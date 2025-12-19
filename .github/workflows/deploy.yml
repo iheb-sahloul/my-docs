@@ -1,0 +1,24 @@
+name: 🚀 Deployment
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        steps:
+            - name: ⤵️ Checkout code
+              uses: actions/checkout@v5
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: '3.x'
+
+            - name: Install dependencies
+              run: pip install mkdocs-material 
+
+            - name: 🚀 Deploy documentation
+              run: mkdocs gh-deploy --force
