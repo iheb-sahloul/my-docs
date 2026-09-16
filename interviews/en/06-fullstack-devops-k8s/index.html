@@ -1,0 +1,2760 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/en/06-fullstack-devops-k8s/">
+      
+      
+        <link rel="prev" href="../05-react-typescript/">
+      
+      
+        <link rel="next" href="../07-system-design-leadership/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Full Stack & DevOps - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#full-stack-devops" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Full Stack & DevOps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-what-are-the-core-principles-of-good-rest-api-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. What are the core principles of good REST API design?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-what-is-a-container-and-how-does-it-fundamentally-differ-from-a-virtual-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What is a container, and how does it fundamentally differ from a virtual machine?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-walk-through-how-docker-image-layers-and-build-caching-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Walk through how Docker image layers and build caching work.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-what-is-a-kubernetes-pod-and-why-doesnt-kubernetes-just-run-containers-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. What is a Kubernetes Pod, and why doesn't Kubernetes just run containers directly?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-what-are-the-three-pillars-of-observability-and-what-does-each-one-actually-tell-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. What are the three pillars of observability, and what does each one actually tell you?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q6-how-do-you-version-a-rest-api-without-breaking-existing-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How do you version a REST API without breaking existing clients?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q7-what-does-idempotency-mean-for-a-rest-api-and-why-does-post-need-special-handling-for-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What does idempotency mean for a REST API, and why does POST need special handling for it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q8-what-are-common-api-rate-limiting-algorithms-and-whats-the-trade-off-between-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What are common API rate-limiting algorithms, and what's the trade-off between them?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q9-walk-through-diagnosing-a-docker-container-that-exits-with-code-137" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Walk through diagnosing a Docker container that exits with code 137.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q10-why-does-dockerfile-instruction-order-matter-for-both-cache-efficiency-and-final-image-size-and-what-does-a-multi-stage-build-solve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Why does Dockerfile instruction order matter for both cache efficiency and final image size, and what does a multi-stage build solve?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q11-whats-the-difference-between-kubernetes-liveness-readiness-and-startup-probes-and-what-happens-when-theyre-misconfigured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What's the difference between Kubernetes liveness, readiness, and startup probes, and what happens when they're misconfigured?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q12-what-happens-if-a-kubernetes-pod-has-no-resource-requests-or-limits-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. What happens if a Kubernetes Pod has no resource requests or limits set?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q13-how-does-the-horizontal-pod-autoscaler-hpa-decide-to-scale-and-whats-a-common-misconfiguration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. How does the Horizontal Pod Autoscaler (HPA) decide to scale, and what's a common misconfiguration?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q14-walk-through-a-kubernetes-rolling-update-and-how-maxsurgemaxunavailable-interact-with-graceful-shutdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. Walk through a Kubernetes rolling update and how maxSurge/maxUnavailable interact with graceful shutdown.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q15-how-do-you-use-git-bisect-to-find-which-commit-introduced-a-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. How do you use git bisect to find which commit introduced a regression?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q16-why-might-an-application-fail-only-inside-a-docker-container-but-work-fine-run-directly-on-the-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. Why might an application fail only inside a Docker container, but work fine run directly on the host?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q17-compare-blue-green-canary-and-rolling-deployment-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. Compare blue-green, canary, and rolling deployment strategies.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q18-put-the-three-pillars-of-observability-into-practice-what-does-good-actually-look-like-for-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Put the three pillars of observability into practice — what does "good" actually look like for each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q19-why-isnt-a-kubernetes-pods-ip-address-a-stable-thing-to-rely-on-and-what-does-a-service-provide-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. Why isn't a Kubernetes Pod's IP address a stable thing to rely on, and what does a Service provide instead?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q20-whats-the-difference-between-a-kubernetes-configmap-and-a-secret-and-whats-the-common-misunderstanding-about-secret-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. What's the difference between a Kubernetes ConfigMap and a Secret, and what's the common misunderstanding about Secret security?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q21-what-problem-does-helm-solve-over-raw-kubernetes-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. What problem does Helm solve over raw Kubernetes manifests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q22-what-stages-does-a-solid-cicd-pipeline-need-and-what-does-fail-fast-mean-in-that-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. What stages does a solid CI/CD pipeline need, and what does "fail fast" mean in that context?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q23-design-a-cicd-pipeline-and-deployment-strategy-for-a-critical-payment-service-that-needs-zero-downtime-and-fast-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. Design a CI/CD pipeline and deployment strategy for a critical payment service that needs zero downtime and fast rollback.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q24-walk-through-debugging-a-works-on-my-machine-fails-in-ciproduction-issue-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q24. Walk through debugging a "works on my machine, fails in CI/production" issue end to end.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q25-design-the-observability-stack-for-a-new-microservices-platform-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q25. Design the observability stack for a new microservices platform from scratch.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-a-container-repeatedly-dies-with-exit-code-137-and-logs-show-nothing-useful" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. A container repeatedly dies with exit code 137, and logs show nothing useful
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-an-application-starts-successfully-but-immediately-fails-to-reach-a-dependency-only-when-run-inside-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. An application starts successfully but immediately fails to reach a dependency, only when run inside a container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-a-kubernetes-pod-repeatedly-enters-crashloopbackoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. A Kubernetes pod repeatedly enters CrashLoopBackOff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4-during-a-rollout-a-burst-of-502503-errors-hits-users-correlating-exactly-with-new-pods-coming-online" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. During a rollout, a burst of 502/503 errors hits users, correlating exactly with new pods coming online
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5-a-deployment-causes-a-burst-of-errors-specifically-at-the-moment-old-pods-are-terminated-not-when-new-ones-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A deployment causes a burst of errors specifically at the moment old pods are terminated, not when new ones start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6-a-single-clients-excessive-request-volume-degrades-response-times-for-every-other-client-of-a-shared-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. A single client's excessive request volume degrades response times for every other client of a shared API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-a-regression-is-reported-but-its-unclear-which-of-the-last-two-months-of-commits-introduced-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. A regression is reported, but it's unclear which of the last two months of commits introduced it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8-ci-passes-cleanly-on-every-check-but-the-feature-breaks-immediately-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. CI passes cleanly on every check, but the feature breaks immediately in production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9-database-credentials-from-a-kubernetes-secret-end-up-posted-in-a-team-chat-or-ticket-treated-as-if-that-were-safe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9. Database credentials from a Kubernetes Secret end up posted in a team chat or ticket, treated as if that were safe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s10-autoscaling-doesnt-kick-in-despite-the-service-clearly-being-under-heavy-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S10. Autoscaling doesn't kick in despite the service clearly being under heavy load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s11-one-misbehaving-pod-causes-unrelated-pods-on-the-same-node-to-slow-down-or-get-evicted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S11. One misbehaving pod causes unrelated pods on the same node to slow down or get evicted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s12-a-canary-release-causes-intermittent-errors-that-dont-correlate-cleanly-with-either-the-old-or-new-version-alone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S12. A canary release causes intermittent errors that don't correlate cleanly with either the old or new version alone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s13-an-outage-is-diagnosed-slowly-because-its-unclear-which-of-many-services-in-the-request-path-is-actually-responsible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S13. An outage is diagnosed slowly because it's unclear which of many services in the request path is actually responsible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s14-docker-images-have-grown-large-enough-to-noticeably-slow-down-cicd-pipeline-runs-and-deployments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S14. Docker images have grown large enough to noticeably slow down CI/CD pipeline runs and deployments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s15-after-a-blue-green-deployment-is-rolled-back-the-application-still-fails-because-the-database-schema-it-expects-doesnt-match-whats-actually-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S15. After a blue-green deployment is rolled back, the application still fails, because the database schema it expects doesn't match what's actually running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s16-a-load-balancer-switch-during-a-blue-green-cutover-drops-long-lived-client-connections-abruptly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S16. A load-balancer switch during a blue-green cutover drops long-lived client connections abruptly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-system-design-leadership/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design & Leadership
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code & AI-assisted Dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-what-are-the-core-principles-of-good-rest-api-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. What are the core principles of good REST API design?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-what-is-a-container-and-how-does-it-fundamentally-differ-from-a-virtual-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What is a container, and how does it fundamentally differ from a virtual machine?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-walk-through-how-docker-image-layers-and-build-caching-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Walk through how Docker image layers and build caching work.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-what-is-a-kubernetes-pod-and-why-doesnt-kubernetes-just-run-containers-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. What is a Kubernetes Pod, and why doesn't Kubernetes just run containers directly?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-what-are-the-three-pillars-of-observability-and-what-does-each-one-actually-tell-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. What are the three pillars of observability, and what does each one actually tell you?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q6-how-do-you-version-a-rest-api-without-breaking-existing-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How do you version a REST API without breaking existing clients?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q7-what-does-idempotency-mean-for-a-rest-api-and-why-does-post-need-special-handling-for-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What does idempotency mean for a REST API, and why does POST need special handling for it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q8-what-are-common-api-rate-limiting-algorithms-and-whats-the-trade-off-between-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What are common API rate-limiting algorithms, and what's the trade-off between them?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q9-walk-through-diagnosing-a-docker-container-that-exits-with-code-137" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Walk through diagnosing a Docker container that exits with code 137.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q10-why-does-dockerfile-instruction-order-matter-for-both-cache-efficiency-and-final-image-size-and-what-does-a-multi-stage-build-solve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Why does Dockerfile instruction order matter for both cache efficiency and final image size, and what does a multi-stage build solve?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q11-whats-the-difference-between-kubernetes-liveness-readiness-and-startup-probes-and-what-happens-when-theyre-misconfigured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What's the difference between Kubernetes liveness, readiness, and startup probes, and what happens when they're misconfigured?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q12-what-happens-if-a-kubernetes-pod-has-no-resource-requests-or-limits-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. What happens if a Kubernetes Pod has no resource requests or limits set?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q13-how-does-the-horizontal-pod-autoscaler-hpa-decide-to-scale-and-whats-a-common-misconfiguration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. How does the Horizontal Pod Autoscaler (HPA) decide to scale, and what's a common misconfiguration?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q14-walk-through-a-kubernetes-rolling-update-and-how-maxsurgemaxunavailable-interact-with-graceful-shutdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. Walk through a Kubernetes rolling update and how maxSurge/maxUnavailable interact with graceful shutdown.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q15-how-do-you-use-git-bisect-to-find-which-commit-introduced-a-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. How do you use git bisect to find which commit introduced a regression?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q16-why-might-an-application-fail-only-inside-a-docker-container-but-work-fine-run-directly-on-the-host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. Why might an application fail only inside a Docker container, but work fine run directly on the host?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q17-compare-blue-green-canary-and-rolling-deployment-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. Compare blue-green, canary, and rolling deployment strategies.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q18-put-the-three-pillars-of-observability-into-practice-what-does-good-actually-look-like-for-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Put the three pillars of observability into practice — what does "good" actually look like for each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q19-why-isnt-a-kubernetes-pods-ip-address-a-stable-thing-to-rely-on-and-what-does-a-service-provide-instead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. Why isn't a Kubernetes Pod's IP address a stable thing to rely on, and what does a Service provide instead?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q20-whats-the-difference-between-a-kubernetes-configmap-and-a-secret-and-whats-the-common-misunderstanding-about-secret-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. What's the difference between a Kubernetes ConfigMap and a Secret, and what's the common misunderstanding about Secret security?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q21-what-problem-does-helm-solve-over-raw-kubernetes-manifests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. What problem does Helm solve over raw Kubernetes manifests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q22-what-stages-does-a-solid-cicd-pipeline-need-and-what-does-fail-fast-mean-in-that-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. What stages does a solid CI/CD pipeline need, and what does "fail fast" mean in that context?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q23-design-a-cicd-pipeline-and-deployment-strategy-for-a-critical-payment-service-that-needs-zero-downtime-and-fast-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. Design a CI/CD pipeline and deployment strategy for a critical payment service that needs zero downtime and fast rollback.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q24-walk-through-debugging-a-works-on-my-machine-fails-in-ciproduction-issue-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q24. Walk through debugging a "works on my machine, fails in CI/production" issue end to end.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q25-design-the-observability-stack-for-a-new-microservices-platform-from-scratch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q25. Design the observability stack for a new microservices platform from scratch.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-a-container-repeatedly-dies-with-exit-code-137-and-logs-show-nothing-useful" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. A container repeatedly dies with exit code 137, and logs show nothing useful
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-an-application-starts-successfully-but-immediately-fails-to-reach-a-dependency-only-when-run-inside-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. An application starts successfully but immediately fails to reach a dependency, only when run inside a container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-a-kubernetes-pod-repeatedly-enters-crashloopbackoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. A Kubernetes pod repeatedly enters CrashLoopBackOff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4-during-a-rollout-a-burst-of-502503-errors-hits-users-correlating-exactly-with-new-pods-coming-online" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. During a rollout, a burst of 502/503 errors hits users, correlating exactly with new pods coming online
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5-a-deployment-causes-a-burst-of-errors-specifically-at-the-moment-old-pods-are-terminated-not-when-new-ones-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A deployment causes a burst of errors specifically at the moment old pods are terminated, not when new ones start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6-a-single-clients-excessive-request-volume-degrades-response-times-for-every-other-client-of-a-shared-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. A single client's excessive request volume degrades response times for every other client of a shared API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-a-regression-is-reported-but-its-unclear-which-of-the-last-two-months-of-commits-introduced-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. A regression is reported, but it's unclear which of the last two months of commits introduced it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8-ci-passes-cleanly-on-every-check-but-the-feature-breaks-immediately-in-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. CI passes cleanly on every check, but the feature breaks immediately in production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9-database-credentials-from-a-kubernetes-secret-end-up-posted-in-a-team-chat-or-ticket-treated-as-if-that-were-safe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9. Database credentials from a Kubernetes Secret end up posted in a team chat or ticket, treated as if that were safe
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s10-autoscaling-doesnt-kick-in-despite-the-service-clearly-being-under-heavy-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S10. Autoscaling doesn't kick in despite the service clearly being under heavy load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s11-one-misbehaving-pod-causes-unrelated-pods-on-the-same-node-to-slow-down-or-get-evicted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S11. One misbehaving pod causes unrelated pods on the same node to slow down or get evicted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s12-a-canary-release-causes-intermittent-errors-that-dont-correlate-cleanly-with-either-the-old-or-new-version-alone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S12. A canary release causes intermittent errors that don't correlate cleanly with either the old or new version alone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s13-an-outage-is-diagnosed-slowly-because-its-unclear-which-of-many-services-in-the-request-path-is-actually-responsible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S13. An outage is diagnosed slowly because it's unclear which of many services in the request path is actually responsible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s14-docker-images-have-grown-large-enough-to-noticeably-slow-down-cicd-pipeline-runs-and-deployments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S14. Docker images have grown large enough to noticeably slow down CI/CD pipeline runs and deployments
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s15-after-a-blue-green-deployment-is-rolled-back-the-application-still-fails-because-the-database-schema-it-expects-doesnt-match-whats-actually-running" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S15. After a blue-green deployment is rolled back, the application still fails, because the database schema it expects doesn't match what's actually running
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s16-a-load-balancer-switch-during-a-blue-green-cutover-drops-long-lived-client-connections-abruptly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S16. A load-balancer switch during a blue-green cutover drops long-lived client connections abruptly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="full-stack-devops">Full Stack &amp; DevOps</h1>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h3 id="q1-what-are-the-core-principles-of-good-rest-api-design">Q1. What are the core principles of good REST API design?</h3>
+<p>Model URLs around resources (nouns), not actions — <code>/orders/123</code>, not <code>/getOrder?id=123</code> — and
+use HTTP methods to express the action: <code>GET</code> (read, safe and idempotent), <code>POST</code> (create, not
+idempotent), <code>PUT</code> (full replace, idempotent), <code>PATCH</code> (partial update), <code>DELETE</code> (remove,
+idempotent). Use status codes to carry real meaning (<code>200</code>/<code>201</code>/<code>204</code> for success variants,
+<code>400</code> for a malformed request, <code>401</code>/<code>403</code> for auth failures, <code>404</code> for missing resources, <code>409</code>
+for a conflict, <code>422</code> for semantically invalid data, <code>500</code> for server errors) rather than always
+returning <code>200</code> with an error flag buried in the body. Nest resources to express genuine
+ownership (<code>/orders/123/items</code>), keep responses consistent in shape across endpoints, and version
+the API deliberately (Q6) rather than letting breaking changes ship silently.</p>
+<h3 id="q2-what-is-a-container-and-how-does-it-fundamentally-differ-from-a-virtual-machine">Q2. What is a container, and how does it fundamentally differ from a virtual machine?</h3>
+<p>A container packages an application with its dependencies and shares the host machine's kernel —
+it's an isolated process (via Linux namespaces for isolation and cgroups for resource limits),
+not a separate operating system, which makes it lightweight (starts in milliseconds to seconds,
+small image footprint) compared to a VM, which virtualizes hardware and runs a full separate
+guest OS and kernel (starts in tens of seconds to minutes, much larger footprint). The trade-off:
+a VM gives stronger isolation (a separate kernel means a kernel-level exploit in one VM doesn't
+automatically reach others) at a real resource cost; a container's shared-kernel model is
+lighter and denser but means containers on the same host are isolated processes, not isolated
+operating systems.</p>
+<h3 id="q3-walk-through-how-docker-image-layers-and-build-caching-work">Q3. Walk through how Docker image layers and build caching work.</h3>
+<p>Each instruction in a Dockerfile (<code>RUN</code>, <code>COPY</code>, <code>ADD</code>) creates a new, immutable layer stacked on
+the previous one, and Docker caches each layer — if a layer's instruction and its inputs haven't
+changed since the last build, Docker reuses the cached layer instead of re-executing it, and
+every layer <em>after</em> the first changed one must be rebuilt (cache invalidates from that point
+forward, not selectively). This is why instruction order matters for build speed: put
+infrequently-changing steps first (installing OS packages, restoring dependencies from a lock
+file) and frequently-changing steps last (copying application source code), so a source code
+change only invalidates and rebuilds the last few layers instead of the whole image, including
+re-downloading dependencies unnecessarily.</p>
+<h3 id="q4-what-is-a-kubernetes-pod-and-why-doesnt-kubernetes-just-run-containers-directly">Q4. What is a Kubernetes Pod, and why doesn't Kubernetes just run containers directly?</h3>
+<p>A Pod is the smallest deployable unit in Kubernetes — one or more containers that are always
+scheduled together on the same node, share a network namespace (so they can reach each other via
+<code>localhost</code> and share one IP), and can share storage volumes. Kubernetes doesn't manage bare
+containers directly because most real workloads need this "always co-located, always
+co-scheduled" grouping — a primary application container plus a sidecar (a log shipper, a service
+mesh proxy) that must run alongside it on the same node and share its network — and the Pod
+abstraction gives Kubernetes one unit to schedule, health-check, and scale as a whole, rather
+than trying to reason about loosely-coupled containers that happen to need each other nearby.</p>
+<h3 id="q5-what-are-the-three-pillars-of-observability-and-what-does-each-one-actually-tell-you">Q5. What are the three pillars of observability, and what does each one actually tell you?</h3>
+<p><strong>Logs</strong> are discrete, timestamped events — what specifically happened, with detail (an error
+message, a specific request's parameters) — best for deep-diving into one specific occurrence
+once you already know roughly where to look. <strong>Metrics</strong> are aggregated numeric measurements over
+time (request rate, error rate, latency percentiles, CPU/memory usage) — best for seeing trends,
+setting alerting thresholds, and answering "is the system healthy right now" at a glance, but
+without the detail of any single event. <strong>Traces</strong> follow one request's path through a
+distributed system, showing the timing of each hop/span — best for answering "where in this
+multi-service call chain did the time go, or where did it fail" for a specific request. The three
+are complementary, not substitutes: metrics tell you something is wrong and roughly where; traces
+narrow down which specific hop; logs give you the exact detail of what happened there.</p>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h3 id="q6-how-do-you-version-a-rest-api-without-breaking-existing-clients">Q6. How do you version a REST API without breaking existing clients?</h3>
+<p><strong>Answer:</strong> The core discipline is distinguishing backward-compatible changes (adding a new
+optional field, adding a new endpoint) — which don't need a version bump, since old clients
+simply ignore fields they don't know about — from breaking changes (removing/renaming a field,
+changing a field's type or meaning, changing required parameters), which do. For breaking
+changes, common strategies: URL path versioning (<code>/v1/orders</code>, <code>/v2/orders</code> — simple, highly
+visible, easy to route, but can lead to duplicated implementation logic across versions);
+header-based versioning (<code>Accept: application/vnd.api.v2+json</code> — keeps URLs stable, less
+visible/discoverable); or, more robustly, treat versioning as a last resort and design changes to
+be additive and backward-compatible wherever possible (the same discipline behind Q19 in module
+4's schema evolution question), reserving a hard version bump for genuinely unavoidable breaking
+changes, with a clear deprecation window and communication to consumers before the old version is
+retired.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>GET /v1/orders/123        # URL path versioning — simple, visible, but duplicates logic across versions
+GET /orders/123
+Accept: application/vnd.api.v2+json   # header versioning — stable URL, less discoverable
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> reaching for a version bump on every change, including additive ones, forces
+every client to explicitly upgrade for something that was backward-compatible in the first place
+— a senior answer treats versioning as the last resort for genuinely breaking changes, not the
+default response to any schema change.</p>
+<h3 id="q7-what-does-idempotency-mean-for-a-rest-api-and-why-does-post-need-special-handling-for-it">Q7. What does idempotency mean for a REST API, and why does <code>POST</code> need special handling for it?</h3>
+<p><strong>Answer:</strong> An idempotent operation produces the same end state no matter how many times it's
+applied — <code>GET</code>, <code>PUT</code>, and <code>DELETE</code> are idempotent by definition/convention (calling
+<code>DELETE /orders/123</code> five times leaves the same end state as calling it once), but <code>POST</code>
+(typically "create a new resource") is not — retrying a <code>POST</code> due to a timeout or network blip
+can create duplicate resources, exactly the pattern from module 4's messaging idempotency problem
+(Q7/Q8 there) but at the HTTP layer. The fix is the same shape: accept an explicit idempotency
+key from the client (a UUID generated once per logical operation, sent as a header, and resent
+unchanged on any retry), and the server checks whether that key has already been processed before
+creating a new resource — a client retrying a timed-out request with the same key gets the
+original result back safely instead of a duplicate.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="err">POST /payments</span>
+<span class="err">Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7</span>
+<span class="err">{...}</span>
+</code></pre></div>
+A network timeout causes the client to retry with the same key — the server recognizes the key
+was already processed and returns the original result instead of creating a second payment.</p>
+<p><strong>Why it's a trap:</strong> assuming retry logic alone ("just retry on any timeout") is a safe default
+regardless of HTTP method — retrying a <code>POST</code> without an idempotency key can silently create
+duplicate resources exactly when the client is trying to be resilient.</p>
+<h3 id="q8-what-are-common-api-rate-limiting-algorithms-and-whats-the-trade-off-between-them">Q8. What are common API rate-limiting algorithms, and what's the trade-off between them?</h3>
+<p><strong>Answer:</strong> <strong>Fixed window</strong> counts requests in a fixed time bucket (e.g. per-minute) and resets
+at the boundary — simple, but allows a burst of up to 2x the limit right at a window boundary (a
+full allowance right before the boundary, then another full allowance right after). <strong>Sliding
+window</strong> smooths this by weighting the count across the current and previous window
+proportionally to elapsed time — more accurate, modestly more complex to implement. <strong>Token
+bucket</strong> fills tokens at a steady rate up to a capacity, and each request consumes a token —
+naturally allows brief bursts (up to the bucket's capacity) while enforcing a steady average rate
+over time, which matches many real traffic patterns better than a hard per-window cap. <strong>Leaky
+bucket</strong> processes requests at a strictly constant output rate regardless of input burstiness,
+smoothing output completely at the cost of added latency for bursty legitimate traffic. The
+choice depends on whether legitimate traffic is naturally bursty (favoring token bucket) or
+whether a strictly smooth downstream rate is required (favoring leaky bucket).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code># Fixed window: up to 2x burst possible right at the boundary.
+11:00:59 -&gt; 100 requests allowed (window resets at 11:01:00)
+11:01:00 -&gt; another 100 requests allowed immediately -&gt; 200 in ~1 second
+
+# Token bucket smooths this by capping burst to the bucket's own capacity, refilled steadily.
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> picking fixed window because it's the simplest to implement, without
+accounting for its boundary-burst flaw, means the limit is only a soft guideline at exactly the
+moment traffic is most bursty — the opposite of when it needs to actually hold.</p>
+<h3 id="q9-walk-through-diagnosing-a-docker-container-that-exits-with-code-137">Q9. Walk through diagnosing a Docker container that exits with code 137.</h3>
+<p><strong>Answer:</strong> Exit code 137 is 128 + 9 (<code>SIGKILL</code>, signal 9) — the container's main process was
+forcibly terminated by an external force, not shut down gracefully by its own logic, and logs are
+often empty precisely because a <code>SIGKILL</code> gives the process no chance to flush or log anything on
+the way out. The most common cause is the OOM killer: the container exceeded its memory limit (or
+the host is under severe memory pressure), and the kernel killed the process to protect the
+system. Diagnosis: run <code>docker inspect</code> on the stopped container and check the <code>OOMKilled</code> field
+under <code>State</code> — if <code>true</code>, confirmed; the fix is raising the container's memory limit (if it was
+merely undersized) or fixing an actual memory leak in the application if usage climbs
+unboundedly rather than plateauing. If <code>OOMKilled</code> is <code>false</code>, check host-level kernel logs
+(<code>dmesg</code>, <code>journalctl -k</code>) for signs of an external kill — a <code>docker stop</code> timing out past its
+grace period and escalating to <code>SIGKILL</code>, or an orchestrator (Kubernetes) evicting the pod for
+its own resource-pressure reasons.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>$ docker inspect mycontainer --format '{{.State.OOMKilled}}'
+true
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating an empty log as "no evidence, so it must be something obscure" — an
+empty log after a 137 exit is the <em>expected</em> signature of <code>SIGKILL</code>, not a mystery; checking
+<code>OOMKilled</code> in <code>docker inspect</code> first is faster than combing through application logs that were
+never going to contain anything.</p>
+<h3 id="q10-why-does-dockerfile-instruction-order-matter-for-both-cache-efficiency-and-final-image-size-and-what-does-a-multi-stage-build-solve">Q10. Why does Dockerfile instruction order matter for both cache efficiency and final image size, and what does a multi-stage build solve?</h3>
+<p><strong>Answer:</strong> Per Q3's caching mechanics, instructions should be ordered from least-frequently-
+changing (installing OS/system dependencies) to most-frequently-changing (copying application
+source) so routine code changes invalidate only the last few layers, not the whole build.
+Multi-stage builds solve a separate problem: compiling/building an application often needs tools
+(a JDK, build caches, <code>node_modules</code> including devDependencies) that the <em>running</em> application
+doesn't need at all — a multi-stage Dockerfile builds in one stage with the full toolchain, then
+copies only the final build artifact (a jar, a compiled binary, the built static assets) into a
+fresh, minimal final stage (<code>FROM eclipse-temurin:21-jre-alpine</code>, not the full JDK image), so the
+shipped image doesn't carry the entire build toolchain's weight and attack surface into
+production.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c"># Single-stage: ships the entire JDK + build cache into production.</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jdk</span>
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>mvn<span class="w"> </span>package
+
+<span class="c"># Multi-stage: only the final artifact crosses into the runtime image.</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jdk</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>mvn<span class="w"> </span>package
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jre-alpine</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>build<span class="w"> </span>/app/target/app.jar<span class="w"> </span>.
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "the build works, the image runs" is treated as the finish line — but a
+single-stage Dockerfile silently ships the entire build toolchain (and its attack surface) into
+production, an issue that looks purely cosmetic (image size) until it becomes a real security or
+cost problem.</p>
+<h3 id="q11-whats-the-difference-between-kubernetes-liveness-readiness-and-startup-probes-and-what-happens-when-theyre-misconfigured">Q11. What's the difference between Kubernetes liveness, readiness, and startup probes, and what happens when they're misconfigured?</h3>
+<p><strong>Answer:</strong> <strong>Liveness</strong> answers "is this container alive, or should it be restarted" — failing
+it causes Kubernetes to kill and restart the container. <strong>Readiness</strong> answers "can this container
+currently serve traffic" — failing it removes the pod from the Service's load-balancing endpoints
+without restarting it, which is the correct response to a pod that's alive but temporarily unable
+to serve (warming a cache, waiting on a dependency). <strong>Startup</strong> exists for slow-starting
+applications, delaying when liveness/readiness even begin being checked, so a legitimately slow
+startup isn't mistaken for a liveness failure and killed before it ever finishes booting. The
+common misconfiguration: using the same check (or no check at all, letting Kubernetes assume
+"ready" immediately) for both liveness and readiness — a liveness probe that's too aggressive
+(short timeout, low failure threshold) on a pod under temporary load can trigger unnecessary
+restarts of an otherwise-healthy pod (a self-inflicted outage), while a missing or trivial
+readiness probe sends traffic to a pod before it's actually able to handle it, causing errors
+during every rollout (S4).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">livenessProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/healthz</span><span class="p p-Indicator">,</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">initialDelaySeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="nt">readinessProbe</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/ready</span><span class="p p-Indicator">,</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="c1"># checks dependencies/warm-up, not just "process is up"</span>
+<span class="w">  </span><span class="nt">periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> reusing the same shallow check ("the process responds") for both liveness and
+readiness treats two different questions — "should this be restarted" vs. "should this receive
+traffic" — as one; an aggressive liveness probe built like a readiness check can restart a
+healthy-but-busy pod, turning a load spike into a self-inflicted outage.</p>
+<h3 id="q12-what-happens-if-a-kubernetes-pod-has-no-resource-requests-or-limits-set">Q12. What happens if a Kubernetes Pod has no resource requests or limits set?</h3>
+<p><strong>Answer:</strong> Without a <strong>request</strong> (the amount the scheduler reserves for this pod on a node), the
+scheduler has no real basis for bin-packing pods sensibly, and a pod without requests is treated
+as lowest priority (<code>BestEffort</code> QoS class) — the first to be evicted under node memory pressure,
+even if it's actually an important workload. Without a <strong>limit</strong> (the hard cap enforced at
+runtime), a pod can consume unbounded memory/CPU on its node — a memory leak in one unbounded pod
+can starve every other pod on that node ("noisy neighbor," S11) rather than being contained to
+itself, and can eventually trigger the node's own OOM killer, which doesn't necessarily kill the
+offending pod specifically. Setting both deliberately (with limits comfortably above expected
+steady-state usage, but bounded) is what gives Kubernetes the information it needs to schedule
+fairly and contain a single workload's failure to itself.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">requests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> memory</span><span class="p">:</span><span class="w"> </span><span class="s">"256Mi"</span><span class="p p-Indicator">,</span><span class="nt"> cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"250m"</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> memory</span><span class="p">:</span><span class="w"> </span><span class="s">"512Mi"</span><span class="p p-Indicator">,</span><span class="nt"> cpu</span><span class="p">:</span><span class="w"> </span><span class="s">"500m"</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="c1"># Omit this block entirely and the pod is BestEffort QoS — first evicted, and free to</span>
+<span class="c1"># consume unbounded resources on its node in the meantime.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating resource requests/limits as an optional tuning knob rather than
+required scheduling input — "it works fine without them in dev" is true right up until real node
+contention exposes both failure modes (unfair eviction, noisy-neighbor) at once.</p>
+<h3 id="q13-how-does-the-horizontal-pod-autoscaler-hpa-decide-to-scale-and-whats-a-common-misconfiguration">Q13. How does the Horizontal Pod Autoscaler (HPA) decide to scale, and what's a common misconfiguration?</h3>
+<p><strong>Answer:</strong> The HPA periodically compares a target metric (commonly CPU or memory utilization, or
+a custom metric like request queue depth) against a configured target value, and computes a
+desired replica count roughly proportional to how far current usage is from the target. A common
+misconfiguration: the HPA scales based on CPU utilization, but the pod has no CPU <em>request</em> set
+(Q12) — utilization percentage is calculated relative to the request, so with no request defined,
+the HPA has no meaningful baseline to compute against and either doesn't scale at all or behaves
+unpredictably. Another common issue: scaling on a metric that doesn't actually correlate with the
+real bottleneck (scaling on CPU when the service is actually I/O-bound and blocked waiting on a
+downstream call, so CPU never crosses the threshold even while the service is genuinely
+overwhelmed) — the fix there is scaling on a custom metric that actually reflects load (request
+rate, queue depth) rather than defaulting to CPU because it's the built-in option.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>$ kubectl get hpa orders-hpa
+NAME         REFERENCE           TARGETS         MINPODS   MAXPODS   REPLICAS
+orders-hpa   Deployment/orders   &lt;unknown&gt;/70%   2         10        2
+</code></pre></div>
+<code>&lt;unknown&gt;</code> as the current value means the HPA has no CPU request baseline on the pod to compute
+utilization against — it will never scale from this state no matter how loaded the service is.</p>
+<p><strong>Why it's a trap:</strong> assuming "the HPA is configured, so autoscaling works" — an HPA scaling on
+CPU with no CPU request set, or scaling on CPU for a genuinely I/O-bound service, can silently
+never trigger, and that gap stays invisible until a real traffic spike exposes it.</p>
+<h3 id="q14-walk-through-a-kubernetes-rolling-update-and-how-maxsurgemaxunavailable-interact-with-graceful-shutdown">Q14. Walk through a Kubernetes rolling update and how <code>maxSurge</code>/<code>maxUnavailable</code> interact with graceful shutdown.</h3>
+<p><strong>Answer:</strong> A rolling update replaces old-version pods with new-version pods incrementally rather
+than all at once: <code>maxSurge</code> controls how many extra pods beyond the desired count can be created
+temporarily during the rollout (higher = faster rollout, more resource headroom needed), and
+<code>maxUnavailable</code> controls how many pods can be down at once during the transition (higher =
+faster rollout, more capacity reduction tolerated meanwhile). The interaction with graceful
+shutdown (module 2's Q16/S16) matters at the moment an old pod is terminated: Kubernetes sends
+<code>SIGTERM</code>, and the pod has <code>terminationGracePeriodSeconds</code> to finish in-flight requests and shut
+down before a hard <code>SIGKILL</code> follows — but the pod is also removed from the Service's endpoints as
+part of this process, and if that endpoint removal isn't correctly sequenced <em>before</em> new
+connections stop being routed to it (a <code>preStop</code> hook adding a brief delay before the app actually
+starts shutting down is the standard mitigation), there's a window where the load balancer can
+still route new traffic to a pod that's already stopped accepting it, causing a burst of errors
+during every rollout.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">lifecycle</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">preStop</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">exec</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"sleep"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"5"</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="c1"># gives the Service time to deregister this pod first</span>
+<span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> assuming <code>SIGTERM</code> alone is enough for a zero-error rollout — without a brief
+<code>preStop</code> delay, the pod can stop accepting connections before the Service has finished removing
+it from its endpoint list, causing a burst of errors on every single deployment.</p>
+<h3 id="q15-how-do-you-use-git-bisect-to-find-which-commit-introduced-a-regression">Q15. How do you use <code>git bisect</code> to find which commit introduced a regression?</h3>
+<p><strong>Answer:</strong> <code>git bisect start</code>, then mark a known-bad commit (<code>git bisect bad &lt;hash&gt;</code>, often just
+<code>HEAD</code> or the current broken state) and a known-good commit (<code>git bisect good &lt;hash&gt;</code>, a point
+before the bug existed) — git checks out the midpoint commit between them, and you test it and
+report <code>git bisect good</code> or <code>git bisect bad</code>, repeating until git narrows it down to the exact
+commit that introduced the regression, in O(log n) steps rather than checking every commit
+individually. If the "test" step (does this commit exhibit the bug) can be scripted (a specific
+failing test, a command with a distinguishable exit code), <code>git bisect run &lt;command&gt;</code> automates
+the entire process end-to-end without manual checkout/test/report cycles. <code>git bisect reset</code>
+returns the repository to its original state once the culprit commit is identified.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>$ git bisect start
+$ git bisect bad HEAD
+$ git bisect good v2.3.0
+$ git bisect run ./run-failing-test.sh
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> manually eyeballing "which of these 200 commits looks suspicious" instead of
+bisecting wastes exactly the log-n advantage bisect gives for free — and skipping
+<code>git bisect run</code> in favor of manual checkout/test cycles turns a scriptable, 8-step process into a
+slow, error-prone manual one.</p>
+<h3 id="q16-why-might-an-application-fail-only-inside-a-docker-container-but-work-fine-run-directly-on-the-host">Q16. Why might an application fail only inside a Docker container, but work fine run directly on the host?</h3>
+<p><strong>Answer:</strong> Common causes: a hardcoded <code>localhost</code> reference that meant "this same machine" on
+the host but, inside a container, refers to the container's own isolated network namespace rather
+than another service the container needs to reach (which instead needs a service name/container
+network alias, or <code>host.docker.internal</code> in specific setups); a file permission mismatch, since a
+container's default user (sometimes <code>root</code>, sometimes a specific UID baked into the image) may
+not match the host user's permissions on a mounted volume; a missing environment variable or
+configuration file that existed on the host's environment but wasn't explicitly passed into the
+container; or a base image with a different OS/library version than the host, surfacing a
+dependency that was implicitly satisfied on the host but isn't present in the (often much more
+minimal, e.g. Alpine-based) container image.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">environment</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_HOST=localhost</span><span class="w">   </span><span class="c1"># meant "this same machine" on the host; inside the container this</span>
+<span class="w">                         </span><span class="c1"># resolves to the container's own network namespace, not the DB</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> assuming "the code is identical, so the environment must be identical too" —
+a container's network namespace, filesystem, and base image are genuinely different execution
+contexts, even when running the exact same application code and binary as the host.</p>
+<h3 id="q17-compare-blue-green-canary-and-rolling-deployment-strategies">Q17. Compare blue-green, canary, and rolling deployment strategies.</h3>
+<p><strong>Answer:</strong> <strong>Rolling</strong> (Kubernetes's default, Q14) incrementally replaces old pods with new ones
+— simple, resource-efficient (no need to run two full environments simultaneously), but rollback
+means rolling the update back the same incremental way, and a bad version is serving <em>some</em>
+traffic for the duration of the rollout before it's caught. <strong>Blue-green</strong> runs two complete,
+independent environments (blue = current, green = new) and switches all traffic over at once
+(typically at the load balancer/DNS level) once the new environment is verified — rollback is
+just switching traffic back, nearly instant, but it requires double the infrastructure running
+simultaneously during the transition, and any stateful component (a database schema, S15) still
+needs to be compatible with both environments during the switch. <strong>Canary</strong> routes a small
+percentage of real traffic to the new version first, observes real metrics/errors from that
+subset, and gradually increases the percentage if healthy (or rolls back the canary immediately
+if not) — the best real-world signal before a full rollout, at the cost of more deployment
+complexity and the requirement that both versions coexist safely for the duration (S12's
+schema-compatibility trap applies here too).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>Rolling:    old -&gt; [old,new] -&gt; [new] over N steps        (partial exposure during rollout)
+Blue-green: [blue] -&gt; [blue,green verified] -&gt; [green]    (instant switch, double infra)
+Canary:     [old 95%, new 5%] -&gt; ... -&gt; [new 100%]        (real-traffic validation first)
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> picking a strategy because it's "the modern one" (canary, blue-green)
+without accounting for its actual cost — blue-green's double infrastructure and schema-
+compatibility burden, or canary's requirement that both versions coexist safely — can be worse
+than a well-tested rolling update for a system that doesn't actually need the extra safety.</p>
+<h3 id="q18-put-the-three-pillars-of-observability-into-practice-what-does-good-actually-look-like-for-each">Q18. Put the three pillars of observability into practice — what does "good" actually look like for each?</h3>
+<p><strong>Answer:</strong> <strong>Structured logging</strong>: emit logs as structured data (JSON, not free-text) with
+consistent fields (a request/trace ID, service name, severity) so they're searchable and
+correlatable across services, not just human-readable one at a time. <strong>Metrics</strong>: the RED method
+for request-driven services (Rate, Errors, Duration — per endpoint) and the USE method for
+resources (Utilization, Saturation, Errors — per CPU/memory/disk/queue) give a structured,
+repeatable checklist for what to instrument, rather than an ad-hoc collection of whatever metrics
+happened to seem interesting at the time. <strong>Distributed tracing</strong>: propagate a trace ID across
+every hop (HTTP headers, message metadata for async hops — module 4's messaging content) using a
+standard (OpenTelemetry) so a single request's full path and timing across services is
+reconstructible, not just each service's isolated view.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"ts"</span><span class="p">:</span><span class="s2">"2024-03-11T10:00:00Z"</span><span class="p">,</span><span class="nt">"level"</span><span class="p">:</span><span class="s2">"error"</span><span class="p">,</span><span class="nt">"service"</span><span class="p">:</span><span class="s2">"orders"</span><span class="p">,</span><span class="nt">"traceId"</span><span class="p">:</span><span class="s2">"a1b2c3"</span><span class="p">,</span><span class="nt">"msg"</span><span class="p">:</span><span class="s2">"payment failed"</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating "we have logs" as equivalent to "we have observability" —
+unstructured, untraceable logs with no shared trace ID across services still leave you manually
+correlating timestamps across a dozen services during an incident, exactly the slow-diagnosis
+failure mode structured logging plus tracing exists to eliminate.</p>
+<h3 id="q19-why-isnt-a-kubernetes-pods-ip-address-a-stable-thing-to-rely-on-and-what-does-a-service-provide-instead">Q19. Why isn't a Kubernetes Pod's IP address a stable thing to rely on, and what does a Service provide instead?</h3>
+<p><strong>Answer:</strong> Pods are ephemeral by design — a Deployment can recreate a pod (on a crash, a rolling
+update, a node failure) at any time, and the new pod gets a new IP address; hardcoding or caching
+a pod IP anywhere is guaranteed to break eventually. A <strong>Service</strong> provides a stable virtual IP
+and DNS name that load-balances across whichever pods currently match its label selector,
+updating automatically as pods come and go — clients target the Service, never a pod directly.
+<code>ClusterIP</code> (the default) is reachable only within the cluster; <code>NodePort</code> exposes the service on
+a static port on every node, reachable from outside the cluster; <code>LoadBalancer</code> provisions an
+actual external load balancer (via the cloud provider) pointing at the service, the standard way
+to expose a service to the internet.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Service</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">orders-svc</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">ports</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">80</span><span class="p p-Indicator">,</span><span class="nt"> targetPort</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}]</span>
+<span class="c1"># Clients target "orders-svc" — never a specific pod's IP, which changes on every recreate.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> caching or hardcoding a pod IP anywhere "because it was stable during my
+testing" — pod IPs are guaranteed to change on the very next reschedule, and code that assumes
+otherwise works right up until the first rolling update or node failure.</p>
+<h3 id="q20-whats-the-difference-between-a-kubernetes-configmap-and-a-secret-and-whats-the-common-misunderstanding-about-secret-security">Q20. What's the difference between a Kubernetes ConfigMap and a Secret, and what's the common misunderstanding about Secret security?</h3>
+<p><strong>Answer:</strong> Both store key-value configuration injected into pods (as environment variables or
+mounted files); the intended distinction is that a ConfigMap holds non-sensitive configuration and
+a Secret holds sensitive data (credentials, tokens, keys). The common misunderstanding: a
+Secret's values are base64-<em>encoded</em>, not encrypted — anyone with read access to the Secret
+object via the Kubernetes API (or <code>kubectl get secret -o yaml</code>) can trivially decode it back to
+plaintext, so a Secret alone provides no confidentiality against anyone with sufficient cluster
+RBAC access, only a mild obfuscation against accidental exposure. Genuine protection requires
+enabling encryption-at-rest for Secrets in etcd (not the default in every cluster setup), tightly
+scoping RBAC access to Secrets, and, for stronger guarantees, integrating an actual secrets
+manager (Vault, cloud-provider secret stores) rather than relying on the base Secret object as if
+it were inherently encrypted.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>$ kubectl get secret db-creds -o jsonpath='{.data.password}' | base64 -d
+SuperSecretPassword123
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating "it's stored as a Secret" as sufficient protection on its own —
+without encryption-at-rest and tight RBAC, a Secret is one <code>kubectl get</code> away from plaintext for
+anyone with cluster read access.</p>
+<h3 id="q21-what-problem-does-helm-solve-over-raw-kubernetes-manifests">Q21. What problem does Helm solve over raw Kubernetes manifests?</h3>
+<p><strong>Answer:</strong> Raw YAML manifests duplicate boilerplate across environments (dev/staging/prod each
+needing near-identical Deployment/Service/ConfigMap files differing only in a handful of values)
+and have no built-in concept of a "release" — no easy way to install, upgrade, or roll back a
+whole set of related resources as one versioned unit. Helm templates the manifests
+(parameterizing the differences into a <code>values.yaml</code> per environment) and tracks each
+install/upgrade as a numbered release, supporting <code>helm rollback</code> to a previous release as one
+command rather than manually reconstructing what the previous manifest state was. The trade-off
+is added complexity (a templating layer and its own tooling/learning curve) that's worth it once
+the same application needs to be deployed across multiple environments or multiple times with
+variations — for a single, simple, rarely-changing deployment, raw manifests can still be the
+simpler choice.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>$ helm upgrade orders ./chart -f values-prod.yaml
+$ helm rollback orders 4   # back to release revision 4, one command
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> adopting Helm (or any templating layer) for a single, simple, rarely-changing
+deployment adds real complexity for no corresponding benefit — its value only shows up once the
+same chart is deployed across multiple environments or multiple times with genuine variation.</p>
+<h3 id="q22-what-stages-does-a-solid-cicd-pipeline-need-and-what-does-fail-fast-mean-in-that-context">Q22. What stages does a solid CI/CD pipeline need, and what does "fail fast" mean in that context?</h3>
+<p><strong>Answer:</strong> Roughly, in increasing cost/time order: lint/static analysis and fast unit tests first
+(cheapest, catch the most common mistakes in seconds), then a build/compile step, then
+integration tests (slower, need real dependencies like a database), then security/dependency
+scanning, then a deploy to a staging environment with smoke tests, then the actual production
+deployment (often gated behind a canary or manual approval for critical services). "Fail fast"
+means ordering stages so the cheapest, most likely-to-catch-something checks run first — a lint
+failure should fail in seconds, not after waiting for a 20-minute integration test suite to
+finish first — so developers get feedback as quickly as possible and expensive resources aren't
+spent running later stages on a change that was already going to fail an earlier, cheaper check.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nt">stages</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">lint</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">unit-test</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">build</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">integration-test</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">security-scan</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">deploy-staging</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">deploy-prod</span><span class="p p-Indicator">]</span>
+<span class="c1"># lint/unit-test run first and finish in seconds; integration-test and deploy are last and</span>
+<span class="c1"># most expensive — a lint failure should never wait behind a 20-minute test suite.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> ordering pipeline stages by when they were historically added rather than by
+cost — an expensive integration-test stage running before a cheap lint check wastes CI minutes
+and developer feedback time on every single failing lint change.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h3 id="q23-design-a-cicd-pipeline-and-deployment-strategy-for-a-critical-payment-service-that-needs-zero-downtime-and-fast-rollback">Q23. Design a CI/CD pipeline and deployment strategy for a critical payment service that needs zero downtime and fast rollback.</h3>
+<p>Pipeline: fast static analysis and unit tests first (fail fast, Q22), then integration tests
+against a real (containerized, ephemeral) database and any critical downstream mocks, then a
+security/dependency scan (payment services are a natural target for supply-chain and dependency
+vulnerability scanning to be non-negotiable), then build a versioned, immutable artifact (a
+tagged container image, never <code>latest</code>) that's the <em>same</em> artifact promoted through every
+environment rather than rebuilt per environment (eliminating "built differently in prod" as a
+failure class). Deployment strategy: canary (Q17) specifically for a payment-critical service,
+routing a small percentage of real traffic first and watching error rate/latency against tight,
+automated rollback thresholds (not just human judgment) before progressively increasing traffic
+— combined with the additive-migration discipline from module 3's Q24 so the database schema is
+compatible with both the old and new version throughout the canary window. Rollback needs to be a
+single, fast, tested command (redirect traffic back to the previous version, which is why the
+previous version's pods often aren't torn down immediately after a rollout, specifically to make
+rollback near-instant) rather than a manual, error-prone unwind. Observability (Q18) with tight
+alerting on the payment-critical path specifically is what makes the canary's automated rollback
+threshold trustworthy in the first place — this entire design is only as good as the signal it's
+making rollback decisions from.</p>
+<h3 id="q24-walk-through-debugging-a-works-on-my-machine-fails-in-ciproduction-issue-end-to-end">Q24. Walk through debugging a "works on my machine, fails in CI/production" issue end to end.</h3>
+<p>Start by establishing exactly <em>where</em> the divergence happens — reproduce the failure in the
+target environment directly if at all possible (don't debug blind from logs alone if you can get
+a shell in the failing container/pod). Systematically compare the two environments along the axes
+that commonly differ: environment variables and configuration (Q16, module 2's S1/S3), base
+image/OS/library versions if one runs in Docker and the other doesn't, file permissions and
+mounted volume ownership, and timezone/locale defaults (a classic silent difference between a
+developer's host locale and a minimal container's default <code>C</code> locale, breaking date parsing or
+sorting in subtle ways). If the divergence is genuinely a recent regression rather than an
+environment difference, <code>git bisect</code> (Q15) — run against the specific environment where it
+actually fails, not locally — narrows down the exact introducing commit efficiently rather than
+manually reviewing a large diff. Once isolated, the fix is usually one of: making the two
+environments more consistent (running the same containerized environment locally that CI/
+production uses, removing the "works on my machine" class of bug at the source), or fixing an
+actual environment-dependent bug the code shouldn't have had (a hardcoded assumption about
+locale, timezone, or network reachability).</p>
+<h3 id="q25-design-the-observability-stack-for-a-new-microservices-platform-from-scratch">Q25. Design the observability stack for a new microservices platform from scratch.</h3>
+<p>Standardize instrumentation <em>before</em> services multiply — adopt OpenTelemetry as the common
+standard across services for traces and metrics from day one (retrofitting consistent tracing
+across a large, already-fragmented fleet is far more expensive than starting consistent), with
+every service propagating trace context across both synchronous (HTTP headers) and asynchronous
+(message metadata, module 4) boundaries. Structured logging (Q18) shipped to a central
+aggregator (rather than each service's logs living only on its own host/pod, inaccessible once
+that pod is gone) with a consistent schema including the trace ID, so a specific trace can be
+cross-referenced directly to its corresponding log lines across every service it touched. Metrics
+following RED/USE (Q18) scraped centrally (Prometheus or equivalent) with dashboards built around
+actual service-level objectives (SLOs) rather than a raw wall of every available metric, and
+alerting tied to those SLOs (symptom-based: "error rate/latency budget is being burned,"
+detected from the user-facing impact) rather than purely cause-based alerts (a specific internal
+metric crossing a threshold that may or may not actually be user-impacting) — symptom-based
+alerting scales much better as the number of services grows, since it doesn't require anticipating
+and alerting on every possible internal failure mode individually. The single highest-leverage
+early decision is the tracing standard and propagation discipline, since every other pillar
+becomes far more valuable once traces let you cross-reference logs and metrics to a specific
+request's actual path.</p>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="s1-a-container-repeatedly-dies-with-exit-code-137-and-logs-show-nothing-useful">S1. A container repeatedly dies with exit code 137, and logs show nothing useful</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>docker ps -a</code> shows exit code 137 on a container that stopped abruptly; no
+  application logs captured the shutdown.</li>
+<li><strong>Diagnosis:</strong> Run <code>docker inspect</code> on the stopped container and check <code>State.OOMKilled</code> — if
+  <code>true</code>, the container exceeded its memory limit and the kernel's OOM killer terminated it with
+  <code>SIGKILL</code>, which gives no opportunity to log anything on the way out (Q9).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ docker inspect mycontainer --format '{{.State.OOMKilled}}'
+true
+</code></pre></div></li>
+<li><strong>Resolution:</strong> If usage plateaus below a reasonable ceiling but the current limit is simply too
+  tight, raise the memory limit. If usage grows unboundedly over time, that's an actual
+  application memory leak (module 1's leak scenarios) needing a code fix, not a limit increase.</li>
+<li><strong>Prevention:</strong> Load-test with realistic memory pressure before setting production limits, and
+  alert on memory usage trend approaching the configured limit, not just on the OOMKill event
+  after it's already happened.</li>
+</ul>
+<h3 id="s2-an-application-starts-successfully-but-immediately-fails-to-reach-a-dependency-only-when-run-inside-a-container">S2. An application starts successfully but immediately fails to reach a dependency, only when run inside a container</h3>
+<ul>
+<li><strong>Symptoms:</strong> The exact same code and config work when run directly on a developer's machine,
+  but inside a Docker container, a call to what should be "the same database/service" fails to
+  connect.</li>
+<li><strong>Diagnosis:</strong> Almost always a networking assumption mismatch — <code>localhost</code> inside the
+  container refers to the container's own network namespace, not the host or another container
+  the way it might have on bare metal, and the dependency's actual reachable address inside the
+  container network (a service name on a Docker network, or <code>host.docker.internal</code>) is different.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1"># docker-compose.yml</span>
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">app</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_HOST=localhost</span><span class="w">   </span><span class="c1"># resolves to the app container's own namespace, not the db service</span>
+<span class="w">  </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres</span>
+<span class="c1"># Fix: DB_HOST=db (the service name on the same Docker network)</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Replace the hardcoded <code>localhost</code> reference with the correct address for the
+  container's actual network context — the dependency's service/container name if both run in
+  the same Docker network, or the appropriate host-bridging address if it's genuinely on the
+  host.</li>
+<li><strong>Prevention:</strong> Never hardcode <code>localhost</code> for a dependency in configuration meant to run
+  containerized — always make the target host configurable via environment variable, defaulting
+  appropriately per environment.</li>
+</ul>
+<h3 id="s3-a-kubernetes-pod-repeatedly-enters-crashloopbackoff">S3. A Kubernetes pod repeatedly enters <code>CrashLoopBackOff</code></h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>kubectl get pods</code> shows a pod restarting on a growing backoff interval, never
+  reaching a stable running state.</li>
+<li><strong>Diagnosis:</strong> <code>kubectl logs &lt;pod&gt; --previous</code> (the previous, crashed instance's logs, since the
+  current instance may not have logged anything yet) usually shows the actual crash reason
+  directly — a startup-time exception, a missing required environment variable/config, or a
+  failing dependency check the application intentionally crashes on. If logs are empty, check
+  <code>kubectl describe pod</code> for the exit reason (often OOMKilled, same diagnosis as S1, but at the
+  Kubernetes-scheduling layer rather than plain Docker).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ kubectl logs orders-7d9f8-x2k4p --previous
+Error: required env var DATABASE_URL is not set
+$ kubectl describe pod orders-7d9f8-x2k4p | grep -A2 "Last State"
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Fix the underlying startup failure identified in logs, or adjust resource
+  limits if it's memory-related, or fix a missing ConfigMap/Secret reference if that's the gap.</li>
+<li><strong>Prevention:</strong> Fail fast and <em>loudly</em> on missing required configuration at startup (a clear
+  error message naming the missing config), rather than a generic crash that requires digging
+  through logs to identify — this turns a <code>CrashLoopBackOff</code> investigation into a five-second log
+  read instead of a guessing exercise.</li>
+</ul>
+<h3 id="s4-during-a-rollout-a-burst-of-502503-errors-hits-users-correlating-exactly-with-new-pods-coming-online">S4. During a rollout, a burst of <code>502</code>/<code>503</code> errors hits users, correlating exactly with new pods coming online</h3>
+<ul>
+<li><strong>Symptoms:</strong> Errors spike specifically during deployments, for requests routed to newly-created
+  pods, and resolve once the rollout finishes.</li>
+<li><strong>Diagnosis:</strong> The readiness probe (Q11) isn't accurately reflecting when the pod can actually
+  serve traffic — either it's missing entirely (Kubernetes assumes ready immediately on
+  container start) or it's checking something too shallow (process is up) rather than something
+  that actually reflects readiness (dependencies connected, caches warmed, the actual health
+  endpoint the application exposes for this purpose).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1"># Missing entirely -&gt; Kubernetes routes traffic the instant the container process starts:</span>
+<span class="c1"># readinessProbe: (none configured)</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add or fix the readiness probe to check a meaningful health endpoint that only
+  returns success once the application is genuinely able to serve traffic (dependencies
+  connected, any required warm-up complete), so Kubernetes doesn't route traffic to the pod until
+  that's true.</li>
+<li><strong>Prevention:</strong> Treat a correct readiness probe as a required part of shipping any new service,
+  tested specifically by observing a rollout under load in staging before it's trusted in
+  production — this class of bug is invisible until a real rollout under real traffic exposes it.</li>
+</ul>
+<h3 id="s5-a-deployment-causes-a-burst-of-errors-specifically-at-the-moment-old-pods-are-terminated-not-when-new-ones-start">S5. A deployment causes a burst of errors specifically at the moment old pods are terminated, not when new ones start</h3>
+<ul>
+<li><strong>Symptoms:</strong> Distinct from S4 — errors correlate with pod <em>termination</em> during rollout, not
+  pod startup, and affect requests that were presumably already in flight or newly routed right
+  as the old pod stopped.</li>
+<li><strong>Diagnosis:</strong> This is the graceful-shutdown/endpoint-deregistration race from Q14 — the load
+  balancer/Service hasn't finished removing the terminating pod from its routing table before
+  the pod actually stops accepting connections, so some requests land on a pod that's already
+  shutting down.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1"># Missing preStop delay -&gt; the pod can stop accepting connections before the Service</span>
+<span class="c1"># finishes deregistering it:</span>
+<span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="c1"># lifecycle.preStop: (none configured)</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add a <code>preStop</code> hook with a brief sleep before the application begins its own
+  shutdown sequence, giving the Service/load balancer's endpoint update time to propagate before
+  the pod actually stops accepting new connections, combined with <code>terminationGracePeriodSeconds</code>
+  large enough for in-flight requests to finish.</li>
+<li><strong>Prevention:</strong> Test rollouts under continuous synthetic load in staging specifically watching
+  for a zero-error-rate guarantee through the full deployment cycle — this class of race is easy
+  to miss without deliberately generating traffic exactly through a deployment.</li>
+</ul>
+<h3 id="s6-a-single-clients-excessive-request-volume-degrades-response-times-for-every-other-client-of-a-shared-api">S6. A single client's excessive request volume degrades response times for every other client of a shared API</h3>
+<ul>
+<li><strong>Symptoms:</strong> Overall API latency and error rate spike, and investigation traces the bulk of the
+  volume to one client/API key making far more requests than any reasonable normal usage.</li>
+<li><strong>Diagnosis:</strong> No rate limiting (Q8) is in place on the affected endpoint(s), so one client's
+  excessive (whether abusive or simply buggy — a retry loop without backoff, per module 1's Q's
+  scenario territory) traffic consumes shared capacity (thread pool, database connections) that
+  every other client also depends on.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code># Access log aggregated by API key over the last hour:
+api-key-a7f3: 480,000 requests
+api-key-b2e1: 1,200 requests
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add rate limiting per client/API key immediately as a mitigation (even a coarse
+  limit stops the bleeding), and separately follow up with the offending client if it's a known
+  partner/integration to fix their retry/traffic pattern at the source.</li>
+<li><strong>Prevention:</strong> Rate limiting per client should be a standard, non-optional part of any
+  public-facing (or even internal, multi-team) API's design from launch — retrofitting it during
+  an active incident is strictly worse than having it from day one.</li>
+</ul>
+<h3 id="s7-a-regression-is-reported-but-its-unclear-which-of-the-last-two-months-of-commits-introduced-it">S7. A regression is reported, but it's unclear which of the last two months of commits introduced it</h3>
+<ul>
+<li><strong>Symptoms:</strong> A bug is confirmed present now and confirmed absent in a build from a couple
+  months ago, but the intervening history has hundreds of commits and no obvious suspect.</li>
+<li><strong>Diagnosis/resolution:</strong> <code>git bisect start</code>, mark the current commit <code>bad</code> and the known-good
+  older commit <code>good</code> (Q15) — git checks out the midpoint, test it (ideally scripted via
+  <code>git bisect run</code> against an automated reproduction of the bug), mark <code>good</code>/<code>bad</code>, and repeat;
+  for hundreds of commits, this typically converges in under 10 steps (log2 of the commit count)
+  rather than requiring a manual, linear review of the whole range.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ git bisect start
+$ git bisect bad HEAD
+$ git bisect good v3.4.0
+$ git bisect run ./reproduce.sh
+# Converges on the exact commit in ~8 steps instead of reviewing 300 commits by hand.
+</code></pre></div></li>
+<li><strong>Prevention:</strong> Keep commits reasonably small and focused (a bisect that lands on a 2,000-line
+  commit touching a dozen unrelated things is far less useful than one landing on a small,
+  single-purpose commit), and maintain a fast, reliable way to test "does this specific commit
+  exhibit the bug" (an automated repro) so <code>git bisect run</code> can fully automate the search instead
+  of requiring manual testing at every step.</li>
+</ul>
+<h3 id="s8-ci-passes-cleanly-on-every-check-but-the-feature-breaks-immediately-in-production">S8. CI passes cleanly on every check, but the feature breaks immediately in production</h3>
+<ul>
+<li><strong>Symptoms:</strong> All automated tests and quality gates are green, yet the deployed feature fails
+  for real users in a way none of the test suite caught.</li>
+<li><strong>Diagnosis:</strong> Look for an environment-parity gap between CI/test and production — a test
+  double/mock standing in for a dependency that behaves differently from the real one in
+  production, a config or feature flag that's different between test and prod (a feature gated
+  off in test but on in prod, or vice versa), or simply a genuine test coverage gap for the
+  specific path that broke.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1"># CI config points at a mock with no timeout enforcement:</span>
+<span class="nt">PAYMENT_GATEWAY_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://mock-gateway:8080</span>
+<span class="c1"># Production points at the real gateway, which enforces a stricter timeout the mock never did.</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Reproduce the failure with a new test that would have caught it (confirming the
+  actual gap, not just guessing), fix the underlying bug, and specifically evaluate whether the
+  test environment needs to more closely mirror production for the class of dependency/config
+  that caused this gap.</li>
+<li><strong>Prevention:</strong> Periodically audit where test and production environments diverge (mocked
+  dependencies, differing config/feature flags) as a deliberate exercise, rather than only
+  discovering each gap reactively after it causes a production incident.</li>
+</ul>
+<h3 id="s9-database-credentials-from-a-kubernetes-secret-end-up-posted-in-a-team-chat-or-ticket-treated-as-if-that-were-safe">S9. Database credentials from a Kubernetes Secret end up posted in a team chat or ticket, treated as if that were safe</h3>
+<ul>
+<li><strong>Symptoms:</strong> Someone shares <code>kubectl get secret db-creds -o yaml</code> output (or the base64-decoded
+  value) in a chat channel or support ticket, apparently under the assumption that a "Secret" is
+  inherently protected.</li>
+<li><strong>Diagnosis:</strong> This confirms the Q20 misunderstanding directly — base64 is encoding, not
+  encryption, trivially reversible by anyone, and treating a Secret's contents as safe to share
+  because "it's a Secret object" is exactly the false sense of security the base64-not-encrypted
+  distinction warns against.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ kubectl get secret db-creds -o jsonpath='{.data.password}' | base64 -d
+SuperSecretPassword123
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Rotate the exposed credential immediately, the same as any other leaked secret
+  (module 2's S10 applies identically here), and remove/redact the shared message where possible.</li>
+<li><strong>Prevention:</strong> Train the team explicitly that Kubernetes Secrets are access-controlled, not
+  encrypted-by-default containers — enable encryption-at-rest for Secrets in the cluster, and
+  treat any Secret's decoded value with the same handling discipline as a plaintext password,
+  never pasted into chat or tickets.</li>
+</ul>
+<h3 id="s10-autoscaling-doesnt-kick-in-despite-the-service-clearly-being-under-heavy-load">S10. Autoscaling doesn't kick in despite the service clearly being under heavy load</h3>
+<ul>
+<li><strong>Symptoms:</strong> Latency and error rate climb under high traffic, but <code>kubectl get hpa</code> shows the
+  replica count unchanged, or scaling far more slowly than the load would justify.</li>
+<li><strong>Diagnosis:</strong> Check whether the pods have a CPU/memory <em>request</em> configured at all — the HPA's
+  utilization percentage is computed relative to the request, and without one, the HPA has no
+  baseline to scale against (Q13). Separately, check whether the metric being scaled on actually
+  reflects the real bottleneck — if the service is I/O-bound (blocked on a slow downstream call)
+  rather than CPU-bound, CPU utilization can stay well under the scaling threshold even while the
+  service is genuinely saturated and failing to keep up.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ kubectl get hpa orders-hpa
+NAME         REFERENCE           TARGETS         MINPODS   MAXPODS   REPLICAS
+orders-hpa   Deployment/orders   &lt;unknown&gt;/70%   2         10        2
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Set explicit resource requests if missing, and switch to (or add) a custom
+  metric that actually correlates with real load (request queue depth, in-flight request count)
+  if CPU isn't the real constraint.</li>
+<li><strong>Prevention:</strong> Validate that the HPA actually triggers under realistic load during load
+  testing, before relying on it as the production safety net during a real traffic spike —
+  "the HPA is configured" and "the HPA actually works for this service's load profile" are
+  different claims.</li>
+</ul>
+<h3 id="s11-one-misbehaving-pod-causes-unrelated-pods-on-the-same-node-to-slow-down-or-get-evicted">S11. One misbehaving pod causes unrelated pods on the same node to slow down or get evicted</h3>
+<ul>
+<li><strong>Symptoms:</strong> Performance degradation or unexpected evictions affect pods that have nothing to
+  do with a separate service that's currently consuming unusually high memory/CPU, but all are
+  co-located on the same node.</li>
+<li><strong>Diagnosis:</strong> The offending pod has no resource limits set (Q12) — it's free to consume
+  unbounded memory/CPU on the node, starving every other pod scheduled there ("noisy neighbor"),
+  and depending on QoS class, an unrelated <code>BestEffort</code> or low-priority pod can be evicted first
+  to relieve node pressure caused entirely by the unlimited pod.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ kubectl top pods --sort-by=memory
+NAME          CPU(cores)   MEMORY(bytes)
+batch-job-x   1800m        7500Mi   &lt;- no limit set, consuming most of the node
+orders-api    120m         180Mi    &lt;- evicted first despite being unrelated and healthy
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Set an appropriate memory/CPU limit on the offending pod so its resource
+  consumption is contained to itself rather than the whole node, and separately fix whatever
+  caused its unusually high consumption in the first place if it's not expected/normal behavior.</li>
+<li><strong>Prevention:</strong> Require resource requests and limits on every deployed workload as a policy
+  (enforced via an admission controller/policy engine, not just a code-review reminder), so a
+  workload without limits can't be deployed to a shared cluster at all.</li>
+</ul>
+<h3 id="s12-a-canary-release-causes-intermittent-errors-that-dont-correlate-cleanly-with-either-the-old-or-new-version-alone">S12. A canary release causes intermittent errors that don't correlate cleanly with either the old or new version alone</h3>
+<ul>
+<li><strong>Symptoms:</strong> During a canary rollout, errors appear that don't clearly implicate either version
+  individually — the same request type sometimes succeeds and sometimes fails, seemingly
+  depending on which pod it happened to hit.</li>
+<li><strong>Diagnosis:</strong> The canary (new) and stable (old) versions are running simultaneously and are
+  not actually compatible with each other at some shared boundary — commonly an API/schema
+  contract change, or a shared database schema that only one of the two versions expects (module
+  3's Q24 territory, but exposed by a canary rather than a rolling update) — so the specific
+  behavior depends on which version's pod handled a given request or which version's assumption
+  about shared state was violated.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// Stable version expects: record ReserveRequest(String orderId, int quantity)</span>
+<span class="c1">// Canary now requires an extra field the stable version's deserializer rejects:</span>
+<span class="kd">record</span> <span class="nc">ReserveRequest</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">quantity</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">warehouseId</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="c1">// Whichever pod handles a given request determines whether it succeeds or fails.</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Roll back the canary immediately (this is exactly the failure mode canary
+  deployments are designed to catch before full rollout), and redesign the change to be genuinely
+  backward/forward compatible for the duration both versions must coexist, before attempting the
+  canary again.</li>
+<li><strong>Prevention:</strong> Explicitly verify compatibility between the new and old version for every shared
+  dependency (API contracts, database schema, message formats) as a required check before any
+  canary or blue-green deployment that requires both versions to coexist even briefly — this
+  isn't optional just because the coexistence window is short.</li>
+</ul>
+<h3 id="s13-an-outage-is-diagnosed-slowly-because-its-unclear-which-of-many-services-in-the-request-path-is-actually-responsible">S13. An outage is diagnosed slowly because it's unclear which of many services in the request path is actually responsible</h3>
+<ul>
+<li><strong>Symptoms:</strong> A user-facing incident is confirmed real, but with a dozen microservices in the
+  request path and each team checking only their own service's dashboards, no one can quickly
+  pinpoint where the actual fault originates.</li>
+<li><strong>Diagnosis:</strong> No centralized, correlatable observability exists across the services — logs
+  live only per-service with no shared trace ID connecting them, and there's no distributed
+  tracing to show the request's actual path and where it failed or slowed (module 2's S15 at the
+  application-code level, but here it's the platform-wide infrastructure gap causing it).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>service-a.log: 10:02:01.442 request received
+service-b.log: 10:02:01.503 forwarded to inventory
+# No shared trace ID -&gt; no way to confirm these two lines even belong to the same request.
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Once diagnosed via manual cross-team log comparison (slow, but the only option
+  without tracing already in place), fix the immediate incident, and treat this incident as the
+  forcing function to actually implement distributed tracing platform-wide.</li>
+<li><strong>Prevention:</strong> Build the observability stack (Q25) — consistent trace propagation, centralized
+  structured logging, RED/USE metrics — before the platform grows to a scale where this
+  investigation becomes routine and expensive; retrofitting it after several of these incidents
+  costs far more than building it in from an early, smaller scale.</li>
+</ul>
+<h3 id="s14-docker-images-have-grown-large-enough-to-noticeably-slow-down-cicd-pipeline-runs-and-deployments">S14. Docker images have grown large enough to noticeably slow down CI/CD pipeline runs and deployments</h3>
+<ul>
+<li><strong>Symptoms:</strong> Build, push, and pull times for the application's Docker image have grown
+  steadily, adding real minutes to every CI run and every deployment.</li>
+<li><strong>Diagnosis:</strong> Check whether the final image includes the full build toolchain (a JDK plus
+  Maven's dependency cache, <code>node_modules</code> with devDependencies, compilers) rather than just the
+  runtime artifact — a common cause is a single-stage Dockerfile that builds and runs in the same
+  image, carrying build-time weight all the way into the shipped artifact.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>$ docker images | grep myapp
+myapp   latest   1.8GB   &lt;- includes the full JDK, Maven cache, and devDependencies
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Convert to a multi-stage build (Q10) — build in a full-toolchain stage, then
+  copy only the final artifact into a minimal runtime base image, dramatically shrinking the final
+  image size without changing the build process's own capabilities.</li>
+<li><strong>Prevention:</strong> Default new services' Dockerfiles to a multi-stage pattern from the start, and
+  track image size as a metric in CI (failing or warning on a significant unexpected increase)
+  the same way build time or bundle size might be tracked.</li>
+</ul>
+<h3 id="s15-after-a-blue-green-deployment-is-rolled-back-the-application-still-fails-because-the-database-schema-it-expects-doesnt-match-whats-actually-running">S15. After a blue-green deployment is rolled back, the application still fails, because the database schema it expects doesn't match what's actually running</h3>
+<ul>
+<li><strong>Symptoms:</strong> A rollback to the previous (blue) application version is expected to instantly fix
+  an issue found in the new (green) version, but the rolled-back version now fails against the
+  database, which was already migrated for the green version's schema requirements.</li>
+<li><strong>Diagnosis:</strong> The deployment's migration step wasn't designed with rollback in mind — the new
+  version's schema migration was applied and isn't backward-compatible with the old version's
+  expectations, so "rolling back the application" alone doesn't actually restore a fully working
+  state, since the database is still in the new schema.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">-- Applied for green, not safe for blue, which still reads/writes this column:</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">DROP</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">legacy_status</span><span class="p">;</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Either roll the database migration back too (risky and not always possible if
+  data was written in the new schema's shape in the meantime), or — the safer approach —
+  redesign the migration to have been additive and backward-compatible in the first place (module
+  3's Q24 pattern), so the old application version continues working correctly against the
+  already-migrated schema without needing a database-level rollback at all.</li>
+<li><strong>Prevention:</strong> Treat "is this migration safe for the previous application version to keep
+  running against, in case of rollback" as a required question for any migration shipped
+  alongside a blue-green or canary deployment — a deployment strategy that assumes instant
+  rollback only actually delivers that if every accompanying schema change was designed the same
+  way.</li>
+</ul>
+<h3 id="s16-a-load-balancer-switch-during-a-blue-green-cutover-drops-long-lived-client-connections-abruptly">S16. A load-balancer switch during a blue-green cutover drops long-lived client connections abruptly</h3>
+<ul>
+<li><strong>Symptoms:</strong> Clients with long-running or sticky connections (WebSocket sessions, long-polling
+  requests, connections pinned to a specific backend by session affinity) are abruptly
+  disconnected at the exact moment traffic is switched from blue to green, even though the
+  cutover was otherwise "instant."</li>
+<li><strong>Diagnosis:</strong> The cutover redirected new connections correctly, but didn't account for
+  <em>existing</em> long-lived connections still attached to the old (blue) environment — an instant
+  traffic switch at the load-balancer level doesn't gracefully drain connections that are
+  expected to persist for minutes or hours, it just stops routing to blue immediately, effectively
+  killing them.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code># At cutover, the load balancer stops routing to blue immediately — a WebSocket client
+# mid-session on blue receives a hard connection reset, not a graceful close frame.
+</code></pre></div></li>
+<li><strong>Resolution:</strong> For the specific connections already in progress, implement a connection-drain
+  period — keep the blue environment running and reachable for existing connections for a bounded
+  window after the cutover (new connections go to green immediately, existing ones on blue are
+  allowed to complete or gracefully reconnect to green on their own terms) rather than an
+  instantaneous hard cutover for every connection regardless of its lifecycle.</li>
+<li><strong>Prevention:</strong> Explicitly account for long-lived/stateful connection types as a distinct
+  requirement when designing a blue-green (or any traffic-switching) deployment strategy — a
+  strategy that only considers short-lived request/response traffic will systematically break
+  this class of client, and it needs to be a named part of the design, not an edge case discovered
+  in production.</li>
+</ul>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<ul>
+<li><strong>REST design</strong>: nouns in URLs, verbs via HTTP methods, status codes carry real meaning — never <code>200</code> + error-in-body.</li>
+<li><strong>Container vs VM</strong>: shared kernel (namespaces + cgroups), lightweight, weaker isolation vs a full separate OS, heavier, stronger isolation.</li>
+<li><strong>Docker caching</strong>: order Dockerfile instructions least-to-most frequently changing; multi-stage builds strip build-time weight from the shipped image.</li>
+<li><strong>Exit 137</strong> = <code>SIGKILL</code> (128+9) — check <code>docker inspect</code> → <code>State.OOMKilled</code>; empty logs are expected, not a mystery.</li>
+<li><strong>Idempotency</strong>: <code>GET</code>/<code>PUT</code>/<code>DELETE</code> idempotent by convention; <code>POST</code> isn't — use an idempotency key for safe retries.</li>
+<li><strong>Rate limiting</strong>: fixed window (simple, boundary-burst flaw) vs sliding window (smoother) vs token bucket (allows natural bursts) vs leaky bucket (strictly smooth output).</li>
+<li><strong>Probes</strong>: liveness = restart if failing; readiness = remove from LB if failing, no restart; startup = delay both for slow boots. Wrong probe choice = self-inflicted outages or traffic-to-unready-pods.</li>
+<li><strong>Resource requests/limits</strong>: no request = poor scheduling + first evicted; no limit = noisy neighbor + uncontained OOM risk.</li>
+<li><strong>HPA</strong>: scales off utilization relative to <em>requests</em> — no request set = HPA has no baseline. Scale on the metric that actually reflects the bottleneck, not just CPU by default.</li>
+<li><strong>Rolling update</strong>: <code>maxSurge</code>/<code>maxUnavailable</code> control rollout speed vs capacity; graceful shutdown + <code>preStop</code> delay needed so LB deregistration finishes before the pod actually stops accepting traffic.</li>
+<li><strong><code>git bisect</code></strong>: mark good/bad, O(log n) steps to the culprit commit; <code>git bisect run &lt;cmd&gt;</code> automates it fully with a scripted repro.</li>
+<li><strong>Deployment strategies</strong>: rolling (efficient, gradual exposure) vs blue-green (instant switch/rollback, double infra, needs schema compat both ways) vs canary (real-traffic validation before full rollout, needs version coexistence compat).</li>
+<li><strong>Observability</strong>: metrics (is it healthy, where roughly) → traces (which hop) → logs (exact detail) — complementary, not substitutes. RED for requests, USE for resources.</li>
+<li><strong>K8s Service</strong>: stable VIP/DNS over ephemeral pod IPs — never target a pod IP directly.</li>
+<li><strong>Secrets are base64, not encrypted</strong> — enable encryption-at-rest, scope RBAC, never treat decoded output as safe to share.</li>
+<li><strong>Helm</strong>: templating + versioned releases + one-command rollback, worth it once deploying across multiple environments/times.</li>
+<li><strong>CI/CD fail fast</strong>: cheapest checks (lint, unit tests) first, expensive ones (integration, deploy) last.
+</content></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

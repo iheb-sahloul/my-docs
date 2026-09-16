@@ -1,0 +1,2845 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/en/01-java-core-jvm/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../02-spring-architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Java Core & JVM - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#java-core-jvm" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Java Core & JVM
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-walk-through-what-actually-happens-inside-hashmapput-and-get-and-explain-why-a-bad-hashcode-is-a-real-performance-bug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Walk through what actually happens inside HashMap.put() and .get(), and explain why a bad hashCode() is a real performance bug.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-what-causes-concurrentmodificationexception-and-whats-the-correct-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What causes ConcurrentModificationException, and what's the correct fix?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-name-the-thread-safe-singleton-implementation-strategies-and-explain-why-bill-pugh-static-inner-class-is-generally-preferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Name the thread-safe Singleton implementation strategies, and explain why Bill Pugh / static inner class is generally preferred.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-whats-the-real-difference-between-synchronized-and-volatile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. What's the real difference between synchronized and volatile?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-explain-reachability-analysis-and-gc-roots-and-name-two-garbage-collection-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Explain reachability analysis and GC roots, and name two garbage collection algorithms.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q6-what-problem-do-virtual-threads-project-loom-actually-solve-and-where-do-they-still-fall-over" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What problem do virtual threads (Project Loom) actually solve, and where do they still fall over?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q7-whats-the-difference-between-using-executorservice-and-creating-raw-thread-objects-and-whats-a-common-pitfall-with-the-common-fork-join-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What's the difference between using ExecutorService and creating raw Thread objects, and what's a common pitfall with the common fork-join pool?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q8-walk-through-thenapply-vs-thencompose-vs-thencombine-on-completablefuture-and-name-a-common-pitfall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Walk through thenApply vs thenCompose vs thenCombine on CompletableFuture, and name a common pitfall.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q9-why-is-string-immutable-and-what-is-the-string-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Why is String immutable, and what is the string pool?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q10-whats-the-autoboxing-trap-with-integer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. What's the autoboxing == trap with Integer?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q11-what-does-try-with-resources-actually-guarantee-and-what-interface-does-it-rely-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What does try-with-resources actually guarantee, and what interface does it rely on?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q12-checked-vs-unchecked-exceptions-whats-the-actual-design-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. Checked vs unchecked exceptions — what's the actual design trade-off?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q13-what-is-type-erasure-and-what-does-it-actually-break" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. What is type erasure, and what does it actually break?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q14-what-does-a-records-compact-canonical-constructor-buy-you-that-a-lombok-data-class-doesnt-structurally-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. What does a record's compact canonical constructor buy you that a Lombok @Data class doesn't structurally guarantee?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q15-how-does-pattern-matching-for-switch-combine-with-sealed-types-and-why-does-that-matter-for-exhaustiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. How does pattern matching for switch combine with sealed types, and why does that matter for exhaustiveness?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q16-java-has-garbage-collection-how-does-a-memory-leak-still-happen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. Java has garbage collection — how does a memory leak still happen?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q17-whats-the-difference-between-stackoverflowerror-and-outofmemoryerror-and-where-does-each-actually-come-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. What's the difference between StackOverflowError and OutOfMemoryError, and where does each actually come from?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q18-design-a-thread-safe-bounded-lru-cache-from-scratch-what-are-the-real-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Design a thread-safe, bounded, LRU cache from scratch. What are the real trade-offs?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q19-when-would-you-choose-virtual-threads-over-a-reactive-stack-webflux-for-a-high-concurrency-io-bound-service-and-vice-versa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. When would you choose virtual threads over a reactive stack (WebFlux) for a high-concurrency I/O-bound service, and vice versa?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q20-walk-through-choosing-between-g1-zgc-and-shenandoah-for-a-latency-sensitive-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Walk through choosing between G1, ZGC, and Shenandoah for a latency-sensitive service.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-production-service-throws-outofmemoryerror-java-heap-space-after-a-traffic-spike" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Production service throws OutOfMemoryError: Java heap space after a traffic spike
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-the-app-freezes-for-several-seconds-at-a-time-seemingly-at-random" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. The app freezes for several seconds at a time, seemingly at random
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-concurrentmodificationexception-appears-intermittently-in-production-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. ConcurrentModificationException appears intermittently in production logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4-a-hashmap-backed-lookup-that-used-to-be-fast-has-gotten-steadily-slower-over-months" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A HashMap-backed lookup that used to be fast has gotten steadily slower over months
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5-heap-usage-climbs-steadily-and-never-comes-back-down-even-under-light-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. Heap usage climbs steadily and never comes back down, even under light load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6-cpu-sits-pegged-near-100-with-no-proportional-increase-in-request-volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. CPU sits pegged near 100% with no proportional increase in request volume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-under-load-requests-start-timing-out-even-though-downstream-dependencies-are-healthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Under load, requests start timing out even though downstream dependencies are healthy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8-two-services-or-two-code-paths-occasionally-deadlock-and-stop-making-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. Two services (or two code paths) occasionally deadlock and stop making progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9-a-financial-calculation-is-occasionally-wrong-by-a-small-inconsistent-amount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9. A financial calculation is occasionally wrong by a small, inconsistent amount
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s10-a-newly-deployed-feature-crashes-with-stackoverflowerror-for-a-subset-of-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S10. A newly deployed feature crashes with StackOverflowError for a subset of users
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s11-after-migrating-a-service-to-virtual-threads-thread-pool-style-throughput-actually-gets-worse-under-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S11. After migrating a service to virtual threads, thread-pool-style throughput actually gets worse under load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s12-metaspace-usage-grows-every-time-the-application-is-redeployed-on-a-long-lived-app-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S12. Metaspace usage grows every time the application is redeployed on a long-lived app server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s13-under-load-a-singleton-service-occasionally-gets-constructed-more-than-once-causing-duplicate-side-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S13. Under load, a "singleton" service occasionally gets constructed more than once, causing duplicate side effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s14-gc-pause-times-get-noticeably-worse-right-after-a-jdkcollector-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S14. GC pause times get noticeably worse right after a JDK/collector upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s15-nullpointerexceptions-spike-sharply-right-after-a-library-dependency-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S15. NullPointerExceptions spike sharply right after a library dependency upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s16-throughput-flattens-under-high-concurrency-even-though-cpu-has-headroom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S16. Throughput flattens under high concurrency even though CPU has headroom
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-system-design-leadership/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design & Leadership
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code & AI-assisted Dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-walk-through-what-actually-happens-inside-hashmapput-and-get-and-explain-why-a-bad-hashcode-is-a-real-performance-bug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Walk through what actually happens inside HashMap.put() and .get(), and explain why a bad hashCode() is a real performance bug.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-what-causes-concurrentmodificationexception-and-whats-the-correct-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What causes ConcurrentModificationException, and what's the correct fix?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-name-the-thread-safe-singleton-implementation-strategies-and-explain-why-bill-pugh-static-inner-class-is-generally-preferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Name the thread-safe Singleton implementation strategies, and explain why Bill Pugh / static inner class is generally preferred.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-whats-the-real-difference-between-synchronized-and-volatile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. What's the real difference between synchronized and volatile?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-explain-reachability-analysis-and-gc-roots-and-name-two-garbage-collection-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Explain reachability analysis and GC roots, and name two garbage collection algorithms.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q6-what-problem-do-virtual-threads-project-loom-actually-solve-and-where-do-they-still-fall-over" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What problem do virtual threads (Project Loom) actually solve, and where do they still fall over?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q7-whats-the-difference-between-using-executorservice-and-creating-raw-thread-objects-and-whats-a-common-pitfall-with-the-common-fork-join-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What's the difference between using ExecutorService and creating raw Thread objects, and what's a common pitfall with the common fork-join pool?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q8-walk-through-thenapply-vs-thencompose-vs-thencombine-on-completablefuture-and-name-a-common-pitfall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Walk through thenApply vs thenCompose vs thenCombine on CompletableFuture, and name a common pitfall.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q9-why-is-string-immutable-and-what-is-the-string-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Why is String immutable, and what is the string pool?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q10-whats-the-autoboxing-trap-with-integer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. What's the autoboxing == trap with Integer?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q11-what-does-try-with-resources-actually-guarantee-and-what-interface-does-it-rely-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What does try-with-resources actually guarantee, and what interface does it rely on?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q12-checked-vs-unchecked-exceptions-whats-the-actual-design-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. Checked vs unchecked exceptions — what's the actual design trade-off?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q13-what-is-type-erasure-and-what-does-it-actually-break" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. What is type erasure, and what does it actually break?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q14-what-does-a-records-compact-canonical-constructor-buy-you-that-a-lombok-data-class-doesnt-structurally-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. What does a record's compact canonical constructor buy you that a Lombok @Data class doesn't structurally guarantee?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q15-how-does-pattern-matching-for-switch-combine-with-sealed-types-and-why-does-that-matter-for-exhaustiveness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. How does pattern matching for switch combine with sealed types, and why does that matter for exhaustiveness?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q16-java-has-garbage-collection-how-does-a-memory-leak-still-happen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. Java has garbage collection — how does a memory leak still happen?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q17-whats-the-difference-between-stackoverflowerror-and-outofmemoryerror-and-where-does-each-actually-come-from" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. What's the difference between StackOverflowError and OutOfMemoryError, and where does each actually come from?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q18-design-a-thread-safe-bounded-lru-cache-from-scratch-what-are-the-real-trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Design a thread-safe, bounded, LRU cache from scratch. What are the real trade-offs?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q19-when-would-you-choose-virtual-threads-over-a-reactive-stack-webflux-for-a-high-concurrency-io-bound-service-and-vice-versa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. When would you choose virtual threads over a reactive stack (WebFlux) for a high-concurrency I/O-bound service, and vice versa?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q20-walk-through-choosing-between-g1-zgc-and-shenandoah-for-a-latency-sensitive-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Walk through choosing between G1, ZGC, and Shenandoah for a latency-sensitive service.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-production-service-throws-outofmemoryerror-java-heap-space-after-a-traffic-spike" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Production service throws OutOfMemoryError: Java heap space after a traffic spike
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-the-app-freezes-for-several-seconds-at-a-time-seemingly-at-random" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. The app freezes for several seconds at a time, seemingly at random
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-concurrentmodificationexception-appears-intermittently-in-production-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. ConcurrentModificationException appears intermittently in production logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4-a-hashmap-backed-lookup-that-used-to-be-fast-has-gotten-steadily-slower-over-months" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A HashMap-backed lookup that used to be fast has gotten steadily slower over months
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5-heap-usage-climbs-steadily-and-never-comes-back-down-even-under-light-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. Heap usage climbs steadily and never comes back down, even under light load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6-cpu-sits-pegged-near-100-with-no-proportional-increase-in-request-volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. CPU sits pegged near 100% with no proportional increase in request volume
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-under-load-requests-start-timing-out-even-though-downstream-dependencies-are-healthy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Under load, requests start timing out even though downstream dependencies are healthy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8-two-services-or-two-code-paths-occasionally-deadlock-and-stop-making-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. Two services (or two code paths) occasionally deadlock and stop making progress
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9-a-financial-calculation-is-occasionally-wrong-by-a-small-inconsistent-amount" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9. A financial calculation is occasionally wrong by a small, inconsistent amount
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s10-a-newly-deployed-feature-crashes-with-stackoverflowerror-for-a-subset-of-users" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S10. A newly deployed feature crashes with StackOverflowError for a subset of users
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s11-after-migrating-a-service-to-virtual-threads-thread-pool-style-throughput-actually-gets-worse-under-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S11. After migrating a service to virtual threads, thread-pool-style throughput actually gets worse under load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s12-metaspace-usage-grows-every-time-the-application-is-redeployed-on-a-long-lived-app-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S12. Metaspace usage grows every time the application is redeployed on a long-lived app server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s13-under-load-a-singleton-service-occasionally-gets-constructed-more-than-once-causing-duplicate-side-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S13. Under load, a "singleton" service occasionally gets constructed more than once, causing duplicate side effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s14-gc-pause-times-get-noticeably-worse-right-after-a-jdkcollector-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S14. GC pause times get noticeably worse right after a JDK/collector upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s15-nullpointerexceptions-spike-sharply-right-after-a-library-dependency-upgrade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S15. NullPointerExceptions spike sharply right after a library dependency upgrade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s16-throughput-flattens-under-high-concurrency-even-though-cpu-has-headroom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S16. Throughput flattens under high concurrency even though CPU has headroom
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="java-core-jvm">Java Core &amp; JVM</h1>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h3 id="q1-walk-through-what-actually-happens-inside-hashmapput-and-get-and-explain-why-a-bad-hashcode-is-a-real-performance-bug">Q1. Walk through what actually happens inside <code>HashMap.put()</code> and <code>.get()</code>, and explain why a bad <code>hashCode()</code> is a real performance bug.</h3>
+<p><strong>Answer:</strong> <code>put()</code> computes <code>hashCode()</code>, spreads it with an internal mix function
+(<code>h ^ (h &gt;&gt;&gt; 16)</code>, to fold high bits into the low bits so table sizes that are small powers of
+two still get good distribution), and picks a bucket index from that hash modulo the table
+capacity. If the bucket is empty, the entry goes there directly; if not, it's appended to that
+bucket's collision chain (a linked list, or — since Java 8, once a bucket exceeds
+<code>TREEIFY_THRESHOLD</code> (8) entries <em>and</em> the table has at least <code>MIN_TREEIFY_CAPACITY</code> (64)
+buckets — converted to a balanced red-black tree keyed by hash then by a tie-break comparison)
+and compared via <code>equals()</code> to detect duplicate keys. <code>get()</code> does the same hash computation to
+jump to the right bucket, then walks/searches it — O(log n) in a treeified bucket, O(n) in a
+list bucket. The tree also un-treeifies back to a list on removal once the bucket shrinks below
+<code>UNTREEIFY_THRESHOLD</code> (6), so a bucket doesn't stay a tree forever if it was just a transient
+spike. A <code>hashCode()</code> that returns the same value for many different objects (or worse, a
+constant) forces every key into the same bucket, degrading lookups from average O(1) toward
+O(log n) with treeification saving you somewhat — but a <code>hashCode()</code>/<code>equals()</code> contract
+violation (two equal objects with different hashes) is worse than slow: it silently produces
+<em>duplicate</em> entries for logically-equal keys, since <code>put()</code> never finds the existing one to
+overwrite.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">BadKey</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="n">BadKey</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">BadKey</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">k</span><span class="p">.</span><span class="na">id</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// hashCode() not overridden -&gt; falls back to Object's identity hash.</span>
+<span class="w">    </span><span class="c1">// equals() says two BadKeys with the same id are equal, but hashCode()</span>
+<span class="w">    </span><span class="c1">// disagrees -&gt; contract violation.</span>
+<span class="p">}</span>
+
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">BadKey</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BadKey</span><span class="p">(</span><span class="s">"42"</span><span class="p">),</span><span class="w"> </span><span class="s">"first"</span><span class="p">);</span>
+<span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BadKey</span><span class="p">(</span><span class="s">"42"</span><span class="p">),</span><span class="w"> </span><span class="s">"second"</span><span class="p">);</span><span class="w"> </span><span class="c1">// different identity hash -&gt; different bucket</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">size</span><span class="p">());</span><span class="w"> </span><span class="c1">// 2, not 1 — "duplicate" entries for an equal key</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates recite "override <code>hashCode()</code> for performance" but miss that a
+broken <code>equals()</code>/<code>hashCode()</code> contract isn't a slowdown — it's a correctness bug that silently
+duplicates data.</p>
+<h3 id="q2-what-causes-concurrentmodificationexception-and-whats-the-correct-fix">Q2. What causes <code>ConcurrentModificationException</code>, and what's the correct fix?</h3>
+<p><strong>Answer:</strong> Java's collections use a fail-fast iterator backed by a <code>modCount</code> field; the
+iterator snapshots <code>modCount</code> when created and checks it on every <code>next()</code>. Structurally
+modifying the collection (add/remove, not just updating a value via <code>set()</code>) outside the
+iterator's own <code>remove()</code> method — most commonly, calling <code>list.remove(x)</code> inside a
+<code>for (x : list)</code> loop — bumps <code>modCount</code> and trips the check on the following <code>next()</code> call. The
+check is deliberately <em>not</em> bulletproof: it's a best-effort detector, not a guarantee, so a
+single-threaded remove-then-immediately-break loop can sometimes slip through without throwing,
+which is why "it worked in my test" is not evidence of correctness here. The correct fix is to
+use the iterator's own <code>Iterator.remove()</code>, or <code>Collection.removeIf(predicate)</code>, or (for
+concurrent access) a concurrent collection like <code>CopyOnWriteArrayList</code> or <code>ConcurrentHashMap</code>,
+which don't throw this exception because they don't track modifications the same way — they
+instead offer weakly consistent iteration that may or may not reflect concurrent changes, which
+is a different trade-off, not a strictly safer one.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"Ann"</span><span class="p">,</span><span class="w"> </span><span class="s">"Bob"</span><span class="p">,</span><span class="w"> </span><span class="s">"Cid"</span><span class="p">));</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">names</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">name</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">"Bob"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">names</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">name</span><span class="p">);</span><span class="w"> </span><span class="c1">// throws ConcurrentModificationException on next()</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Fix: drive removal through the iterator itself.</span>
+<span class="n">Iterator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">it</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">names</span><span class="p">.</span><span class="na">iterator</span><span class="p">();</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="na">next</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">"Bob"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">it</span><span class="p">.</span><span class="na">remove</span><span class="p">();</span><span class="w"> </span><span class="c1">// safe — updates modCount through the same iterator</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Or, more idiomatically:</span>
+<span class="n">names</span><span class="p">.</span><span class="na">removeIf</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="s">"Bob"</span><span class="p">));</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> it's easy to "fix" this by wrapping the loop in a <code>try/catch</code> or converting
+to an index-based loop that skips an element after removal — both hide a real bug instead of
+fixing it (the index-based version silently skips the element after the removed one).</p>
+<h3 id="q3-name-the-thread-safe-singleton-implementation-strategies-and-explain-why-bill-pugh-static-inner-class-is-generally-preferred">Q3. Name the thread-safe Singleton implementation strategies, and explain why Bill Pugh / static inner class is generally preferred.</h3>
+<p><strong>Answer:</strong> Four common approaches: (1) eager initialization — a <code>static final</code> field,
+instantiated at class-load time, simple and thread-safe but always pays the construction cost
+even if unused; (2) synchronized <code>getInstance()</code> — correct but serializes every call forever,
+even after the instance exists; (3) double-checked locking with a <code>volatile</code> field — lazy and
+fast after the first call, but easy to get wrong without <code>volatile</code> (see Q4); (4) Bill Pugh's
+static inner holder class — a private static nested class holds the <code>static final</code> instance, and
+the JVM only loads (and thus initializes) that nested class the first time it's referenced,
+giving lazy initialization with no synchronization at all, guaranteed by the JVM's class-loading
+thread-safety. It's preferred over double-checked locking because it gets laziness and thread
+safety for free, without the subtlety that pattern requires. An <code>enum</code> with a single value is the
+other commonly cited approach, and it is <em>not</em> simply equivalent to Bill Pugh: it's also
+thread-safe and lazy by construction, but it additionally protects against two attacks Bill Pugh
+does not — reflection (a caller can force a private constructor to run twice via
+<code>Constructor.setAccessible(true)</code>, but the JVM guarantees an enum constructor runs exactly once
+per constant) and deserialization (a hand-written singleton that implements <code>Serializable</code> can be
+deserialized into a brand-new second instance unless you explicitly add <code>readResolve()</code>; enums
+handle this correctly with no extra code). So the real ranking for a senior answer isn't "Bill
+Pugh and enum are both fine" — it's "enum is strictly more robust against adversarial or
+accidental duplication; Bill Pugh is the right choice mainly when the singleton can't be an enum
+(e.g. it needs to extend another class)."</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Registry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Registry</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Holder</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Registry</span><span class="w"> </span><span class="n">INSTANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Registry</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Registry</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Holder</span><span class="p">.</span><span class="na">INSTANCE</span><span class="p">;</span><span class="w"> </span><span class="c1">// Holder class loads lazily, on first call, no lock needed</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Reflection can still break Registry:</span>
+<span class="n">Constructor</span><span class="o">&lt;</span><span class="n">Registry</span><span class="o">&gt;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Registry</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getDeclaredConstructor</span><span class="p">();</span>
+<span class="n">c</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+<span class="n">Registry</span><span class="w"> </span><span class="n">second</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">newInstance</span><span class="p">();</span><span class="w"> </span><span class="c1">// succeeds — a second, distinct instance</span>
+
+<span class="c1">// An enum singleton closes that hole:</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">EnumRegistry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">INSTANCE</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// EnumRegistry.class.getDeclaredConstructor() throws NoSuchMethodException —</span>
+<span class="c1">// enum constructors aren't invocable via reflection this way.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating Bill Pugh and <code>enum</code> as interchangeably "the best" answer — an
+interviewer probing further ("what about reflection?") is testing whether you actually know the
+gap, not just the name of the pattern.</p>
+<h3 id="q4-whats-the-real-difference-between-synchronized-and-volatile">Q4. What's the real difference between <code>synchronized</code> and <code>volatile</code>?</h3>
+<p><strong>Answer:</strong> <code>synchronized</code> provides mutual exclusion (only one thread executes the block at a
+time) <strong>and</strong> a happens-before edge: everything a thread did before releasing a lock is visible
+to the next thread that acquires that same lock, including plain (non-volatile) writes made
+earlier in the block. <code>volatile</code> provides <em>only</em> the visibility half of that — every read of a
+volatile field sees the most recent write to it across threads, and the JVM is barred from
+reordering other memory operations across a volatile read/write — with no mutual exclusion; two
+threads can still race to increment a <code>volatile int</code> and lose an update, because <code>i++</code> is a
+read-modify-write that isn't atomic even when the field is volatile. The senior trap is treating
+them as interchangeable: use <code>volatile</code> for a single flag or reference where you need visibility
+without contention (a shutdown flag, a double-checked-locking instance reference — see Q3), and
+<code>synchronized</code> (or an explicit <code>Lock</code>, or an atomic class) when you need to protect a multi-step
+invariant, i.e. more than one field/operation must be observed or updated as a unit.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Counter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">volatile</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// visibility only — no atomicity</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">increment</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// read, add, write — three steps, not one; a lost update is possible</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">SafeCounter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="c1">// plain field is fine — synchronized supplies visibility too</span>
+
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">increment</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="c1">// mutual exclusion makes the three steps effectively atomic</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+Two threads calling <code>Counter.increment()</code> 100,000 times each can finish with a total noticeably
+below 200,000 — <code>volatile</code> guarantees each thread eventually sees the latest value, not that no
+other thread interleaves between the read and the write.</p>
+<p><strong>Why it's a trap:</strong> "volatile makes it thread-safe" is the single most common wrong answer to
+this question — volatile only removes stale-read bugs, it does nothing about race conditions on
+compound operations.</p>
+<h3 id="q5-explain-reachability-analysis-and-gc-roots-and-name-two-garbage-collection-algorithms">Q5. Explain reachability analysis and GC roots, and name two garbage collection algorithms.</h3>
+<p><strong>Answer:</strong> The JVM doesn't use reference counting; it periodically traces reachability from a
+fixed set of <strong>GC roots</strong> — local variables and parameters on the stack of each live thread,
+static fields, JNI references held by native code, and a few others (active monitors, JVM
+internal references) — following every reference transitively. Anything not reachable from a
+root is garbage, regardless of how many objects reference each other (which is why reference
+cycles aren't a leak in Java, unlike naive reference counting — two objects that only reference
+each other but that nothing else reaches are still collected together). Two named algorithms:
+<strong>G1 (Garbage First)</strong>, the default since Java 9, which divides the heap into fixed-size regions
+and collects the ones with the most garbage first, aiming for a configurable pause-time goal
+rather than a fixed generation layout; and <strong>ZGC</strong>, a low-latency concurrent collector
+(sub-millisecond target pauses even on very large heaps, using colored pointers and load barriers
+to do marking and relocation concurrently with application threads) whose pause time stays
+roughly flat regardless of heap size, unlike G1's pauses which still grow somewhat with live-set
+size.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Node</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Node</span><span class="w"> </span><span class="n">other</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">demo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Node</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Node</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="p">();</span>
+<span class="w">    </span><span class="n">a</span><span class="p">.</span><span class="na">other</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="n">b</span><span class="p">.</span><span class="na">other</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w"> </span><span class="c1">// a and b reference each other — a reference-counting GC would leak this</span>
+
+<span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// Neither local variable is a GC root anymore, so the a&lt;-&gt;b cycle</span>
+<span class="w">    </span><span class="c1">// is unreachable as a whole and gets collected on the next cycle,</span>
+<span class="w">    </span><span class="c1">// despite the objects still referencing each other.</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates from a reference-counted-language background (Python, Swift,
+Objective-C) sometimes assume Java has the same cycle-leak problem those languages have without
+a cycle collector — Java's tracing GC never had that problem in the first place.</p>
+<h3 id="q6-what-problem-do-virtual-threads-project-loom-actually-solve-and-where-do-they-still-fall-over">Q6. What problem do virtual threads (Project Loom) actually solve, and where do they still fall over?</h3>
+<p><strong>Answer:</strong> Platform threads are thin wrappers around OS threads — expensive to create
+(megabyte-scale stacks) and limited in number (thousands, not millions), which is why
+high-concurrency I/O-bound servers historically reached for reactive/async programming
+(callbacks, <code>CompletableFuture</code> chains, WebFlux) to avoid blocking a scarce thread on a slow
+network call. Virtual threads are JVM-managed, cheap (kilobytes, millions possible), and when a
+virtual thread blocks on I/O, the JVM unmounts it from its carrier platform thread and frees that
+platform thread to run other virtual threads — so you get to write ordinary blocking, sequential
+code (<code>InputStream.read()</code>, JDBC calls) and still get reactive-style scalability under the hood,
+without restructuring the code into callbacks. The two places this still bites in production: (1)
+a virtual thread that blocks <em>inside</em> a <code>synchronized</code> block cannot be unmounted — it pins its
+carrier thread instead, silently reproducing the old thread-starvation problem (see S11); and (2)
+because virtual threads are so cheap that people spin up millions of them, any per-thread state
+that used to be "free" at platform-thread scale — most commonly a <code>ThreadLocal</code> holding a large
+object — stops being free, since it's now multiplied by orders of magnitude more threads, and
+<code>ThreadLocal</code> was never designed with that cardinality in mind.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="na">newVirtualThreadPerTaskExecutor</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">100_000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">submit</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Ordinary blocking JDBC/HTTP call here — the JVM unmounts this</span>
+<span class="w">            </span><span class="c1">// virtual thread from its carrier while it waits, instead of</span>
+<span class="w">            </span><span class="c1">// parking a whole OS thread.</span>
+<span class="w">            </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMillis</span><span class="p">(</span><span class="mi">50</span><span class="p">));</span>
+<span class="w">        </span><span class="p">});</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="c1">// platform threads would never scale to 100,000 concurrent blocking tasks like this</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "virtual threads make blocking code free" is only true until a
+<code>synchronized</code> block or an oversized <code>ThreadLocal</code> is on the hot path — an interviewer asking
+"what could go wrong?" is checking whether you know the two concrete failure modes, not just the
+headline benefit.</p>
+<h3 id="q7-whats-the-difference-between-using-executorservice-and-creating-raw-thread-objects-and-whats-a-common-pitfall-with-the-common-fork-join-pool">Q7. What's the difference between using <code>ExecutorService</code> and creating raw <code>Thread</code> objects, and what's a common pitfall with the common fork-join pool?</h3>
+<p><strong>Answer:</strong> <code>ExecutorService</code> decouples task submission from thread management — you submit
+<code>Runnable</code>s or <code>Callable</code>s to a pool with a bounded (or virtual-thread-per-task) size, get back
+<code>Future</code>s, and the pool handles reuse, queuing, and shutdown; raw <code>Thread</code> creation gives you none
+of that and doesn't scale past a handful of threads. The common pitfall: <code>parallelStream()</code> and
+<code>CompletableFuture</code>'s default async methods (<code>thenApplyAsync</code> without an explicit executor, etc.)
+both use the shared <code>ForkJoinPool.commonPool()</code>, sized by default to
+<code>availableProcessors() - 1</code> — submitting a blocking I/O call into it (a JDBC query, an HTTP call)
+can starve <em>every other</em> parallel stream and default-async <code>CompletableFuture</code> in the entire JVM
+process, since they all share that one pool, including ones in unrelated libraries you don't
+control. Blocking work belongs in its own dedicated executor, sized for the blocking workload
+(often much larger than CPU count, since blocked threads aren't consuming CPU).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Dangerous: a slow HTTP call inside parallelStream() eats a commonPool thread</span>
+<span class="c1">// that every other parallelStream() call in the JVM is also competing for.</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">urls</span><span class="p">.</span><span class="na">parallelStream</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">url</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">httpClient</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">url</span><span class="p">))</span><span class="w"> </span><span class="c1">// blocking call on the shared commonPool</span>
+<span class="w">    </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+
+<span class="c1">// Fix: give blocking work its own dedicated, sized-for-blocking pool.</span>
+<span class="n">ExecutorService</span><span class="w"> </span><span class="n">ioPool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="na">newFixedThreadPool</span><span class="p">(</span><span class="mi">50</span><span class="p">);</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Future</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">futures</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">urls</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">url</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ioPool</span><span class="p">.</span><span class="na">submit</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">httpClient</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">url</span><span class="p">)))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the bug doesn't show up in the code that has it — it shows up as an
+unrelated, seemingly random slowdown in a completely different part of the application that also
+happens to use <code>parallelStream()</code> or default-async <code>CompletableFuture</code>.</p>
+<h3 id="q8-walk-through-thenapply-vs-thencompose-vs-thencombine-on-completablefuture-and-name-a-common-pitfall">Q8. Walk through <code>thenApply</code> vs <code>thenCompose</code> vs <code>thenCombine</code> on <code>CompletableFuture</code>, and name a common pitfall.</h3>
+<p><strong>Answer:</strong> <code>thenApply</code> transforms the result with a plain function (<code>T -&gt; U</code>) — use it when the
+next step isn't itself async. <code>thenCompose</code> flattens a step that <em>returns</em> another
+<code>CompletableFuture</code> (<code>T -&gt; CompletableFuture&lt;U&gt;</code>) — the async equivalent of <code>flatMap</code>; using
+<code>thenApply</code> here would give you a <code>CompletableFuture&lt;CompletableFuture&lt;U&gt;&gt;</code>, which almost always
+means whoever consumes it forgot to unwrap a layer. <code>thenCombine</code> joins two <em>independent</em> futures
+once both complete, running a <code>BiFunction</code> over both results. The common pitfall is calling
+<code>.get()</code> or <code>.join()</code> on a future inside another future's callback (or worse, on a request
+thread) — that blocks a thread waiting on async work, which defeats the purpose and, on the
+common pool, risks the same starvation as Q7. Compose the chain instead of blocking mid-chain.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">userFuture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fetchUser</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+
+<span class="c1">// Wrong shape: thenApply on a step that returns a future -&gt; nested future.</span>
+<span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">nested</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">userFuture</span><span class="p">.</span><span class="na">thenApply</span><span class="p">(</span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">fetchLatestOrder</span><span class="p">(</span><span class="n">user</span><span class="p">));</span><span class="w"> </span><span class="c1">// fetchLatestOrder returns a CF&lt;Order&gt;</span>
+
+<span class="c1">// Correct: thenCompose flattens it.</span>
+<span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">flat</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">userFuture</span><span class="p">.</span><span class="na">thenCompose</span><span class="p">(</span><span class="n">user</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">fetchLatestOrder</span><span class="p">(</span><span class="n">user</span><span class="p">));</span>
+
+<span class="c1">// Combining two independent futures:</span>
+<span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">Profile</span><span class="o">&gt;</span><span class="w"> </span><span class="n">profileFuture</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">fetchProfile</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">Dashboard</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dashboard</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">flat</span><span class="p">.</span><span class="na">thenCombine</span><span class="p">(</span><span class="n">profileFuture</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Dashboard</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">profile</span><span class="p">));</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the compiler happily accepts the <code>thenApply</code> version with a nested future —
+it's a type-shape bug, not a syntax error, so it only surfaces when a caller tries to use the
+result and gets a <code>CompletableFuture</code> where they expected the actual value.</p>
+<h3 id="q9-why-is-string-immutable-and-what-is-the-string-pool">Q9. Why is <code>String</code> immutable, and what is the string pool?</h3>
+<p><strong>Answer:</strong> Once created, a <code>String</code>'s backing character storage is never mutated — every
+"modifying" method (<code>concat</code>, <code>substring</code>, <code>replace</code>) returns a new <code>String</code>. This buys thread
+safety without synchronization (safe to share across threads), lets <code>String</code> be safely used as a
+<code>HashMap</code> key (its hash can be cached, computed once and stored in the object — see Q1's
+performance discussion), and enables the <strong>string pool</strong> — literal strings (and interned strings)
+are deduplicated in a shared pool, so <code>"abc" == "abc"</code> is <code>true</code> (same pooled reference) while
+<code>new String("abc") == "abc"</code> is <code>false</code> (a distinct heap object bypasses the pool unless you call
+<code>.intern()</code>). One historical nuance worth knowing: before Java 7, the string pool lived in
+PermGen, a fixed-size metadata region — calling <code>.intern()</code> on many unique runtime strings (e.g.
+interning every parsed token from user input) could exhaust PermGen and crash the JVM with
+<code>OutOfMemoryError: PermGen space</code>. Since Java 7 the pool moved to the regular heap, so the same
+misuse today just bloats heap usage instead of hitting a hard, separate ceiling — it's a smaller
+problem than it used to be, but "interning every string I see" is still a bad habit that defeats
+the pool's purpose of deduplicating a <em>bounded</em> set of recurring literals.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">String</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hello"</span><span class="p">;</span>
+<span class="n">String</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"hello"</span><span class="p">;</span>
+<span class="n">String</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="s">"hello"</span><span class="p">);</span>
+
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w">           </span><span class="c1">// true  — both resolve to the same pooled literal</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="p">);</span><span class="w">           </span><span class="c1">// false — c is a distinct heap object</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">intern</span><span class="p">());</span><span class="w">  </span><span class="c1">// true  — intern() returns the pooled reference</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates often say "strings are pooled" as a blanket statement without
+the <code>new String(...)</code> caveat — an interviewer will immediately follow up with exactly that line
+to see if the distinction is actually understood, not memorized as one fact.</p>
+<h3 id="q10-whats-the-autoboxing-trap-with-integer">Q10. What's the autoboxing <code>==</code> trap with <code>Integer</code>?</h3>
+<p><strong>Answer:</strong> The JVM caches boxed <code>Integer</code> values from -128 to 127 (<code>Integer.valueOf</code>'s internal
+cache, populated at class-init time and guaranteed by the JLS, not just an implementation detail
+you can't rely on), so <code>Integer a = 100; Integer b = 100; a == b</code> is <code>true</code> — both point at the
+same cached object, per spec — while the identical code with <code>200</code> instead of <code>100</code> is <code>false</code>,
+because values outside the cache range allocate a fresh object each time. This is a classic
+interview trap precisely because it "works" in small examples and fails silently in production
+once real data exceeds 127 — test fixtures and demo data are disproportionately likely to use
+small numbers (ids, quantities, scores in a unit test), which is exactly why this bug survives
+code review and passes tests before breaking in production with real values. The fix is
+unconditional: use <code>.equals()</code> (or unbox to <code>int</code> and compare primitives) for boxed-type
+comparison, never <code>==</code> — there's no threshold above which <code>==</code> becomes "safe enough."</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">Integer</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span>
+<span class="n">Integer</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">200</span><span class="p">;</span>
+
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">);</span><span class="w"> </span><span class="c1">// true  — both in the cached [-128, 127] range</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">y</span><span class="p">);</span><span class="w"> </span><span class="c1">// false — outside the cache, two distinct objects</span>
+
+<span class="c1">// The actual fix, independent of the value:</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">b</span><span class="p">));</span><span class="w"> </span><span class="c1">// true</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">y</span><span class="p">));</span><span class="w"> </span><span class="c1">// true</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="na">intValue</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">intValue</span><span class="p">());</span><span class="w"> </span><span class="c1">// true — unboxed primitive compare</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> it's one of the few Java bugs that is <em>specified</em> behavior, not a JVM
+quirk — the JLS explicitly requires caching -128..127, which means relying on <code>==</code> "working" in
+that range isn't even undefined behavior you got lucky with; it's guaranteed to keep working
+right up until a real value crosses the boundary.</p>
+<h3 id="q11-what-does-try-with-resources-actually-guarantee-and-what-interface-does-it-rely-on">Q11. What does <code>try-with-resources</code> actually guarantee, and what interface does it rely on?</h3>
+<p><strong>Answer:</strong> Any resource implementing <code>AutoCloseable</code> (or <code>Closeable</code>, which extends it and
+narrows <code>close()</code> to throw only <code>IOException</code>) declared in the <code>try(...)</code> parentheses has its
+<code>close()</code> called automatically when the block exits — normally or via exception — in <strong>reverse</strong>
+declaration order, without needing a <code>finally</code> block. If both the try block and <code>close()</code> throw,
+the try block's exception is the one propagated, and the <code>close()</code> exception is attached to it as
+a <strong>suppressed</strong> exception (retrievable via <code>getSuppressed()</code>), rather than one silently masking
+the other the way a hand-written <code>try/finally</code> often does — a hand-written version that calls
+<code>close()</code> in <code>finally</code> and lets that call throw will lose the original exception entirely if
+<code>close()</code> also throws, which is a real and common bug in code written before Java 7.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Resource</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">AutoCloseable</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Resource</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"open "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">close</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"close "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">Resource</span><span class="w"> </span><span class="n">r1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Resource</span><span class="p">(</span><span class="s">"A"</span><span class="p">);</span><span class="w"> </span><span class="n">Resource</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Resource</span><span class="p">(</span><span class="s">"B"</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"using both"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// Output: open A, open B, using both, close B, close A — reverse declaration order.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates get the "automatic close" part right but rarely know the
+suppressed-exception mechanism, which is exactly the detail that matters when debugging a
+production stack trace that has a "Suppressed:" section a reader skipped past.</p>
+<h3 id="q12-checked-vs-unchecked-exceptions-whats-the-actual-design-trade-off">Q12. Checked vs unchecked exceptions — what's the actual design trade-off?</h3>
+<p><strong>Answer:</strong> Checked exceptions (subclasses of <code>Exception</code> but not <code>RuntimeException</code>) must be
+declared or caught — the compiler forces the caller to acknowledge a specific, recoverable
+failure mode (e.g. <code>IOException</code>). Unchecked exceptions (<code>RuntimeException</code> and its subclasses)
+need no declaration and typically signal programming errors (<code>NullPointerException</code>,
+<code>IllegalArgumentException</code>) that callers shouldn't be expected to recover from locally. The
+trade-off in practice: checked exceptions document and enforce handling of genuinely recoverable
+conditions, but overused (or used for things a caller can't meaningfully recover from) they push
+teams toward <code>catch (Exception e) {}</code> boilerplate that swallows the exception's whole value —
+which is why most modern Java frameworks (Spring's <code>DataAccessException</code> hierarchy included)
+deliberately favor unchecked exceptions and reserve checked ones for truly recoverable,
+caller-actionable failures. A related trap worth naming explicitly: <code>catch (Exception e) {}</code>
+(or worse, <code>catch (Throwable t) {}</code>) also silently swallows unchecked exceptions and even
+<code>Error</code>s that were never meant to be caught at all, so the "just catch everything" instinct
+doesn't just hide checked-exception boilerplate — it can hide a real bug or even mask an
+<code>OutOfMemoryError</code> that should have crashed the process loudly.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Checked: caller is forced to decide how to handle a recoverable failure.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">readConfig</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Files</span><span class="p">.</span><span class="na">readString</span><span class="p">(</span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"config.yml"</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// The lazy "fix" that defeats the point of checked exceptions:</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">readConfig</span><span class="p">();</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// swallows IOException *and* any RuntimeException *and* would even</span>
+<span class="w">    </span><span class="c1">// catch an AssertionError if the catch clause used Throwable instead</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the "solution" candidates reach for under interview pressure —
+<code>catch (Exception e) {}</code> — is the exact anti-pattern the question is probing for; a senior answer
+names why that's worse than either checked or unchecked exceptions done properly.</p>
+<h3 id="q13-what-is-type-erasure-and-what-does-it-actually-break">Q13. What is type erasure, and what does it actually break?</h3>
+<p><strong>Answer:</strong> Generic type information (<code>List&lt;String&gt;</code> vs <code>List&lt;Integer&gt;</code>) exists only at compile
+time for type-checking; the compiler erases it to raw types (<code>List</code>) with inserted casts, so at
+runtime both are just <code>List</code>. This breaks: overloading two methods that differ only by generic
+type parameter (<code>void f(List&lt;String&gt;)</code> and <code>void f(List&lt;Integer&gt;)</code> collide, same erasure);
+creating a generic array (<code>new T[10]</code> doesn't compile, since the JVM needs a concrete component
+type at the allocation site); and <code>instanceof</code> checks against a parameterized type
+(<code>x instanceof List&lt;String&gt;</code> isn't allowed — only <code>x instanceof List&lt;?&gt;</code>). The concrete mechanism
+the compiler uses to paper over one consequence of erasure is the <strong>bridge method</strong>: when a
+subclass overrides a generic method with a more specific type
+(<code>class IntBox extends Box&lt;Integer&gt; { void set(Integer v) { ... } }</code> overriding
+<code>void set(T v)</code>), the compiler generates a synthetic bridge method <code>set(Object)</code> that casts and
+delegates to <code>set(Integer)</code>, because at the bytecode level the erased superclass signature is
+<code>set(Object)</code> and something has to satisfy it for polymorphism (virtual dispatch) to work
+correctly. It's the same reason <code>List&lt;String&gt;.class</code> doesn't exist as a distinct object from
+<code>List&lt;Integer&gt;.class</code> — there is exactly one <code>List.class</code> at runtime.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Box</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">IntBox</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Box</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="n">Integer</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// your source-level override</span>
+<span class="w">    </span><span class="c1">// compiler also generates: void set(Object value) { set((Integer) value); }</span>
+<span class="w">    </span><span class="c1">// — a synthetic bridge method, visible via IntBox.class.getDeclaredMethods()</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates can usually name that erasure "removes generic type info at
+runtime" but few can explain the bridge-method mechanism that makes polymorphism still work
+correctly despite that — it's the difference between reciting the term and understanding what
+the compiler had to do about it.</p>
+<h3 id="q14-what-does-a-records-compact-canonical-constructor-buy-you-that-a-lombok-data-class-doesnt-structurally-guarantee">Q14. What does a record's compact canonical constructor buy you that a Lombok <code>@Data</code> class doesn't structurally guarantee?</h3>
+<p><strong>Answer:</strong> A record's compact constructor (<code>record Range(int lo, int hi) { Range { if (lo &gt; hi)
+throw new IllegalArgumentException(); } }</code>) runs validation <em>before</em> fields are assigned, as an
+intrinsic part of the type's only way to be constructed — there's no setter, no second
+constructor, no reflection-based builder that can bypass it, because a record's fields are
+<code>private final</code> and there is exactly one canonical constructor path. <code>@Data</code> generates a mutable
+class with setters by default; you can still get immutability from Lombok (<code>@Value</code>), but the
+record gives you that guarantee as a language feature the compiler enforces, not a convention a
+future maintainer can quietly violate by adding a setter or a second constructor that skips
+validation.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">record</span> <span class="nc">Range</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">lo</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">hi</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Range</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// compact constructor — runs before field assignment</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lo</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">hi</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">"lo &gt; hi"</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Range</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// throws immediately — no way to construct an invalid Range</span>
+
+<span class="nd">@Data</span>
+<span class="kd">class</span> <span class="nc">LombokRange</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">lo</span><span class="p">,</span><span class="w"> </span><span class="n">hi</span><span class="p">;</span><span class="w"> </span><span class="c1">// mutable — setLo(999) after construction bypasses any validation</span>
+<span class="w">                          </span><span class="c1">// that only lived in a constructor</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "records and <code>@Data</code> classes are basically the same thing, just less
+boilerplate" is the wrong mental model — the record's guarantee is structural (the compiler
+enforces it), while <code>@Data</code>'s immutability (if you even remembered <code>@Value</code> instead) is a
+convention that a later setter call or reflection-based framework can silently violate.</p>
+<h3 id="q15-how-does-pattern-matching-for-switch-combine-with-sealed-types-and-why-does-that-matter-for-exhaustiveness">Q15. How does pattern matching for <code>switch</code> combine with sealed types, and why does that matter for exhaustiveness?</h3>
+<p><strong>Answer:</strong> Since Java 21, <code>switch</code> can pattern-match on a sealed type's permitted subtypes
+directly: <code>switch (shape) { case Circle c -&gt; ...; case Square s -&gt; ...; case Triangle t -&gt; ...; }</code>.
+Because <code>Shape</code> is <code>sealed permits Circle, Square, Triangle</code>, the compiler knows the complete set
+of possible subtypes and can verify every case is handled <em>without</em> a <code>default</code> branch — if a new
+shape is added to <code>permits</code> later, every exhaustive switch over <code>Shape</code> across the codebase
+becomes a compile error at the missing case, not a runtime gap. This turns what used to be a
+runtime risk (forgetting to update a chain of <code>instanceof</code> checks, or a <code>default</code> branch in an
+old-style switch that silently does the wrong thing for a case nobody thought to add) into a
+compile-time guarantee. The trap version of this question asks what happens if you <em>do</em> add a
+<code>default</code> branch "just in case" — doing so throws away the exhaustiveness check entirely, because
+the compiler now considers the switch complete regardless of whether every permitted subtype has
+its own case, so a newly added subtype silently falls into <code>default</code> instead of failing to
+compile.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Shape</span><span class="w"> </span><span class="kd">permits</span><span class="w"> </span><span class="n">Circle</span><span class="p">,</span><span class="w"> </span><span class="n">Square</span><span class="p">,</span><span class="w"> </span><span class="n">Triangle</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">record</span> <span class="nc">Circle</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Shape</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">record</span> <span class="nc">Square</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">side</span><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Shape</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">record</span> <span class="nc">Triangle</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">base</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">height</span><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Shape</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="kt">double</span><span class="w"> </span><span class="nf">area</span><span class="p">(</span><span class="n">Shape</span><span class="w"> </span><span class="n">shape</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">Circle</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">PI</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">r</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">r</span><span class="p">();</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">Square</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">side</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">side</span><span class="p">();</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">Triangle</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mf">0.5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">base</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">height</span><span class="p">();</span>
+<span class="w">        </span><span class="c1">// no default needed — compiler proves every permitted subtype is handled</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+<span class="c1">// Adding `record Rectangle(...) implements Shape {}` to `permits` now makes</span>
+<span class="c1">// this switch fail to compile until a Rectangle case is added.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> adding a defensive <code>default -&gt; throw new IllegalStateException()</code> feels
+like good practice, but it silently reintroduces the exact runtime gap sealed types + exhaustive
+switch were designed to eliminate at compile time.</p>
+<h3 id="q16-java-has-garbage-collection-how-does-a-memory-leak-still-happen">Q16. Java has garbage collection — how does a memory leak still happen?</h3>
+<p><strong>Answer:</strong> GC only reclaims <em>unreachable</em> objects; a "leak" in Java is really unintentional
+reachability — something still holds a reference to objects no one needs anymore, so they never
+become eligible for collection. Classic causes: a <code>static</code> collection (cache, listener list) that
+only grows and is never pruned; registered listeners/callbacks never unregistered, keeping the
+whole object graph they close over alive; and <code>ThreadLocal</code> values not cleared before a thread is
+returned to a pool — since pooled threads live indefinitely, anything left in their <code>ThreadLocal</code>
+map lives with them, which is a particularly nasty leak in app-server thread pools because it's
+invisible until the heap has been growing for days. Virtual threads (Q6) don't remove this risk;
+they can make it worse in volume, since a <code>ThreadLocal</code> misuse that was bounded by "a few hundred
+platform threads in the pool" is unbounded by "however many virtual threads happen to be alive
+right now" if the value is never cleared.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">RequestContext</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ThreadLocal</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">BUFFER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ThreadLocal</span><span class="p">.</span><span class="na">withInitial</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">byte</span><span class="o">[</span><span class="mi">1_000_000</span><span class="o">]</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">handle</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">BUFFER</span><span class="p">.</span><span class="na">get</span><span class="p">();</span><span class="w"> </span><span class="c1">// do work with a per-thread scratch buffer</span>
+<span class="w">        </span><span class="c1">// missing: BUFFER.remove();</span>
+<span class="w">        </span><span class="c1">// On a pooled platform thread, this 1 MB buffer lives forever, tied to</span>
+<span class="w">        </span><span class="c1">// that thread — multiply by pool size and it's a slow, steady leak.</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "GC handles memory for me" is the assumption that gets challenged here —
+the interviewer wants to hear that a leak is a reachability bug the <em>application</em> owns, not
+something a garbage collector could ever be expected to detect or fix.</p>
+<h3 id="q17-whats-the-difference-between-stackoverflowerror-and-outofmemoryerror-and-where-does-each-actually-come-from">Q17. What's the difference between <code>StackOverflowError</code> and <code>OutOfMemoryError</code>, and where does each actually come from?</h3>
+<p><strong>Answer:</strong> Both are <code>Error</code>s (not <code>Exception</code>s — the JVM is signaling something the application
+generally shouldn't try to recover from), but they come from different memory regions.
+<code>StackOverflowError</code> happens when a single thread's call stack exceeds its fixed size — almost
+always unbounded or excessively deep recursion; increasing <code>-Xss</code> delays it but a genuine
+infinite-recursion bug will still hit it eventually, just later. <code>OutOfMemoryError</code> happens on
+the heap (<code>OutOfMemoryError: Java heap space</code>, when live objects plus garbage exceed the
+configured heap and GC can't free enough), or in metaspace (<code>OutOfMemoryError: Metaspace</code>, from
+loading too many classes — a classic classloader leak symptom, see S12), or even from too many
+threads (<code>OutOfMemoryError: unable to create new native thread</code>, hitting an OS thread limit,
+which is one more reason virtual threads (Q6) changed the failure mode of high-concurrency code —
+that specific error becomes far less likely when threads are cheap) — the specific message after
+the colon is the first thing to read, since the fix differs completely by region.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// StackOverflowError — unbounded recursion, not a heap problem at all.</span>
+<span class="kt">long</span><span class="w"> </span><span class="nf">factorial</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// no base-case bug needed —</span>
+<span class="w">                                               </span><span class="c1">// a large enough n alone overflows the stack</span>
+<span class="p">}</span>
+
+<span class="c1">// OutOfMemoryError: Java heap space — a genuinely unbounded live set.</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">leak</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">leak</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">byte</span><span class="o">[</span><span class="mi">1_000_000</span><span class="o">]</span><span class="p">);</span><span class="w"> </span><span class="c1">// never removed, always reachable via `leak`</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates sometimes reach for "increase the heap" or "increase the stack
+size" as a universal fix for both — that treats the symptom, not the region-specific root cause,
+and both errors keep recurring (just later) if the underlying algorithm is genuinely unbounded.</p>
+<h3 id="q18-design-a-thread-safe-bounded-lru-cache-from-scratch-what-are-the-real-trade-offs">Q18. Design a thread-safe, bounded, LRU cache from scratch. What are the real trade-offs?</h3>
+<p><strong>Answer:</strong> A <code>LinkedHashMap</code> in access-order mode (<code>new LinkedHashMap&lt;&gt;(cap, 0.75f, true)</code>) with
+<code>removeEldestEntry</code> overridden to evict past a size threshold gives you LRU semantics almost for
+free, because access-order mode re-links an entry to the tail of the internal doubly-linked list
+on every <code>get()</code>, so the head is always the least-recently-used entry — but it's not thread-safe
+on its own, so you wrap access in a single lock (<code>synchronized</code> or a <code>ReentrantReadWriteLock</code>) or
+use <code>Collections.synchronizedMap</code>. The trade-off at that point is a single global lock serializing
+every read, which is fine for low-to-moderate contention but becomes the bottleneck under high
+concurrency, since even a plain <code>get()</code> mutates the internal linked list (to record the access)
+and therefore can't be a pure concurrent read. For higher throughput, the real answer is
+segmenting the cache (striped locks, like old <code>ConcurrentHashMap</code> internals) or reaching for a
+purpose-built library (Caffeine) that implements approximate LRU/LFU with lock-free reads via a
+ring-buffer-based access log and sampling-based eviction — at that point you're trading perfect
+LRU ordering for concurrency, which is almost always the right trade for a production cache. The
+interview signal isn't reciting Caffeine's internals; it's recognizing <em>why</em> naive LRU and high
+concurrency are in tension (every read is also a write to the ordering structure).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">LruCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">LinkedHashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">LruCache</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="mf">0.75f</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// true = access-order, not insertion-order</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">capacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">removeEldestEntry</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">eldest</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w"> </span><span class="c1">// evict the head once we exceed capacity</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Not thread-safe on its own — every public method must go through a lock:</span>
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">getSafe</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">putSafe</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates often stop at "use <code>LinkedHashMap</code> with <code>removeEldestEntry</code>" as
+if that alone answers "thread-safe" — the question explicitly asked for thread-safe, and the
+naive lock-everything fix is itself the setup for the follow-up about concurrency trade-offs.</p>
+<h3 id="q19-when-would-you-choose-virtual-threads-over-a-reactive-stack-webflux-for-a-high-concurrency-io-bound-service-and-vice-versa">Q19. When would you choose virtual threads over a reactive stack (WebFlux) for a high-concurrency I/O-bound service, and vice versa?</h3>
+<p><strong>Answer:</strong> Virtual threads (Q6) win when the codebase, its libraries, and its debugging tooling
+assume blocking, synchronous code — most JDBC drivers, most existing business logic, stack traces
+that read top-to-bottom — and you want reactive-scale concurrency without a full reactive
+rewrite; you get that scalability essentially "for free" on unmodified blocking code, and thread
+dumps stay readable. Reactive/WebFlux still wins when you need actual backpressure semantics (a
+slow consumer explicitly signaling a fast producer to slow down — virtual threads don't give you
+this, since each virtual thread still runs whatever synchronous code you wrote, with no signal to
+the producer to slow down), or when your data sources are already fully non-blocking end-to-end
+(R2DBC, reactive Mongo) and rewriting them as blocking would throw that away. In practice: default
+to virtual threads for typical CRUD/proxy/orchestration services now that they're stable and
+blocking libraries "just work" on them; reach for reactive specifically when backpressure or a
+fully non-blocking pipeline is the actual requirement, not a default choice made because
+"reactive is the modern way."</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Virtual-thread style: ordinary blocking code, scales via cheap threads.</span>
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/orders/{id}"</span><span class="p">)</span>
+<span class="n">String</span><span class="w"> </span><span class="nf">getOrder</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">queryForObject</span><span class="p">(</span>
+<span class="w">        </span><span class="s">"select * from orders where id = ?"</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w"> </span><span class="c1">// blocks the virtual thread only</span>
+<span class="p">}</span>
+
+<span class="c1">// Reactive style: explicit backpressure-aware pipeline, no thread blocks at all.</span>
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/orders/{id}"</span><span class="p">)</span>
+<span class="n">Mono</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getOrderReactive</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">r2dbcTemplate</span><span class="p">.</span><span class="na">selectOne</span><span class="p">(</span><span class="n">Query</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">where</span><span class="p">(</span><span class="s">"id"</span><span class="p">).</span><span class="na">is</span><span class="p">(</span><span class="n">id</span><span class="p">)),</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "just use virtual threads everywhere, reactive is obsolete now" is an
+overcorrection — it's right for the common CRUD case but wrong the moment backpressure or an
+already-reactive downstream is a genuine requirement, and a senior answer names that boundary
+instead of picking a universal winner.</p>
+<h3 id="q20-walk-through-choosing-between-g1-zgc-and-shenandoah-for-a-latency-sensitive-service">Q20. Walk through choosing between G1, ZGC, and Shenandoah for a latency-sensitive service.</h3>
+<p><strong>Answer:</strong> Start from the actual constraint, not the collector name: G1 is the safe default —
+mature, well-understood, region-based, tunable pause-time goals (<code>-XX:MaxGCPauseMillis</code>) — and is
+fine for most services where "occasional tens-of-milliseconds pause" is acceptable. If the
+service has a hard sub-10ms (or sub-millisecond) pause budget regardless of heap size — a trading
+system, a real-time bidding path — ZGC and Shenandoah are the concurrent, low-pause collectors,
+doing marking and compaction concurrently with application threads instead of stopping the world
+for them; ZGC in particular scales pause time independently of heap size (via colored pointers
+and load barriers, see Q5), so it stays flat even on very large (hundreds of GB) heaps, whereas
+G1's stop-the-world pauses still creep up somewhat with a larger live set. The trade-off for both
+concurrent collectors is somewhat higher CPU overhead (concurrent work competes with application
+threads for cores) and, historically, a throughput cost versus G1 — though that gap has narrowed
+significantly in recent JDK versions. The interview-worthy answer states the actual latency
+requirement first (a number, in milliseconds, tied to an SLO), then picks the collector that fits
+it, rather than defaulting to "ZGC is newer so it's better" — a batch ETL job with no user-facing
+latency requirement gets nothing from ZGC's low pauses and pays its CPU overhead for no benefit.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code># G1 — safe default, tunable pause goal:
+-XX:+UseG1GC -XX:MaxGCPauseMillis=200
+
+# ZGC — sub-millisecond pauses, flat regardless of heap size, more CPU overhead:
+-XX:+UseZGC
+
+# Choosing between them isn't a flag decision, it's an SLO decision:
+# "p99 request latency must stay under 15ms" -&gt; ZGC is a candidate.
+# "occasional 100ms pause is acceptable, we care more about throughput" -&gt; G1.
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> picking a collector by reputation ("ZGC is the fastest") instead of by the
+service's actual latency SLO is a red flag — a batch job with no latency requirement gains
+nothing from ZGC and pays its overhead for free, while a service with a genuine sub-10ms budget
+that stays on G1 "because it's the default" is under-serving its own requirement.</p>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="s1-production-service-throws-outofmemoryerror-java-heap-space-after-a-traffic-spike">S1. Production service throws <code>OutOfMemoryError: Java heap space</code> after a traffic spike</h3>
+<ul>
+<li><strong>Symptoms:</strong> The service was healthy for weeks, then during a marketing-driven traffic spike
+  it starts throwing <code>OutOfMemoryError: Java heap space</code> and gets OOMKilled or restarted by the
+  orchestrator.</li>
+<li><strong>Diagnosis:</strong> Pull a heap dump on the next occurrence (<code>-XX:+HeapDumpOnOutOfMemoryError</code> should
+  already be set in prod) and load it in a memory analyzer to find the dominator tree — what's
+  retaining the most memory. Cross-check with monitoring: was this heap size always marginal and
+  the spike just exposed it (scale the heap or add replicas), or did retained memory grow
+  unboundedly with request volume (an actual leak, likely an unbounded cache or collection tied
+  to request count)?</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// A classic accidental leak: caching per-request data in a static map that's</span>
+<span class="c1">// sized fine at low traffic but scales unboundedly with the traffic spike.</span>
+<span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Response</span><span class="o">&gt;</span><span class="w"> </span><span class="n">responseCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w"> </span><span class="c1">// never evicted</span>
+
+<span class="n">Response</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">Request</span><span class="w"> </span><span class="n">req</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">responseCache</span><span class="p">.</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="na">key</span><span class="p">(),</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">compute</span><span class="p">(</span><span class="n">req</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> If it's genuinely undersized, raise <code>-Xmx</code> and/or add horizontal capacity. If
+  it's a leak, fix the retaining reference (add eviction/bounding to the offending
+  collection/cache, e.g. swap it for a bounded Caffeine cache) and redeploy; verify the heap now
+  plateaus under sustained load instead of climbing.</li>
+<li><strong>Prevention:</strong> Load-test with production-representative traffic before high-visibility events,
+  alert on heap-usage trend (not just a threshold — a steady climb is the leak signature), and
+  default new caches to a bounded implementation (Caffeine with a max size) rather than a plain
+  <code>HashMap</code>.</li>
+</ul>
+<h3 id="s2-the-app-freezes-for-several-seconds-at-a-time-seemingly-at-random">S2. The app freezes for several seconds at a time, seemingly at random</h3>
+<ul>
+<li><strong>Symptoms:</strong> No errors, no crashes, but latency graphs show periodic spikes where every
+  request stalls for 2–5 seconds simultaneously, then recovers.</li>
+<li><strong>Diagnosis:</strong> This pattern — everything pausing at once — is the signature of a stop-the-world
+  GC pause, not application logic. Enable/check GC logs (<code>-Xlog:gc*</code>) and correlate pause
+  timestamps against the latency spikes; if they line up, it's confirmed.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>[12.481s][info][gc] GC(42) Pause Full (Allocation Failure) 1998M-&gt;1950M(2048M) 2412.331ms
+</code></pre></div>
+  A <code>Pause Full</code> line at 2+ seconds lining up exactly with a request-latency spike on the same
+  timestamp is the confirming evidence — not a coincidence to explain away.</li>
+<li><strong>Resolution:</strong> Depending on what the GC log shows: if pauses correlate with full GCs, the
+  young generation may be undersized (too many objects promoted too early) — tune generation
+  sizing before switching collectors. If pauses are frequent but the pause-time goal itself is
+  too loose, tighten <code>-XX:MaxGCPauseMillis</code>. If the service has a genuinely strict latency budget
+  the current collector can't hit even tuned, that's the case for moving to ZGC/Shenandoah (Q20).</li>
+<li><strong>Prevention:</strong> Ship GC pause metrics to the same dashboard as request latency so this
+  correlation is a five-second check next time, not a fresh investigation; set a GC pause-time
+  SLO alongside the request latency SLO.</li>
+</ul>
+<h3 id="s3-concurrentmodificationexception-appears-intermittently-in-production-logs">S3. <code>ConcurrentModificationException</code> appears intermittently in production logs</h3>
+<ul>
+<li><strong>Symptoms:</strong> A background job or request handler occasionally throws
+  <code>ConcurrentModificationException</code>, but it's not reproducible locally and doesn't happen on
+  every run.</li>
+<li><strong>Diagnosis:</strong> Find every place the collection in the stack trace is iterated and every place
+  it's structurally modified; intermittent means it only fails when a modification happens to
+  land during an active iteration elsewhere — often a shared field iterated in one thread while
+  another thread (a scheduled task, an event listener) adds/removes from it concurrently.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">SubscriptionRegistry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Listener</span><span class="o">&gt;</span><span class="w"> </span><span class="n">listeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">notifyAll</span><span class="p">(</span><span class="n">Event</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Listener</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">listeners</span><span class="p">)</span><span class="w"> </span><span class="n">l</span><span class="p">.</span><span class="na">onEvent</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w"> </span><span class="c1">// thread A iterating</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">unregister</span><span class="p">(</span><span class="n">Listener</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">listeners</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"> </span><span class="c1">// thread B mutating concurrently — CME if they overlap</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> If it's genuinely single-threaded logic with a bad remove-during-iterate
+  pattern, switch to <code>Iterator.remove()</code> or <code>removeIf</code> (Q2). If it's cross-thread access to shared
+  mutable state, that's the real bug — either make access single-threaded (route through one
+  executor), or move to a concurrent collection appropriate to the access pattern
+  (<code>ConcurrentHashMap</code>, <code>CopyOnWriteArrayList</code> for read-heavy/write-light, which fits a listener
+  list well since registration is rare and notification is frequent).</li>
+<li><strong>Prevention:</strong> Treat any mutable collection reachable from more than one thread as a
+  code-review flag; document ownership (which thread/component is allowed to mutate it) directly
+  in the field's declaration.</li>
+</ul>
+<h3 id="s4-a-hashmap-backed-lookup-that-used-to-be-fast-has-gotten-steadily-slower-over-months">S4. A <code>HashMap</code>-backed lookup that used to be fast has gotten steadily slower over months</h3>
+<ul>
+<li><strong>Symptoms:</strong> A cache or index keyed by a custom object type was fast at launch; response times
+  for that lookup have crept up as the dataset grew, disproportionately to the growth in entry
+  count.</li>
+<li><strong>Diagnosis:</strong> Check the key type's <code>hashCode()</code> implementation (Q1). A common bug:
+  <code>hashCode()</code> was never overridden (falls back to <code>Object</code>'s identity hash, which is fine for
+  distribution but breaks logical equality across separately-constructed instances) <em>or</em> was
+  overridden incorrectly — e.g. based on a field that's constant or low-cardinality across most
+  entries, collapsing most keys into a handful of buckets.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">OrderKey</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">region</span><span class="p">;</span><span class="w"> </span><span class="c1">// only 4 possible values across millions of orders</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">region</span><span class="p">.</span><span class="na">hashCode</span><span class="p">();</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// ignores orderId — bad!</span>
+<span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">OrderKey</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">region</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">k</span><span class="p">.</span><span class="na">region</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">orderId</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">k</span><span class="p">.</span><span class="na">orderId</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Every key in the same region collapses into the same bucket — O(n) lookups.</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Fix <code>hashCode()</code> to incorporate all fields used in <code>equals()</code> with good
+  distribution (<code>Objects.hash(region, orderId)</code> is the safe default), and make sure <code>equals()</code>
+  and <code>hashCode()</code> stay consistent (equal objects must have equal hashes). Verify by checking
+  bucket distribution before/after, or simply re-measuring lookup latency at the same data
+  volume.</li>
+<li><strong>Prevention:</strong> Generate <code>equals()</code>/<code>hashCode()</code> with the IDE or <code>record</code>/Lombok rather than
+  hand-writing them, and add a test that asserts reasonable hash distribution for any custom key
+  type used in a hot-path map.</li>
+</ul>
+<h3 id="s5-heap-usage-climbs-steadily-and-never-comes-back-down-even-under-light-load">S5. Heap usage climbs steadily and never comes back down, even under light load</h3>
+<ul>
+<li><strong>Symptoms:</strong> Heap usage after each GC cycle trends upward over days, unrelated to current
+  traffic — a classic sawtooth-that-never-resets pattern on the memory graph.</li>
+<li><strong>Diagnosis:</strong> This is a leak, not a sizing problem (S1's spike scenario recovers between GCs;
+  this doesn't). Heap dump plus dominator-tree analysis to find what's growing; the most common
+  culprit is a <code>static</code> <code>Map</code>/<code>List</code> used as an ad-hoc cache with entries added on every request
+  and never removed — check anything <code>static</code> first.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Session</span><span class="o">&gt;</span><span class="w"> </span><span class="n">activeSessions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">onLogin</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">Session</span><span class="w"> </span><span class="n">session</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">activeSessions</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">session</span><span class="p">);</span><span class="w"> </span><span class="c1">// added on login...</span>
+<span class="w">    </span><span class="c1">// ...but the logout handler was never wired up to remove it, so every</span>
+<span class="w">    </span><span class="c1">// session that ever logged in stays reachable via this static map.</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add bounding/eviction to the offending collection (size cap, TTL, or switch to
+  a proper cache library), or fix the underlying logic if entries should have been removed on
+  some lifecycle event that isn't firing (e.g. a listener never unregistered — see Q16).</li>
+<li><strong>Prevention:</strong> Ban unbounded <code>static</code> mutable collections in code review as a default; require
+  any intentional in-memory cache to state its bound and eviction policy explicitly.</li>
+</ul>
+<h3 id="s6-cpu-sits-pegged-near-100-with-no-proportional-increase-in-request-volume">S6. CPU sits pegged near 100% with no proportional increase in request volume</h3>
+<ul>
+<li><strong>Symptoms:</strong> CPU utilization spikes and stays high even as request throughput stays flat or
+  drops; the service is still technically responding, just slowly.</li>
+<li><strong>Diagnosis:</strong> Take a thread dump (or several, a few seconds apart) and look for threads
+  <code>RUNNABLE</code> in the same hot method across samples — that's a busy-wait or tight retry loop, not
+  I/O wait (which would show <code>WAITING</code>/<code>TIMED_WAITING</code>). A common cause: a retry loop with no
+  backoff spinning against a failing dependency, or a polling loop with too short an interval.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">call</span><span class="p">(</span><span class="n">dependency</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// no backoff, no attempt cap — a failing dependency turns this into</span>
+<span class="w">        </span><span class="c1">// a tight CPU-burning loop, retried thousands of times per second</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add exponential backoff (with jitter) to the retry/poll loop, and cap retry
+  attempts; if it's a genuine algorithmic hot loop, profile it (async-profiler / JFR) to find the
+  actual inefficiency rather than guessing.</li>
+<li><strong>Prevention:</strong> Never ship a retry loop without backoff and a max-attempts limit; add a
+  thread-dump-on-high-CPU runbook step so this diagnosis is routine, not a fire drill.</li>
+</ul>
+<h3 id="s7-under-load-requests-start-timing-out-even-though-downstream-dependencies-are-healthy">S7. Under load, requests start timing out even though downstream dependencies are healthy</h3>
+<ul>
+<li><strong>Symptoms:</strong> Latency and error rate climb sharply past a certain concurrent-request threshold,
+  even though the database/downstream services show normal response times on their own
+  dashboards.</li>
+<li><strong>Diagnosis:</strong> Thread dump during the slowdown; look for many threads <code>WAITING</code> on the executor
+  queue rather than actively running — that's thread-pool exhaustion, requests queuing behind a
+  fixed-size pool rather than a downstream being slow. Check the pool's configured size against
+  actual concurrent demand, and check whether any handler is doing blocking work on a pool sized
+  for something else (Q7's common-pool trap, or a web server's request-handling pool being used
+  for a slow blocking call).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="nd">@Async</span><span class="w"> </span><span class="c1">// uses a small default executor sized for lightweight tasks</span>
+<span class="n">CompletableFuture</span><span class="o">&lt;</span><span class="n">Report</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">generateReport</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">CompletableFuture</span><span class="p">.</span><span class="na">completedFuture</span><span class="p">(</span><span class="n">slowJdbcQuery</span><span class="p">());</span><span class="w"> </span><span class="c1">// blocks that small pool's thread</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Size the pool to the actual concurrency need (with a queue and rejection
+  policy, not unbounded), or move blocking work off the request-handling pool onto a dedicated
+  one sized for it, or move to virtual threads where "pool size" stops being the constraint for
+  I/O-bound work (Q6).</li>
+<li><strong>Prevention:</strong> Expose executor queue depth and active-thread count as metrics, not just
+  request latency — queue depth climbing while downstream latency is flat is the specific signal
+  for this failure mode, and it's invisible without that metric.</li>
+</ul>
+<h3 id="s8-two-services-or-two-code-paths-occasionally-deadlock-and-stop-making-progress">S8. Two services (or two code paths) occasionally deadlock and stop making progress</h3>
+<ul>
+<li><strong>Symptoms:</strong> A subset of requests simply hang forever — no error, no timeout fires, no
+  crash — until the process is restarted.</li>
+<li><strong>Diagnosis:</strong> Take a thread dump; the JVM explicitly detects and reports deadlocks in
+  <code>jstack</code> output ("Found one Java-level deadlock"), naming the two threads and the locks each
+  holds while waiting on the other.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// Thread A:                          // Thread B:</span>
+<span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">accountA</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">             </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">accountB</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">accountB</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w">       </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">accountA</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// opposite order -&gt; deadlock</span>
+<span class="p">}</span><span class="w">                                      </span><span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Immediate mitigation is restarting the stuck instance (with alerting so it's
+  not silent). The real fix is establishing a consistent lock acquisition order everywhere
+  (always acquire lock A before lock B, never the reverse in any code path — e.g. always lock
+  accounts in a fixed order such as by account id), or replacing multiple locks with one coarser
+  lock, or using <code>tryLock()</code> with a timeout so a deadlock becomes a recoverable timeout instead of
+  a permanent hang.</li>
+<li><strong>Prevention:</strong> Keep lock ordering documented and enforced by convention (or a static analysis
+  rule); prefer higher-level concurrency utilities (<code>java.util.concurrent</code> classes,
+  <code>synchronized</code> on a single well-defined object) over hand-rolled multi-lock schemes.</li>
+</ul>
+<h3 id="s9-a-financial-calculation-is-occasionally-wrong-by-a-small-inconsistent-amount">S9. A financial calculation is occasionally wrong by a small, inconsistent amount</h3>
+<ul>
+<li><strong>Symptoms:</strong> A comparison between two <code>Integer</code> values behaves correctly in testing (small
+  values) but intermittently misbehaves in production with real (larger) numbers — logic that
+  should be equivalent to a numeric comparison silently takes the wrong branch.</li>
+<li><strong>Diagnosis:</strong> Grep the code path for <code>==</code> between boxed types (<code>Integer</code>, <code>Long</code>); this is the
+  autoboxing cache trap from Q10 — values in <code>[-128, 127]</code> happen to be <code>==</code>-equal by
+  specification, values outside that range aren't, and test data conveniently staying inside that
+  range (small unit prices, small quantities) is exactly why it passed review and testing.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Invoice</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Integer</span><span class="w"> </span><span class="n">amountDue</span><span class="p">;</span><span class="w"> </span><span class="c1">// boxed — comes from a DB row mapper as an Integer</span>
+<span class="p">}</span>
+
+<span class="kt">boolean</span><span class="w"> </span><span class="nf">isFullyPaid</span><span class="p">(</span><span class="n">Invoice</span><span class="w"> </span><span class="n">invoice</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="w"> </span><span class="n">amountPaid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">invoice</span><span class="p">.</span><span class="na">amountDue</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">amountPaid</span><span class="p">;</span><span class="w"> </span><span class="c1">// "works" in tests with small amounts like 50</span>
+<span class="w">                                             </span><span class="c1">// silently wrong once a real invoice hits 200+</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Replace <code>==</code> with <code>.equals()</code> for boxed comparisons, or unbox to primitive
+  <code>int</code>/<code>long</code> and compare those directly; add a regression test using a value outside the cache
+  range specifically (e.g. an invoice amount of 500, not 50).</li>
+<li><strong>Prevention:</strong> Enable a static-analysis rule (Error Prone, SonarQube) that flags <code>==</code> between
+  boxed types — this bug class is common enough to be worth banning mechanically rather than
+  relying on review.</li>
+</ul>
+<h3 id="s10-a-newly-deployed-feature-crashes-with-stackoverflowerror-for-a-subset-of-users">S10. A newly deployed feature crashes with <code>StackOverflowError</code> for a subset of users</h3>
+<ul>
+<li><strong>Symptoms:</strong> Errors appear only for certain inputs (e.g. deeply nested comment threads, large
+  category trees) right after a feature ships that processes a tree or graph recursively.</li>
+<li><strong>Diagnosis:</strong> The stack trace itself is the diagnosis tool — it shows the same few frames
+  repeating hundreds of times, identifying exactly which recursive call is unbounded; correlate
+  the failing inputs with unusually deep nesting.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kt">int</span><span class="w"> </span><span class="nf">countDescendants</span><span class="p">(</span><span class="n">Comment</span><span class="w"> </span><span class="n">comment</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">comment</span><span class="p">.</span><span class="na">replies</span><span class="p">().</span><span class="na">size</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Comment</span><span class="w"> </span><span class="n">reply</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">comment</span><span class="p">.</span><span class="na">replies</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">total</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">countDescendants</span><span class="p">(</span><span class="n">reply</span><span class="p">);</span><span class="w"> </span><span class="c1">// no depth guard — a 50,000-deep reply</span>
+<span class="w">    </span><span class="p">}</span><span class="w">                                     </span><span class="c1">// chain from one abusive thread overflows the stack</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">total</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add an explicit depth limit with a clear error before the JVM's own stack
+  limit is hit (a controlled <code>400 Bad Request</code> beats an uncontrolled crash), or convert the
+  recursion to an iterative approach with an explicit stack/queue data structure if arbitrary
+  depth must be supported.</li>
+<li><strong>Prevention:</strong> Any recursive algorithm over user-influenced data (comment trees, category
+  hierarchies, JSON parsing) needs an explicit, tested depth bound as part of the original
+  design, not an afterthought once it crashes.</li>
+</ul>
+<h3 id="s11-after-migrating-a-service-to-virtual-threads-thread-pool-style-throughput-actually-gets-worse-under-load">S11. After migrating a service to virtual threads, thread-pool-style throughput actually gets worse under load</h3>
+<ul>
+<li><strong>Symptoms:</strong> Post-migration to virtual threads, the service that was expected to scale better
+  instead shows carrier-thread contention — throughput plateaus well below expectations, and
+  thread dumps show many virtual threads stuck rather than progressing.</li>
+<li><strong>Diagnosis:</strong> Look for <code>synchronized</code> blocks or methods on the hot path (Q6). Until pinning
+  was substantially improved in recent JDKs, a virtual thread blocking <em>inside</em> a <code>synchronized</code>
+  block can't be unmounted from its carrier platform thread — it pins the carrier, so a blocking
+  I/O call inside <code>synchronized</code> blocks that carrier thread exactly like the old model, defeating
+  the point. JFR's virtual thread pinning events (<code>jdk.VirtualThreadPinned</code>) will confirm it.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">synchronized</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">processOrder</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">paymentClient</span><span class="p">.</span><span class="na">charge</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w"> </span><span class="c1">// blocking network call while holding the monitor</span>
+<span class="w">    </span><span class="c1">// this virtual thread pins its carrier platform thread for the whole</span>
+<span class="w">    </span><span class="c1">// duration of the network call — no unmounting happens inside synchronized</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Replace <code>synchronized</code> with <code>java.util.concurrent.locks.ReentrantLock</code> around
+  any section that also does blocking I/O — <code>ReentrantLock</code> doesn't pin the carrier thread the
+  same way. Keep <code>synchronized</code> only for short, non-blocking critical sections.
+  <div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="w"> </span><span class="n">lock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ReentrantLock</span><span class="p">();</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">processOrder</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">lock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span>
+<span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">paymentClient</span><span class="p">.</span><span class="na">charge</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w"> </span><span class="c1">// no pinning — the carrier is free while this blocks</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">lock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Prevention:</strong> When adopting virtual threads, audit <code>synchronized</code> usage on any path that also
+  performs I/O as part of the migration, not after a regression shows up.</li>
+</ul>
+<h3 id="s12-metaspace-usage-grows-every-time-the-application-is-redeployed-on-a-long-lived-app-server">S12. Metaspace usage grows every time the application is redeployed on a long-lived app server</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>OutOfMemoryError: Metaspace</code> after several redeploys on the same JVM instance
+  (a hot-redeploy application server setup), even though the application code itself hasn't
+  obviously grown.</li>
+<li><strong>Diagnosis:</strong> This is a classloader leak — each redeploy should let the old application's
+  classloader (and every class it loaded) become garbage once the new version is live, but
+  something is still holding a reference to the old classloader, so none of its classes are ever
+  unloaded and metaspace accumulates one full copy of the class metadata per redeploy. Usual
+  suspects: a JDBC driver registered via <code>DriverManager</code> and never deregistered, a <code>ThreadLocal</code>
+  holding an instance of an application class on a long-lived thread pool thread (Q16), or a
+  static reference in a library that outlives the redeploy.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// In a servlet context listener, on application shutdown:</span>
+<span class="n">Enumeration</span><span class="o">&lt;</span><span class="n">Driver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">drivers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DriverManager</span><span class="p">.</span><span class="na">getDrivers</span><span class="p">();</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">drivers</span><span class="p">.</span><span class="na">hasMoreElements</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Driver</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">drivers</span><span class="p">.</span><span class="na">nextElement</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">d</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getClassLoader</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getClassLoader</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">DriverManager</span><span class="p">.</span><span class="na">deregisterDriver</span><span class="p">(</span><span class="n">d</span><span class="p">);</span><span class="w"> </span><span class="c1">// without this, the driver keeps the</span>
+<span class="w">    </span><span class="p">}</span><span class="w">                                      </span><span class="c1">// old webapp classloader reachable forever</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Explicitly deregister JDBC drivers and clear <code>ThreadLocal</code>s in a shutdown hook,
+  or — the pragmatic fix most teams actually take — stop doing hot redeploys and restart the JVM
+  process per deployment instead, which is standard practice in container-based deployments
+  anyway.</li>
+<li><strong>Prevention:</strong> In a containerized world, avoid the hot-redeploy pattern entirely — one process
+  per deployed version, replaced wholesale, sidesteps this entire class of leak.</li>
+</ul>
+<h3 id="s13-under-load-a-singleton-service-occasionally-gets-constructed-more-than-once-causing-duplicate-side-effects">S13. Under load, a "singleton" service occasionally gets constructed more than once, causing duplicate side effects</h3>
+<ul>
+<li><strong>Symptoms:</strong> A component meant to be a single shared instance (e.g. initializing a metrics
+  registry, opening a connection pool) occasionally logs its "initializing" message twice under
+  concurrent startup load, and downstream duplicate-resource symptoms follow (double-registered
+  metrics, doubled connection pool).</li>
+<li><strong>Diagnosis:</strong> Check the singleton's implementation for the double-checked-locking pattern
+  <em>without</em> a <code>volatile</code> field, or a lazy <code>getInstance()</code> with no synchronization at all — under
+  concurrent first access, two threads can both see the field as <code>null</code>, both proceed to
+  construct an instance, and the second write silently overwrites the first (or, without
+  <code>volatile</code>, a thread can observe a partially-constructed object due to instruction reordering).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">MetricsRegistry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">MetricsRegistry</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w"> </span><span class="c1">// missing volatile</span>
+
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">MetricsRegistry</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">MetricsRegistry</span><span class="p">.</span><span class="na">class</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MetricsRegistry</span><span class="p">();</span><span class="w"> </span><span class="c1">// reordering can publish a</span>
+<span class="w">                </span><span class="p">}</span><span class="w">                                      </span><span class="c1">// partially-constructed reference</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Switch to the Bill Pugh static-holder-class pattern (Q3), which the JVM
+  guarantees is thread-safe with no synchronization needed, or add <code>volatile</code> if double-checked
+  locking must be kept for some reason.</li>
+<li><strong>Prevention:</strong> Default to the static-holder pattern (or an <code>enum</code> singleton) for any
+  hand-rolled singleton rather than double-checked locking — it's strictly simpler and removes
+  this whole failure class.</li>
+</ul>
+<h3 id="s14-gc-pause-times-get-noticeably-worse-right-after-a-jdkcollector-upgrade">S14. GC pause times get noticeably worse right after a JDK/collector upgrade</h3>
+<ul>
+<li><strong>Symptoms:</strong> After upgrading the JDK version (or switching the default collector), p99 latency
+  regresses even though throughput and CPU look similar to before.</li>
+<li><strong>Diagnosis:</strong> Compare GC logs before and after; a common cause is that heap-sizing flags
+  (<code>-Xmx</code>, <code>-Xms</code>, generation ratios) tuned for the old collector's behavior don't transfer
+  cleanly to the new one's defaults — e.g. G1's region size and pause-time goal interact
+  differently with a given heap size than the collector it replaced.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code># Old flags, tuned for an older collector's defaults, carried over verbatim:
+-Xmx4g -XX:NewRatio=2 -XX:MaxGCPauseMillis=500
+# New collector's own recommended starting point, re-tuned instead of copied:
+-Xmx4g -XX:MaxGCPauseMillis=100
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Re-tune from the collector's own recommended starting point rather than
+  carrying over old flags verbatim; set an explicit <code>-XX:MaxGCPauseMillis</code> goal matching the
+  actual SLO and let G1 (or the new collector) adapt region sizing to hit it, then measure again
+  under representative load.</li>
+<li><strong>Prevention:</strong> Treat a collector or major JDK version change as a performance-sensitive
+  deployment requiring a load test and GC-log comparison before it reaches production, not a
+  routine dependency bump.</li>
+</ul>
+<h3 id="s15-nullpointerexceptions-spike-sharply-right-after-a-library-dependency-upgrade">S15. <code>NullPointerException</code>s spike sharply right after a library dependency upgrade</h3>
+<ul>
+<li><strong>Symptoms:</strong> A previously stable service starts throwing <code>NullPointerException</code> in several
+  unrelated call sites immediately after bumping a dependency version, with no application code
+  changes.</li>
+<li><strong>Diagnosis:</strong> Check the dependency's changelog for a method that used to return a sentinel
+  (an empty collection, an empty string) and now returns <code>null</code> in some case, or — increasingly
+  common — a method that changed its return type to <code>Optional&lt;T&gt;</code>, and callers that were doing a
+  direct field/method access on the old return type are now calling straight through the
+  <code>Optional</code> wrapper or unwrapping it incorrectly (<code>.get()</code> without checking <code>.isPresent()</code>).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// Old library version: findById returned User, or null if not found.</span>
+<span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="n">user</span><span class="p">.</span><span class="na">getEmail</span><span class="p">();</span><span class="w"> </span><span class="c1">// worked fine — call sites already null-checked `user` where needed</span>
+
+<span class="c1">// New library version: findById now returns Optional&lt;User&gt; instead.</span>
+<span class="n">Optional</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">maybeUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+<span class="n">maybeUser</span><span class="p">.</span><span class="na">get</span><span class="p">().</span><span class="na">getEmail</span><span class="p">();</span><span class="w"> </span><span class="c1">// .get() without .isPresent() throws NoSuchElementException,</span>
+<span class="w">                            </span><span class="c1">// or a lazy caller casts/ignores the change and gets an NPE</span>
+<span class="w">                            </span><span class="c1">// from treating the Optional itself as the User</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Fix each call site to handle the new contract properly — <code>Optional</code> should be
+  consumed with <code>.map()</code>/<code>.orElse()</code>/<code>.ifPresent()</code>, not called <code>.get()</code> on blindly; pin the
+  dependency version pending the fix if the issue is spreading faster than it can be patched.</li>
+<li><strong>Prevention:</strong> Pin dependency versions and review changelogs (especially return-type/nullability
+  changes) before bumping, rather than auto-upgrading; enable a nullability-checking static
+  analyzer where the codebase's conventions support it.</li>
+</ul>
+<h3 id="s16-throughput-flattens-under-high-concurrency-even-though-cpu-has-headroom">S16. Throughput flattens under high concurrency even though CPU has headroom</h3>
+<ul>
+<li><strong>Symptoms:</strong> Adding more concurrent load doesn't increase throughput past a certain point, and
+  CPU utilization stays well under 100% — the system isn't compute-bound, but it's also not
+  scaling.</li>
+<li><strong>Diagnosis:</strong> Thread dump under load; look for many threads <code>BLOCKED</code> (not <code>WAITING</code> on I/O,
+  specifically <code>BLOCKED</code> on monitor entry) all queued on the same <code>synchronized</code> method — that's
+  lock contention on an overly coarse-grained critical section, serializing work that didn't need
+  to be serialized.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">RequestCounter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unrelatedCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kd">synchronized</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">recordRequest</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">endpoint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// the whole method is one lock</span>
+<span class="w">        </span><span class="n">total</span><span class="o">++</span><span class="p">;</span>
+<span class="w">        </span><span class="n">unrelatedCache</span><span class="p">.</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">loadMetadata</span><span class="p">(</span><span class="n">k</span><span class="p">));</span><span class="w"> </span><span class="c1">// slow, unrelated work</span>
+<span class="w">    </span><span class="p">}</span><span class="w">                                                                   </span><span class="c1">// serialized behind</span>
+<span class="p">}</span><span class="w">                                                                       </span><span class="c1">// the same monitor</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Narrow the critical section to only the actually-shared mutable state (don't
+  synchronize the whole method if only a counter update needs protecting), switch to a
+  finer-grained or lock-free structure — here, an <code>AtomicLong</code> for <code>total</code> and a
+  <code>ConcurrentHashMap</code> for the cache removes the shared lock entirely:
+  <div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">RequestCounter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AtomicLong</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AtomicLong</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">unrelatedCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ConcurrentHashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">recordRequest</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">endpoint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">total</span><span class="p">.</span><span class="na">incrementAndGet</span><span class="p">();</span>
+<span class="w">        </span><span class="n">unrelatedCache</span><span class="p">.</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">loadMetadata</span><span class="p">(</span><span class="n">k</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+  If the contended resource is genuinely a single shared sequential dependency, that's a real
+  architectural bottleneck to redesign around (e.g. partitioning the workload so different
+  requests don't contend on the same lock at all).</li>
+<li><strong>Prevention:</strong> Keep <code>synchronized</code> blocks as small as possible by default, and load-test new
+  shared-state code under realistic concurrency before it ships — this failure mode often doesn't
+  show up until traffic reaches production scale.</li>
+</ul>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<ul>
+<li><strong><code>HashMap</code> collision chain</strong> → tree once a bucket has &gt;8 entries and table ≥64 buckets, un-trees back below 6 entries; bad <code>hashCode()</code> degrades O(1) toward O(log n) — but a broken <code>equals()</code>/<code>hashCode()</code> contract silently <em>duplicates</em> keys, which is worse than slow.</li>
+<li><strong><code>ConcurrentModificationException</code></strong> → fail-fast iterator + <code>modCount</code>; fix with <code>Iterator.remove()</code>/<code>removeIf</code>, not manual remove-during-iterate or an index-based workaround.</li>
+<li><strong>Singleton, ranked:</strong> <code>enum</code> (best — also blocks reflection/deserialization attacks) ≈ Bill Pugh static holder (best when it can't be an enum) &gt; double-checked locking with <code>volatile</code> &gt; synchronized accessor &gt; eager <code>static final</code>.</li>
+<li><strong><code>synchronized</code></strong> = mutual exclusion + a happens-before edge (visibility of everything before the lock release). <strong><code>volatile</code></strong> = visibility only, no atomicity for compound ops like <code>i++</code>.</li>
+<li><strong>GC roots</strong>: stack locals, static fields, JNI refs — reachability, not reference counting; cycles aren't leaks.</li>
+<li><strong>Virtual threads</strong> = cheap, JVM-managed, unmount on blocking I/O — but <code>synchronized</code> around I/O pins the carrier thread, and a <code>ThreadLocal</code> habit that was harmless at platform-thread scale isn't at virtual-thread scale.</li>
+<li><strong>Common pool trap</strong>: <code>parallelStream()</code> and default-async <code>CompletableFuture</code> share one JVM-wide <code>ForkJoinPool.commonPool()</code> — a blocking call in either can starve unrelated code elsewhere in the process.</li>
+<li><strong><code>thenCompose</code> vs <code>thenApply</code></strong>: use <code>thenCompose</code> when the next step itself returns a <code>CompletableFuture</code>, or you get a nested future by mistake.</li>
+<li><strong><code>Integer</code> cache</strong>: -128..127 is <em>specified</em>, not a coincidence — <code>==</code> "works" by contract in that range, breaks (also by contract) outside it; always use <code>.equals()</code> or unbox.</li>
+<li><strong>try-with-resources</strong> closes in reverse order; try-block exception wins, <code>close()</code> exception is attached as suppressed — a hand-written <code>finally</code> block often loses one of the two silently.</li>
+<li><strong>Checked exceptions</strong> = compiler-enforced recoverable conditions; <strong>unchecked</strong> = programming errors. <code>catch (Exception e) {}</code> is the anti-pattern both designs are trying to prevent.</li>
+<li><strong>Type erasure</strong> breaks: overload-by-generic-parameter, generic array creation, <code>instanceof ParameterizedType</code> — the compiler patches polymorphism around it with synthetic bridge methods.</li>
+<li><strong>Sealed + switch pattern matching</strong> = compiler-verified exhaustiveness — but adding a defensive <code>default</code> branch throws that guarantee away.</li>
+<li><strong>Leak despite GC</strong> = unintended reachability: static collections, un-removed listeners, uncleared <code>ThreadLocal</code> on pooled threads (worse at virtual-thread scale).</li>
+<li><strong><code>StackOverflowError</code></strong> = stack region, unbounded recursion. <strong><code>OutOfMemoryError</code></strong> = heap/metaspace/native-thread region — read the message after the colon; raising <code>-Xmx</code>/<code>-Xss</code> delays, doesn't fix, a genuinely unbounded algorithm.</li>
+<li><strong>Collectors:</strong> G1 = safe default, tunable pause goal. ZGC/Shenandoah = concurrent, sub-ms pauses flat across heap size, some CPU/throughput cost — pick by the service's actual latency SLO, not by reputation.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

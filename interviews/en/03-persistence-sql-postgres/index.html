@@ -1,0 +1,2992 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/en/03-persistence-sql-postgres/">
+      
+      
+        <link rel="prev" href="../02-spring-architecture/">
+      
+      
+        <link rel="next" href="../04-messaging-rabbitmq-kafka/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Persistence & SQL - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#persistence-sql" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Persistence & SQL
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-when-would-you-choose-jpahibernate-plain-jdbc-or-mybatis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. When would you choose JPA/Hibernate, plain JDBC, or MyBatis?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-what-is-an-orm-and-what-problem-does-it-actually-solve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What is an ORM, and what problem does it actually solve?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-whats-the-difference-between-a-primary-key-a-unique-constraint-and-an-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. What's the difference between a primary key, a unique constraint, and an index?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-walk-through-normalizing-a-table-from-1nf-to-3nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Walk through normalizing a table from 1NF to 3NF.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-what-do-the-acid-properties-actually-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. What do the ACID properties actually guarantee?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q6-what-is-the-logical-execution-order-of-a-sql-querys-clauses-and-why-cant-you-filter-on-a-select-alias-in-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What is the logical execution order of a SQL query's clauses — and why can't you filter on a SELECT alias in WHERE?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q7-why-can-you-filter-on-an-aggregate-function-in-having-but-not-in-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. Why can you filter on an aggregate function in HAVING but not in WHERE?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q8-whats-the-n1-query-problem-and-name-two-ways-to-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What's the N+1 query problem, and name two ways to fix it.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q9-explain-optimistic-vs-pessimistic-locking-in-terms-of-actual-contention-not-just-the-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Explain optimistic vs. pessimistic locking in terms of actual contention, not just the definitions.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q10-name-the-four-hibernate-entity-states-with-a-usage-example-for-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Name the four Hibernate entity states, with a usage example for each.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q11-how-does-mybatiss-approach-to-persistence-differ-from-jpahibernates-and-when-is-that-difference-the-deciding-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q12-how-do-you-configure-and-safely-route-to-multiple-data-sources-in-one-spring-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. How do you configure and safely route to multiple data sources in one Spring application?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q13-what-index-types-does-postgresql-offer-beyond-the-default-b-tree-and-when-do-you-reach-for-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. What index types does PostgreSQL offer beyond the default B-tree, and when do you reach for each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q14-how-do-you-read-explain-analyze-output-to-diagnose-a-slow-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. How do you read EXPLAIN ANALYZE output to diagnose a slow query?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q15-name-the-transaction-isolation-levels-and-the-anomalies-each-one-prevents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. Name the transaction isolation levels and the anomalies each one prevents.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q16-how-do-you-size-a-hikaricp-connection-pool-and-whats-the-common-sizing-mistake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. How do you size a HikariCP connection pool, and what's the common sizing mistake?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q17-whats-the-safe-process-for-a-schema-migration-in-a-production-database-and-what-tools-manage-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. What's the safe process for a schema migration in a production database, and what tools manage this?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q18-why-does-column-order-matter-in-a-composite-multi-column-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Why does column order matter in a composite (multi-column) index?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q19-when-should-a-column-be-jsonb-versus-a-properly-normalized-set-of-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. When should a column be JSONB versus a properly normalized set of tables?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q20-why-are-orm-generated-insertsupdates-often-slow-in-bulk-and-how-do-you-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q21-what-breaks-when-you-naively-add-a-read-replica-for-scaling-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. What breaks when you naively add a read replica for scaling reads?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q22-soft-deletes-vs-hard-deletes-whats-the-actual-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. Soft deletes vs. hard deletes — what's the actual trade-off?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q23-design-the-schema-and-indexing-strategy-for-a-high-write-append-heavy-feedevent-table-expected-to-reach-billions-of-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q24-how-do-you-safely-add-a-not-null-column-to-a-50-million-row-table-with-zero-downtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q24. How do you safely add a NOT NULL column to a 50-million-row table with zero downtime?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q25-when-do-you-deliberately-denormalize-and-how-do-you-keep-the-denormalized-copy-consistent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q25. When do you deliberately denormalize, and how do you keep the denormalized copy consistent?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-a-query-that-used-to-be-fast-has-become-steadily-slower-as-the-table-has-grown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. A query that used to be fast has become steadily slower as the table has grown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-an-apm-tool-flags-dozens-of-near-identical-queries-firing-for-a-single-page-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. An APM tool flags dozens of near-identical queries firing for a single page load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-two-concurrent-transactions-deadlock-and-one-is-aborted-by-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Two concurrent transactions deadlock, and one is aborted by the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4-requests-fail-with-the-databases-own-too-many-connections-error-independent-of-the-application-level-pool-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. Requests fail with the database's own "too many connections" error, independent of the application-level pool size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5-a-schema-migration-locks-a-production-table-and-causes-a-brief-outage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A schema migration locks a production table and causes a brief outage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6-a-user-submits-a-form-is-redirected-to-a-confirmation-page-and-sees-their-submission-is-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. A user submits a form, is redirected to a confirmation page, and sees their submission is missing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-two-near-simultaneous-requests-both-create-a-row-for-what-should-be-a-unique-entity-resulting-in-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Two near-simultaneous requests both create a row for what should be a unique entity, resulting in duplicates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8-select-count-on-a-large-table-is-unexpectedly-slow-and-shows-up-as-a-hot-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. SELECT COUNT(*) on a large table is unexpectedly slow and shows up as a hot query
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9-optimistic-locking-failures-spike-sharply-during-a-specific-high-traffic-period" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9. Optimistic-locking failures spike sharply during a specific high-traffic period
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s10-after-an-application-crash-mid-operation-the-database-is-left-in-an-inconsistent-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S10. After an application crash mid-operation, the database is left in an inconsistent state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s11-queries-filtering-on-a-jsonb-column-get-slower-as-the-table-grows-despite-the-column-being-indexed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S11. Queries filtering on a JSONB column get slower as the table grows, despite the column being indexed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s12-a-nightly-batch-job-that-updates-millions-of-rows-one-at-a-time-starts-timing-out-or-overwhelming-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S12. A nightly batch job that updates millions of rows one at a time starts timing out or overwhelming the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s13-a-report-occasionally-shows-numbers-that-dont-add-up-only-under-concurrent-write-activity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S13. A report occasionally shows numbers that don't add up, only under concurrent write activity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s14-table-and-index-sizes-keep-growing-even-though-the-row-count-is-roughly-stable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S14. Table and index sizes keep growing even though the row count is roughly stable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s15-deleting-one-row-unexpectedly-deletes-a-large-number-of-related-rows-across-several-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S15. Deleting one row unexpectedly deletes a large number of related rows across several tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s16-immediately-after-a-deployment-that-includes-a-schema-migration-the-application-starts-throwing-errors-about-a-missing-or-unexpected-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S16. Immediately after a deployment that includes a schema migration, the application starts throwing errors about a missing or unexpected column
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-system-design-leadership/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design & Leadership
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code & AI-assisted Dev
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q1-when-would-you-choose-jpahibernate-plain-jdbc-or-mybatis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. When would you choose JPA/Hibernate, plain JDBC, or MyBatis?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q2-what-is-an-orm-and-what-problem-does-it-actually-solve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What is an ORM, and what problem does it actually solve?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q3-whats-the-difference-between-a-primary-key-a-unique-constraint-and-an-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. What's the difference between a primary key, a unique constraint, and an index?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q4-walk-through-normalizing-a-table-from-1nf-to-3nf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Walk through normalizing a table from 1NF to 3NF.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q5-what-do-the-acid-properties-actually-guarantee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. What do the ACID properties actually guarantee?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q6-what-is-the-logical-execution-order-of-a-sql-querys-clauses-and-why-cant-you-filter-on-a-select-alias-in-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What is the logical execution order of a SQL query's clauses — and why can't you filter on a SELECT alias in WHERE?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q7-why-can-you-filter-on-an-aggregate-function-in-having-but-not-in-where" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. Why can you filter on an aggregate function in HAVING but not in WHERE?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q8-whats-the-n1-query-problem-and-name-two-ways-to-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What's the N+1 query problem, and name two ways to fix it.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q9-explain-optimistic-vs-pessimistic-locking-in-terms-of-actual-contention-not-just-the-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Explain optimistic vs. pessimistic locking in terms of actual contention, not just the definitions.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q10-name-the-four-hibernate-entity-states-with-a-usage-example-for-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Name the four Hibernate entity states, with a usage example for each.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q11-how-does-mybatiss-approach-to-persistence-differ-from-jpahibernates-and-when-is-that-difference-the-deciding-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q12-how-do-you-configure-and-safely-route-to-multiple-data-sources-in-one-spring-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. How do you configure and safely route to multiple data sources in one Spring application?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q13-what-index-types-does-postgresql-offer-beyond-the-default-b-tree-and-when-do-you-reach-for-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. What index types does PostgreSQL offer beyond the default B-tree, and when do you reach for each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q14-how-do-you-read-explain-analyze-output-to-diagnose-a-slow-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. How do you read EXPLAIN ANALYZE output to diagnose a slow query?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q15-name-the-transaction-isolation-levels-and-the-anomalies-each-one-prevents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. Name the transaction isolation levels and the anomalies each one prevents.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q16-how-do-you-size-a-hikaricp-connection-pool-and-whats-the-common-sizing-mistake" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. How do you size a HikariCP connection pool, and what's the common sizing mistake?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q17-whats-the-safe-process-for-a-schema-migration-in-a-production-database-and-what-tools-manage-this" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. What's the safe process for a schema migration in a production database, and what tools manage this?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q18-why-does-column-order-matter-in-a-composite-multi-column-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Why does column order matter in a composite (multi-column) index?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q19-when-should-a-column-be-jsonb-versus-a-properly-normalized-set-of-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. When should a column be JSONB versus a properly normalized set of tables?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q20-why-are-orm-generated-insertsupdates-often-slow-in-bulk-and-how-do-you-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q21-what-breaks-when-you-naively-add-a-read-replica-for-scaling-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. What breaks when you naively add a read replica for scaling reads?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q22-soft-deletes-vs-hard-deletes-whats-the-actual-trade-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. Soft deletes vs. hard deletes — what's the actual trade-off?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#q23-design-the-schema-and-indexing-strategy-for-a-high-write-append-heavy-feedevent-table-expected-to-reach-billions-of-rows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q24-how-do-you-safely-add-a-not-null-column-to-a-50-million-row-table-with-zero-downtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q24. How do you safely add a NOT NULL column to a 50-million-row table with zero downtime?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#q25-when-do-you-deliberately-denormalize-and-how-do-you-keep-the-denormalized-copy-consistent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q25. When do you deliberately denormalize, and how do you keep the denormalized copy consistent?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s1-a-query-that-used-to-be-fast-has-become-steadily-slower-as-the-table-has-grown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. A query that used to be fast has become steadily slower as the table has grown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s2-an-apm-tool-flags-dozens-of-near-identical-queries-firing-for-a-single-page-load" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. An APM tool flags dozens of near-identical queries firing for a single page load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s3-two-concurrent-transactions-deadlock-and-one-is-aborted-by-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Two concurrent transactions deadlock, and one is aborted by the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s4-requests-fail-with-the-databases-own-too-many-connections-error-independent-of-the-application-level-pool-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. Requests fail with the database's own "too many connections" error, independent of the application-level pool size
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s5-a-schema-migration-locks-a-production-table-and-causes-a-brief-outage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A schema migration locks a production table and causes a brief outage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s6-a-user-submits-a-form-is-redirected-to-a-confirmation-page-and-sees-their-submission-is-missing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. A user submits a form, is redirected to a confirmation page, and sees their submission is missing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s7-two-near-simultaneous-requests-both-create-a-row-for-what-should-be-a-unique-entity-resulting-in-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Two near-simultaneous requests both create a row for what should be a unique entity, resulting in duplicates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s8-select-count-on-a-large-table-is-unexpectedly-slow-and-shows-up-as-a-hot-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. SELECT COUNT(*) on a large table is unexpectedly slow and shows up as a hot query
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s9-optimistic-locking-failures-spike-sharply-during-a-specific-high-traffic-period" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S9. Optimistic-locking failures spike sharply during a specific high-traffic period
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s10-after-an-application-crash-mid-operation-the-database-is-left-in-an-inconsistent-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S10. After an application crash mid-operation, the database is left in an inconsistent state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s11-queries-filtering-on-a-jsonb-column-get-slower-as-the-table-grows-despite-the-column-being-indexed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S11. Queries filtering on a JSONB column get slower as the table grows, despite the column being indexed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s12-a-nightly-batch-job-that-updates-millions-of-rows-one-at-a-time-starts-timing-out-or-overwhelming-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S12. A nightly batch job that updates millions of rows one at a time starts timing out or overwhelming the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s13-a-report-occasionally-shows-numbers-that-dont-add-up-only-under-concurrent-write-activity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S13. A report occasionally shows numbers that don't add up, only under concurrent write activity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s14-table-and-index-sizes-keep-growing-even-though-the-row-count-is-roughly-stable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S14. Table and index sizes keep growing even though the row count is roughly stable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s15-deleting-one-row-unexpectedly-deletes-a-large-number-of-related-rows-across-several-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S15. Deleting one row unexpectedly deletes a large number of related rows across several tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#s16-immediately-after-a-deployment-that-includes-a-schema-migration-the-application-starts-throwing-errors-about-a-missing-or-unexpected-column" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S16. Immediately after a deployment that includes a schema migration, the application starts throwing errors about a missing or unexpected column
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="persistence-sql">Persistence &amp; SQL</h1>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h3 id="q1-when-would-you-choose-jpahibernate-plain-jdbc-or-mybatis">Q1. When would you choose JPA/Hibernate, plain JDBC, or MyBatis?</h3>
+<p><strong>Answer:</strong> JPA/Hibernate is the default for typical CRUD-heavy applications: you get object-relational
+mapping, a repository abstraction, derived query methods, and don't hand-write SQL for common
+cases. Plain JDBC (via <code>JdbcTemplate</code>) is lower-level but avoids ORM machinery entirely — useful
+for simple, high-performance paths or when the ORM's generated SQL is the problem, not the
+solution. MyBatis sits between the two: you write the SQL yourself (full control over the exact
+query, easy to tune) but MyBatis handles parameter binding and mapping the result set back to
+objects — it's the common choice when queries are complex, performance-critical, or need to use
+database-specific features the ORM abstracts away.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// JPA/Hibernate: derived query, no SQL written at all.</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">OrderRepository</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">JpaRepository</span><span class="o">&lt;</span><span class="n">Order</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findByCustomerIdAndStatus</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">customerId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Plain JDBC via JdbcTemplate: full control, minimal abstraction.</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">query</span><span class="p">(</span>
+<span class="w">    </span><span class="s">"select * from orders where customer_id = ? and status = ?"</span><span class="p">,</span>
+<span class="w">    </span><span class="p">(</span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">rowNum</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">mapOrder</span><span class="p">(</span><span class="n">rs</span><span class="p">),</span><span class="w"> </span><span class="n">customerId</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="c1">// MyBatis: SQL you write, mapping MyBatis handles.</span>
+<span class="nd">@Select</span><span class="p">(</span><span class="s">"select * from orders where customer_id = #{customerId} and status = #{status}"</span><span class="p">)</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findByCustomerAndStatus</span><span class="p">(</span><span class="nd">@Param</span><span class="p">(</span><span class="s">"customerId"</span><span class="p">)</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">customerId</span><span class="p">,</span><span class="w"> </span><span class="nd">@Param</span><span class="p">(</span><span class="s">"status"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "always use JPA, it's the standard" skips the case that actually shows up in
+practice — a reporting query with a window function, a database-specific hint, or a hand-tuned
+join that Hibernate would never generate on its own. Knowing when to <em>not</em> reach for the ORM is
+part of the answer, not a concession.</p>
+<h3 id="q2-what-is-an-orm-and-what-problem-does-it-actually-solve">Q2. What is an ORM, and what problem does it actually solve?</h3>
+<p><strong>Answer:</strong> An ORM (Object-Relational Mapper) bridges the "impedance mismatch" between the relational model
+(tables, rows, foreign keys) and the object model (classes, references, inheritance) — mapping
+rows to objects, foreign keys to object references/collections, and translating object-graph
+navigation into SQL joins or additional queries. It solves the tedium and error-proneness of
+hand-writing that mapping code for every entity, at the cost of sometimes generating SQL that's
+less efficient than a hand-written query for a specific case (see the N+1 problem, Q8).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@Entity</span>
+<span class="kd">class</span> <span class="nc">Order</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Id</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@ManyToOne</span><span class="w"> </span><span class="n">Customer</span><span class="w"> </span><span class="n">customer</span><span class="p">;</span><span class="w">       </span><span class="c1">// foreign key -&gt; object reference</span>
+<span class="w">    </span><span class="nd">@OneToMany</span><span class="p">(</span><span class="n">mappedBy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"order"</span><span class="p">)</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">LineItem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">items</span><span class="p">;</span><span class="w"> </span><span class="c1">// join -&gt; collection navigation</span>
+<span class="p">}</span>
+
+<span class="n">order</span><span class="p">.</span><span class="na">getCustomer</span><span class="p">().</span><span class="na">getName</span><span class="p">();</span><span class="w">  </span><span class="c1">// looks like a field access...</span>
+<span class="n">order</span><span class="p">.</span><span class="na">getItems</span><span class="p">().</span><span class="na">size</span><span class="p">();</span><span class="w">        </span><span class="c1">// ...but each of these can silently trigger its own SQL query</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating the ORM as "no SQL knowledge required" is the surface-level answer —
+the abstraction is real, but it leaks exactly where performance matters, and the two lines above
+are precisely where the N+1 problem (Q8) is born.</p>
+<h3 id="q3-whats-the-difference-between-a-primary-key-a-unique-constraint-and-an-index">Q3. What's the difference between a primary key, a unique constraint, and an index?</h3>
+<p><strong>Answer:</strong> A primary key uniquely identifies each row, is implicitly <code>NOT NULL</code>, and a table has at most
+one; it also implicitly creates an index to enforce and speed up that uniqueness. A unique
+constraint enforces uniqueness on one or more columns but allows <code>NULL</code> (and typically allows
+multiple <code>NULL</code>s, since <code>NULL</code> isn't considered equal to another <code>NULL</code>) — a table can have
+several. An index is purely a data structure for fast lookup on a column (or columns) and
+doesn't enforce anything by itself; primary keys and unique constraints happen to create indexes
+as a side effect of enforcing their constraint, but you can also create an index with no
+uniqueness constraint at all, purely for query speed.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w">               </span><span class="c1">-- unique + NOT NULL, index created automatically</span>
+<span class="w">    </span><span class="n">email</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w"> </span><span class="k">unique</span><span class="p">,</span><span class="w">           </span><span class="c1">-- unique, but NULL allowed (and more than one NULL)</span>
+<span class="w">    </span><span class="n">last_login</span><span class="w"> </span><span class="k">timestamp</span>
+<span class="p">);</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_users_last_login</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">users</span><span class="p">(</span><span class="n">last_login</span><span class="p">);</span><span class="w"> </span><span class="c1">-- pure lookup speed, no constraint at all</span>
+
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">null</span><span class="p">);</span><span class="w"> </span><span class="c1">-- ok</span>
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="k">null</span><span class="p">);</span><span class="w"> </span><span class="c1">-- also ok — two NULLs don't violate uniqueness</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> assuming a unique constraint behaves exactly like a primary key including
+<code>NULL</code> handling — if the business rule actually needs "at most one row with a <em>missing</em> email"
+to be enforced too, a plain unique constraint won't do it; that needs an explicit condition or a
+different modeling choice, not blind reliance on the constraint's default <code>NULL</code> semantics.</p>
+<h3 id="q4-walk-through-normalizing-a-table-from-1nf-to-3nf">Q4. Walk through normalizing a table from 1NF to 3NF.</h3>
+<p><strong>Answer:</strong> Given a flat <code>Orders</code> table with columns <code>order_id, customer_name, customer_email, product_name,
+product_price, quantity</code>: <strong>1NF</strong> requires atomic values and no repeating groups — if a column
+stored a comma-separated list of products per order, splitting it into one row per product line
+item is the 1NF step. <strong>2NF</strong> requires every non-key column to depend on the <em>whole</em> primary
+key, not part of it — if the key is <code>(order_id, product_id)</code> but <code>customer_name</code> only depends on
+<code>order_id</code>, that's a partial dependency; move customer data to its own <code>Customers</code> table keyed
+by <code>customer_id</code>. <strong>3NF</strong> requires removing transitive dependencies — if <code>product_price</code> in the
+order line depends on <code>product_id</code>, which depends on the order line's key only transitively
+through the product, move <code>product_name</code>/<code>product_price</code> to their own <code>Products</code> table too. The
+end state: <code>Orders</code>, <code>Customers</code>, <code>Products</code>, and an <code>OrderItems</code> junction table, each column
+depending only on its own table's full key.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Before (1NF violation): products stored as a repeating group in one column.</span>
+<span class="c1">-- order_id | customer_name | customer_email | products</span>
+<span class="c1">-- 1        | Ann           | ann@x.com      | "Widget,Gadget"</span>
+
+<span class="c1">-- After 3NF:</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="nb">text</span><span class="p">);</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">products</span><span class="w">  </span><span class="p">(</span><span class="n">product_id</span><span class="w">  </span><span class="nb">bigint</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="nb">numeric</span><span class="p">);</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">orders</span><span class="w">    </span><span class="p">(</span><span class="n">order_id</span><span class="w">    </span><span class="nb">bigint</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">customers</span><span class="p">);</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">order_items</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">order_id</span><span class="w">   </span><span class="nb">bigint</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">orders</span><span class="p">,</span>
+<span class="w">    </span><span class="n">product_id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">products</span><span class="p">,</span>
+<span class="w">    </span><span class="n">quantity</span><span class="w">   </span><span class="nb">int</span><span class="p">,</span>
+<span class="w">    </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">order_id</span><span class="p">,</span><span class="w"> </span><span class="n">product_id</span><span class="p">)</span>
+<span class="p">);</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "more tables is always better" is the wrong takeaway — normalization exists to
+remove update/insert/delete anomalies, not as a goal in itself; a read-heavy path that pays for a
+four-table join on every request because of textbook normalization, when the data barely
+changes, is exactly the case where deliberate denormalization (Q25) is the more senior call.</p>
+<h3 id="q5-what-do-the-acid-properties-actually-guarantee">Q5. What do the ACID properties actually guarantee?</h3>
+<p><strong>Answer:</strong> <strong>Atomicity</strong>: a transaction's operations all succeed or all roll back together, no partial
+application. <strong>Consistency</strong>: a transaction moves the database from one valid state to another,
+respecting constraints (foreign keys, unique constraints, check constraints). <strong>Isolation</strong>:
+concurrent transactions don't see each other's uncommitted intermediate state, to a degree
+controlled by the isolation level (Q15). <strong>Durability</strong>: once committed, a transaction's changes
+survive a crash — typically via a write-ahead log flushed before the commit is acknowledged.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">begin</span><span class="p">;</span>
+<span class="k">update</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="k">update</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="c1">-- If the process crashes here, atomicity guarantees neither update survives on restart.</span>
+<span class="k">commit</span><span class="p">;</span><span class="w"> </span><span class="c1">-- durability guarantees both updates survive any crash from this point on.</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the "C" is the one candidates misstate — it doesn't mean "my business logic
+is correct," it means the database enforces the constraints it was explicitly told about
+(foreign keys, checks, uniqueness). A transaction can be fully ACID-compliant and still leave
+data in a state that violates an invariant the schema never declared — that gap is an
+application bug, not something ACID was ever promising to catch.</p>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h3 id="q6-what-is-the-logical-execution-order-of-a-sql-querys-clauses-and-why-cant-you-filter-on-a-select-alias-in-where">Q6. What is the logical execution order of a SQL query's clauses — and why can't you filter on a <code>SELECT</code> alias in <code>WHERE</code>?</h3>
+<p><strong>Answer:</strong> <code>FROM</code>/<code>JOIN</code> → <code>WHERE</code> → <code>GROUP BY</code> → <code>HAVING</code> → <code>SELECT</code> → <code>DISTINCT</code> → <code>ORDER BY</code> →
+<code>LIMIT</code>/<code>OFFSET</code>. This is the logical processing order the engine reasons about, not the order
+you physically type the clauses in. The trap: trying to filter on a column alias defined in
+<code>SELECT</code> from within <code>WHERE</code> fails in most databases, precisely because <code>WHERE</code> is logically
+evaluated <em>before</em> <code>SELECT</code> — the alias doesn't exist yet at that point in logical execution.
+<code>ORDER BY</code>, by contrast, runs after <code>SELECT</code> and so <em>can</em> reference a <code>SELECT</code> alias.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">select</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">quantity</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">line_total</span>
+<span class="k">from</span><span class="w"> </span><span class="n">order_items</span>
+<span class="k">where</span><span class="w"> </span><span class="n">line_total</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w">   </span><span class="c1">-- ERROR: column "line_total" does not exist — WHERE runs before SELECT</span>
+
+<span class="k">select</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">quantity</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">line_total</span>
+<span class="k">from</span><span class="w"> </span><span class="n">order_items</span>
+<span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">line_total</span><span class="w"> </span><span class="k">desc</span><span class="p">;</span><span class="w"> </span><span class="c1">-- fine — ORDER BY runs after SELECT, the alias already exists</span>
+
+<span class="k">select</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">quantity</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">line_total</span>
+<span class="k">from</span><span class="w"> </span><span class="n">order_items</span>
+<span class="k">where</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">quantity</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="c1">-- the actual fix: repeat the expression, don't rely on the alias</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates who've memorized "you can't use a <code>SELECT</code> alias in <code>WHERE</code>" as a
+rule rarely know <em>why</em> — and the same underlying order is what makes <code>HAVING</code> (Q7) work where
+<code>WHERE</code> can't, and why a window function can't appear in <code>WHERE</code> either. It's one mental model,
+not three unrelated syntax rules to memorize separately.</p>
+<h3 id="q7-why-can-you-filter-on-an-aggregate-function-in-having-but-not-in-where">Q7. Why can you filter on an aggregate function in <code>HAVING</code> but not in <code>WHERE</code>?</h3>
+<p><strong>Answer:</strong> Because <code>WHERE</code> is evaluated before grouping/aggregation happens (per Q6's order), so aggregate
+values like <code>COUNT(*)</code> or <code>SUM(x)</code> don't exist yet at that stage of processing — there's nothing
+to filter on. <code>HAVING</code> runs after <code>GROUP BY</code>, once aggregates have actually been computed per
+group, so it's the correct place to filter on them (<code>HAVING COUNT(*) &gt; 5</code>). <code>WHERE</code> still filters
+individual rows before grouping; <code>HAVING</code> filters groups after grouping — using the wrong one
+either fails outright or, worse, silently computes something different from what was intended.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">select</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">order_count</span>
+<span class="k">from</span><span class="w"> </span><span class="n">orders</span>
+<span class="k">where</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">5</span><span class="w">   </span><span class="c1">-- ERROR: aggregate functions are not allowed in WHERE</span>
+<span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">customer_id</span><span class="p">;</span>
+
+<span class="k">select</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">order_count</span>
+<span class="k">from</span><span class="w"> </span><span class="n">orders</span>
+<span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">customer_id</span>
+<span class="k">having</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="c1">-- correct: filters groups, evaluated after the aggregate is computed</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the failure isn't always a clean syntax error a candidate can just fix and
+move on — mixing up which clause narrows <em>rows</em> versus which narrows <em>groups</em> can produce a query
+that runs and returns a plausible-looking but silently wrong number, which is a much worse
+production bug than one that fails loudly at query time.</p>
+<h3 id="q8-whats-the-n1-query-problem-and-name-two-ways-to-fix-it">Q8. What's the N+1 query problem, and name two ways to fix it.</h3>
+<p><strong>Answer:</strong> Fetching a list of N parent entities, then lazily triggering one additional query <em>per</em> parent
+to fetch an associated collection (e.g. loading 50 orders, then triggering 50 separate queries
+to fetch each order's line items) — 1 query becomes N+1, and it scales linearly with result set
+size in the worst possible way. Fixes: (1) a JOIN FETCH in JPQL (or an explicit join in MyBatis/
+JDBC) to pull the association in the same query as the parent; (2) <code>@EntityGraph</code> in Spring Data
+JPA to declare which associations to eagerly fetch for a specific query method, without changing
+the entity's default fetch type globally. Batch fetching (<code>@BatchSize</code> / Hibernate's default
+batch fetch config) is a third, coarser fix — it doesn't eliminate the extra queries but groups
+them into far fewer round trips.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// N+1: one query for orders, then one more query per order for its items.</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">findAll</span><span class="p">();</span>
+<span class="n">orders</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">getItems</span><span class="p">().</span><span class="na">size</span><span class="p">());</span><span class="w"> </span><span class="c1">// triggers a lazy-load query, once per order</span>
+
+<span class="c1">// Fix 1: JOIN FETCH pulls items in the same query as the parent.</span>
+<span class="nd">@Query</span><span class="p">(</span><span class="s">"select o from Order o join fetch o.items"</span><span class="p">)</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAllWithItems</span><span class="p">();</span>
+
+<span class="c1">// Fix 2: @EntityGraph scopes the eager fetch to this query method only.</span>
+<span class="nd">@EntityGraph</span><span class="p">(</span><span class="n">attributePaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"items"</span><span class="p">)</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAll</span><span class="p">();</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the tempting "fix" is flipping the association to <code>FetchType.EAGER</code> on the
+entity itself — that resolves this one query, but now <em>every</em> other query touching that entity
+eagerly pulls the association too, and stacking two eager collections on the same entity produces
+a cartesian-product join that can be far worse than the N+1 it replaced.</p>
+<h3 id="q9-explain-optimistic-vs-pessimistic-locking-in-terms-of-actual-contention-not-just-the-definitions">Q9. Explain optimistic vs. pessimistic locking in terms of actual contention, not just the definitions.</h3>
+<p><strong>Answer:</strong> Pessimistic locking acquires a database-level lock (<code>SELECT ... FOR UPDATE</code>) the moment a row is
+read for update, blocking any other transaction from modifying (sometimes even reading) it until
+the first transaction commits or rolls back — correct under high contention on the same rows,
+but it serializes access and can create lock waits or deadlocks under load. Optimistic locking
+adds a version column (<code>@Version</code>) and checks at commit time whether the row's version still
+matches what was read — if another transaction updated it in between, the commit fails with an
+<code>OptimisticLockException</code> instead of blocking anyone. It scales much better under <em>low</em>
+contention (no locks held at all while the user is "thinking"), but under genuinely high
+contention on the same rows, it just moves the cost from blocking to a high rate of failed
+commits that must be retried — at some contention level, pessimistic locking is actually the
+better throughput choice, not the naively "worse" option.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// Pessimistic: blocks any other transaction from touching this row until commit/rollback.</span>
+<span class="n">Account</span><span class="w"> </span><span class="n">acct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">em</span><span class="p">.</span><span class="na">createQuery</span><span class="p">(</span><span class="s">"select a from Account a where a.id = :id"</span><span class="p">,</span><span class="w"> </span><span class="n">Account</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">setParameter</span><span class="p">(</span><span class="s">"id"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">setLockMode</span><span class="p">(</span><span class="n">LockModeType</span><span class="p">.</span><span class="na">PESSIMISTIC_WRITE</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">getSingleResult</span><span class="p">();</span>
+
+<span class="c1">// Optimistic: no lock held; fails at commit if the version changed underneath it.</span>
+<span class="nd">@Entity</span>
+<span class="kd">class</span> <span class="nc">Account</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Version</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">version</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">balance</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// ... read, mutate, save — on flush, an OptimisticLockException means someone else won the race</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> candidates recite "optimistic is better because it doesn't block" as a
+universal rule — a senior answer names the crossover point: under genuinely high contention on a
+small set of hot rows (see S9), optimistic locking's retry storm can cost more than the blocking
+pessimistic locking would have, and picking one over the other should follow from the actual
+access pattern, not a blanket preference.</p>
+<h3 id="q10-name-the-four-hibernate-entity-states-with-a-usage-example-for-each">Q10. Name the four Hibernate entity states, with a usage example for each.</h3>
+<p><strong>Answer:</strong> <strong>Transient</strong>: a plain <code>new Entity()</code>, not associated with any persistence context and not
+represented in the database — <code>new Order()</code> before <code>save()</code>. <strong>Persistent</strong> (managed): attached
+to an active persistence context; changes to it are automatically tracked and flushed to the DB
+at commit/flush time without an explicit <code>save()</code> call — an entity returned by
+<code>entityManager.find()</code> inside an open session. <strong>Detached</strong>: was persistent, but its persistence
+context has closed (e.g. the transaction ended, or it was explicitly <code>.detach()</code>ed) — its
+identity still maps to a DB row, but changes to it are no longer tracked; re-attaching it via
+<code>merge()</code> is a common source of subtle bugs if the caller doesn't realize a stale detached copy
+is being merged over newer data. <strong>Removed</strong>: marked for deletion within the current persistence
+context via <code>entityManager.remove()</code>, deleted from the DB on flush/commit, but the Java object
+itself still exists in memory until garbage collected.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Order</span><span class="p">();</span><span class="w">          </span><span class="c1">// transient — not tracked, not in the DB</span>
+<span class="n">em</span><span class="p">.</span><span class="na">persist</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w">                  </span><span class="c1">// persistent — now managed, dirty-checked automatically</span>
+<span class="n">order</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="s">"SHIPPED"</span><span class="p">);</span><span class="w">         </span><span class="c1">// no explicit save() needed — flushed at commit</span>
+
+<span class="n">em</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">                         </span><span class="c1">// order is now detached — changes no longer tracked</span>
+<span class="n">order</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="s">"CANCELLED"</span><span class="p">);</span><span class="w">       </span><span class="c1">// silently untracked; nothing happens until merge()</span>
+<span class="n">Order</span><span class="w"> </span><span class="n">merged</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">em</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w">     </span><span class="c1">// re-attaches — but overwrites the DB row with this object's</span>
+<span class="w">                                     </span><span class="c1">// field values, even if the DB row changed since detach</span>
+
+<span class="n">em</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">merged</span><span class="p">);</span><span class="w">                  </span><span class="c1">// removed — deleted on flush/commit, object still exists in JVM</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the state candidates get wrong is <strong>detached</strong> — assuming <code>merge()</code> safely
+"syncs" the object, when it actually overwrites the current DB row with the detached object's
+field values wholesale. If another transaction updated that row after this object was detached,
+<code>merge()</code> silently discards that newer write with no conflict detection, unless <code>@Version</code> (Q9)
+is also in play to catch it.</p>
+<h3 id="q11-how-does-mybatiss-approach-to-persistence-differ-from-jpahibernates-and-when-is-that-difference-the-deciding-factor">Q11. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor?</h3>
+<p><strong>Answer:</strong> JPA/Hibernate is a full ORM: you declare entity mappings and let Hibernate generate SQL, manage
+a persistence context with dirty-checking, and handle caching/lazy-loading transparently — which
+is powerful but means the actual SQL executed is somewhat indirect and can surprise you (N+1,
+unexpected joins). MyBatis is a SQL mapper, not a full ORM: you write the SQL (or a fairly thin
+XML/annotation-based template of it) explicitly, and MyBatis's job is purely binding parameters
+in and mapping result columns back to objects — there's no persistence context, no automatic
+dirty-checking, no hidden queries. The deciding factor in practice: reach for MyBatis when
+queries are complex, need database-specific tuning, or when a team explicitly wants to see and
+control every SQL statement executed (common in performance-sensitive or legacy-schema
+environments where the ORM's generated SQL would be a liability, not a convenience).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">// JPA: the actual SQL is generated by Hibernate — dirty-checking happens for free.</span>
+<span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">em</span><span class="p">.</span><span class="na">find</span><span class="p">(</span><span class="n">Order</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+<span class="n">order</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="s">"SHIPPED"</span><span class="p">);</span><span class="w"> </span><span class="c1">// no explicit update statement written anywhere — flushed at commit</span>
+
+<span class="c1">// MyBatis: the SQL is explicit and visible; no hidden dirty-checking or session cache.</span>
+<span class="nd">@Update</span><span class="p">(</span><span class="s">"update orders set status = #{status} where id = #{id}"</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">updateStatus</span><span class="p">(</span><span class="nd">@Param</span><span class="p">(</span><span class="s">"id"</span><span class="p">)</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="nd">@Param</span><span class="p">(</span><span class="s">"status"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "MyBatis has no ORM overhead so it's always faster" oversimplifies the
+comparison — much of what a JPA persistence context buys you for free (dirty-checking, avoiding a
+duplicate query for an entity already loaded in this transaction) is work a MyBatis-based
+codebase has to hand-roll if the use case genuinely needs it. The right choice is about how much
+control over the exact SQL the team needs, not a blanket performance verdict.</p>
+<h3 id="q12-how-do-you-configure-and-safely-route-to-multiple-data-sources-in-one-spring-application">Q12. How do you configure and safely route to multiple data sources in one Spring application?</h3>
+<p><strong>Answer:</strong> Define each <code>DataSource</code> as its own <code>@Bean</code>, mark the default one <code>@Primary</code>, bind each to its
+own configuration prefix, and — critically for correctness, not just wiring — configure separate
+<code>EntityManagerFactory</code>/<code>TransactionManager</code> beans per data source if they're genuinely
+independent databases, since a single <code>@Transactional</code> boundary can't atomically span two
+physically separate databases (no distributed 2-phase-commit by default). The senior trap here is
+assuming <code>@Transactional</code> gives atomicity across both data sources the way it does within one —
+it doesn't, unless a distributed transaction manager (JTA/XA) is explicitly configured, which
+most teams avoid due to its operational cost and instead design around the constraint (e.g. only
+one data source is ever the "source of truth" for a given write).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="nd">@Bean</span><span class="w"> </span><span class="nd">@Primary</span>
+<span class="n">DataSource</span><span class="w"> </span><span class="nf">ordersDataSource</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">DataSourceBuilder</span><span class="p">.</span><span class="na">create</span><span class="p">().</span><span class="na">build</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="nd">@Bean</span>
+<span class="n">DataSource</span><span class="w"> </span><span class="nf">billingDataSource</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">DataSourceBuilder</span><span class="p">.</span><span class="na">create</span><span class="p">().</span><span class="na">build</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="nd">@Transactional</span><span class="w"> </span><span class="c1">// this boundary only covers ONE of the two data sources' work at a time</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">processOrder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ordersRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w">      </span><span class="c1">// committed against ordersDataSource's transaction manager</span>
+<span class="w">    </span><span class="n">billingRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">invoice</span><span class="p">);</span><span class="w">   </span><span class="c1">// a SEPARATE, independently-committed transaction —</span>
+<span class="w">                                        </span><span class="c1">// if this throws, the order above is not rolled back</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> assuming <code>@Transactional</code> gives cross-database atomicity the same way it
+does within a single data source — without an explicit JTA/XA transaction manager, a failure on
+the second write leaves the first one committed, and no annotation in this code silently fixes
+that; the fix is a design decision (idempotent retries, a saga, or a single source of truth), not
+a missing configuration flag.</p>
+<h3 id="q13-what-index-types-does-postgresql-offer-beyond-the-default-b-tree-and-when-do-you-reach-for-each">Q13. What index types does PostgreSQL offer beyond the default B-tree, and when do you reach for each?</h3>
+<p><strong>Answer:</strong> B-tree (the default) handles equality and range queries (<code>=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>BETWEEN</code>, sorting) and
+covers the large majority of cases. GIN (Generalized Inverted Index) indexes composite/multi-
+valued data — full-text search <code>tsvector</code> columns, array containment (<code>@&gt;</code>), and specifically
+<code>JSONB</code> columns for containment/key-existence queries (<code>jsonb_column @&gt; '{"key": "value"}'</code>),
+which a B-tree can't usefully index. GiST supports geometric/range-overlap queries. A <strong>partial
+index</strong> (<code>CREATE INDEX ... WHERE status = 'active'</code>) indexes only rows matching a condition —
+much smaller and faster than a full index when queries always filter to a small, well-defined
+subset of a large table (e.g. only "active" rows out of a mostly-archived table).</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_orders_created_at</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">created_at</span><span class="p">);</span><span class="w">                 </span><span class="c1">-- B-tree: default</span>
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_products_attrs</span><span class="w">   </span><span class="k">on</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">gin</span><span class="w"> </span><span class="p">(</span><span class="n">attributes</span><span class="p">);</span><span class="w">     </span><span class="c1">-- GIN: JSONB containment</span>
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_bookings_period</span><span class="w">  </span><span class="k">on</span><span class="w"> </span><span class="n">bookings</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">gist</span><span class="w"> </span><span class="p">(</span><span class="n">during</span><span class="p">);</span><span class="w">        </span><span class="c1">-- GiST: range overlap</span>
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_orders_active</span><span class="w">    </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'active'</span><span class="p">;</span><span class="w"> </span><span class="c1">-- partial</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> reaching for a GIN index on every <code>JSONB</code> column "just in case" ignores that
+GIN indexes are notably more expensive to maintain on writes than a B-tree — blanket-applying one
+without checking the actual query pattern trades away write throughput for a lookup speed nobody
+asked for on that column.</p>
+<h3 id="q14-how-do-you-read-explain-analyze-output-to-diagnose-a-slow-query">Q14. How do you read <code>EXPLAIN ANALYZE</code> output to diagnose a slow query?</h3>
+<p><strong>Answer:</strong> <code>EXPLAIN ANALYZE</code> actually runs the query and shows the real execution plan with actual row
+counts and timing per step, nested innermost-first. The first thing to check: <code>Seq Scan</code> (full
+table scan) on a large table where an <code>Index Scan</code> was expected — usually means a missing index,
+a function applied to the indexed column preventing index use (<code>WHERE lower(email) = ...</code>
+without a matching functional index), or the planner's cost estimate genuinely favoring a scan
+(common when selectivity is poor — the filter doesn't actually narrow down many rows). Second:
+compare the planner's estimated row count against the actual row count at each step — a large
+mismatch means outdated table statistics (<code>ANALYZE</code> needs to run) misleading the planner into a
+bad plan choice. Third: look for <code>Nested Loop</code> over a large outer set — often the plan shape
+behind an N+1-like problem at the SQL level itself.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code>Seq Scan on orders  (cost=0.00..48123.00 rows=1 width=64) (actual time=0.02..412.55 rows=980000 loops=1)
+  Filter: (customer_id = 42)
+  Rows Removed by Filter: 19020000
+Planning Time: 0.15 ms
+Execution Time: 415.10 ms
+</code></pre></div>
+A <code>Seq Scan</code> scanning 20 million rows to return 980,000 that match a single <code>customer_id</code>, with
+the planner having estimated only 1 row — that estimate-vs-actual gap points straight at stale
+statistics, and the full scan itself points at a missing index on <code>customer_id</code>.</p>
+<p><strong>Why it's a trap:</strong> <code>EXPLAIN</code> without <code>ANALYZE</code> shows only the planner's <em>estimated</em> cost and row
+counts — it never actually runs the query. Quoting those numbers as if they were real measured
+timings is the giveaway that a candidate hasn't actually run and read a real <code>ANALYZE</code> plan
+against production-scale data.</p>
+<h3 id="q15-name-the-transaction-isolation-levels-and-the-anomalies-each-one-prevents">Q15. Name the transaction isolation levels and the anomalies each one prevents.</h3>
+<p><strong>Answer:</strong> From loosest to strictest: <strong>Read Uncommitted</strong> prevents nothing (dirty reads possible; rarely
+used, PostgreSQL treats it identically to Read Committed). <strong>Read Committed</strong> (PostgreSQL's
+default) prevents dirty reads (never sees another transaction's uncommitted changes) but allows
+non-repeatable reads (re-reading the same row within a transaction can see a different, now-
+committed value) and phantom reads (a repeated range query can return different rows).
+<strong>Repeatable Read</strong> additionally prevents non-repeatable reads by taking a consistent snapshot
+for the whole transaction — in PostgreSQL specifically, this also prevents phantom reads (unlike
+the SQL standard's minimum guarantee), though at the cost of possible serialization failures
+under write conflicts that must be retried. <strong>Serializable</strong> guarantees the outcome is
+equivalent to <em>some</em> serial (one-at-a-time) execution of all concurrent transactions — the
+strongest guarantee, at the highest cost in contention and retry rate.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Session A (Read Committed, PostgreSQL's default)</span>
+<span class="k">begin</span><span class="p">;</span>
+<span class="k">select</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">-- returns 100</span>
+
+<span class="c1">-- Session B, commits concurrently</span>
+<span class="k">update</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span>
+
+<span class="c1">-- back in Session A, same transaction:</span>
+<span class="k">select</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">accounts</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">-- returns 50 — a non-repeatable read</span>
+<span class="k">commit</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> treating "higher isolation is strictly safer" as the rule ignores the
+throughput cost — defaulting every transaction to <code>SERIALIZABLE</code> "to be safe" trades a specific,
+understood anomaly for a much higher rate of serialization failures that now every code path must
+retry, which is often a worse production outcome than the anomaly it was meant to avoid.</p>
+<h3 id="q16-how-do-you-size-a-hikaricp-connection-pool-and-whats-the-common-sizing-mistake">Q16. How do you size a HikariCP connection pool, and what's the common sizing mistake?</h3>
+<p><strong>Answer:</strong> The common mistake is sizing the pool far larger than needed, on the intuition that "more
+connections = more throughput" — in reality, past a certain point (roughly tied to the database
+server's own CPU core count and its ability to context-switch between active queries), adding
+more connections adds contention on the database side and <em>reduces</em> throughput, not increases
+it. HikariCP's own guidance, based on the PostgreSQL wiki's formula, is roughly
+<code>connections = ((core_count * 2) + effective_spindle_count)</code> as a starting point for the
+<em>database server's total</em> connection budget, divided across however many application instances
+share it — not per-instance. The practical rule: start smaller than intuition suggests, load-test
+to find the actual throughput-maximizing pool size, and remember every application instance's
+pool competes for the same database-side connection budget.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># The reflexive "fix" for a timeout complaint — often makes things worse, not better:</span>
+<span class="nt">spring.datasource.hikari.maximum-pool-size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span><span class="w">  </span><span class="c1"># on a DB with 8 cores</span>
+
+<span class="c1"># Right-sized starting point per instance, derived from the DB's actual core count</span>
+<span class="c1"># and divided across the number of instances sharing that database:</span>
+<span class="nt">spring.datasource.hikari.maximum-pool-size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "just raise <code>maximum-pool-size</code>" is the reflexive fix for any
+slow-query-under-load complaint — past the database's actual concurrency sweet spot, adding
+connections adds context-switching and lock contention on the server, making latency <em>worse</em>, not
+better, which is the opposite of what the change was meant to achieve.</p>
+<h3 id="q17-whats-the-safe-process-for-a-schema-migration-in-a-production-database-and-what-tools-manage-this">Q17. What's the safe process for a schema migration in a production database, and what tools manage this?</h3>
+<p><strong>Answer:</strong> Flyway and Liquibase are the standard tools — each migration is a versioned, tracked script
+(SQL or, for Liquibase, also XML/YAML) applied in order and recorded in a migrations-history
+table, so the schema's current state is always derivable and repeatable across environments. The
+safe process for a breaking-shaped change (renaming a column, adding a <code>NOT NULL</code> constraint)
+is to break it into multiple deployable, backward-compatible steps rather than one migration:
+add the new column nullable, deploy application code that writes to both old and new, backfill
+existing rows, deploy code that reads only from the new column, then drop the old column in a
+final migration — at every intermediate step, both the old and new application version can run
+against the current schema, which is what makes a zero-downtime rolling deployment possible.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- V1: additive, safe on a live table with any Postgres version</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">email_normalized</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span>
+
+<span class="c1">-- Application deploy: writes email_normalized on every write, reads still use the old column.</span>
+
+<span class="c1">-- V2: backfill in batches (see Q20/S12), not one giant UPDATE.</span>
+<span class="c1">-- Application deploy: reads switch to email_normalized.</span>
+
+<span class="c1">-- V3, once fully cut over:</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">email</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the "obvious" single migration — add the <code>NOT NULL</code> column directly in one
+step — often runs fine against a small staging database with light load, then locks or fails
+against production simply because production has orders of magnitude more rows and concurrent
+traffic staging never had; the multi-step pattern isn't extra caution, it's the only version that
+scales to production's actual size and concurrency.</p>
+<h3 id="q18-why-does-column-order-matter-in-a-composite-multi-column-index">Q18. Why does column order matter in a composite (multi-column) index?</h3>
+<p><strong>Answer:</strong> A B-tree composite index on <code>(a, b)</code> is physically sorted by <code>a</code> first, then <code>b</code> within each <code>a</code>
+value — so it can efficiently serve a query filtering on <code>a</code> alone, or on <code>a</code> and <code>b</code> together,
+but it's largely useless for a query filtering on <code>b</code> alone (the index has no useful ordering by
+<code>b</code> in isolation, forcing a full scan of the index or the table). The rule of thumb: put the
+column with equality filters and highest selectivity (narrows results the most) first, and
+columns used for range filters or that are frequently queried without the other columns should
+generally come later or get their own separate index — and always check with <code>EXPLAIN</code> rather
+than assuming, since the right order also depends on actual query patterns.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_orders_customer_status</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+
+<span class="c1">-- Uses the index efficiently — filters on the leading column:</span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'PENDING'</span><span class="p">;</span>
+
+<span class="c1">-- Can't use this index efficiently — status is not the leading column:</span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'PENDING'</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "just add a composite index on every column the query filters on" without
+checking column order against the actual query shape produces an index that silently doesn't
+serve the query it was added for — <code>EXPLAIN</code> still shows a <code>Seq Scan</code>, and the index just sits
+there paying its write cost for nothing.</p>
+<h3 id="q19-when-should-a-column-be-jsonb-versus-a-properly-normalized-set-of-tables">Q19. When should a column be <code>JSONB</code> versus a properly normalized set of tables?</h3>
+<p><strong>Answer:</strong> <code>JSONB</code> is appropriate for genuinely semi-structured, sparse, or schema-varying data — a
+"custom attributes" bag on a product that varies wildly by category, or an audit log's payload
+that isn't queried structurally, only stored and occasionally retrieved whole. It's a poor fit
+for data with a stable, well-known structure that's frequently queried, filtered, joined, or
+aggregated by individual fields — at that point, normalized columns are both faster (a proper
+B-tree on a real column beats even a GIN-indexed JSONB key lookup for most access patterns) and
+give you real referential integrity (foreign keys, <code>NOT NULL</code>, <code>CHECK</code> constraints) that JSONB
+can't enforce at the database level. The trap to watch for in review: reaching for JSONB because
+it's convenient during early development, then still having it in a hot, frequently-filtered
+path a year later with a GIN index papering over what should have been a normalized column from
+the start.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Fine: genuinely sparse, schema-varying, rarely filtered structurally.</span>
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">products</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="p">,</span>
+<span class="w">    </span><span class="n">custom_attributes</span><span class="w"> </span><span class="n">jsonb</span><span class="w"> </span><span class="c1">-- varies wildly per category, mostly just stored/retrieved whole</span>
+<span class="p">);</span>
+
+<span class="c1">-- Poor fit: stable structure, filtered/joined constantly — should be real columns instead.</span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">payload</span><span class="w"> </span><span class="o">@&gt;</span><span class="w"> </span><span class="s1">'{"status": "SHIPPED", "region": "EU"}'</span><span class="p">;</span><span class="w"> </span><span class="c1">-- vs:</span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'SHIPPED'</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'EU'</span><span class="p">;</span><span class="w"> </span><span class="c1">-- normalized, indexable, constrained</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> reaching for <code>JSONB</code> because it's convenient during early development, and
+never revisiting that decision once the field becomes a stable, frequently-filtered column, is
+how a GIN index ends up papering over what should have been a normalized column with a real
+foreign key and <code>NOT NULL</code> constraint from the start.</p>
+<h3 id="q20-why-are-orm-generated-insertsupdates-often-slow-in-bulk-and-how-do-you-fix-it">Q20. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it?</h3>
+<p><strong>Answer:</strong> By default, most ORMs issue one <code>INSERT</code>/<code>UPDATE</code> statement per entity, in a loop — for a batch
+of 10,000 rows, that's 10,000 round trips (or 10,000 statements even if pipelined), each paying
+per-statement overhead. Fixes: enable Hibernate's batch settings
+(<code>hibernate.jdbc.batch_size</code>, plus <code>order_inserts</code>/<code>order_updates</code> so same-table statements are
+grouped for the batch to actually apply), which coalesces multiple statements into fewer network
+round trips using JDBC's batch API; or bypass the ORM for genuinely bulk operations and use a
+native multi-row <code>INSERT ... VALUES (...), (...), (...)</code> or Postgres's <code>COPY</code> command, which is
+dramatically faster than even a well-batched ORM insert for large volumes.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1"># Enabling batch_size alone is not enough:</span>
+<span class="na">hibernate.jdbc.batch_size</span><span class="o">=</span><span class="s">50</span>
+<span class="c1"># Without these, interleaved entity types in the persistence context break up the batches:</span>
+<span class="na">hibernate.order_inserts</span><span class="o">=</span><span class="s">true</span>
+<span class="na">hibernate.order_updates</span><span class="o">=</span><span class="s">true</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Fastest path for genuinely bulk loads, bypassing the ORM entirely:</span>
+<span class="k">copy</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="k">stdin</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="p">(</span><span class="n">format</span><span class="w"> </span><span class="n">csv</span><span class="p">);</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> setting <code>hibernate.jdbc.batch_size</code> alone and assuming that's the whole fix —
+without <code>order_inserts</code>/<code>order_updates</code>, Hibernate still won't actually coalesce statements if
+different entity types are interleaved in the persistence context (e.g. saving an <code>Order</code> then a
+<code>Payment</code> then another <code>Order</code>), so the "batched" insert silently reverts to one-at-a-time
+statements without the missing flag.</p>
+<h3 id="q21-what-breaks-when-you-naively-add-a-read-replica-for-scaling-reads">Q21. What breaks when you naively add a read replica for scaling reads?</h3>
+<p><strong>Answer:</strong> The obvious failure mode: <strong>read-after-write inconsistency</strong> — a client writes to the primary,
+then immediately reads from a replica that hasn't received (or applied) that write yet due to
+replication lag, and sees stale data, which is especially jarring for a user who just submitted
+a form and reloads to see their own change missing. This shows up specifically in flows like
+"create a resource, then redirect to its detail page" if the detail read is routed to a lagging
+replica. Fixes: route reads that must be immediately consistent with a just-completed write back
+to the primary (or to the same replica the write's session is pinned to), accept and design
+around eventual consistency for reads that can tolerate it, or monitor replication lag and
+route reads away from a replica that's fallen too far behind.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="n">Long</span><span class="w"> </span><span class="n">orderId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderService</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">request</span><span class="p">);</span><span class="w">  </span><span class="c1">// write goes to the primary</span>
+<span class="k">return</span><span class="w"> </span><span class="s">"redirect:/orders/"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">orderId</span><span class="p">;</span>
+
+<span class="c1">// The redirected GET, if routed to a lagging replica:</span>
+<span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">orderId</span><span class="p">);</span><span class="w"> </span><span class="c1">// 404 or stale — replica hasn't caught up yet</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "add a read replica" is treated as a purely upside scaling win with no
+consistency cost attached — the first production incident from this is almost always exactly the
+create-then-redirect flow above, discovered by a confused user rather than caught in review.</p>
+<h3 id="q22-soft-deletes-vs-hard-deletes-whats-the-actual-trade-off">Q22. Soft deletes vs. hard deletes — what's the actual trade-off?</h3>
+<p><strong>Answer:</strong> Soft deletes (a <code>deleted_at</code> timestamp or <code>is_deleted</code> flag, with rows never physically removed)
+preserve audit history, support "undo," and avoid foreign-key cascade surprises (see S15) —
+but every single query in the codebase now must remember to filter out soft-deleted rows
+(easy to forget, causing a soft-deleted row to leak back into results), unique constraints get
+complicated (can a new row reuse an email that a soft-deleted row still holds?), and the table
+grows unboundedly since nothing is ever actually removed. Hard deletes keep the table and its
+constraints simple and enforce real space reclamation, at the cost of losing history and needing
+a separate audit/archive mechanism if that history is actually required for compliance or
+support. Many production systems land on a hybrid: soft delete for a retention window (supports
+undo and audit for recent changes), followed by a scheduled job that hard-deletes rows past that
+window.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Forgotten filter: a soft-deleted user leaks back into results.</span>
+<span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'ann@example.com'</span><span class="p">;</span><span class="w"> </span><span class="c1">-- returns the "deleted" row too</span>
+
+<span class="c1">-- A plain unique constraint blocks a new signup from reusing that email:</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">uq_users_email</span><span class="w"> </span><span class="k">unique</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">);</span><span class="w"> </span><span class="c1">-- still holds the deleted row's email</span>
+
+<span class="c1">-- The actual fix for both: filter deleted rows explicitly, and scope uniqueness to live rows only.</span>
+<span class="k">create</span><span class="w"> </span><span class="k">unique</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">uq_users_email_active</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">users</span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">deleted_at</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> soft delete is often assumed to be the strictly "safer" default — but it
+trades a class of bug a hard delete structurally can't have (forgetting the <code>deleted_at is null</code>
+filter and leaking deleted data back into a query) for the audit/undo benefit, and a naive unique
+constraint on an email column will silently block a legitimate re-signup unless it's explicitly
+scoped to non-deleted rows.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h3 id="q23-design-the-schema-and-indexing-strategy-for-a-high-write-append-heavy-feedevent-table-expected-to-reach-billions-of-rows">Q23. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows.</h3>
+<p><strong>Answer:</strong> Favor an append-only insert pattern (avoid updates where possible — updates on a huge table
+fight with vacuum and bloat, see S14) and partition the table by time (native PostgreSQL range
+partitioning on a timestamp column) so that queries scoped to a recent time window only touch
+recent partitions, and old partitions can be dropped wholesale (instant, versus a slow <code>DELETE</code>
+scanning billions of rows) once a retention policy expires them. Index deliberately and sparingly
+— every additional index adds write cost on every insert, which matters enormously at this write
+volume — typically just the columns actually used to filter feeds (<code>user_id</code>, <code>created_at</code>)
+rather than every column that might theoretically be queried. Consider whether the read pattern
+genuinely needs relational query flexibility at all, or whether a purpose-built time-series or
+wide-column store is a better fit once relational indexing overhead becomes the bottleneck — the
+senior-level answer recognizes that "keep scaling Postgres" and "the data model doesn't fit a
+relational database at this shape anymore" are both legitimate answers depending on the actual
+query patterns, not just the row count.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">generated</span><span class="w"> </span><span class="n">always</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="k">identity</span><span class="p">,</span>
+<span class="w">    </span><span class="n">user_id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="n">created_at</span><span class="w"> </span><span class="n">timestamptz</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span>
+<span class="w">    </span><span class="n">payload</span><span class="w"> </span><span class="n">jsonb</span>
+<span class="p">)</span><span class="w"> </span><span class="n">partition</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="p">(</span><span class="n">created_at</span><span class="p">);</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">events_2026_01</span><span class="w"> </span><span class="n">partition</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="n">events</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="p">(</span><span class="s1">'2026-01-01'</span><span class="p">)</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="p">(</span><span class="s1">'2026-02-01'</span><span class="p">);</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span><span class="p">);</span><span class="w"> </span><span class="c1">-- only the columns feeds are actually filtered by</span>
+
+<span class="c1">-- Retention: instant, versus a DELETE that would scan billions of rows.</span>
+<span class="k">drop</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">events_2025_01</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> over-indexing "just to be safe" on a table at this write volume is a genuine
+mistake, not caution — every additional index is write-amplification paid on every single insert,
+and at billions of rows, indexes that were never actually used by a real query pattern are pure
+cost with no offsetting benefit.</p>
+<h3 id="q24-how-do-you-safely-add-a-not-null-column-to-a-50-million-row-table-with-zero-downtime">Q24. How do you safely add a <code>NOT NULL</code> column to a 50-million-row table with zero downtime?</h3>
+<p><strong>Answer:</strong> Never add <code>NOT NULL</code> directly in one migration on a huge table under concurrent write load — in
+older Postgres versions this would rewrite the entire table under an exclusive lock; even with
+modern Postgres's improvements (adding a column with a constant default no longer rewrites the
+table), adding <code>NOT NULL</code> still requires validating every existing row, which briefly locks the
+table if done as one blocking step. Safe sequence: (1) add the column as nullable; (2) backfill
+existing rows in small batches (to avoid one giant long-running transaction and to avoid
+overwhelming replication/vacuum), with the application still working fine since the column
+allows <code>NULL</code>; (3) add the <code>NOT NULL</code> constraint using <code>NOT VALID</code> plus a separate <code>VALIDATE
+CONSTRAINT</code> step (Postgres-specific: <code>NOT VALID</code> adds the constraint instantly without
+validating existing rows, and <code>VALIDATE CONSTRAINT</code> then checks them with a much lighter lock,
+concurrently with normal operations); (4) deploy application code that always writes a value
+for the new column, timed so it happens before the constraint is enforced. The pattern
+generalizes: any schema change on a huge, live table gets split into a nullable/loose step, a
+backfill, and a strict-enforcement step, each independently deployable and each safe to run
+without blocking concurrent traffic.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Step 1: instant, no table rewrite.</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span>
+
+<span class="c1">-- Step 2: backfill in batches, not one giant transaction (see S12).</span>
+<span class="k">update</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'UNKNOWN'</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">between</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="mi">10000</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">region</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">null</span><span class="p">;</span>
+<span class="c1">-- ... repeat in chunks ...</span>
+
+<span class="c1">-- Step 3: instant constraint add, no validation yet — then validate with a lighter lock.</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">orders_region_not_null</span><span class="w"> </span><span class="k">check</span><span class="w"> </span><span class="p">(</span><span class="n">region</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">)</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">valid</span><span class="p">;</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">validate</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">orders_region_not_null</span><span class="p">;</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> the migration that "just works" in a staging environment with a few thousand
+rows and no concurrent traffic is exactly the one that locks production for the duration of a
+full-table validation — the difference only shows up at production's actual scale, which is
+precisely why this has to be a deliberate, tested pattern rather than something discovered the
+hard way during a deploy.</p>
+<h3 id="q25-when-do-you-deliberately-denormalize-and-how-do-you-keep-the-denormalized-copy-consistent">Q25. When do you deliberately denormalize, and how do you keep the denormalized copy consistent?</h3>
+<p><strong>Answer:</strong> Denormalize when a read pattern is both extremely hot and expensive to compute from normalized
+data on every request — a running total, a frequently-displayed aggregate (comment count on a
+post, follower count on a profile), or data joined so often that the join cost itself is the
+bottleneck. The trade-off is explicit: you're accepting a consistency-maintenance burden in
+exchange for read speed, and that burden needs a deliberate mechanism, not "just remember to
+update it everywhere" — options include updating the denormalized value transactionally
+alongside the source-of-truth write (same transaction, so it can never drift, but couples the
+two writes), an async event/queue-driven update (eventually consistent, decoupled, but needs
+monitoring for drift and a reconciliation job to catch missed events), or a materialized view
+refreshed on a schedule (simple, but only as fresh as the last refresh). The interview-worthy
+answer names the specific mechanism chosen and its specific failure mode — "I'd cache it" without
+naming how staleness or drift is detected and corrected is an incomplete answer at senior level.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Denormalized counter, updated in the same transaction as the source-of-truth write:</span>
+<span class="k">begin</span><span class="p">;</span>
+<span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">comments</span><span class="w"> </span><span class="p">(</span><span class="n">post_id</span><span class="p">,</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">42</span><span class="p">,</span><span class="w"> </span><span class="s1">'nice post'</span><span class="p">);</span>
+<span class="k">update</span><span class="w"> </span><span class="n">posts</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">comment_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">comment_count</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="k">commit</span><span class="p">;</span><span class="w"> </span><span class="c1">-- can never drift — both writes succeed or fail together</span>
+
+<span class="c1">-- A reconciliation job to catch drift from an async-updated denormalized value:</span>
+<span class="k">select</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">comment_count</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">actual</span>
+<span class="k">from</span><span class="w"> </span><span class="n">posts</span><span class="w"> </span><span class="n">p</span>
+<span class="k">join</span><span class="w"> </span><span class="p">(</span><span class="k">select</span><span class="w"> </span><span class="n">post_id</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">actual</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">comments</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">post_id</span><span class="p">)</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">post_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">id</span>
+<span class="k">where</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="n">comment_count</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">actual</span><span class="p">;</span><span class="w"> </span><span class="c1">-- flags any row that has drifted from the source of truth</span>
+</code></pre></div></p>
+<p><strong>Why it's a trap:</strong> "I'd just cache it" sounds like an answer but doesn't survive the obvious
+follow-up — what happens when an update event is missed, and how would anyone find out? Naming
+the reconciliation mechanism up front is what separates a senior answer from a plausible-sounding
+one that hasn't been tested against a real failure mode.</p>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="s1-a-query-that-used-to-be-fast-has-become-steadily-slower-as-the-table-has-grown">S1. A query that used to be fast has become steadily slower as the table has grown</h3>
+<ul>
+<li><strong>Symptoms:</strong> A specific query's latency has crept up over months in proportion to table
+  growth, well beyond what row-count growth alone should cause.</li>
+<li><strong>Diagnosis:</strong> Run <code>EXPLAIN ANALYZE</code> (Q14) and check for a <code>Seq Scan</code> where an <code>Index Scan</code>
+  would be expected, or a large mismatch between the planner's estimated and actual row counts
+  (stale statistics).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>Seq Scan on orders (actual time=0.02..812.40 rows=1200000 loops=1)
+  Filter: (status = 'PENDING')
+Planning Time: 0.10 ms
+Execution Time: 815.02 ms
+</code></pre></div>
+  No index exists on <code>status</code>, so every query filtering on it scans the whole table — and that
+  scan gets linearly slower as the table grows.</li>
+<li><strong>Resolution:</strong> Add the missing index (checking column order for composite cases, Q18), or run
+  <code>ANALYZE</code> to refresh statistics if the plan itself is simply wrong due to stale stats, or
+  rewrite the query if a function wrapped around the filtered column is preventing index use.</li>
+<li><strong>Prevention:</strong> Set up <code>EXPLAIN</code>-based query review for new hot-path queries before they ship,
+  and monitor slow-query logs continuously rather than discovering degradation from user reports.</li>
+</ul>
+<h3 id="s2-an-apm-tool-flags-dozens-of-near-identical-queries-firing-for-a-single-page-load">S2. An APM tool flags dozens of near-identical queries firing for a single page load</h3>
+<ul>
+<li><strong>Symptoms:</strong> A page that lists 50 items triggers 51+ database queries — one for the list, and
+  one per item for an associated collection.</li>
+<li><strong>Diagnosis:</strong> Classic N+1 (Q8) — confirm by checking the entity's association fetch type and
+  whether the code iterates the collection and accesses a lazy association inside the loop.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>select * from orders limit 50
+select * from line_items where order_id = 1
+select * from line_items where order_id = 2
+-- ... 48 more, one per order in the page
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add a <code>JOIN FETCH</code> / <code>@EntityGraph</code> for that specific query path, or configure
+  batch fetching if eager-joining everywhere isn't appropriate.</li>
+<li><strong>Prevention:</strong> Add a query-count assertion to integration tests for list-rendering endpoints
+  (many test frameworks support asserting a maximum query count per test) so a regression fails
+  CI instead of shipping.</li>
+</ul>
+<h3 id="s3-two-concurrent-transactions-deadlock-and-one-is-aborted-by-the-database">S3. Two concurrent transactions deadlock, and one is aborted by the database</h3>
+<ul>
+<li><strong>Symptoms:</strong> Postgres logs a <code>deadlock detected</code> error, naming the two conflicting processes
+  and the locks each held while waiting on the other; one transaction is automatically rolled
+  back to break the cycle.</li>
+<li><strong>Diagnosis:</strong> The log message itself names the exact queries and lock types involved — the
+  usual cause is two transactions updating the same two rows (or tables) in opposite order (A
+  then B in one transaction, B then A in another).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>ERROR: deadlock detected
+DETAIL: Process 1234 waits for ShareLock on transaction 5678; blocked by process 5678.
+        Process 5678 waits for ShareLock on transaction 1234; blocked by process 1234.
+Process 1234: UPDATE accounts SET balance = balance - 100 WHERE id = 2;
+Process 5678: UPDATE accounts SET balance = balance - 50  WHERE id = 1;
+</code></pre></div>
+  Transaction 1234 updated <code>id = 1</code> then wanted <code>id = 2</code>; transaction 5678 updated <code>id = 2</code> first
+  then wanted <code>id = 1</code> — a classic opposite-order lock acquisition.</li>
+<li><strong>Resolution:</strong> Standardize a consistent lock/update order across every code path that touches
+  both resources (always update in the same order, e.g. by primary key ascending), or shrink
+  transaction scope so locks are held for less time, reducing the window for the conflict.</li>
+<li><strong>Prevention:</strong> Handle the deadlock exception with a retry (the aborted transaction is safe to
+  retry — nothing committed), and document the required lock ordering for any multi-row
+  operation that's genuinely prone to this pattern.</li>
+</ul>
+<h3 id="s4-requests-fail-with-the-databases-own-too-many-connections-error-independent-of-the-application-level-pool-size">S4. Requests fail with the database's own "too many connections" error, independent of the application-level pool size</h3>
+<ul>
+<li><strong>Symptoms:</strong> The application's HikariCP pool isn't exhausted (metrics show headroom), but the
+  database itself rejects new connections.</li>
+<li><strong>Diagnosis:</strong> Check the database server's <code>max_connections</code> against the <em>sum</em> of every
+  application instance's pool size, plus any other clients (admin tools, other services sharing
+  the database) — a fleet of instances each sized generously can collectively exceed the
+  server's actual limit even though no single instance's pool looks maxed out.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>FATAL: sorry, too many clients already
+</code></pre></div>
+  <div class="highlight"><pre><span></span><code>show max_connections; -- 100
+-- 12 application instances x maximum-pool-size: 15 each = 180 possible connections,
+-- already over the server's limit even before any admin tooling connects.
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Reduce per-instance pool size using the sizing guidance in Q16, or introduce a
+  connection pooler (PgBouncer) in front of the database to multiplex many application
+  connections over fewer actual database connections.</li>
+<li><strong>Prevention:</strong> Track total connections across the fleet as a first-class metric against the
+  database's configured limit, not just per-instance pool utilization.</li>
+</ul>
+<h3 id="s5-a-schema-migration-locks-a-production-table-and-causes-a-brief-outage">S5. A schema migration locks a production table and causes a brief outage</h3>
+<ul>
+<li><strong>Symptoms:</strong> A deployment's migration step causes a spike in request latency or outright
+  timeouts for the duration the migration ran, on a table under active read/write traffic.</li>
+<li><strong>Diagnosis:</strong> Identify the specific migration statement — adding a column with a non-constant
+  default (pre-recent-Postgres-versions, this rewrote the whole table under an exclusive lock),
+  adding a foreign key without <code>NOT VALID</code> (validates all existing rows under lock), or creating
+  an index without <code>CONCURRENTLY</code> (blocks writes for the duration of the build).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">-- Blocks writes to `orders` for however long the index build takes:</span>
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_orders_email</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">customer_email</span><span class="p">);</span>
+
+<span class="c1">-- Non-blocking equivalent:</span>
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">concurrently</span><span class="w"> </span><span class="n">idx_orders_email</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">customer_email</span><span class="p">);</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Rewrite the migration using the non-blocking equivalents: <code>NOT VALID</code> +
+  separate <code>VALIDATE CONSTRAINT</code> for constraints, <code>CREATE INDEX CONCURRENTLY</code> for indexes, and
+  the multi-step pattern from Q24 for anything that would otherwise require a full-table
+  rewrite or scan.</li>
+<li><strong>Prevention:</strong> Require every migration against a large, live table to state explicitly which
+  lock it takes and for how long, as part of review — and test migrations against a
+  production-sized dataset in staging, not just an empty or small dev database, since lock
+  duration scales with table size.</li>
+</ul>
+<h3 id="s6-a-user-submits-a-form-is-redirected-to-a-confirmation-page-and-sees-their-submission-is-missing">S6. A user submits a form, is redirected to a confirmation page, and sees their submission is missing</h3>
+<ul>
+<li><strong>Symptoms:</strong> Intermittent, and specifically tied to write-then-immediate-read flows — the same
+  user reloading a moment later sees the data correctly.</li>
+<li><strong>Diagnosis:</strong> Classic read-after-write inconsistency from a naive read-replica setup (Q21) —
+  the write landed on the primary, and the confirmation page's read was routed to a replica that
+  hadn't caught up yet.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderService</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">request</span><span class="p">);</span><span class="w">       </span><span class="c1">// write -&gt; primary</span>
+<span class="k">return</span><span class="w"> </span><span class="s">"redirect:/orders/"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w">               </span><span class="c1">// client immediately follows the redirect</span>
+
+<span class="c1">// GET /orders/{id} handler, routed by the load balancer/read-router to a replica:</span>
+<span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w">    </span><span class="c1">// replica hasn't replicated the insert yet -&gt; 404</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Route reads that must reflect a just-completed write back to the primary (or a
+  replica known to be caught up for that session), at least for that specific flow.</li>
+<li><strong>Prevention:</strong> Identify every read-after-write-sensitive flow explicitly during design (don't
+  assume every read can safely go to a replica), and monitor replication lag with alerting so a
+  lagging replica is caught before it causes user-visible inconsistency broadly.</li>
+</ul>
+<h3 id="s7-two-near-simultaneous-requests-both-create-a-row-for-what-should-be-a-unique-entity-resulting-in-duplicates">S7. Two near-simultaneous requests both create a row for what should be a unique entity, resulting in duplicates</h3>
+<ul>
+<li><strong>Symptoms:</strong> Under concurrent load (e.g. a user double-clicking submit, or a retried request
+  racing the original), two rows exist for what the business logic assumed could only ever be
+  one (two accounts for one email, two orders for one idempotency key).</li>
+<li><strong>Diagnosis:</strong> Check-then-insert logic at the application level ("check if it exists, if not,
+  insert") has a race window between the check and the insert — two concurrent requests can both
+  pass the check before either has inserted.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// Both requests execute this concurrently and both pass the check before either inserts:</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">userRepository</span><span class="p">.</span><span class="na">findByEmail</span><span class="p">(</span><span class="n">email</span><span class="p">).</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">userRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">(</span><span class="n">email</span><span class="p">));</span><span class="w"> </span><span class="c1">// race window between the check and this insert</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add a database-level unique constraint (the check-then-insert pattern is never
+  sufficient alone at the database's actual concurrency level — the constraint is the real
+  guarantee) and handle the resulting unique-violation exception as an expected "already exists"
+  case, using <code>ON CONFLICT DO NOTHING</code>/<code>DO UPDATE</code> (Postgres upsert) where the intent is
+  idempotent creation rather than a hard error.
+  <div class="highlight"><pre><span></span><code><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="s1">'ann@example.com'</span><span class="p">)</span>
+<span class="k">on</span><span class="w"> </span><span class="n">conflict</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="k">nothing</span><span class="p">;</span><span class="w"> </span><span class="c1">-- idempotent under the exact race that broke check-then-insert</span>
+</code></pre></div></li>
+<li><strong>Prevention:</strong> Never rely on application-level check-then-act for uniqueness that must
+  actually hold — always back it with a database constraint, since the database is the only
+  component that can see and serialize truly concurrent attempts.</li>
+</ul>
+<h3 id="s8-select-count-on-a-large-table-is-unexpectedly-slow-and-shows-up-as-a-hot-query">S8. <code>SELECT COUNT(*)</code> on a large table is unexpectedly slow and shows up as a hot query</h3>
+<ul>
+<li><strong>Symptoms:</strong> A dashboard or pagination feature calling <code>COUNT(*)</code> on a multi-million-row table
+  takes seconds, disproportionate to how simple the query looks.</li>
+<li><strong>Diagnosis:</strong> Postgres's MVCC design means <code>COUNT(*)</code> can't use an index alone to answer the
+  question — it generally must check row visibility for the requesting transaction, which for
+  large tables means a real scan of a large portion of the table (or the index, for an
+  index-only-scan-eligible case, but still proportional to row count either way).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="k">explain</span><span class="w"> </span><span class="k">analyze</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="p">;</span>
+<span class="c1">-- Aggregate (actual time=1120.44..1120.44 rows=1 loops=1)</span>
+<span class="c1">--   -&gt;  Seq Scan on orders (actual time=0.01..980.22 rows=18000000 loops=1)</span>
+
+<span class="c1">-- Approximate count from table statistics — near-instant, good enough for most UIs:</span>
+<span class="k">select</span><span class="w"> </span><span class="n">reltuples</span><span class="p">::</span><span class="nb">bigint</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">pg_class</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">relname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'orders'</span><span class="p">;</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> If exact real-time counts aren't actually required (most pagination UIs don't
+  need an exact "10,482,393 results"), use an approximate count from table statistics
+  (<code>pg_class.reltuples</code>, refreshed by <code>ANALYZE</code>/autovacuum) or cap and label large counts ("10,000+
+  results") instead of computing the exact number. If an exact count genuinely is required
+  frequently, maintain it incrementally (a counter column updated transactionally, or via a
+  materialized aggregate) rather than recomputing it from scratch on every request.</li>
+<li><strong>Prevention:</strong> Treat "do we need an exact count on every page load" as a design question for
+  any paginated UI over a large or fast-growing table, not a default to reach for unquestioned.</li>
+</ul>
+<h3 id="s9-optimistic-locking-failures-spike-sharply-during-a-specific-high-traffic-period">S9. Optimistic-locking failures spike sharply during a specific high-traffic period</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>OptimisticLockException</code> (or equivalent version-conflict error) rates climb
+  during a known high-concurrency window (a flash sale, a popular event), causing a wave of
+  failed updates that the application surfaces as user-facing errors or silent retries.</li>
+<li><strong>Diagnosis:</strong> This confirms Q9's point in practice — optimistic locking's failure rate rises
+  with contention on the same rows, and at flash-sale-level contention on a small number of hot
+  rows (e.g. limited inventory counts), the failure rate can become the dominant user experience
+  problem rather than an edge case.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// Read-then-write race under high contention — every retry re-reads, re-checks, re-fails:</span>
+<span class="n">Inventory</span><span class="w"> </span><span class="n">inv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">inventoryRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">skuId</span><span class="p">);</span><span class="w"> </span><span class="c1">// read version N</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inv</span><span class="p">.</span><span class="na">getQty</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">inv</span><span class="p">.</span><span class="na">setQty</span><span class="p">(</span><span class="n">inv</span><span class="p">.</span><span class="na">getQty</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="n">inventoryRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">inv</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="c1">// save() throws OptimisticLockException if another request updated this row in between</span>
+
+<span class="c1">// Fix for this specific hot path: a single atomic statement, no read-then-write race at all.</span>
+</code></pre></div>
+  <div class="highlight"><pre><span></span><code><span class="k">update</span><span class="w"> </span><span class="n">inventory</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">qty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">qty</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">sku_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">qty</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="c1">-- affected rows == 0 means "out of stock", with no lock held and no retry storm possible</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> For genuinely hot, high-contention rows specifically, switch that access path
+  to pessimistic locking (or an atomic <code>UPDATE ... SET qty = qty - 1 WHERE qty &gt;= 1</code> single
+  statement, which sidesteps optimistic-locking's read-then-write race entirely for this simple
+  case), while leaving optimistic locking in place for the vast majority of low-contention rows
+  where it performs better.</li>
+<li><strong>Prevention:</strong> Identify hot-row contention patterns before they're discovered in production
+  under real flash-sale load — load-test the specific high-contention path deliberately, since
+  it behaves qualitatively differently from average-case traffic.</li>
+</ul>
+<h3 id="s10-after-an-application-crash-mid-operation-the-database-is-left-in-an-inconsistent-state">S10. After an application crash mid-operation, the database is left in an inconsistent state</h3>
+<ul>
+<li><strong>Symptoms:</strong> A multi-step business operation (debit account A, credit account B) is found
+  partially applied after a crash — one side happened, the other didn't.</li>
+<li><strong>Diagnosis:</strong> The operation's multiple statements weren't wrapped in a single database
+  transaction — each executed and committed independently, so a crash between them left a
+  genuinely inconsistent, non-atomic result; this is an application-code bug, not a database
+  failure, since the database did exactly what it was told for each individual statement.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// Bug: two independent auto-committing statements, no shared transaction boundary.</span>
+<span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="s">"update accounts set balance = balance - 100 where id = 1"</span><span class="p">);</span>
+<span class="c1">// &lt;-- crash here leaves account 1 debited with account 2 never credited</span>
+<span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="s">"update accounts set balance = balance + 100 where id = 2"</span><span class="p">);</span>
+
+<span class="c1">// Fix: one transaction, atomic by construction.</span>
+<span class="nd">@Transactional</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">transfer</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">fromId</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">toId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="s">"update accounts set balance = balance - ? where id = ?"</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">fromId</span><span class="p">);</span>
+<span class="w">    </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="s">"update accounts set balance = balance + ? where id = ?"</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">,</span><span class="w"> </span><span class="n">toId</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Wrap the entire multi-step operation in one transaction (<code>@Transactional</code> at
+  the correct granularity, or an explicit <code>BEGIN</code>/<code>COMMIT</code>) so atomicity (Q5) actually holds —
+  either both statements commit or, on any failure including a crash before commit, neither does.
+  Reconcile the specific inconsistent rows found by this incident manually, since the historical
+  damage isn't automatically fixed by the code change.</li>
+<li><strong>Prevention:</strong> Treat "is this operation wrapped in one transaction" as a required review
+  question for any code touching more than one write, and add a reconciliation/audit job that
+  periodically checks for exactly this class of drift (e.g. debits not matching credits) as a
+  safety net independent of getting every code path right the first time.</li>
+</ul>
+<h3 id="s11-queries-filtering-on-a-jsonb-column-get-slower-as-the-table-grows-despite-the-column-being-indexed">S11. Queries filtering on a <code>JSONB</code> column get slower as the table grows, despite the column being indexed</h3>
+<ul>
+<li><strong>Symptoms:</strong> A query like <code>WHERE metadata @&gt; '{"status": "active"}'</code> on a <code>JSONB</code> column
+  degrades with table growth even though "there's an index."</li>
+<li><strong>Diagnosis:</strong> Check the actual index type — a plain B-tree index on a <code>JSONB</code> column supports
+  only equality on the <em>whole</em> JSON value, not containment (<code>@&gt;</code>) or key-existence queries; only
+  a GIN index (Q13) actually accelerates those operators. A B-tree index existing on the column
+  doesn't mean the specific query pattern is using it — <code>EXPLAIN</code> confirms this directly.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_orders_metadata</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">metadata</span><span class="p">);</span><span class="w"> </span><span class="c1">-- B-tree — useless for @&gt;</span>
+
+<span class="k">explain</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">metadata</span><span class="w"> </span><span class="o">@&gt;</span><span class="w"> </span><span class="s1">'{"status": "active"}'</span><span class="p">;</span>
+<span class="c1">-- Seq Scan on orders -- the B-tree index above is never even considered for this operator</span>
+
+<span class="k">create</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="n">idx_orders_metadata_gin</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">gin</span><span class="w"> </span><span class="p">(</span><span class="n">metadata</span><span class="p">);</span><span class="w"> </span><span class="c1">-- the actual fix</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Add a GIN index specifically (<code>CREATE INDEX ... USING GIN (metadata)</code>, or
+  <code>jsonb_path_ops</code> variant for containment-only queries, which is smaller and faster for that
+  narrower use case).</li>
+<li><strong>Prevention:</strong> When a column's query pattern involves containment/key lookups rather than
+  whole-value equality, choose the index type deliberately for that operator from the start,
+  rather than adding "an index" generically and assuming it covers every access pattern.</li>
+</ul>
+<h3 id="s12-a-nightly-batch-job-that-updates-millions-of-rows-one-at-a-time-starts-timing-out-or-overwhelming-the-database">S12. A nightly batch job that updates millions of rows one at a time starts timing out or overwhelming the database</h3>
+<ul>
+<li><strong>Symptoms:</strong> A batch job that loops through rows and issues one <code>UPDATE</code> per row takes
+  increasingly long as data volume grows, and during its run other queries against the same
+  table slow down noticeably.</li>
+<li><strong>Diagnosis:</strong> Row-by-row updates in a loop (Q20's pattern, but for updates rather than
+  inserts) pay per-statement round-trip overhead multiplied by row count, and if each update
+  commits individually, it also generates far more write-ahead-log/vacuum churn than necessary;
+  if it's all one giant transaction instead, that creates a long-running transaction holding
+  locks and bloating the table (since Postgres can't vacuum rows a long-running transaction might
+  still need to see).</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">// One round trip per row, and — if wrapped in one giant transaction — one long-lived</span>
+<span class="c1">// transaction blocking autovacuum for its entire duration.</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">millionsOfIds</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="s">"update prices set updated = true where id = ?"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+  <div class="highlight"><pre><span></span><code><span class="c1">-- Fix: a single bulk statement instead of a million round trips.</span>
+<span class="k">update</span><span class="w"> </span><span class="n">prices</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">updated</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">true</span>
+<span class="k">from</span><span class="w"> </span><span class="p">(</span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="w"> </span><span class="cm">/* ... a chunk's worth of ids ... */</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">t</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="k">where</span><span class="w"> </span><span class="n">prices</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Batch the updates — either a single bulk <code>UPDATE ... FROM (VALUES ...)</code>
+  statement for the whole set, or chunked batches of a few thousand rows each, committed
+  incrementally rather than one all-or-nothing transaction, with a short pause between batches if
+  the goal is to avoid saturating the database during business hours.</li>
+<li><strong>Prevention:</strong> Default any bulk data-modification job to a chunked, batched pattern from the
+  start, with the chunk size and pacing configurable — "loop and update one row at a time" should
+  be a code-review flag for anything operating on more than a few hundred rows.</li>
+</ul>
+<h3 id="s13-a-report-occasionally-shows-numbers-that-dont-add-up-only-under-concurrent-write-activity">S13. A report occasionally shows numbers that don't add up, only under concurrent write activity</h3>
+<ul>
+<li><strong>Symptoms:</strong> A multi-query report (e.g. sum several tables' values that should reconcile) is
+  correct when the system is idle but occasionally inconsistent when generated while writes are
+  happening concurrently.</li>
+<li><strong>Diagnosis:</strong> Check the isolation level the report's queries run under — at the default Read
+  Committed level (Q15), each individual statement within the report's transaction sees the
+  latest committed data <em>at the time that specific statement runs</em>, so two queries a few
+  milliseconds apart within the same "report" can see different snapshots if a write commits in
+  between — that's a non-repeatable read, not a bug in the report's arithmetic.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">-- Report, run at the default Read Committed level:</span>
+<span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">debits</span><span class="p">;</span><span class="w">   </span><span class="c1">-- sees $10,000 total</span>
+
+<span class="c1">-- A write commits here, in between the report's two statements:</span>
+<span class="c1">-- insert into credits (amount) values (500);</span>
+
+<span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">credits</span><span class="p">;</span><span class="w">  </span><span class="c1">-- now includes the new $500 -- the two sums no longer reconcile</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Run the whole report inside a single transaction at Repeatable Read isolation
+  (Postgres's Repeatable Read takes one consistent snapshot for the entire transaction), so every
+  query within it sees the exact same point-in-time view of the data.
+  <div class="highlight"><pre><span></span><code><span class="k">begin</span><span class="w"> </span><span class="k">transaction</span><span class="w"> </span><span class="k">isolation</span><span class="w"> </span><span class="k">level</span><span class="w"> </span><span class="k">repeatable</span><span class="w"> </span><span class="k">read</span><span class="p">;</span>
+<span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">debits</span><span class="p">;</span>
+<span class="k">select</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">credits</span><span class="p">;</span><span class="w"> </span><span class="c1">-- guaranteed to see the same snapshot as the first query</span>
+<span class="k">commit</span><span class="p">;</span>
+</code></pre></div></li>
+<li><strong>Prevention:</strong> Any multi-query operation that requires a single consistent view of the data
+  across several statements needs an explicit isolation-level decision, not the implicit default
+  — this is a case where naming the isolation level in code review matters as much as naming the
+  index strategy.</li>
+</ul>
+<h3 id="s14-table-and-index-sizes-keep-growing-even-though-the-row-count-is-roughly-stable">S14. Table and index sizes keep growing even though the row count is roughly stable</h3>
+<ul>
+<li><strong>Symptoms:</strong> Disk usage for a frequently-updated table climbs steadily, disproportionate to
+  its actual (stable or slowly growing) live row count, and query performance degrades alongside
+  it.</li>
+<li><strong>Diagnosis:</strong> This is table/index bloat — Postgres's MVCC keeps old row versions (dead tuples)
+  around after an <code>UPDATE</code>/<code>DELETE</code> until vacuum reclaims them; if autovacuum isn't keeping up
+  (too infrequent for the table's write rate, or blocked by a long-running transaction holding
+  back the horizon it can clean up to), dead tuples accumulate and both bloat the table on disk
+  and degrade every scan that has to skip over them.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="k">select</span><span class="w"> </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">n_live_tup</span><span class="p">,</span><span class="w"> </span><span class="n">n_dead_tup</span>
+<span class="k">from</span><span class="w"> </span><span class="n">pg_stat_user_tables</span>
+<span class="k">where</span><span class="w"> </span><span class="n">relname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'sessions'</span><span class="p">;</span>
+<span class="c1">--  relname  | n_live_tup | n_dead_tup</span>
+<span class="c1">--  sessions |    500000  |   4200000   -- 8x more dead tuples than live rows</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Tune autovacuum settings more aggressively for this specific table
+  (<code>autovacuum_vacuum_scale_factor</code>/<code>cost_limit</code> per-table overrides for high-churn tables rather
+  than the global default), identify and fix any long-running transaction preventing vacuum from
+  making progress, and run a manual <code>VACUUM (VERBOSE, ANALYZE)</code> to assess current bloat and
+  recover disk space (or <code>VACUUM FULL</code>/<code>pg_repack</code> for severe cases, understanding <code>VACUUM FULL</code>
+  takes an exclusive lock).</li>
+<li><strong>Prevention:</strong> Monitor dead-tuple count and autovacuum run frequency per table as an ongoing
+  metric for any high-write table, not just overall table size — bloat is a trend that's cheap to
+  catch early and expensive to unwind once severe.</li>
+</ul>
+<h3 id="s15-deleting-one-row-unexpectedly-deletes-a-large-number-of-related-rows-across-several-tables">S15. Deleting one row unexpectedly deletes a large number of related rows across several tables</h3>
+<ul>
+<li><strong>Symptoms:</strong> Removing what looked like a single, contained entity (e.g. deleting a user)
+  cascades into deleting orders, payment records, or audit history that the team assumed would
+  be preserved.</li>
+<li><strong>Diagnosis:</strong> Check the foreign key constraints' <code>ON DELETE</code> behavior — <code>ON DELETE CASCADE</code>
+  was set (perhaps for a different, genuinely-dependent relationship, like line items belonging
+  to an order) and it's now propagating further than intended through a chain of cascading
+  foreign keys, or was applied to a relationship that should have been <code>ON DELETE RESTRICT</code>
+  (block the delete) or <code>SET NULL</code> instead.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code><span class="c1">-- users -&gt; orders -&gt; payments, CASCADE at every link:</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fk_orders_user</span>
+<span class="w">    </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">users</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">cascade</span><span class="p">;</span>
+<span class="k">alter</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">payments</span><span class="w"> </span><span class="k">add</span><span class="w"> </span><span class="k">constraint</span><span class="w"> </span><span class="n">fk_payments_order</span>
+<span class="w">    </span><span class="k">foreign</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">order_id</span><span class="p">)</span><span class="w"> </span><span class="k">references</span><span class="w"> </span><span class="n">orders</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="k">delete</span><span class="w"> </span><span class="k">cascade</span><span class="p">;</span>
+
+<span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span><span class="w"> </span><span class="c1">-- silently also deletes every order AND every payment record</span>
+</code></pre></div></li>
+<li><strong>Resolution:</strong> Review every <code>ON DELETE CASCADE</code> on the affected chain and change it to
+  <code>RESTRICT</code> (force an explicit decision at delete time) or <code>SET NULL</code> wherever cascading isn't
+  actually the intended business behavior; for entities requiring historical retention, this is
+  usually also the trigger to introduce soft deletes (Q22) instead of ever hard-deleting them at
+  all.</li>
+<li><strong>Prevention:</strong> Treat <code>ON DELETE CASCADE</code> as a deliberate, reviewed decision per relationship,
+  not a default reached for convenience — document explicitly, for every foreign key, what should
+  happen to the child rows when the parent is deleted.</li>
+</ul>
+<h3 id="s16-immediately-after-a-deployment-that-includes-a-schema-migration-the-application-starts-throwing-errors-about-a-missing-or-unexpected-column">S16. Immediately after a deployment that includes a schema migration, the application starts throwing errors about a missing or unexpected column</h3>
+<ul>
+<li><strong>Symptoms:</strong> Errors like "column does not exist" or a mapping failure appear right after
+  deploy, but only on some instances, or only briefly.</li>
+<li><strong>Diagnosis:</strong> Migration and application code deployment aren't atomic together — during a
+  rolling deployment, old application instances (expecting the old schema) can still be running
+  against a database that's already been migrated to the new schema, or a migration was run
+  <em>after</em> new application code already started expecting it, briefly exposing a gap.</li>
+<li><strong>Example:</strong>
+  <div class="highlight"><pre><span></span><code>ERROR: column "region" of relation "orders" does not exist
+</code></pre></div>
+  A new application instance, already deployed and expecting <code>orders.region</code>, started receiving
+  traffic before the migration that adds that column had actually run against the database — or
+  the reverse: old instances still running the previous version choke on a renamed/dropped column
+  a migration already applied.</li>
+<li><strong>Resolution:</strong> Reorder deployment strictly so the migration always completes fully before any
+  new application code that depends on it starts receiving traffic, and ensure the migration
+  itself is backward-compatible with the <em>old</em> application version for the duration old instances
+  are still running (this is exactly why Q24's multi-step, additive-first migration pattern
+  matters — it's designed so both old and new code work against the in-between schema state).</li>
+<li><strong>Prevention:</strong> Never ship a migration that both adds a requirement (a new <code>NOT NULL</code> column, a
+  renamed column) and requires the new code in the same atomic step — always split into an
+  additive, backward-compatible migration first, deployed and verified, before a later cleanup
+  migration removes what the old code needed.</li>
+</ul>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<ul>
+<li><strong>JPA vs JDBC vs MyBatis</strong>: full ORM / low-level manual / SQL-you-write-plus-mapping — pick by how much control over the exact SQL you need.</li>
+<li><strong>SQL logical order</strong>: <code>FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → DISTINCT → ORDER BY → LIMIT</code>. <code>WHERE</code> can't see a <code>SELECT</code> alias; <code>HAVING</code> can filter aggregates because it runs after grouping.</li>
+<li><strong>N+1</strong>: 1 query becomes N+1 via lazy-loaded collections in a loop — fix with <code>JOIN FETCH</code>/<code>@EntityGraph</code>/batch fetching, not a blanket <code>FetchType.EAGER</code>.</li>
+<li><strong>Optimistic vs pessimistic</strong>: optimistic wins at low contention (no locks held); pessimistic wins at high contention on the same hot rows (avoids retry storms).</li>
+<li><strong>Hibernate entity states</strong>: transient → persistent (managed, auto-tracked) → detached (changes untracked — <code>merge()</code> can silently overwrite newer data) → removed.</li>
+<li><strong>Multi-datasource <code>@Transactional</code></strong> doesn't span both DBs atomically without JTA/XA — design around a single source of truth per write instead.</li>
+<li><strong>Postgres index types</strong>: B-tree (default, equality/range) · GIN (JSONB containment, full-text, arrays) · GiST (geometric/range overlap) · partial index (small, filtered subset).</li>
+<li><strong><code>EXPLAIN ANALYZE</code></strong>: watch for <code>Seq Scan</code> on a big table, and estimated-vs-actual row mismatches (stale stats → run <code>ANALYZE</code>) — plain <code>EXPLAIN</code> is only an estimate, it never actually runs the query.</li>
+<li><strong>Isolation levels</strong>: Read Committed (default, prevents dirty reads only) &lt; Repeatable Read (also prevents non-repeatable/phantom reads in Postgres) &lt; Serializable (fully serial-equivalent, more retries).</li>
+<li><strong>HikariCP sizing</strong>: smaller than intuition suggests; total connections across the whole fleet must fit the DB's <code>max_connections</code>, not just one instance's pool.</li>
+<li><strong>Big migrations</strong>: <code>NOT VALID</code> + <code>VALIDATE CONSTRAINT</code>, <code>CREATE INDEX CONCURRENTLY</code>, additive-then-backfill-then-cleanup — never one blocking step on a huge live table.</li>
+<li><strong>Composite index column order</strong> matters: equality/high-selectivity columns first, or the index silently doesn't serve the query.</li>
+<li><strong>JSONB</strong>: fine for sparse/variable data; normalize anything frequently filtered, joined, or constraint-checked.</li>
+<li><strong>Bulk writes</strong>: batch inserts/updates (JDBC batch API, multi-row <code>VALUES</code>, or <code>COPY</code>) — never row-by-row in a loop; <code>hibernate.jdbc.batch_size</code> alone isn't enough without <code>order_inserts</code>/<code>order_updates</code>.</li>
+<li><strong>Read replicas</strong>: naive routing breaks read-after-write — pin write-sensitive reads to the primary.</li>
+<li><strong><code>ON DELETE CASCADE</code></strong>: a deliberate per-relationship decision, not a default — review the full cascade chain.</li>
+<li><strong>Soft deletes</strong>: prevent forgotten <code>deleted_at is null</code> filters and unique constraints from leaking/blocking on "deleted" rows — scope uniqueness to live rows with a partial index.</li>
+<li><strong>Table/index bloat</strong>: <code>n_dead_tup</code> growing despite stable <code>n_live_tup</code> means autovacuum isn't keeping up — tune per-table settings or find the blocking long-running transaction.</li>
+<li><strong>Zero-downtime schema changes</strong>: additive/nullable first → backfill → enforce/cleanup, each step compatible with both old and new app code.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
