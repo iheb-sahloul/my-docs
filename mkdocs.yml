@@ -1,0 +1,64 @@
+site_name: My Docs
+site_url: https://iheb-sahloul.github.io/my-docs/
+site_author: Iheb Sahloul
+
+repo_name: iheb-sahloul/my-docs
+repo_url: https://github.com/iheb-sahloul/my-docs
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/link
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+
+plugins: 
+  - search
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.superfences
+  - pymdownx.blocks.caption
+  - toc
+
+nav:
+- Home: index.md
+- Interview:
+  - Overview: interviews/en/index.md
+  - Java Core & JVM: interviews/en/01-java-core-jvm.md
+  - Spring & Architecture: interviews/en/02-spring-architecture.md
+  - Persistence & SQL: interviews/en/03-persistence-sql-postgres.md
+  - Messaging: interviews/en/04-messaging-rabbitmq-kafka.md
+  - React & TypeScript: interviews/en/05-react-typescript.md
+  - Full Stack & DevOps: interviews/en/06-fullstack-devops-k8s.md
+  - System Design & Leadership: interviews/en/07-system-design-leadership.md
+  - Claude Code & AI-assisted Dev: interviews/en/08-claude-code.md
+  - Mock Interview Checklist: interviews/en/mock-interview.md
