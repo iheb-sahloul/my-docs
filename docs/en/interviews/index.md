@@ -2,16 +2,16 @@
 
 ## Modules
 
-| # | Module                        | File                             | Focus                                                         |
-|---|-------------------------------|----------------------------------|---------------------------------------------------------------|
-| 1 | Java Core & JVM               | `01-java-core-jvm.md`            | records, sealed, virtual threads, concurrency, GC             |
-| 2 | Spring & Architecture         | `02-spring-architecture.md`      | `@Transactional`, security, hexagonal                         |
-| 3 | Persistence & SQL             | `03-persistence-sql-postgres.md` | MyBatis, advanced SQL, PostgreSQL, indexes                    |
-| 4 | Messaging                     | `04-messaging-rabbitmq-kafka.md` | RabbitMQ vs Kafka, idempotency, sagas                         |
-| 5 | React & TypeScript            | `05-react-typescript.md`         | Hooks, state, performance, TS                                 |
-| 6 | Full Stack & DevOps           | `06-fullstack-devops-k8s.md`     | API design, Docker, K8s, observability                        |
-| 7 | System Design & Leadership    | `07-system-design-leadership.md` | Scalability, CAP, OWASP, mentoring                            |
-| 8 | Claude Code & AI-assisted Dev | `08-claude-code.md`              | Agentic coding, prompts/context, MCP, AI security, governance |
+| # | Module                                                         | Focus                                                         |
+|---|----------------------------------------------------------------|---------------------------------------------------------------|
+| 1 | [`Java Core & JVM`](java-core-jvm.md)                       | records, sealed, virtual threads, concurrency, GC             |
+| 2 | [`Spring & Architecture`](spring-architecture.md)           | `@Transactional`, security, hexagonal                         |
+| 3 | [`Persistence & SQL`](persistence-sql-postgres.md)          | MyBatis, advanced SQL, PostgreSQL, indexes                    |
+| 4 | [`Messaging`](messaging-rabbitmq-kafka.md)                  | RabbitMQ vs Kafka, idempotency, sagas                         |
+| 5 | [`React & TypeScript`](react-typescript.md)                 | Hooks, state, performance, TS                                 |
+| 6 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | API design, Docker, K8s, observability                        |
+| 7 | [`System Design & Leadership`](system-design-leadership.md) | Scalability, CAP, OWASP, mentoring                            |
+| 8 | [`Claude Code & AI-assisted Dev`](claude-code.md)           | Agentic coding, prompts/context, MCP, AI security, governance |
 
 ## Suggested revision plan (D-7)
 

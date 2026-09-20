@@ -146,12 +146,10 @@
 
 |     | Link |
 |-----|------|
-| [ ] | [Step-by-Step Guide to Becoming a Java Architect](https://www.analyticsinsight.net/step-by-step-guide-to-becoming-a-java-architect/) |
 | [ ] | [What are memory optimization techniques in Java?](https://www.educative.io/answers/what-are-memory-optimization-techniques-in-java) |
-| [ ] | [Basic Memory-Saving Techniques for Java Programming](https://medium.com/javarevisited/basic-memory-saving-techniques-for-java-programming-6677a7237a69) |
+| [ ] | [Basic Memory-Saving Techniques for Java Programming](https://archive.is/WmRlI) |
 | [ ] | [Detect & delete unreferenced code with ArchUnit](https://blog.jdriven.com/2021/01/detect-delete-unreferenced-code-with-archunit/) |
 | [ ] | [How to create Unit tests for code design?](https://dev.to/mrkandreev/how-to-create-unit-tests-for-code-design-5g9i) |
-| [ ] | [How to Prevent Null Pointer Exceptions in Java?](https://medium.com/@gurkanucar/how-to-prevent-null-pointer-exceptions-in-java-8d7c894c9bb4) |
 | [ ] | [A Comprehensive Guide to Multithreading and Concurrency in Java](https://medium.com/@lakshyachampion/a-comprehensive-guide-to-multithreading-and-concurrency-in-java-9bf8a0a0bb82) |
 | [ ] | [Java for Interviews](https://aloysius05.hashnode.dev/java-for-interviews-core-java-i) |
 | [ ] | [JVM Tutorial - Java Virtual Machine Architecture Explained for Beginners](https://www.freecodecamp.org/news/jvm-tutorial-java-virtual-machine-architecture-explained-for-beginners/) |

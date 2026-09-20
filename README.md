@@ -8,32 +8,26 @@ Published at: https://iheb-sahloul.github.io/my-docs/
 
 **Prerequisites:** Python 3.x
 
-1. (Optional) create a virtual environment:
+1. Install MkDocs Material:
 
    ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
+   pip install mkdocs-material mkdocs-static-i18n
    ```
 
-2. Install MkDocs Material:
+   If `pip` doesn't work, try `pip3` instead.
+
+
+2. Serve the site locally with live reload:
 
    ```bash
-   pip install mkdocs-material
-   ```
-
-3. Serve the site locally with live reload:
-
-   ```bash
-   mkdocs serve
+   python3 -m mkdocs serve
    ```
 
    Then open http://127.0.0.1:8000 in your browser.
 
-4. Or build the static site into `site/`:
+## Translations
 
-   ```bash
-   mkdocs build
-   ```
+Content lives in `docs/en/` (default, served at `/`) and `docs/fr/` (served at `/fr/`). To translate a page, copy it into `docs/fr/` at the same relative path; untranslated pages fall back to English. Shared images stay in `docs/assets/`.
 
 ## Deployment
 

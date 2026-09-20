@@ -2,7 +2,9 @@
 
 ## 🟢 Fundamentals
 
-### Q1. What is Dependency Injection in Spring, and what are its advantages?
+### Core & configuration
+
+#### Q1. What is Dependency Injection in Spring, and what are its advantages?
 DI means a class declares what it needs (via constructor, setter, or field) and the Spring
 container supplies (injects) that dependency instead of the class creating it itself.
 Advantages: loose coupling between classes, much easier unit testing (you can inject mocks
@@ -10,23 +12,7 @@ without touching production wiring), more flexible configuration (swap an implem
 without touching the consumer), and container-managed object lifecycles instead of hand-rolled
 `new` calls scattered through the codebase.
 
-### Q2. What is Spring Boot, and how does it differ from plain Spring?
-Spring Boot is an opinionated layer on top of the Spring Framework that removes most manual
-setup. Where plain Spring needs extensive XML or Java configuration and a separately
-provisioned server, Spring Boot auto-configures beans based on the dependencies on the
-classpath, ships an embedded server (Tomcat, Jetty, or Undertow) so the app runs as a
-standalone jar, and bundles production-ready features (metrics, health checks, externalized
-configuration) out of the box — which is also why it's the default choice for microservices.
-
-### Q3. What does `@SpringBootApplication` actually do?
-It's a convenience annotation bundling three others on the main class: `@Configuration` (marks
-the class as a source of bean definitions), `@EnableAutoConfiguration` (turns on
-classpath-based auto-configuration), and `@ComponentScan` (scans the current package and
-sub-packages for components). Understanding it as three separate annotations matters the
-moment you need to customize just one of them — e.g. excluding a specific auto-configuration
-class without giving up component scanning.
-
-### Q4. What's the difference between `@Component`, `@Service`, and `@Repository`?
+#### Q2. What's the difference between `@Component`, `@Service`, and `@Repository`?
 All three register a class as a Spring-managed bean via component scanning. `@Component` is
 the generic form; `@Service` and `@Repository` are semantic specializations — `@Service` marks
 a service-layer bean (mostly documentation/intent), and `@Repository` additionally enables
@@ -34,7 +20,53 @@ Spring's exception translation for the data-access layer, converting driver-spec
 into Spring's unchecked `DataAccessException` hierarchy so callers don't need to catch
 vendor-specific SQL exceptions.
 
-### Q5. What is hexagonal (ports & adapters) architecture, and what problem does it solve?
+#### Q3. What's the difference between a `@Configuration` class and a `@Component` class that declares `@Bean` methods?
+Both can hold `@Bean` methods and both are picked up by component scanning, but they behave
+differently when one `@Bean` method calls another. A `@Configuration` class runs in **full
+mode**: Spring subclasses it with CGLIB, and that subclass intercepts every `@Bean` method call so
+that `jdbcTemplate(dataSource())` returns the *same singleton* `DataSource` bean the container
+already created instead of executing the method body again. A plain `@Component` (or a
+`@Configuration(proxyBeanMethods = false)`) runs in **lite mode**: no subclass, so an
+inter-`@Bean` call is an ordinary Java method call and silently builds a *second, unmanaged*
+instance — two connection pools, two caches, two "singletons" — with no error. Rule of thumb:
+use `@Configuration` when `@Bean` methods call each other; use `proxyBeanMethods = false` (Spring
+Boot's own auto-configurations do) when they don't, since it skips the CGLIB subclass and
+speeds startup; or sidestep the whole question by taking the dependency as a method parameter
+(`JdbcTemplate jdbcTemplate(DataSource ds)`), which works in both modes.
+
+#### Q4. What is Spring Boot, and how does it differ from plain Spring?
+Spring Boot is an opinionated layer on top of the Spring Framework that removes most manual
+setup. Where plain Spring needs extensive XML or Java configuration and a separately
+provisioned server, Spring Boot auto-configures beans based on the dependencies on the
+classpath, ships an embedded server (Tomcat, Jetty, or Undertow) so the app runs as a
+standalone jar, and bundles production-ready features (metrics, health checks, externalized
+configuration) out of the box — which is also why it's the default choice for microservices.
+
+#### Q5. What does `@SpringBootApplication` actually do?
+It's a convenience annotation bundling three others on the main class: `@Configuration` (marks
+the class as a source of bean definitions), `@EnableAutoConfiguration` (turns on
+classpath-based auto-configuration), and `@ComponentScan` (scans the current package and
+sub-packages for components). Understanding it as three separate annotations matters the
+moment you need to customize just one of them — e.g. excluding a specific auto-configuration
+class without giving up component scanning.
+
+#### Q6. `@Value` vs `@ConfigurationProperties` — when do you use which?
+`@Value("${app.timeout}")` injects one property into one field and is fine for a single
+isolated value or for a SpEL expression. Once you have a *group* of related settings,
+`@ConfigurationProperties(prefix = "app.payment")` bound onto a class (or, better, an immutable
+`record`) is the better tool: the whole group is bound to one typed object, **relaxed binding**
+maps `app.payment.max-retries`, `APP_PAYMENT_MAXRETRIES` and `maxRetries` to the same field,
+values are converted to real types (`Duration`, `DataSize`, enums, lists, nested objects),
+`@Validated` plus Bean Validation annotations makes the application **fail at startup** on a
+missing or invalid setting instead of at first use, and Spring Boot generates IDE metadata for
+autocompletion. The trade-offs of `@Value`: strings scattered across the codebase with no
+single place to see what an application accepts, no fail-fast validation, and stricter matching
+of property names. Practical point: a typo'd or missing `@ConfigurationProperties` value is
+caught at boot, while a typo'd `@Value` default can quietly ship a wrong value to production.
+
+### Architecture
+
+#### Q7. What is hexagonal (ports & adapters) architecture, and what problem does it solve?
 Hexagonal architecture puts the domain/business logic at the center, exposing **ports**
 (interfaces) that describe what the domain needs or offers, with **adapters** implementing
 those ports for specific technologies — a REST controller and a message listener might both be
@@ -47,152 +79,9 @@ touching business rules.
 
 ## 🟡 Senior traps
 
-### Q6. What design patterns show up naturally in how Spring itself works?
-**Answer:**
-- **DI / IoC**: constructor, setter, and field injection all directly implement this pattern.
-- **Singleton**: the default bean scope — `@Service` effectively applies Singleton, one shared
-  instance the container injects everywhere it's needed.
-- **Factory**: `ApplicationContext` and `FactoryBean` implementations act as factories that
-  create and manage beans, rather than callers instantiating objects with `new`.
-- **Strategy**: injecting different implementations of the same interface depending on context
-  (e.g. multiple `PaymentProcessor` implementations selected at runtime).
-- **Proxy**: a placeholder object controlling access to the real bean — exactly the mechanism
-  behind `@Transactional`, method-level security, and AOP in general.
-- **Template**: abstractions like `JdbcTemplate` handle the boilerplate of a repetitive
-  operation (open connection, run query, handle exceptions, close connection) while letting you
-  plug in just the part that varies.
+### Bean container & lifecycle
 
-**Example:**
-```java
-// Proxy: @Transactional wraps the bean so start/commit/rollback happens around your code.
-@Transactional
-public void placeOrder(Order order) { repository.save(order); }
-
-// Template: JdbcTemplate hides connection/exception/close boilerplate — you supply
-// only the SQL and the row-mapping function, the parts that actually vary.
-List<Order> pending = jdbcTemplate.query(
-    "select * from orders where status = ?",
-    (rs, rowNum) -> new Order(rs.getString("id"), rs.getString("status")),
-    "PENDING");
-```
-
-**Why it's a trap:** naming the patterns is the easy half; the follow-up an interviewer actually
-cares about is spotting where the abstraction leaks — e.g. assuming a `@Service` singleton is
-safe for mutable instance state (Q10), or that a CGLIB proxy behaves identically to the real
-object it wraps (Q14). Reciting "Spring uses Singleton, Factory, Proxy..." without being able to
-name a concrete failure mode for at least one of them is a shallow answer.
-
-### Q7. Can you call a `@Transactional` method from another method in the same class?
-**Answer:** No — or rather, it silently doesn't work as expected. Spring implements
-`@Transactional` via a proxy wrapped around the bean; a call from *outside* the class goes
-through that proxy and the transaction logic runs, but a call from *within* the same class
-(self-invocation) bypasses the proxy entirely, calling the real method directly, so no
-transaction actually starts — with no error to tell you. Fixes: move the method to another
-bean, inject the `ApplicationContext`-managed proxy of the same bean into itself
-(self-injection), or fall back to AspectJ compile-time/load-time weaving, which doesn't rely on
-runtime proxying and so isn't subject to this limitation.
-
-**Example:**
-```java
-@Service
-public class OrderService {
-    public void placeOrder(Order order) {
-        save(order); // self-invocation — this is a plain `this.save(...)` call,
-                      // it never goes through the transactional proxy
-    }
-
-    @Transactional
-    public void save(Order order) {
-        repository.save(order); // no transaction is actually started here
-    }
-}
-```
-
-**Why it's a trap:** the code compiles, runs, and "looks" transactional — nothing throws. The
-bug only surfaces the day something inside `save` fails partway through and a partial write
-isn't rolled back, in production, under conditions a happy-path manual test never exercised.
-
-### Q8. Since `@Transactional` relies on the Proxy pattern, what does that tell you about calling it on a private method?
-**Answer:** A private method can't be proxied the way a public method can — the dynamic proxy
-overrides/wraps the method from *outside* the class, and a private method isn't visible outside
-the class to override in the first place. So `@Transactional` on a private method has the same
-practical failure mode as self-invocation (Q7): it's silently ignored, no transaction ever
-starts, and nothing tells you at compile time or even at startup.
-
-**Example:**
-```java
-@Service
-public class OrderService {
-    @Transactional
-    private void archive(Order order) { // a proxy can never override a private method
-        repository.markArchived(order); // this annotation has zero effect
-    }
-
-    public void run(Order order) {
-        archive(order); // same silent no-op as self-invocation — no error anywhere
-    }
-}
-```
-
-**Why it's a trap:** it's easy to assume "the annotation is on the method, so it must apply" —
-Spring never validates this at startup, so a `@Transactional private` method is a landmine that
-looks completely correct in code review.
-
-### Q9. What does calling `flush()` on a persistence context actually do, and how does it differ from `commit()`?
-**Answer:** `flush()` pushes all pending changes to the database immediately but does **not**
-commit the transaction — it just synchronizes the persistence context (the first-level cache)
-with the database early, which is sometimes necessary before running a query that needs to see
-those uncommitted changes (e.g. a native query bypassing the persistence context). `commit()`
-ends the transaction, making the changes permanent (and, depending on isolation level, visible
-to other transactions) — a flush without a commit can still be rolled back.
-
-**Example:**
-```java
-entityManager.persist(order);
-entityManager.flush();       // INSERT is sent to the DB now, but the transaction is still open
-
-Integer count = (Integer) entityManager
-    .createNativeQuery("select count(*) from orders where id = :id")
-    .setParameter("id", order.getId())
-    .getSingleResult();      // sees the flushed row, because a native query bypasses
-                              // the first-level cache and hits the DB directly
-
-// entityManager.getTransaction().rollback(); // still fully reversible at this point —
-                                                // the flushed INSERT is undone with everything else
-```
-
-**Why it's a trap:** candidates conflate "the data hit the database" with "the data is
-permanent." Flushing early is sometimes necessary, but a flush is not a commit — the change is
-still fully reversible until the transaction actually ends.
-
-### Q10. What are Spring bean scopes, and what's the thread-safety implication of getting one wrong?
-**Answer:** `singleton` (default) creates one shared instance for the whole application context;
-`prototype` creates a new instance on every injection point/request; `request` and `session`
-scope to the web request/HTTP session. The trap: a `singleton`-scoped bean is shared across
-every concurrent request handled by the application, so any mutable instance field on it is
-shared mutable state across threads — a common real bug is adding an instance field to a
-`@Service` for "just passing a value between two methods" and getting cross-request data
-corruption under load, because that field is one shared field, not one per request.
-
-**Example:**
-```java
-@Service
-public class ReportService { // singleton by default — one instance for the whole app
-    private String currentUser; // shared mutable field, NOT one per request
-
-    public Report generate(String user) {
-        currentUser = user;              // request thread A sets it
-        return buildReport(currentUser); // request thread B may have already
-                                          // overwritten currentUser by the time this runs
-    }
-}
-```
-
-**Why it's a trap:** it passes every manual test and every low-traffic staging check (one
-request at a time never races with itself) and only breaks once two requests actually overlap
-in production — which also makes it maddening to reproduce after the fact.
-
-### Q11. Why is constructor injection generally preferred over field injection?
+#### Q8. Why is constructor injection generally preferred over field injection?
 **Answer:** Constructor injection makes dependencies explicit and immutable (`final` fields),
 makes it impossible to construct the bean in an invalid, partially-wired state, and —
 critically for testing — lets you instantiate the class directly with mocks in a plain unit
@@ -223,7 +112,34 @@ new ReportService(mockRepository); // just works, no Spring involved
 it's the version that lets a bean end up half-wired and forces every future test of that class
 to carry Spring-container weight it never needed to.
 
-### Q12. Walk through the Spring bean lifecycle, and how does Spring resolve circular dependencies?
+#### Q9. What are Spring bean scopes, and what's the thread-safety implication of getting one wrong?
+**Answer:** `singleton` (default) creates one shared instance for the whole application context;
+`prototype` creates a new instance on every injection point/request; `request` and `session`
+scope to the web request/HTTP session. The trap: a `singleton`-scoped bean is shared across
+every concurrent request handled by the application, so any mutable instance field on it is
+shared mutable state across threads — a common real bug is adding an instance field to a
+`@Service` for "just passing a value between two methods" and getting cross-request data
+corruption under load, because that field is one shared field, not one per request.
+
+**Example:**
+```java
+@Service
+public class ReportService { // singleton by default — one instance for the whole app
+    private String currentUser; // shared mutable field, NOT one per request
+
+    public Report generate(String user) {
+        currentUser = user;              // request thread A sets it
+        return buildReport(currentUser); // request thread B may have already
+                                          // overwritten currentUser by the time this runs
+    }
+}
+```
+
+**Why it's a trap:** it passes every manual test and every low-traffic staging check (one
+request at a time never races with itself) and only breaks once two requests actually overlap
+in production — which also makes it maddening to reproduce after the fact.
+
+#### Q10. Walk through the Spring bean lifecycle, and how does Spring resolve circular dependencies?
 **Answer:** Roughly: bean definitions are read, instances are instantiated (constructor
 called), properties are injected (setter/field injection happens here — *after* construction),
 `BeanPostProcessor`s run (before/after initialization, including `@PostConstruct`), then the
@@ -252,7 +168,311 @@ loud, fail-fast startup error for a bean that's usable before it's fully wired �
 symptom instead of fixing the actual design smell (two services that need each other), and
 resurfaces later as a subtler bug if either bean does real work during construction.
 
-### Q13. Why do `@Async` methods lose the Spring Security context?
+#### Q11. What design patterns show up naturally in how Spring itself works?
+**Answer:**
+- **DI / IoC**: constructor, setter, and field injection all directly implement this pattern.
+- **Singleton**: the default bean scope — `@Service` effectively applies Singleton, one shared
+  instance the container injects everywhere it's needed.
+- **Factory**: `ApplicationContext` and `FactoryBean` implementations act as factories that
+  create and manage beans, rather than callers instantiating objects with `new`.
+- **Strategy**: injecting different implementations of the same interface depending on context
+  (e.g. multiple `PaymentProcessor` implementations selected at runtime).
+- **Proxy**: a placeholder object controlling access to the real bean — exactly the mechanism
+  behind `@Transactional`, method-level security, and AOP in general.
+- **Template**: abstractions like `JdbcTemplate` handle the boilerplate of a repetitive
+  operation (open connection, run query, handle exceptions, close connection) while letting you
+  plug in just the part that varies.
+
+**Example:**
+```java
+// Proxy: @Transactional wraps the bean so start/commit/rollback happens around your code.
+@Transactional
+public void placeOrder(Order order) { repository.save(order); }
+
+// Template: JdbcTemplate hides connection/exception/close boilerplate — you supply
+// only the SQL and the row-mapping function, the parts that actually vary.
+List<Order> pending = jdbcTemplate.query(
+    "select * from orders where status = ?",
+    (rs, rowNum) -> new Order(rs.getString("id"), rs.getString("status")),
+    "PENDING");
+```
+
+**Why it's a trap:** naming the patterns is the easy half; the follow-up an interviewer actually
+cares about is spotting where the abstraction leaks — e.g. assuming a `@Service` singleton is
+safe for mutable instance state (Q9), or that a CGLIB proxy behaves identically to the real
+object it wraps (Q12). Reciting "Spring uses Singleton, Factory, Proxy..." without being able to
+name a concrete failure mode for at least one of them is a shallow answer.
+
+### Proxies, AOP & transactions
+
+#### Q12. What's the practical difference between JDK dynamic proxies and CGLIB proxies in Spring AOP, and why does it matter?
+**Answer:** Spring uses JDK dynamic proxies (interface-based) when the target bean implements at
+least one interface, and CGLIB (subclass-based bytecode generation) when it doesn't, or when
+explicitly configured to always use CGLIB. The practical trap: a JDK dynamic proxy can only
+intercept calls made *through the interface type* — if you inject the concrete class and call a
+method not on the interface, or self-invoke (Q14), it's bypassed. CGLIB subclasses the target
+class, so `final` classes or `final` methods can't be proxied by CGLIB at all — silently
+skipping the intended AOP advice (transactions, security, caching) rather than erroring, which
+is why `final` on a Spring-managed class or its methods is a real footgun, not just a style
+preference.
+
+**Example:**
+```java
+@Service
+public final class PricingService { // final class — CGLIB cannot subclass this
+    @Transactional
+    public void applyDiscount(Order order) {
+        order.applyDiscount();
+        repository.save(order);
+    }
+}
+// PricingService implements no interface, so Spring needs CGLIB — but CGLIB can't
+// subclass a final class, so the proxy is never created and @Transactional silently
+// never runs. No startup error; the annotation is simply inert.
+```
+
+**Why it's a trap:** the failure mode is identical to Q14/Q13 (silent no-op, no error anywhere),
+but the root cause here is a class modifier that has nothing to do with the transaction code
+itself — a `final` added for unrelated "good practice" reasons quietly disables AOP.
+
+#### Q13. Since `@Transactional` relies on the Proxy pattern, what does that tell you about calling it on a private method?
+**Answer:** A private method can't be proxied the way a public method can — the dynamic proxy
+overrides/wraps the method from *outside* the class, and a private method isn't visible outside
+the class to override in the first place. So `@Transactional` on a private method has the same
+practical failure mode as self-invocation (Q14): it's silently ignored, no transaction ever
+starts, and nothing tells you at compile time or even at startup.
+
+**Example:**
+```java
+@Service
+public class OrderService {
+    @Transactional
+    private void archive(Order order) { // a proxy can never override a private method
+        repository.markArchived(order); // this annotation has zero effect
+    }
+
+    public void run(Order order) {
+        archive(order); // same silent no-op as self-invocation — no error anywhere
+    }
+}
+```
+
+**Why it's a trap:** it's easy to assume "the annotation is on the method, so it must apply" —
+Spring never validates this at startup, so a `@Transactional private` method is a landmine that
+looks completely correct in code review.
+
+#### Q14. Can you call a `@Transactional` method from another method in the same class?
+**Answer:** No — or rather, it silently doesn't work as expected. Spring implements
+`@Transactional` via a proxy wrapped around the bean; a call from *outside* the class goes
+through that proxy and the transaction logic runs, but a call from *within* the same class
+(self-invocation) bypasses the proxy entirely, calling the real method directly, so no
+transaction actually starts — with no error to tell you. Fixes: move the method to another
+bean, inject the `ApplicationContext`-managed proxy of the same bean into itself
+(self-injection), or fall back to AspectJ compile-time/load-time weaving, which doesn't rely on
+runtime proxying and so isn't subject to this limitation.
+
+**Example:**
+```java
+@Service
+public class OrderService {
+    public void placeOrder(Order order) {
+        save(order); // self-invocation — this is a plain `this.save(...)` call,
+                      // it never goes through the transactional proxy
+    }
+
+    @Transactional
+    public void save(Order order) {
+        repository.save(order); // no transaction is actually started here
+    }
+}
+```
+
+**Why it's a trap:** the code compiles, runs, and "looks" transactional — nothing throws. The
+bug only surfaces the day something inside `save` fails partway through and a partial write
+isn't rolled back, in production, under conditions a happy-path manual test never exercised.
+
+#### Q15. How do `@Transactional` propagation and rollback rules interact, and what does `readOnly = true` really do?
+**Answer:** The default propagation, `REQUIRED`, means "join the caller's transaction if one
+exists, otherwise start one" — so the outer and inner methods share **one** physical transaction
+and one commit/rollback decision. That has a sharp consequence: when the inner `@Transactional`
+method (called through a proxy, so not a self-invocation, Q14) throws a runtime exception, the
+proxy marks the shared transaction **rollback-only** *before* the exception even reaches the
+caller. If the outer method catches that exception and carries on, nothing is undone right
+away — but at commit time the transaction manager sees the rollback-only flag and throws
+`UnexpectedRollbackException: Transaction silently rolled back because it has been marked as
+rollback-only`, and *all* the outer work is lost. `REQUIRES_NEW` suspends the outer transaction
+and starts an independent one (a second connection from the pool), so the inner work commits or
+rolls back on its own — the right tool for audit/outbox-style records that must survive an outer
+failure, at the cost of holding two connections at once (a pool-exhaustion risk, see S7).
+`NESTED` uses savepoints and only works with JDBC transaction managers, not with JPA in
+general. Rollback rules are a separate axis: only unchecked exceptions and `Error` trigger
+rollback by default (see the cheat-sheet), so add `rollbackFor` for checked ones. Finally,
+`readOnly = true` is a **hint**, not a guard: Spring/Hibernate use it to skip dirty checking
+(flush mode `MANUAL`), some drivers set the connection read-only, and routing data sources can
+send it to a replica — but whether a stray `UPDATE` is actually rejected depends on the driver
+and database, so never rely on it as a security boundary.
+
+**Example:**
+```java
+@Service
+class OrderService {
+    private final OrderRepository orders;
+    private final AuditService audit;              // a different bean -> goes through the proxy
+
+    @Transactional
+    public void place(Order o) {
+        orders.save(o);
+        try {
+            audit.record(o);                        // throws -> tx is marked rollback-only NOW
+        } catch (RuntimeException e) {
+            log.warn("audit failed, continuing", e); // swallowed...
+        }
+    }                                                // ...commit -> UnexpectedRollbackException,
+}                                                    // the order is rolled back too
+
+@Service
+class AuditService {
+    @Transactional                                   // REQUIRED: joins the caller's transaction
+    public void record(Order o) { /* throws IllegalStateException */ }
+
+    // Fix if the audit must be independent of the caller's outcome:
+    // @Transactional(propagation = Propagation.REQUIRES_NEW)
+}
+```
+
+**Why it's a trap:** "I caught the exception, so the transaction is fine" is the intuitive —
+and wrong — belief. The failure also appears *far* from the cause (at the outer method's
+closing brace), and `REQUIRES_NEW` looks like a free fix while quietly doubling connection use.
+
+#### Q16. What does calling `flush()` on a persistence context actually do, and how does it differ from `commit()`?
+**Answer:** `flush()` pushes all pending changes to the database immediately but does **not**
+commit the transaction — it just synchronizes the persistence context (the first-level cache)
+with the database early, which is sometimes necessary before running a query that needs to see
+those uncommitted changes (e.g. a native query bypassing the persistence context). `commit()`
+ends the transaction, making the changes permanent (and, depending on isolation level, visible
+to other transactions) — a flush without a commit can still be rolled back.
+
+**Example:**
+```java
+entityManager.persist(order);
+entityManager.flush();       // INSERT is sent to the DB now, but the transaction is still open
+
+Integer count = (Integer) entityManager
+    .createNativeQuery("select count(*) from orders where id = :id")
+    .setParameter("id", order.getId())
+    .getSingleResult();      // sees the flushed row, because a native query bypasses
+                              // the first-level cache and hits the DB directly
+
+// entityManager.getTransaction().rollback(); // still fully reversible at this point —
+                                                // the flushed INSERT is undone with everything else
+```
+
+**Why it's a trap:** candidates conflate "the data hit the database" with "the data is
+permanent." Flushing early is sometimes necessary, but a flush is not a commit — the change is
+still fully reversible until the transaction actually ends.
+
+#### Q17. What is Open-in-View (OSIV), why is it on by default, and why do many teams turn it off?
+**Answer:** With `spring.jpa.open-in-view=true` (the Spring Boot default — it logs a startup
+warning about it), an `OpenEntityManagerInViewInterceptor` binds a JPA `EntityManager` to the
+request thread for the *whole HTTP request*, from the controller through JSON serialization. The
+benefit is convenience: lazy associations can still be loaded after the `@Transactional` service
+method returned, so a controller or a Jackson serializer walking `order.getLines()` doesn't
+throw `LazyInitializationException`. The costs are real. The persistence context — and,
+once the first query runs, typically a **pooled database connection** — stays open until the
+response is written, so a controller that does a slow HTTP call, or a client with a slow
+connection, holds a connection it isn't using and drains the pool under load (S7). It also
+hides N+1 queries (Q18): the lazy loads that fire during serialization happen outside any
+service method and are easy to overlook in review, so 1 + N statements go out with no
+transaction boundary around them. Turning it off (`spring.jpa.open-in-view=false`) forces the
+right design: services fetch exactly what the response needs (`JOIN FETCH`, `@EntityGraph`, or DTO
+projections) inside the transaction, and controllers return DTOs, never entities. The migration
+cost is a wave of `LazyInitializationException`s that each point at a missing fetch — which is
+the point.
+
+**Example:**
+```java
+// OSIV on: compiles, works, and hides a slow, connection-holding N+1 during serialization.
+@GetMapping("/orders/{id}")
+Order get(@PathVariable long id) {
+    return orders.findById(id).orElseThrow();   // returns an entity; lines load lazily while
+}                                               // Jackson serializes it — outside any tx
+
+// OSIV off: the service loads what the view needs, in one query, inside the transaction.
+@Transactional(readOnly = true)
+public OrderView get(long id) {
+    return orders.findViewById(id);             // @Query("select new ...OrderView(...) ...")
+}
+// application.yml:  spring.jpa.open-in-view: false
+```
+
+**Why it's a trap:** "OSIV is on by default, so it must be fine" — the default exists for
+convenience and demo-friendliness. Interviewers use it to check whether you understand that a
+lazy-loading exception is a *design signal*, not an annoyance to be silenced by keeping the
+session open longer.
+
+### Data & caching
+
+#### Q18. What causes the N+1 query problem in JPA, and how do you detect and fix it?
+**Answer:** Lazy-loaded JPA associations fetched inside a loop trigger one query per iteration
+instead of one query total — the classic N+1: fetching N orders runs 1 query for the orders,
+then N more queries, one per order, to lazily load each order's line items the first time
+they're accessed. It's invisible in code review (nothing looks wrong — it's just
+`order.getLineItems()`) and invisible against a dev/test dataset with a handful of rows; it only
+becomes visible as N grows in production, where it shows up as a linear-in-N slowdown that looks
+like a scaling problem rather than a query-count problem. Detect it by turning on SQL logging
+(`spring.jpa.show-sql=true` plus a statement counter in tests, or a tool like Hibernate's
+statistics/`SessionMetrics`) and watching query counts scale with result-set size instead of
+staying constant.
+
+**Example:**
+```java
+List<Order> orders = orderRepository.findAll();      // 1 query
+for (Order order : orders) {
+    order.getLineItems().size();                      // 1 extra lazy-load query PER order
+}
+// N orders -> N+1 total queries instead of 1.
+
+// Fix: fetch the association in the same query with a query-specific JOIN FETCH.
+@Query("select distinct o from Order o join fetch o.lineItems")
+List<Order> findAllWithLineItems();
+```
+
+**Why it's a trap:** candidates who've only worked against small local datasets often haven't
+seen this fail, so the answer they reach for is "just make it `@OneToMany(fetch =
+FetchType.EAGER)`" — that fixes this one query path but silently makes *every* query that loads
+an `Order` eagerly fetch line items too, including ones that never needed them, trading one
+N+1 for unconditional over-fetching everywhere; the correct fix is a query-specific `JOIN FETCH`
+or entity graph, not a blanket fetch-type change on the mapping itself.
+
+#### Q19. What's the trap with `@Cacheable` returning a mutable object?
+**Answer:** `@Cacheable` stores whatever reference the method returns; if that's a mutable
+object (a `List`, a mutable entity/DTO) and a caller mutates it, every subsequent cache hit
+hands out that same corrupted object — the cache doesn't clone on read, so "reading from the
+cache" and "getting your own private copy" are not the same thing unless the cached type is
+immutable or the cache provider is configured to serialize/deserialize on access.
+
+**Example:**
+```java
+@Cacheable("productLists")
+public List<Product> findByCategory(String category) {
+    return new ArrayList<>(repository.findByCategory(category));
+}
+
+List<Product> products = productService.findByCategory("books");
+products.add(new Product("injected")); // mutates the cached list in place!
+
+// Every later call to findByCategory("books") now returns the polluted list —
+// including the injected product — even though nothing was ever persisted.
+```
+
+**Why it's a trap:** it doesn't fail where the mutation happens — it fails somewhere else
+entirely, on a later, unrelated call that just happened to read the same cache key, which makes
+it look like a data-corruption bug in a completely different code path rather than a caching
+contract violation at the source.
+
+### Async & threading
+
+#### Q20. Why do `@Async` methods lose the Spring Security context?
 **Answer:** `@Async` executes the method on a different thread from a task executor's pool, and
 by default Spring Security's context is held in a `ThreadLocal` scoped to the *original* request
 thread — so the new async thread simply doesn't have it, and any security check inside the
@@ -283,37 +503,81 @@ context for an authorization check can end up denying (or, worse, defaulting to 
 access based on an empty context, and the bug only shows up in the async path, never in a
 synchronous test of the same logic.
 
-### Q14. What's the practical difference between JDK dynamic proxies and CGLIB proxies in Spring AOP, and why does it matter?
-**Answer:** Spring uses JDK dynamic proxies (interface-based) when the target bean implements at
-least one interface, and CGLIB (subclass-based bytecode generation) when it doesn't, or when
-explicitly configured to always use CGLIB. The practical trap: a JDK dynamic proxy can only
-intercept calls made *through the interface type* — if you inject the concrete class and call a
-method not on the interface, or self-invoke (Q7), it's bypassed. CGLIB subclasses the target
-class, so `final` classes or `final` methods can't be proxied by CGLIB at all — silently
-skipping the intended AOP advice (transactions, security, caching) rather than erroring, which
-is why `final` on a Spring-managed class or its methods is a real footgun, not just a style
-preference.
+#### Q21. What are the default thread-pool behaviours of `@Async` and `@Scheduled`, and what do they get wrong for production?
+**Answer:** Both annotations look like "just run this elsewhere" but come with sharp defaults.
+`@Scheduled` methods run on a scheduler with a **single thread** by default
+(`spring.task.scheduling.pool.size=1`): one slow job — or a `fixedRate` job that takes longer
+than its rate — delays *every other* scheduled job in the application, so the nightly
+report can start an hour late because a five-second job was running back to back. `@Async` needs
+`@EnableAsync` (without it, the annotation is silently ignored and the method just runs
+synchronously), and which executor it uses depends on your setup: Spring Boot auto-configures a
+`ThreadPoolTaskExecutor` (core size 8 and an **effectively unbounded queue**, so a slow
+consumer builds an unbounded backlog — the same failure as an unbounded `ExecutorService`, module
+1 S17), whereas plain Spring without an executor bean falls back to `SimpleAsyncTaskExecutor`,
+which starts a **new thread per task** with no cap. Failure handling is the third gap: an
+exception thrown from a `void @Async` method never reaches the caller (it is only logged by the
+default `AsyncUncaughtExceptionHandler`), and the caller's `SecurityContext` and transaction do
+not propagate (Q20). Production setup: declare a named, **bounded** executor
+(core/max/queue/`CallerRunsPolicy`) for `@Async`, size the scheduler pool to the number of
+concurrent jobs, return a `CompletableFuture` when the caller needs to observe failure, and
+register an `AsyncConfigurer` exception handler that raises an alert.
 
 **Example:**
 ```java
-@Service
-public final class PricingService { // final class — CGLIB cannot subclass this
-    @Transactional
-    public void applyDiscount(Order order) {
-        order.applyDiscount();
-        repository.save(order);
+@Scheduled(fixedRate = 1_000)
+void slowJob() throws InterruptedException { Thread.sleep(5_000); }   // occupies the only thread
+
+@Scheduled(cron = "0 0 2 * * *")
+void nightlyReport() { /* starts late, or is skipped-then-bunched, while slowJob() runs */ }
+
+// Fix: bounded executor for @Async, larger scheduler pool.
+@Configuration @EnableAsync
+class AsyncConfig {
+    @Bean("mailExecutor")
+    ThreadPoolTaskExecutor mailExecutor() {
+        var ex = new ThreadPoolTaskExecutor();
+        ex.setCorePoolSize(4); ex.setMaxPoolSize(8); ex.setQueueCapacity(200);
+        ex.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        ex.setThreadNamePrefix("mail-");
+        return ex;
     }
 }
-// PricingService implements no interface, so Spring needs CGLIB — but CGLIB can't
-// subclass a final class, so the proxy is never created and @Transactional silently
-// never runs. No startup error; the annotation is simply inert.
+
+@Async("mailExecutor")
+public CompletableFuture<Void> sendWelcome(User u) { /* failure is observable by the caller */ }
+// application.yml:  spring.task.scheduling.pool.size: 4
 ```
 
-**Why it's a trap:** the failure mode is identical to Q7/Q8 (silent no-op, no error anywhere),
-but the root cause here is a class modifier that has nothing to do with the transaction code
-itself — a `final` added for unrelated "good practice" reasons quietly disables AOP.
+**Why it's a trap:** it all *works* in a demo — jobs fire, mails are sent. The defaults only
+hurt with a slow job, a burst of work or a failure, i.e. in production, and the symptoms
+(late jobs, growing memory, vanishing exceptions) point away from the annotations that
+caused them.
 
-### Q15. Which Actuator endpoints matter in production, and what should you be careful about exposing?
+### Configuration & operations
+
+#### Q22. What's the precedence order across the different ways to configure a Spring Boot application?
+**Answer:** From highest to lowest priority (roughly): command-line arguments,
+`SPRING_APPLICATION_JSON` environment property, JNDI attributes, Java system properties, OS
+environment variables, profile-specific `application-{profile}.properties/yml`, the base
+`application.properties/yml`, then `@PropertySource` annotations and defaults set in code. The
+practical implication: an environment variable set on a container will override whatever is
+baked into the jar's `application.yml`, which is exactly the mechanism used to inject
+environment-specific secrets and config without rebuilding the artifact per environment.
+
+**Example:**
+```bash
+$ SPRING_APPLICATION_JSON='{"app.timeout":"5000"}' \
+  java -jar app.jar --app.timeout=9000
+# --app.timeout=9000 (a command-line argument) wins over SPRING_APPLICATION_JSON,
+# which in turn wins over whatever application.yml bakes into the jar.
+```
+
+**Why it's a trap:** "I changed the value in `application.yml` and it's still using the old
+one" is one of the most common config-debugging complaints, and the actual cause is almost
+always a higher-priority source silently overriding the file someone edited — the fix is
+knowing the order well enough to check the right layer first instead of guessing.
+
+#### Q23. Which Actuator endpoints matter in production, and what should you be careful about exposing?
 **Answer:** `/actuator/health` (liveness/readiness for orchestrators), `/actuator/metrics`
 (feeds Prometheus/monitoring), `/actuator/info` (build/version metadata), `/actuator/loggers`
 (change log levels live without a redeploy — invaluable mid-incident), `/actuator/prometheus` if
@@ -341,29 +605,9 @@ management:
 moment someone adds `include: "*"` for convenience during debugging (and forgets to revert it),
 `/actuator/env` can leak database passwords and API keys straight to the internet.
 
-### Q16. What's the precedence order across the different ways to configure a Spring Boot application?
-**Answer:** From highest to lowest priority (roughly): command-line arguments,
-`SPRING_APPLICATION_JSON` environment property, JNDI attributes, Java system properties, OS
-environment variables, profile-specific `application-{profile}.properties/yml`, the base
-`application.properties/yml`, then `@PropertySource` annotations and defaults set in code. The
-practical implication: an environment variable set on a container will override whatever is
-baked into the jar's `application.yml`, which is exactly the mechanism used to inject
-environment-specific secrets and config without rebuilding the artifact per environment.
+### Web API
 
-**Example:**
-```bash
-$ SPRING_APPLICATION_JSON='{"app.timeout":"5000"}' \
-  java -jar app.jar --app.timeout=9000
-# --app.timeout=9000 (a command-line argument) wins over SPRING_APPLICATION_JSON,
-# which in turn wins over whatever application.yml bakes into the jar.
-```
-
-**Why it's a trap:** "I changed the value in `application.yml` and it's still using the old
-one" is one of the most common config-debugging complaints, and the actual cause is almost
-always a higher-priority source silently overriding the file someone edited — the fix is
-knowing the order well enough to check the right layer first instead of guessing.
-
-### Q17. How do you handle exceptions globally in a Spring Boot REST API?
+#### Q24. How do you handle exceptions globally in a Spring Boot REST API?
 **Answer:** With `@ControllerAdvice` (or `@RestControllerAdvice`) plus `@ExceptionHandler`,
 centralizing error handling instead of scattering try/catch blocks across controllers.
 
@@ -392,7 +636,7 @@ fragment, an internal class name) back to the client — a catch-all handler tha
 `ex.getMessage()` directly to the caller is a common information-disclosure bug hiding behind
 what looks like "proper" centralized error handling.
 
-### Q18. How do you configure CORS correctly, and what's the trap with combining a wildcard origin and credentials?
+#### Q25. How do you configure CORS correctly, and what's the trap with combining a wildcard origin and credentials?
 **Answer:** Configure it globally via a `WebMvcConfigurer`, or per-controller with
 `@CrossOrigin`. Browsers reject (and Spring itself rejects at config time) the combination of
 `allowedOrigins("*")` with `allowCredentials(true)` — a wildcard origin plus cookies/credentials
@@ -418,7 +662,44 @@ console reaches for `allowedOrigins("*")` as the fastest fix — which is exactl
 combination that either fails outright (with credentials) or silently opens the API to any
 origin (without credentials, but with sensitive data returned regardless).
 
-### Q19. How do you actually structure a hexagonal Spring Boot application in packages?
+#### Q26. Why doesn't `@Valid` automatically validate nested objects, and what's the fix?
+**Answer:** `@Valid` on a controller parameter validates that object's own fields, but
+validation does **not** automatically cascade into a nested object field — a nested field also
+needs its own `@Valid` annotation, or Bean Validation silently skips validating it entirely,
+letting an invalid nested object straight through with no error and no warning.
+
+**Example:**
+```java
+class OrderRequest {
+    @NotNull String customerId;
+    AddressRequest shippingAddress; // missing @Valid — this nested object is never validated
+}
+class AddressRequest {
+    @NotBlank String street;
+    @NotBlank String zipCode;
+}
+
+@PostMapping("/orders")
+ResponseEntity<Order> create(@Valid @RequestBody OrderRequest request) {
+    // request.shippingAddress.street == "" passes validation silently —
+    // @NotBlank on AddressRequest's own fields never even runs.
+}
+
+// Fix: cascade explicitly.
+class OrderRequest {
+    @NotNull String customerId;
+    @Valid AddressRequest shippingAddress; // now nested constraints are checked too
+}
+```
+
+**Why it's a trap:** the top-level DTO looks fully annotated, compiles cleanly, and passes every
+test that only exercises top-level fields — the gap only surfaces once bad nested data reaches
+the database or a downstream system, past a validation layer everyone assumed had already
+caught it.
+
+### Design & resilience
+
+#### Q27. How do you actually structure a hexagonal Spring Boot application in packages?
 **Answer:** A common layout: a `domain` package with plain Java (no Spring, no JPA annotations)
 holding entities and business rules; an `application` package with use-case/service classes and
 the **port** interfaces they depend on (`OrderRepository`, `PaymentGateway`); and an
@@ -444,7 +725,7 @@ deadline pressure from importing `jakarta.persistence.Entity` directly into `dom
 "just this once," and without an ArchUnit rule catching it in CI, that one exception quietly
 becomes the new normal within a few sprints.
 
-### Q20. Design the payment-type selection for a system supporting Credit Card, PayPal, and Bitcoin, without the client code knowing which concrete class to instantiate.
+#### Q28. Design the payment-type selection for a system supporting Credit Card, PayPal, and Bitcoin, without the client code knowing which concrete class to instantiate.
 **Answer:** Use the Factory pattern: a `PaymentFactory` with a method like
 `createPayment(String type)` that internally decides which concrete `Payment` subclass to
 instantiate and return. The client just asks the factory for "the payment implementation it
@@ -481,7 +762,7 @@ registry of named/typed beans — the idiomatic Spring answer replaces a class y
 maintain with a `Map` the container populates for free, and an interviewer asking "how would you
 do this in Spring specifically" is checking for that recognition.
 
-### Q21. When do you reach for the Strategy pattern with Spring beans versus a simple `if`/`switch`?
+#### Q29. When do you reach for the Strategy pattern with Spring beans versus a simple `if`/`switch`?
 **Answer:** Strategy earns its complexity when the set of behaviors is expected to grow (new
 payment providers, new pricing rules, new notification channels) and each behavior is
 substantial enough to deserve its own class and tests — injecting `List<PricingStrategy>` and
@@ -517,7 +798,7 @@ overcorrection — a senior answer names the actual criterion (does this set of 
 over time, and is each one substantial) instead of treating one pattern as universally superior
 to a plain conditional.
 
-### Q22. What's the circuit breaker pattern, and when does a service actually need one?
+#### Q30. What's the circuit breaker pattern, and when does a service actually need one?
 **Answer:** A circuit breaker wraps calls to a potentially-failing dependency and tracks their
 failure rate; once failures exceed a threshold, it "opens" and fails fast (without even
 attempting the call) for a cooldown period, then allows a limited number of trial calls
@@ -547,102 +828,11 @@ warranted — adding a circuit breaker around every single downstream call regar
 radius is cargo-culting resilience, while skipping it on the one call that genuinely can cascade
 (a shared thread pool, per S8) leaves the actual risk unaddressed.
 
-### Q23. What causes the N+1 query problem in JPA, and how do you detect and fix it?
-**Answer:** Lazy-loaded JPA associations fetched inside a loop trigger one query per iteration
-instead of one query total — the classic N+1: fetching N orders runs 1 query for the orders,
-then N more queries, one per order, to lazily load each order's line items the first time
-they're accessed. It's invisible in code review (nothing looks wrong — it's just
-`order.getLineItems()`) and invisible against a dev/test dataset with a handful of rows; it only
-becomes visible as N grows in production, where it shows up as a linear-in-N slowdown that looks
-like a scaling problem rather than a query-count problem. Detect it by turning on SQL logging
-(`spring.jpa.show-sql=true` plus a statement counter in tests, or a tool like Hibernate's
-statistics/`SessionMetrics`) and watching query counts scale with result-set size instead of
-staying constant.
-
-**Example:**
-```java
-List<Order> orders = orderRepository.findAll();      // 1 query
-for (Order order : orders) {
-    order.getLineItems().size();                      // 1 extra lazy-load query PER order
-}
-// N orders -> N+1 total queries instead of 1.
-
-// Fix: fetch the association in the same query with a query-specific JOIN FETCH.
-@Query("select distinct o from Order o join fetch o.lineItems")
-List<Order> findAllWithLineItems();
-```
-
-**Why it's a trap:** candidates who've only worked against small local datasets often haven't
-seen this fail, so the answer they reach for is "just make it `@OneToMany(fetch =
-FetchType.EAGER)`" — that fixes this one query path but silently makes *every* query that loads
-an `Order` eagerly fetch line items too, including ones that never needed them, trading one
-N+1 for unconditional over-fetching everywhere; the correct fix is a query-specific `JOIN FETCH`
-or entity graph, not a blanket fetch-type change on the mapping itself.
-
-### Q24. What's the trap with `@Cacheable` returning a mutable object?
-**Answer:** `@Cacheable` stores whatever reference the method returns; if that's a mutable
-object (a `List`, a mutable entity/DTO) and a caller mutates it, every subsequent cache hit
-hands out that same corrupted object — the cache doesn't clone on read, so "reading from the
-cache" and "getting your own private copy" are not the same thing unless the cached type is
-immutable or the cache provider is configured to serialize/deserialize on access.
-
-**Example:**
-```java
-@Cacheable("productLists")
-public List<Product> findByCategory(String category) {
-    return new ArrayList<>(repository.findByCategory(category));
-}
-
-List<Product> products = productService.findByCategory("books");
-products.add(new Product("injected")); // mutates the cached list in place!
-
-// Every later call to findByCategory("books") now returns the polluted list —
-// including the injected product — even though nothing was ever persisted.
-```
-
-**Why it's a trap:** it doesn't fail where the mutation happens — it fails somewhere else
-entirely, on a later, unrelated call that just happened to read the same cache key, which makes
-it look like a data-corruption bug in a completely different code path rather than a caching
-contract violation at the source.
-
-### Q25. Why doesn't `@Valid` automatically validate nested objects, and what's the fix?
-**Answer:** `@Valid` on a controller parameter validates that object's own fields, but
-validation does **not** automatically cascade into a nested object field — a nested field also
-needs its own `@Valid` annotation, or Bean Validation silently skips validating it entirely,
-letting an invalid nested object straight through with no error and no warning.
-
-**Example:**
-```java
-class OrderRequest {
-    @NotNull String customerId;
-    AddressRequest shippingAddress; // missing @Valid — this nested object is never validated
-}
-class AddressRequest {
-    @NotBlank String street;
-    @NotBlank String zipCode;
-}
-
-@PostMapping("/orders")
-ResponseEntity<Order> create(@Valid @RequestBody OrderRequest request) {
-    // request.shippingAddress.street == "" passes validation silently —
-    // @NotBlank on AddressRequest's own fields never even runs.
-}
-
-// Fix: cascade explicitly.
-class OrderRequest {
-    @NotNull String customerId;
-    @Valid AddressRequest shippingAddress; // now nested constraints are checked too
-}
-```
-
-**Why it's a trap:** the top-level DTO looks fully annotated, compiles cleanly, and passes every
-test that only exercises top-level fields — the gap only surfaces once bad nested data reaches
-the database or a downstream system, past a validation layer everyone assumed had already
-caught it.
-
 ## 🔴 Expert / Open
 
-### Q26. How would you migrate an existing monolith to hexagonal architecture incrementally, without a big-bang rewrite?
+### Architecture & extensibility
+
+#### Q31. How would you migrate an existing monolith to hexagonal architecture incrementally, without a big-bang rewrite?
 Start at the seams that already exist naturally — pick one bounded, well-understood module
 (often the one changing most often, since that's where the payoff compounds fastest) and define
 its ports first: what does this module need from the outside world, and what does it offer? Move
@@ -655,7 +845,7 @@ kind of big design-up-front effort that stalls halfway through a migration and n
 an ArchUnit rule from day one on the *converted* modules to prevent regression, even while
 unconverted modules still violate it.
 
-### Q27. Design a plugin-style extension system in Spring so new behavior can be added without modifying existing code.
+#### Q32. Design a plugin-style extension system in Spring so new behavior can be added without modifying existing code.
 Define an interface (a port) representing the extension point — e.g. `NotificationChannel` with
 `send(Notification)` and `supports(ChannelType)`. Let Spring's component scanning collect every
 implementation automatically via `List<NotificationChannel>` injected into a dispatcher bean,
@@ -667,18 +857,92 @@ runtime, not compiled into the main artifact), Spring's own class scanning won't
 classloader boundaries cleanly — that's the point where `ServiceLoader` or an explicit plugin
 framework (with its own classloader-per-plugin strategy) becomes necessary instead.
 
-### Q28. How do you decide between an AOP-based cross-cutting concern (like `@Transactional`, `@Cacheable`, or a custom annotation) and writing it explicitly in the method body?
+#### Q33. How do you decide between an AOP-based cross-cutting concern (like `@Transactional`, `@Cacheable`, or a custom annotation) and writing it explicitly in the method body?
 AOP earns its cost when the concern is genuinely orthogonal to business logic and applies
 uniformly across many methods with the same rule — transactions, caching, and audit logging are
 the textbook cases because the "how" is identical everywhere it's used and the annotation makes
 the intent visible at the call site. The cost is real, though: AOP introduces the proxy
-limitations from Q7/Q8/Q14 (self-invocation, private methods, `final` classes), makes the actual
+limitations from Q14/Q13/Q12 (self-invocation, private methods, `final` classes), makes the actual
 execution flow less obvious from reading the method body alone, and can surprise a maintainer
 who doesn't know the annotation triggers a whole aspect. Prefer explicit code when the concern
 varies meaningfully case-by-case, when debuggability during an incident matters more than
 DRY-ness, or when the team has already been burned by an AOP proxy gotcha in this exact codebase
 — explicit code that says exactly what it does is sometimes the more senior choice, not the
 less sophisticated one.
+
+#### Q34. How do you use application events inside a Spring monolith, and what's the catch with `@TransactionalEventListener`?
+`ApplicationEventPublisher` lets a service announce "OrderPlaced" without knowing who cares
+(email, inventory, analytics), which decouples modules inside a monolith and is the natural
+stepping-stone toward hexagonal ports (Q27, Q31) and, later, messaging. A plain `@EventListener`
+runs *synchronously, on the publisher's thread, inside its transaction* — so a listener
+failure rolls back the order, and a slow listener slows the request. That is rarely what you
+want for side effects. `@TransactionalEventListener` (default phase `AFTER_COMMIT`) fixes the
+first half: the listener runs only if the transaction actually committed, so no confirmation
+email goes out for an order that rolled back. Its catch is the mirror image: by
+`AFTER_COMMIT` the original transaction is over, so a listener that writes to the database is
+**not** covered by any transaction — `@Transactional` on it is ignored unless it is
+`REQUIRES_NEW` — and if the listener fails, or the JVM dies between commit and dispatch, the
+event is **lost**, because it lived only in memory. If the side effect must not be lost (billing,
+an integration event to another service), persist the intent in the same transaction and deliver
+it separately: the **outbox pattern** (module 4 Q26) — or, in a modular monolith, Spring
+Modulith's event publication registry, which stores events until their listeners complete. My
+guideline: `@EventListener` for in-transaction, must-succeed-together reactions; 
+`@TransactionalEventListener(AFTER_COMMIT)` for best-effort side effects (cache eviction,
+notifications); an outbox for anything with a durability requirement. Add `@Async` (with a
+bounded executor, Q21) if the listener is slow, accepting that ordering and the security context
+are no longer guaranteed.
+
+### Multi-tenancy & security
+
+#### Q35. How would you design multi-tenancy in a Spring Boot / JPA application, and what are the traps?
+There are three isolation models, and the choice is a business decision before it is a technical
+one. **Database-per-tenant** gives the strongest isolation, per-tenant backup/restore and
+noisy-neighbour control, but costs one connection pool per tenant and an operational burden that
+grows linearly (hundreds of tenants = hundreds of pools and migrations to run). **Schema-per-tenant**
+(PostgreSQL schemas) shares the server but still isolates data and lets you `SET search_path`
+per connection; it is a good middle ground until the number of tenants reaches the thousands
+and schema migrations become the bottleneck. **Shared schema with a `tenant_id` discriminator**
+is the cheapest and scales to many small tenants, but isolation is only as strong as every
+query's `WHERE tenant_id = ?` — one forgotten filter is a cross-tenant data leak — so back it
+with database-level protection: PostgreSQL **row-level security** with the tenant set per
+transaction, and Hibernate's `@TenantId` (6.x) or a filter so application code cannot forget it.
+In Spring the plumbing is the same for the first two: resolve the tenant early (a servlet filter
+reading a JWT claim or subdomain), store it in a request-scoped holder, and use an
+`AbstractRoutingDataSource` or Hibernate's `CurrentTenantIdentifierResolver` +
+`MultiTenantConnectionProvider` to pick the connection. The traps: (1) **context propagation** —
+the tenant lives in a `ThreadLocal`, so `@Async`, scheduled jobs and message consumers lose it
+just like the `SecurityContext` (Q20); a background job must set the tenant explicitly and clear
+it in `finally`. (2) **Caches** — `@Cacheable` keys must include the tenant id or tenant A reads
+tenant B's cached value (see Q19 for the related cached-object pitfall). (3) **Pool sizing** with
+per-tenant pools. (4) **Migrations** must be run across all schemas/databases and be re-runnable
+(Flyway per tenant, module 3 Q25). (5) **Tests**: an automated test that requests the same
+resource as two tenants and asserts isolation is the only reliable regression net. I would start
+with the shared-schema + RLS design unless a customer contract demands physical isolation, and
+keep the tenant resolver behind one interface so a large customer can later be moved to its own
+database without touching business code.
+
+#### Q36. Should authorization live in URL rules, in method security, or both?
+Both, because they defend against different mistakes. URL rules in the
+`SecurityFilterChain` (`authorizeHttpRequests`) are coarse, centralized and evaluated *before*
+any controller runs: "everything under `/admin/**` needs `ROLE_ADMIN`", "`/actuator/**` is
+internal only". Their weakness is that they are keyed on paths, so a new endpoint under an
+unexpected path, a path-normalization quirk (trailing slash, encoded characters), or the same
+service reached through a different entry point (a message listener, a scheduled job, another
+controller) is unprotected. Rules are evaluated **in order, first match wins**, so a broad
+`permitAll()` above a specific rule silently wins — and `anyRequest().authenticated()` (or
+`denyAll()`) must be last, making "deny by default" the baseline. Method security
+(`@EnableMethodSecurity`, `@PreAuthorize`) puts the rule next to the code it protects and can
+express **business-level** decisions that URLs can't: "only the owner of the order, or a
+support agent, may read it" (`@PreAuthorize("@orderAccess.canRead(#id, authentication)")`,
+`@PostAuthorize` on the returned object). That last category — **object-level authorization** —
+is the OWASP #1 issue (broken access control / IDOR), and it *cannot* be done with URL rules:
+`GET /orders/123` and `GET /orders/124` are the same path. Method security is implemented with
+AOP proxies, so the limitations from Q14/Q13/Q12 apply: a `@PreAuthorize` on a method called from
+within the same class, or on a `private` method, is silently not enforced — the classic reason a
+security test passes in isolation and the hole exists in production. My default: URL rules for
+coarse, deny-by-default perimeter rules; `@PreAuthorize` on the *service* layer (where every
+entry point converges) for role and ownership checks; and a test per protected use case that
+proves the negative case (a wrong user gets a 403/404).
 
 ## 🎯 Real-world scenarios
 
@@ -687,7 +951,7 @@ less sophisticated one.
   first request, once deployed to a real environment.
 - **Diagnosis:** Compare configuration first, not code — check active profile
   (`spring.profiles.active`), environment variables, and whichever `application-{profile}.yml`
-  is actually being loaded in that environment (Q16's precedence order). Check for
+  is actually being loaded in that environment (Q22's precedence order). Check for
   environment-specific resources assumed to exist (a database, a secrets file, a network path)
   that simply aren't reachable from the deployed environment the way they are from a developer's
   machine.
@@ -719,7 +983,7 @@ less sophisticated one.
   hasn't changed, and it's not consistently slow — it varies.
 - **Diagnosis:** Production has data volume and concurrency staging doesn't — check whether the
   slow path involves a database query whose execution plan degrades with real data size (missing
-  index that didn't matter on a small staging dataset), or whether it's contention (Q10, Q16's
+  index that didn't matter on a small staging dataset), or whether it's contention (Q9, Q22's
   scenario S16 in module 1) only reproducible under production's actual concurrent load.
   Distributed tracing (S15) or an APM tool's flame graph will usually localize the slow span
   directly.
@@ -734,7 +998,7 @@ less sophisticated one.
 
   create index idx_orders_customer_id on orders(customer_id); -- the actual fix
   ```
-- **Resolution:** Add the missing index, fix the N+1 query (Q23), or address the specific
+- **Resolution:** Add the missing index, fix the N+1 query (Q18), or address the specific
   contention point once identified from the trace — resist the urge to guess and optimize
   something the trace didn't actually implicate.
 - **Prevention:** Load-test with production-scale data volume before shipping a new query path,
@@ -744,7 +1008,7 @@ less sophisticated one.
 ### S3. Changes to `application.properties` don't seem to take effect after a config update
 - **Symptoms:** A configuration value was changed and redeployed, but the running application
   still behaves according to the old value.
-- **Diagnosis:** Check the precedence order (Q16) — a higher-priority source (an environment
+- **Diagnosis:** Check the precedence order (Q22) — a higher-priority source (an environment
   variable set on the container, a command-line argument baked into the startup script) may be
   overriding the file that was edited. Also check whether the *wrong profile* is active, so the
   edited file isn't even the one being loaded, or whether the deployment actually shipped the new
@@ -757,7 +1021,7 @@ less sophisticated one.
 
   # ...but the container's own environment still sets the old value, which wins:
   $ env | grep APP_TIMEOUT
-  APP_TIMEOUT=3000   # an OS env var beats the properties file every time (Q16)
+  APP_TIMEOUT=3000   # an OS env var beats the properties file every time (Q22)
   ```
 - **Resolution:** Once the actual active source is identified, edit that one — or, if the design
   goal is "config should always come from this one file," remove the higher-priority override
@@ -771,8 +1035,8 @@ less sophisticated one.
 - **Symptoms:** The service handles normal load fine but crashes, restarts, or stops responding
   entirely once traffic crosses some threshold.
 - **Diagnosis:** Distinguish resource exhaustion (heap — module 1's OOM scenario; thread pool —
-  Q7 in module 1, S7 below; connection pool — S7 below) from an actual bug that only triggers
-  under concurrency (a race condition, Q10's singleton mutable-state trap). Metrics and a thread
+  Q21 in module 1, S7 below; connection pool — S7 below) from an actual bug that only triggers
+  under concurrency (a race condition, Q9's singleton mutable-state trap). Metrics and a thread
   dump taken *during* the incident (not after restart, which loses the evidence) distinguish
   these quickly.
 - **Example:**
@@ -781,13 +1045,13 @@ less sophisticated one.
      java.lang.Thread.State: BLOCKED (on object monitor)
      at com.example.ReportService.generate(ReportService.java:22)
      - waiting to lock <0x000000076ab62208> (a com.example.ReportService)
-  # 140+ request threads BLOCKED on the same singleton's monitor — Q10's mutable-field
+  # 140+ request threads BLOCKED on the same singleton's monitor — Q9's mutable-field
   # trap turning into a full request-handling stall under real concurrency.
   ```
 - **Resolution:** Depends entirely on which resource is exhausted — scale the relevant pool/
   heap/instance count, or fix the concurrency bug if that's what a thread dump actually shows.
 - **Prevention:** Load-test to find the actual breaking point before production traffic finds it,
-  and put circuit breakers (Q22) and rate limiting in front of the service so a traffic spike
+  and put circuit breakers (Q30) and rate limiting in front of the service so a traffic spike
   degrades gracefully instead of crashing outright.
 
 ### S5. The application context fails to start with a "no unique bean" or bean conflict error
@@ -809,7 +1073,7 @@ less sophisticated one.
   @Primary
   @Component class CreditCardPayment implements Payment { }
 
-  // or, if the consumer genuinely wants all of them (Q21's Strategy pattern):
+  // or, if the consumer genuinely wants all of them (Q29's Strategy pattern):
   OrderController(List<Payment> payments) { ... }
   ```
 - **Resolution:** If genuinely one should be the default, mark it `@Primary`. If the consumer
@@ -825,7 +1089,7 @@ less sophisticated one.
   sometimes gets `401`, with no obvious pattern from the client side.
 - **Diagnosis:** Common causes in a Spring Security context: token expiry racing with request
   timing (a token that expires mid-session, especially short-lived JWTs without proper refresh
-  handling); the security context not propagating across an async boundary (Q13's `@Async`
+  handling); the security context not propagating across an async boundary (Q20's `@Async`
   scenario, if the endpoint does async work before the security check); or a load-balanced
   deployment where session-based auth isn't actually shared/sticky across instances, so a request
   landing on a different instance than the one that authenticated it appears unauthenticated.
@@ -833,7 +1097,7 @@ less sophisticated one.
   ```java
   @Async
   public void enforceAndAudit(String userId) {
-      // SecurityContextHolder is empty on this thread (Q13) — an authorization check
+      // SecurityContextHolder is empty on this thread (Q20) — an authorization check
       // placed here fails unpredictably, only on requests that happen to hit this path.
       if (SecurityContextHolder.getContext().getAuthentication() == null) {
           throw new AccessDeniedException("no security context on async thread");
@@ -885,7 +1149,7 @@ less sophisticated one.
 - **Symptoms:** One downstream dependency becomes slow or flaky, and shortly after, seemingly
   unrelated features in the calling service start failing or timing out too.
 - **Diagnosis:** This is the classic cascading-failure pattern — callers block waiting on the
-  slow dependency, exhausting a shared thread pool (Q7 in module 1) that other, healthy request
+  slow dependency, exhausting a shared thread pool (Q21 in module 1) that other, healthy request
   paths also depend on, so one dependency's slowness takes down capacity for everything.
 - **Example:**
   ```java
@@ -894,14 +1158,14 @@ less sophisticated one.
       return restTemplate.getForObject("/inventory/" + sku, Inventory.class);
   }
 
-  // Fix: an explicit timeout plus a circuit breaker (Q22), so one flaky dependency
+  // Fix: an explicit timeout plus a circuit breaker (Q30), so one flaky dependency
   // fails fast instead of exhausting the shared request-handling thread pool.
   RestTemplate client = restTemplateBuilder
       .setConnectTimeout(Duration.ofSeconds(2))
       .setReadTimeout(Duration.ofSeconds(2))
       .build();
   ```
-- **Resolution:** Add a circuit breaker (Q22) around the specific call so failures there fail
+- **Resolution:** Add a circuit breaker (Q30) around the specific call so failures there fail
   fast instead of piling up threads, add a sensible timeout (never call a downstream service with
   no timeout at all), add retry with backoff for transient failures specifically (not for every
   failure indiscriminately — retrying a genuinely down service just adds more load to it), and
@@ -1017,7 +1281,7 @@ less sophisticated one.
   curl -X POST localhost:8080/actuator/loggers/com.example.orders \
     -H 'Content-Type: application/json' -d '{"configuredLevel": "DEBUG"}'
   ```
-- **Resolution:** Use `/actuator/loggers` (Q15) to bump the relevant logger to `DEBUG` live,
+- **Resolution:** Use `/actuator/loggers` (Q23) to bump the relevant logger to `DEBUG` live,
   without a redeploy, to capture detail on the *next* occurrence if this one is already missed;
   fix the log-shipping pipeline if that's the actual gap.
 - **Prevention:** Default to `INFO` in production (not `WARN`) for anything that could matter
@@ -1138,6 +1402,195 @@ less sophisticated one.
   requests catches a graceful-shutdown regression immediately, rather than it being discovered as
   a recurring blip nobody investigated.
 
+### S17. `LazyInitializationException` appears in production right after a "harmless" cleanup
+- **Symptoms:** After a release that set `spring.jpa.open-in-view=false` (to fix a pool-exhaustion
+  warning, Q17), several endpoints start returning `500` with
+  `org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role
+  Order.lines: could not initialize proxy - no Session`. Tests that call the service directly
+  all pass.
+- **Diagnosis:** The message is precise: something touched a lazy association after the session
+  was closed. Read the stack trace bottom-up: the access happens in the controller layer or in Jackson's
+  `BeanSerializer` — code that ran only because OSIV used to keep the session open for the whole
+  request. Unit tests of the service pass because they never serialize the result. List every
+  entity that leaves a service method and every lazy collection it exposes; each one is either a
+  missing fetch or a design leak.
+- **Example:**
+  ```java
+  @Transactional(readOnly = true)
+  public Order find(long id) { return orders.findById(id).orElseThrow(); } // lines = lazy proxy
+
+  @GetMapping("/orders/{id}")
+  Order get(@PathVariable long id) {
+      return service.find(id);        // Jackson walks order.getLines() -> no Session -> boom
+  }
+  ```
+- **Resolution:** Do **not** re-enable OSIV or switch the association to `EAGER` (that just
+  hardcodes an N+1, Q18). Load what the response needs *inside* the service, and return a DTO:
+  ```java
+  @Query("select new com.acme.OrderView(o.id, o.status, l.sku, l.qty) " +
+         "from Order o join o.lines l where o.id = :id")
+  List<OrderRow> findRows(long id);          // or @EntityGraph(attributePaths = "lines")
+  ```
+  Verify with a controller-level test (`@WebMvcTest`/`MockMvc` or `@SpringBootTest`) that asserts
+  the JSON body and counts SQL statements (Hibernate statistics or a datasource-proxy) — the
+  count should be constant, not proportional to `lines`.
+- **Prevention:** Never return entities from controllers; add an integration test per endpoint
+  (serialization included); keep OSIV off from the start of a project — retrofitting is far more
+  painful than beginning without it.
+
+### S18. Every scheduled job runs once per replica, so customers get duplicate emails and double charges
+- **Symptoms:** After scaling from 1 to 3 pods, the nightly "send invoices" job emails each
+  customer three times; a monthly billing job charges some accounts twice. Logs show the same
+  job starting at the same second on every pod.
+- **Diagnosis:** `@Scheduled` is *local to a JVM*: each instance has its own scheduler and knows
+  nothing about the others, so N replicas means N executions. Confirm by grepping logs for the
+  job's start line across pods with identical timestamps. It went unnoticed before because there
+  was exactly one instance (or because the job was accidentally idempotent).
+- **Example:**
+  ```java
+  @Scheduled(cron = "0 0 2 * * *")
+  void sendInvoices() { invoiceService.sendAllPending(); }   // runs on EVERY pod at 02:00
+  ```
+- **Resolution:** Make exactly one instance win each run. Options, in order of preference: a
+  Kubernetes `CronJob` (the platform guarantees one run; the job is a separate process), a
+  distributed lock with **ShedLock** (a row in an existing table or Redis key acquired per run),
+  or a PostgreSQL advisory lock. With ShedLock:
+  ```java
+  @Scheduled(cron = "0 0 2 * * *")
+  @SchedulerLock(name = "sendInvoices", lockAtMostFor = "30m", lockAtLeastFor = "1m")
+  void sendInvoices() { invoiceService.sendAllPending(); }
+  ```
+  `lockAtMostFor` protects against a crashed holder keeping the lock forever;
+  `lockAtLeastFor` stops a fast job being re-run by a replica whose clock is a bit behind.
+  Also make the job itself **idempotent** (mark each invoice `SENT` in the same transaction, or
+  use a unique key) since a lock timeout or a pod restart can still cause a rare double run
+  (module 4 Q13). Verify by running three replicas locally and asserting one execution per
+  trigger.
+- **Prevention:** Treat "how many instances run this?" as a required question for every
+  `@Scheduled` method in code review; keep a scheduled-job inventory with lock name, max
+  duration and idempotency notes.
+
+### S19. Orders vanish although the code "handled" the exception and returned success
+- **Symptoms:** Support reports customers who got a confirmation page but have no order. Logs
+  show `WARN audit failed, continuing` followed a few milliseconds later by
+  `UnexpectedRollbackException: Transaction silently rolled back because it has been marked as
+  rollback-only`. Sometimes the user sees a `500` and sometimes a success — depending on whether
+  something upstream swallowed the exception too.
+- **Diagnosis:** Find the outer `@Transactional` method and look for a `try/catch` around a call
+  into *another* `@Transactional` bean. The inner method threw, its proxy marked the shared
+  (`REQUIRED`) transaction rollback-only, the outer method caught the exception and returned
+  normally, and the commit refused to proceed (Q15). Turn on
+  `logging.level.org.springframework.transaction=DEBUG` (or `TRACE`) to see "Participating in
+  existing transaction" followed by "Setting JPA transaction on EntityManager rollback-only".
+- **Example:**
+  ```java
+  @Transactional
+  public void place(Order o) {
+      orders.save(o);
+      try { notifier.publish(o); }               // notifier.publish is @Transactional (REQUIRED)
+      catch (RuntimeException e) { log.warn("audit failed, continuing", e); }
+  }   // commit -> UnexpectedRollbackException, order gone
+  ```
+- **Resolution:** Decide what the *business* wants. If the side effect must not affect the
+  order, run it independently: `@Transactional(propagation = REQUIRES_NEW)` on the inner method,
+  or better move it *after* commit with a `@TransactionalEventListener` (Q34) — an outbox if it
+  must not be lost. If it *is* part of the order, don't catch the exception. Add a test that
+  makes the collaborator throw and asserts the order's final state matches the intended
+  semantics.
+- **Prevention:** Team rule: never catch a runtime exception thrown from a call that crosses a
+  transactional bean boundary without knowing whether the transaction is now rollback-only;
+  prefer explicit propagation attributes on side-effect services over relying on the default.
+
+### S20. Threads pile up and the service stops answering because one dependency stopped answering
+- **Symptoms:** A downstream inventory API starts hanging (accepting connections but never
+  responding). Within a minute all Tomcat threads (200 by default) are busy, `/actuator/health`
+  times out, the pod is restarted by the liveness probe, and the new pod dies the same way.
+  CPU is idle; the dependency dashboard shows no errors — only *no responses*.
+- **Diagnosis:** A thread dump (`jcmd <pid> Thread.print`) shows the request threads all parked
+  in `SocketInputStream.socketRead0` / `SocketOrChannelRead` under `RestTemplate.exchange` or
+  `WebClient` blocking calls. Check the client configuration: a `RestTemplate` built with
+  `new RestTemplate()` uses `SimpleClientHttpRequestFactory` with **no** connect or read timeout,
+  and Reactor Netty's `WebClient` has no default response timeout, so a hung peer holds the thread
+  as long as it likes. One unbounded dependency has consumed the whole servlet thread pool,
+  which is why unrelated endpoints failed too.
+- **Example:**
+  ```java
+  RestTemplate rt = new RestTemplate();                 // no timeouts at all
+  Stock s = rt.getForObject("http://inventory/stock/{sku}", Stock.class, sku); // may block forever
+  ```
+- **Resolution:** Set explicit timeouts on every outbound client, sized from the dependency's
+  latency SLO, and wrap the call in a circuit breaker with a bulkhead so one dependency can't
+  take all threads (Q30, S8):
+  ```java
+  var f = new SimpleClientHttpRequestFactory();
+  f.setConnectTimeout(2_000);   // ms
+  f.setReadTimeout(3_000);
+  RestTemplate rt = new RestTemplate(f);
+
+  // WebClient: HttpClient.create().responseTimeout(Duration.ofSeconds(3)) + .timeout(...) on the Mono
+  ```
+  Verify with a fault-injection test (a stub that sleeps 30 s): the caller must fail in ~3 s,
+  the breaker must open, and unrelated endpoints must stay healthy. Also separate liveness from
+  readiness so a slow dependency doesn't get the pod killed.
+- **Prevention:** Central `RestTemplate`/`WebClient` builder beans with mandatory timeouts (ban
+  `new RestTemplate()` via ArchUnit), a per-dependency bulkhead, and a dashboard of in-flight
+  outbound calls and their p99.
+
+### S21. A WebFlux service performs worse than the old MVC one, and latency spikes for everyone at once
+- **Symptoms:** After migrating a service to Spring WebFlux "for scalability", throughput is
+  lower than before; under moderate load *all* requests stall together for hundreds of milliseconds.
+  Only a handful of threads exist, and they are all busy.
+- **Diagnosis:** WebFlux runs on a tiny fixed set of event-loop threads (about one per CPU
+  core). A single blocking call — JDBC, a blocking HTTP client, `Thread.sleep`, `.block()`,
+  heavy CPU work — stops that event loop from serving *every* other connection assigned to it. A
+  thread dump shows the `reactor-http-nio-*` threads inside JDBC or socket-read code. Use
+  BlockHound in a test or staging (`BlockHound.install()`), which throws at the exact blocking
+  call.
+- **Example:**
+  ```java
+  @GetMapping("/users/{id}")
+  Mono<User> get(@PathVariable long id) {
+      return Mono.just(jdbcTemplate.queryForObject(SQL, mapper, id)); // blocks the event loop
+  }
+  ```
+- **Resolution:** Either go fully reactive (R2DBC, `WebClient`) or explicitly move the
+  unavoidable blocking work off the event loop:
+  ```java
+  return Mono.fromCallable(() -> jdbcTemplate.queryForObject(SQL, mapper, id))
+             .subscribeOn(Schedulers.boundedElastic());
+  ```
+  Then ask whether WebFlux was the right choice at all: with a blocking JDBC stack, Spring MVC
+  on virtual threads gives you the concurrency without the reactive programming model (module 1
+  Q24). Verify with a load test comparing p99 before/after and BlockHound green in CI.
+- **Prevention:** Only choose reactive when the *whole* path (driver included) is non-blocking;
+  run BlockHound in the integration-test suite; document which thread each layer runs on.
+
+### S22. "Welcome" emails silently stop being sent, and memory creeps up, while the API returns success
+- **Symptoms:** The signup endpoint returns `201` as always, but a growing share of new users
+  never receive the welcome email; nothing shows in dashboards or on-call. Heap usage on the pods
+  climbs steadily over several days.
+- **Diagnosis:** Sending is a `void @Async` method, so its outcome is invisible to the caller.
+  Searching the logs for `Unexpected exception occurred invoking async method` finds thousands of
+  `MailSendException`s — the mail provider had been rejecting requests for days, and the
+  default `AsyncUncaughtExceptionHandler` only logs. The heap growth is the executor's
+  effectively unbounded queue filling with retry-less tasks (Q21); a heap histogram shows
+  `ThreadPoolExecutor$Worker` queues full of `Runnable`s referencing `User` objects.
+- **Example:**
+  ```java
+  @Async
+  public void sendWelcome(User user) { mailClient.send(user.email(), template); } // failure -> log line
+  ```
+- **Resolution:** Make failure visible and bounded. Use a named, bounded executor with a
+  rejection policy; return `CompletableFuture<Void>` and attach `exceptionally` handlers, or (for
+  a "must send" email) don't send inline at all — write a row to an outbox table in the signup
+  transaction and let a worker deliver with retry/backoff and a dead-letter state (module 4
+  Q26/Q9). Register an `AsyncConfigurer#getAsyncUncaughtExceptionHandler` that increments a
+  metric and pages. Verify by pointing the mail client at a stub that fails: the failure counter
+  must alert, the queue must stay bounded, and no signup request should be affected.
+- **Prevention:** Metrics for every asynchronous boundary (queued, running, failed, rejected);
+  an alert on the failure rate; an explicit choice, per side effect, between "best effort" and
+  "must not lose".
+
 ## 📌 Cheat-sheet
 
 - **DI** = class declares needs, container supplies them → loose coupling, testability, no hand-rolled `new`.
@@ -1160,3 +1613,14 @@ less sophisticated one.
 - **`@Cacheable` + mutable return value**: the cache stores the reference, not a copy — a caller mutating a cached `List`/DTO corrupts every future cache hit.
 - **`@Valid` doesn't cascade**: a nested object field needs its own `@Valid` annotation, or its constraints are silently never checked.
 - **Graceful shutdown**: `server.shutdown=graceful` + orchestrator grace period, so in-flight requests finish and the LB deregisters before the process exits.
+- **`@Configuration` vs `@Component` `@Bean`**: full mode (CGLIB) makes inter-`@Bean` calls return the singleton; lite mode / `proxyBeanMethods = false` creates a fresh instance each call — take dependencies as method parameters.
+- **`@ConfigurationProperties` over `@Value`** for grouped settings: typed, relaxed binding, `@Validated` fail-fast at startup, IDE metadata.
+- **Propagation**: `REQUIRED` shares one transaction — an inner runtime exception marks it rollback-only even if the caller catches it (`UnexpectedRollbackException`); `REQUIRES_NEW` = independent transaction but a second pooled connection. `readOnly = true` is a hint, not a write guard.
+- **`@Scheduled`/`@Async` defaults**: one scheduler thread; Boot's `@Async` executor has an unbounded queue (plain Spring: a new thread per task); `void @Async` failures never reach the caller — use a named, bounded executor + failure handler.
+- **Open-in-View**: convenience that holds a persistence context (and often a connection) for the whole request and hides N+1 — turn it off, fetch in the service, return DTOs.
+- **Multi-tenancy**: DB-per-tenant (isolation) → schema-per-tenant → `tenant_id` + row-level security (density); propagate tenant like the `SecurityContext`, include it in cache keys, migrate every tenant.
+- **`@TransactionalEventListener(AFTER_COMMIT)`**: runs only on commit, but outside the transaction and not durable — use an outbox for events that must not be lost.
+- **Authorization**: URL rules (first match wins, deny by default last) for the perimeter; `@PreAuthorize` on services for role/ownership (IDOR) — proxy limits apply (self-invocation, `private`).
+- **`@Scheduled` on N replicas = N runs**: use a K8s `CronJob`, ShedLock or an advisory lock, and make the job idempotent.
+- **Outbound calls need timeouts**: `new RestTemplate()` / default `WebClient` can block forever and drain the servlet pool — set connect/read timeouts, add a breaker + bulkhead.
+- **WebFlux + blocking call** = stalled event loop; use BlockHound, `boundedElastic`, or stay on MVC + virtual threads.

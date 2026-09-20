@@ -39,26 +39,46 @@ theme:
     text: Roboto
     code: Roboto Mono
 
-plugins: 
+plugins:
   - search
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: fr
+          name: Français
+          build: true
+          nav_translations:
+            Home: Accueil
+            Interview: Entretien
+            Overview: Vue d'ensemble
+            Persistence & SQL: Persistance & SQL
+            Claude Code & AI-assisted Dev: Claude Code & Dev assisté par IA
+            Mock Interview Checklist: Checklist d'entretien blanc
 
 markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.superfences
   - pymdownx.blocks.caption
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - toc
 
 nav:
 - Home: index.md
 - Interview:
-  - Overview: interviews/en/index.md
-  - Java Core & JVM: interviews/en/01-java-core-jvm.md
-  - Spring & Architecture: interviews/en/02-spring-architecture.md
-  - Persistence & SQL: interviews/en/03-persistence-sql-postgres.md
-  - Messaging: interviews/en/04-messaging-rabbitmq-kafka.md
-  - React & TypeScript: interviews/en/05-react-typescript.md
-  - Full Stack & DevOps: interviews/en/06-fullstack-devops-k8s.md
-  - System Design & Leadership: interviews/en/07-system-design-leadership.md
-  - Claude Code & AI-assisted Dev: interviews/en/08-claude-code.md
-  - Mock Interview Checklist: interviews/en/mock-interview.md
+  - Overview: interviews/index.md
+  - Java Core & JVM: interviews/java-core-jvm.md
+  - Spring & Architecture: interviews/spring-architecture.md
+  - Persistence & SQL: interviews/persistence-sql-postgres.md
+  - Messaging: interviews/messaging-rabbitmq-kafka.md
+  - React & TypeScript: interviews/react-typescript.md
+  - Full Stack & DevOps: interviews/fullstack-devops-k8s.md
+  - System Design & Leadership: interviews/system-design-leadership.md
+  - Claude Code & AI-assisted Dev: interviews/claude-code.md
+  - Mock Interview Checklist: interviews/mock-interview.md

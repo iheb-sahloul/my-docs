@@ -4,14 +4,14 @@
 |---|---|
 | **`mock-interview.md`** (this file) | Pre-interview readiness checklist |
 | [`index.md`](index.md) | Module overview, revision plan, scenario format |
-| [`01-java-core-jvm.md`](01-java-core-jvm.md) | **Java Core & JVM** — records, sealed, virtual threads, concurrency, GC |
-| [`02-spring-architecture.md`](02-spring-architecture.md) | **Spring & Architecture** — DI, `@Transactional`, security, hexagonal, design patterns |
-| [`03-persistence-sql-postgres.md`](03-persistence-sql-postgres.md) | **Persistence & SQL** — MyBatis, advanced SQL, PostgreSQL, indexes |
-| [`04-messaging-rabbitmq-kafka.md`](04-messaging-rabbitmq-kafka.md) | **Messaging** — RabbitMQ vs Kafka, idempotency, sagas |
-| [`05-react-typescript.md`](05-react-typescript.md) | **React & TypeScript** — hooks, state, performance, TS |
-| [`06-fullstack-devops-k8s.md`](06-fullstack-devops-k8s.md) | **Full Stack & DevOps** — API design, Docker, K8s, observability, git |
-| [`07-system-design-leadership.md`](07-system-design-leadership.md) | **System Design & Leadership** — scalability, CAP, OWASP, mentoring |
-| [`08-claude-code.md`](08-claude-code.md) | **Claude Code & AI-assisted Dev** — agentic coding, MCP, AI security |
+| [`java-core-jvm.md`](java-core-jvm.md) | **Java Core & JVM** — records, sealed, virtual threads, concurrency, GC |
+| [`spring-architecture.md`](spring-architecture.md) | **Spring & Architecture** — DI, `@Transactional`, security, hexagonal, design patterns |
+| [`persistence-sql-postgres.md`](persistence-sql-postgres.md) | **Persistence & SQL** — MyBatis, advanced SQL, PostgreSQL, indexes |
+| [`messaging-rabbitmq-kafka.md`](messaging-rabbitmq-kafka.md) | **Messaging** — RabbitMQ vs Kafka, idempotency, sagas |
+| [`react-typescript.md`](react-typescript.md) | **React & TypeScript** — hooks, state, performance, TS |
+| [`fullstack-devops-k8s.md`](fullstack-devops-k8s.md) | **Full Stack & DevOps** — API design, Docker, K8s, observability, git |
+| [`system-design-leadership.md`](system-design-leadership.md) | **System Design & Leadership** — scalability, CAP, OWASP, mentoring |
+| [`claude-code.md`](claude-code.md) | **Claude Code & AI-assisted Dev** — agentic coding, MCP, AI security |
 
 
 ## Interview Preparation Checklist
