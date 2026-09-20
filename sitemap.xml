@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/claude-code/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/claude-code/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/claude-code/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/fullstack-devops-k8s/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/fullstack-devops-k8s/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/fullstack-devops-k8s/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/further-reading/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/further-reading/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/further-reading/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/java-core-jvm/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/java-core-jvm/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/java-core-jvm/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/messaging-rabbitmq-kafka/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/messaging-rabbitmq-kafka/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/messaging-rabbitmq-kafka/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/mock-interview/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/mock-interview/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/mock-interview/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/persistence-sql-postgres/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/persistence-sql-postgres/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/persistence-sql-postgres/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/react-typescript/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/react-typescript/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/react-typescript/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/spring-architecture/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/spring-architecture/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/spring-architecture/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/interviews/system-design-leadership/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/system-design-leadership/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/system-design-leadership/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/claude-code/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/claude-code/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/claude-code/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/fullstack-devops-k8s/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/fullstack-devops-k8s/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/fullstack-devops-k8s/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/further-reading/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/further-reading/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/further-reading/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/java-core-jvm/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/java-core-jvm/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/java-core-jvm/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/messaging-rabbitmq-kafka/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/messaging-rabbitmq-kafka/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/messaging-rabbitmq-kafka/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/mock-interview/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/mock-interview/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/mock-interview/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/persistence-sql-postgres/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/persistence-sql-postgres/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/persistence-sql-postgres/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/react-typescript/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/react-typescript/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/react-typescript/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/spring-architecture/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/spring-architecture/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/spring-architecture/"/>
+    </url>
+    <url>
+        <loc>https://iheb-sahloul.github.io/my-docs/fr/interviews/system-design-leadership/</loc>
+        <lastmod>2026-09-20</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/system-design-leadership/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://iheb-sahloul.github.io/my-docs/interviews/system-design-leadership/"/>
+    </url>
+</urlset>
