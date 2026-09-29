@@ -4,6 +4,7 @@
 |---|---|
 | **`mock-interview.md`** (ce fichier) | Checklist de préparation avant l'entretien |
 | [`index.md`](index.md) | Vue d'ensemble des modules, planning de révision, format des scénarios |
+| [`design-patterns.md`](design-patterns.md) | **Design Patterns** — catalogue GoF, quand (ne pas) utiliser un pattern, patterns tactiques DDD |
 | [`java-core-jvm.md`](java-core-jvm.md) | **Java Core & JVM** — records, sealed, virtual threads, concurrence, GC |
 | [`spring-architecture.md`](spring-architecture.md) | **Spring & Architecture** — DI, `@Transactional`, sécurité, hexagonal, design patterns |
 | [`persistence-sql-postgres.md`](persistence-sql-postgres.md) | **Persistance & SQL** — MyBatis, SQL avancé, PostgreSQL, index |
@@ -35,3 +36,4 @@ et visibilité.
 - [ ] Je sais expliquer l'ordre d'exécution logique du SQL et pourquoi WHERE ne peut pas référencer un alias du SELECT.
 - [ ] Je sais expliquer les cinq design patterns qui sous-tendent Spring lui-même, pas seulement lister des noms de patterns GoF.
 - [ ] Je sais expliquer la vraie différence entre hachage, encodage et chiffrement — et pourquoi l'encodage n'est pas de la sécurité.
+- [ ] Je sais expliquer pourquoi le Singleton est considéré comme un anti-pattern par de nombreux seniors, bien qu'il soit facile à implémenter correctement.

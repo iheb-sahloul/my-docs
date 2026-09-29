@@ -12,6 +12,7 @@
 | 6 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | Conception d'API, Docker, K8s, observabilité                          |
 | 7 | [`System Design & Leadership`](system-design-leadership.md) | Scalabilité, CAP, OWASP, mentorat                                     |
 | 8 | [`Claude Code & Dev assisté par IA`](claude-code.md)        | Agentic coding, prompts/contexte, MCP, sécurité de l'IA, gouvernance  |
+| 9 | [`Design Patterns`](design-patterns.md)                     | Catalogue GoF, quand (ne pas) utiliser un pattern, patterns tactiques DDD |
 
 ## Planning de révision suggéré (J-7)
 

@@ -5,6 +5,10 @@ site_author: Iheb Sahloul
 repo_name: iheb-sahloul/my-docs
 repo_url: https://github.com/iheb-sahloul/my-docs
 
+# Shown by `mkdocs serve`, left out of `mkdocs build` / deploy
+draft_docs: |
+  draft/
+
 theme:
   name: material
   features:
@@ -59,11 +63,22 @@ plugins:
             Persistence & SQL: Persistance & SQL
             Claude Code & AI-assisted Dev: Claude Code & Dev assisté par IA
             Mock Interview Checklist: Checklist d'entretien blanc
+            Best Practices: Bonnes pratiques
+            Further Reading: Pour aller plus loin
+            Notes: Notes
+            Testing: Tests
+            Security: Sécurité
+            Observability: Observabilité
+            Maven & Gradle: Maven & Gradle
 
 markdown_extensions:
   - attr_list
   - md_in_html
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.blocks.caption
   - pymdownx.tasklist:
       custom_checkbox: true
@@ -73,6 +88,7 @@ nav:
 - Home: index.md
 - Interview:
   - Overview: interviews/index.md
+  - Design Patterns: interviews/design-patterns.md
   - Java Core & JVM: interviews/java-core-jvm.md
   - Spring & Architecture: interviews/spring-architecture.md
   - Persistence & SQL: interviews/persistence-sql-postgres.md
@@ -82,3 +98,25 @@ nav:
   - System Design & Leadership: interviews/system-design-leadership.md
   - Claude Code & AI-assisted Dev: interviews/claude-code.md
   - Mock Interview Checklist: interviews/mock-interview.md
+  - Further Reading: interviews/further-reading.md
+- Notes:
+  - Git: notes/git.md
+  - Java: notes/java.md
+  - Maven & Gradle: notes/maven-gradle.md
+  - SQL: notes/sql.md
+  - Postgres: notes/postgres.md
+  - Docker: notes/docker.md
+  - Kubernetes: notes/kubernetes.md
+  - Linux: notes/linux.md
+  - AI: notes/ai.md
+- Best Practices:
+  - Git: best-practices/git.md
+  - Java: best-practices/java.md
+  - Spring Boot: best-practices/spring-boot.md
+  - Testing: best-practices/testing.md
+  - Security: best-practices/security.md
+  - Observability: best-practices/observability.md
+  - REST API: best-practices/rest-api.md
+  - React & TypeScript: best-practices/react-typescript.md
+  - SQL, JPA & Postgres: best-practices/sql-jpa-postgres.md
+  - Docker, K8s & DevOps: best-practices/docker-k8s-devops.md

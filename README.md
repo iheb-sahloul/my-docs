@@ -8,10 +8,10 @@ Published at: https://iheb-sahloul.github.io/my-docs/
 
 **Prerequisites:** Python 3.x
 
-1. Install MkDocs Material:
+1. Install dependencies:
 
    ```bash
-   pip install mkdocs-material mkdocs-static-i18n
+   pip install -r requirements.txt
    ```
 
    If `pip` doesn't work, try `pip3` instead.

@@ -2,28 +2,18 @@
 
 ## Modules
 
-| # | Module                                                         | Focus                                                         |
-|---|----------------------------------------------------------------|---------------------------------------------------------------|
-| 1 | [`Java Core & JVM`](java-core-jvm.md)                       | records, sealed, virtual threads, concurrency, GC             |
-| 2 | [`Spring & Architecture`](spring-architecture.md)           | `@Transactional`, security, hexagonal                         |
-| 3 | [`Persistence & SQL`](persistence-sql-postgres.md)          | MyBatis, advanced SQL, PostgreSQL, indexes                    |
-| 4 | [`Messaging`](messaging-rabbitmq-kafka.md)                  | RabbitMQ vs Kafka, idempotency, sagas                         |
-| 5 | [`React & TypeScript`](react-typescript.md)                 | Hooks, state, performance, TS                                 |
-| 6 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | API design, Docker, K8s, observability                        |
-| 7 | [`System Design & Leadership`](system-design-leadership.md) | Scalability, CAP, OWASP, mentoring                            |
-| 8 | [`Claude Code & AI-assisted Dev`](claude-code.md)           | Agentic coding, prompts/context, MCP, AI security, governance |
+| # | Module                                                      | Focus                                                             |
+|---|-------------------------------------------------------------|-------------------------------------------------------------------|
+| 1 | [`Design Patterns`](design-patterns.md)                     | GoF catalogue, when (not) to use a pattern, DDD tactical patterns |
+| 2 | [`Java Core & JVM`](java-core-jvm.md)                       | records, sealed, virtual threads, concurrency, GC                 |
+| 3 | [`Spring & Architecture`](spring-architecture.md)           | `@Transactional`, security, hexagonal                             |
+| 4 | [`Persistence & SQL`](persistence-sql-postgres.md)          | MyBatis, advanced SQL, PostgreSQL, indexes                        |
+| 5 | [`React & TypeScript`](react-typescript.md)                 | Hooks, state, performance, TS                                     |
+| 6 | [`Messaging`](messaging-rabbitmq-kafka.md)                  | RabbitMQ vs Kafka, idempotency, sagas                             |
+| 7 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | API design, Docker, K8s, observability                            |
+| 8 | [`System Design & Leadership`](system-design-leadership.md) | Scalability, CAP, OWASP, mentoring                                |
+| 9 | [`Claude Code & AI-assisted Dev`](claude-code.md)           | Agentic coding, prompts/context, MCP, AI security, governance     |
 
-## Suggested revision plan (D-7)
-
-| Day | Morning                      | Afternoon                   |
-|-----|------------------------------|-----------------------------|
-| D-7 | Module 1 (Java Core)         | Module 2 (Spring)           |
-| D-6 | Module 3 (SQL/Persistence)   | Review Modules 1–2          |
-| D-5 | Module 4 (Messaging)         | Module 5 (React)            |
-| D-4 | Module 6 (DevOps/K8s)        | Review Modules 3–4          |
-| D-3 | Module 7 (System Design)     | Module 8 (Claude Code / AI) |
-| D-2 | Cheat-sheets for all modules | Mock interview (out loud)   |
-| D-1 | Identified weak points       | Rest + light review         |
 
 ## Difficulty legend
 
@@ -68,4 +58,3 @@ Walking through this outline out loud shows an engineering method rather than a 
 Once you've been through every module, [`mock-interview.md`](mock-interview.md) is a compact,
 self-assessable checklist for the day before — work through it and be honest about which items
 you can't yet answer from memory, with code, on the spot.
-
