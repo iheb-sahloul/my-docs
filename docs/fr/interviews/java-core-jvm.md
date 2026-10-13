@@ -1,15 +1,173 @@
 # Java Core & JVM
 
+## 🟢 Fondamentaux
+
+### POO & bases du langage
+
+#### Q1. Interface vs classe abstraite — comment choisir ?
+
+**Réponse :** Une **interface** définit une capacité ou un contrat que promet un type (`Comparable`,
+`PaymentGateway`). Une classe peut en implémenter plusieurs, et depuis Java 8 les interfaces peuvent porter des
+méthodes `default` et `static`, mais aucun état d'instance. Une **classe abstraite** est une implémentation partielle
+partagée par une famille de types proches : elle peut avoir des champs, des constructeurs et des helpers `protected`,
+et une classe ne peut en étendre qu'une. Choisissez l'interface par défaut, car elle laisse les implémentations libres
+d'étendre autre chose et se simule facilement en test. Utilisez une classe abstraite quand les sous-classes partagent
+réellement un état et un squelette d'algorithme fixe (Template Method), et gardez la hiérarchie peu profonde. Depuis
+Java 17, une **interface sealed** avec des records est souvent meilleure que les deux pour un ensemble fermé de
+variantes.
+
+**Exemple :**
+
+```java
+public interface PaymentGateway {              // contrat : nombreuses implémentations sans lien
+    PaymentResult charge(Money amount, CardToken card);
+}
+
+public abstract class BaseImporter {           // état partagé + squelette fixe
+    protected final Clock clock;
+    protected BaseImporter(Clock clock) { this.clock = clock; }
+    public final ImportReport run(Path file) { var rows = parse(file); return store(validate(rows)); }
+    protected abstract List<Row> parse(Path file);
+    // validate() et store() partagés par tous les importeurs
+}
+```
+
+#### Q2. Quelle est la différence entre `==` et `.equals()` ?
+
+**Réponse :** `==` compare ce que les variables *contiennent* : pour les primitifs c'est la valeur, pour les références
+c'est l'identité de l'objet (les deux variables pointent-elles vers exactement le même objet du tas ?). `.equals()` est
+une méthode qui demande à l'objet s'il se considère *logiquement* égal à un autre. `Object.equals()` se comporte par
+défaut comme `==`, donc une classe qui ne la redéfinit pas a une sémantique d'identité ; `String`, les types enveloppes,
+`List`, `Set`, `LocalDate` et les records la redéfinissent pour comparer le contenu. Règle pratique : `==` pour les
+primitifs, les enums et les tests de `null` ; `.equals()` (ou `Objects.equals(a, b)` quand `a` peut être `null`) pour le
+reste. Placez toujours l'opérande non nul connu à gauche (`"PAID".equals(status)`) ou utilisez `Objects.equals` pour
+éviter une `NullPointerException`.
+
+**Exemple :**
+
+```java
+String a = new String("rdv");
+String b = new String("rdv");
+System.out.println(a == b);        // false : deux objets différents
+System.out.println(a.equals(b));   // true : mêmes caractères
+System.out.println(a == "rdv");    // false : le littéral "rdv" vit dans le pool de chaînes
+System.out.println(a.intern() == "rdv"); // true, mais ne bâtissez pas de logique dessus
+
+record Slot(String doctorId, LocalDateTime start) {}
+new Slot("d1", t).equals(new Slot("d1", t)); // true : un record génère equals sur tous ses composants
+```
+
+**Pourquoi c'est un piège :** les littéraux de chaîne sont mis en pool, donc `"a" == "a"` vaut `true` et un test rapide
+donne l'impression que `==` est correct, jusqu'à ce qu'une valeur vienne d'une saisie, d'une base de données ou de
+`new String(...)` et que la comparaison échoue silencieusement en production. C'est pareil avec les nombres encapsulés
+(voir [Java Q9](java-core-jvm.md)). Et redéfinir `equals` sans `hashCode` casse les collections à hachage
+(voir [Java Q3](java-core-jvm.md)).
+
+#### Q3. Quel est le contrat `equals`/`hashCode`, et que se passe-t-il si on n'en redéfinit qu'un ?
+
+**Réponse :** Si `a.equals(b)` est vrai, alors `a.hashCode() == b.hashCode()` doit aussi être vrai. Des hash codes
+égaux n'impliquent pas l'égalité (les collisions sont permises). `equals` doit être réflexive, symétrique, transitive,
+cohérente et renvoyer false pour `null`. Redéfinir `equals` sans `hashCode` casse les collections à hachage : deux
+objets « égaux » tombent dans des buckets différents, donc `set.contains(copie)` renvoie false et un `HashSet` accepte
+des doublons. Basez les deux méthodes sur les mêmes champs immuables. Les records génèrent les deux à partir de tous
+leurs composants. Pour ce que cela donne à l'intérieur d'une `HashMap`, voir Q18 et Q19.
+
+**Exemple :**
+
+```java
+class Email {
+    private final String value;
+    Email(String v) { value = v.toLowerCase(); }
+    @Override public boolean equals(Object o) { return o instanceof Email e && value.equals(e.value); }
+    // hashCode() manquant !
+}
+Set<Email> set = new HashSet<>(List.of(new Email("a@x.io")));
+set.contains(new Email("A@x.io"));   // false — hash d'identité différent, mauvais bucket
+```
+
+#### Q4. Que signifient `final` et `static` sur une variable, une méthode et une classe ?
+
+**Réponse :** Variable `final` : affectée exactement une fois. Pour une référence, la référence ne peut pas changer,
+mais l'objet pointé le peut encore (`final List` n'est pas une liste immuable). Méthode `final` : ne peut pas être
+redéfinie. Classe `final` : ne peut pas être étendue (`String`, records). `static` signifie que le membre appartient à
+la **classe**, pas à une instance : une seule copie partagée par toutes les instances, accessible sans objet.
+`static final` avec une valeur immuable est une constante. Attention à **l'état statique mutable** : il est partagé
+entre threads et entre tests, survit d'une classe de test à l'autre dans la même JVM, et cause souvent fuites et tests
+instables.
+
+**Exemple :**
+
+```java
+final List<String> names = new ArrayList<>();
+names.add("Ada");                 // ok : la liste est mutable
+// names = new ArrayList<>();     // erreur de compilation : la référence est final
+static final List<String> ROLES = List.of("ADMIN", "USER");   // une vraie constante : valeur immuable
+```
+
+#### Q5. Comment les modificateurs d'accès et les packages servent-ils l'encapsulation en pratique ?
+
+**Réponse :** Quatre niveaux : `private` (la classe seule), package-private (sans mot-clé : même package), `protected`
+(package plus sous-classes) et `public`. Utilisez la **visibilité la plus restreinte qui fonctionne** : champs privés,
+helpers privés ou package-private, et seule la vraie API publique. Le package-private est sous-utilisé : dans une
+organisation par fonctionnalité (`order/`, `payment/`), seuls la façade de service et les DTO doivent être publics, et
+le repository et les classes internes restent package-private, pour que les autres packages ne puissent pas
+contourner le service. Pour l'imposer entre modules, utilisez les `exports` JPMS (voir la section expert) ou des règles
+ArchUnit.
+
+### Collections & génériques
+
+#### Q6. `ArrayList` vs `LinkedList`, `HashMap` vs `TreeMap` vs `LinkedHashMap` — comment choisir une collection ?
+
+**Réponse :** Par défaut **`ArrayList`** : mémoire contiguë, accès par index en O(1) et itération rapide grâce aux
+caches CPU. `LinkedList` ne gagne qu'en théorie (insertion en O(1) sur un nœud connu) ; en pratique atteindre le nœud
+coûte O(n) et chaque nœud est un objet séparé, donc elle est presque toujours plus lente. Pour une file ou une pile,
+utilisez **`ArrayDeque`**. Pour les maps : **`HashMap`** pour une recherche en O(1) sans ordre ; **`LinkedHashMap`**
+pour garder l'ordre d'insertion (ou d'accès, pour un cache LRU) ; **`TreeMap`** pour des clés triées et des requêtes
+par plage (`headMap`, `ceilingKey`) en O(log n). Même logique pour `HashSet`, `LinkedHashSet`, `TreeSet`. En
+concurrence, utilisez `ConcurrentHashMap`, pas `Collections.synchronizedMap`. Préférez `List.of`/`Map.of` pour des
+données fixes et immuables.
+
+**Exemple :**
+
+```java
+Deque<Task> stack = new ArrayDeque<>();                    // ni Stack, ni LinkedList
+NavigableMap<LocalDate, Rate> rates = new TreeMap<>();
+Rate applicable = rates.floorEntry(invoiceDate).getValue(); // dernier taux à la date ou avant
+```
+
+#### Q7. `Comparable` vs `Comparator`, et que signifie PECS pour les génériques ?
+
+**Réponse :** `Comparable` définit l'**ordre naturel** d'un type dans la classe elle-même (`compareTo`), et il n'y en a
+qu'un. `Comparator` définit un **ordre externe**, on peut donc en avoir plusieurs
+(`Comparator.comparing(Order::total).reversed().thenComparing(Order::id)`). Gardez `compareTo` cohérent avec `equals`,
+sinon les sets et maps triés se comportent bizarrement (`BigDecimal("1.0")` et `BigDecimal("1.00")` sont égaux selon
+`compareTo` mais pas selon `equals`). **PECS** (« Producer Extends, Consumer Super ») indique quel joker utiliser : un
+paramètre dans lequel on ne fait que **lire** est un producteur, donc `? extends T` ; un paramètre dans lequel on ne
+fait qu'**écrire** est un consommateur, donc `? super T`. C'est pourquoi `Collections.sort(List<T>, Comparator<? super T>)`
+accepte un `Comparator<Object>` pour une `List<String>`.
+
+**Exemple :**
+
+```java
+static double sum(Collection<? extends Number> nums) {        // producteur : on lit des Number
+    return nums.stream().mapToDouble(Number::doubleValue).sum();
+}
+static void fill(List<? super Integer> out) { out.add(42); }  // consommateur : on écrit des Integer
+sum(List.of(1, 2.5, 3L));
+fill(new ArrayList<Number>());
+```
+
 ## 🟡 Pièges seniors
 
 ### Langage & types
 
-#### Q1. Pourquoi `String` est-elle immuable, et qu'est-ce que le string pool ?
+#### Q8. Pourquoi `String` est-elle immuable, et qu'est-ce que le string pool ?
+
 **Réponse :** Une fois créé, le stockage interne des caractères d'une `String` n'est jamais modifié — chaque
 méthode « modifiante » (`concat`, `substring`, `replace`) retourne une nouvelle `String`. Cela apporte la
 thread safety sans synchronisation (partage sûr entre threads), permet d'utiliser une `String` sans risque comme
 clé de `HashMap` (son hash peut être mis en cache, calculé une fois et stocké dans l'objet — voir la discussion
-sur la performance à la Q11), et rend possible le **string pool** — les chaînes littérales (et les chaînes
+sur la performance à la Q18), et rend possible le **string pool** — les chaînes littérales (et les chaînes
 internées) sont dédupliquées dans un pool partagé, de sorte que `"abc" == "abc"` vaut `true` (même référence
 poolée) alors que `new String("abc") == "abc"` vaut `false` (un objet distinct du heap contourne le pool sauf si
 vous appelez `.intern()`). Une nuance historique à connaître : avant Java 7, le string pool vivait dans
@@ -22,6 +180,7 @@ une mauvaise habitude qui va à l'encontre de l'objectif du pool : dédupliquer 
 récurrents.
 
 **Exemple :**
+
 ```java
 String a = "hello";
 String b = "hello";
@@ -36,7 +195,8 @@ System.out.println(a == c.intern());  // true  — intern() returns the pooled r
 la réserve sur `new String(...)` — un recruteur enchaînera immédiatement avec exactement cette ligne pour voir
 si la distinction est réellement comprise, et pas mémorisée comme un fait isolé.
 
-#### Q2. Quel est le piège de `==` avec l'autoboxing sur `Integer` ?
+#### Q9. Quel est le piège de `==` avec l'autoboxing sur `Integer` ?
+
 **Réponse :** La JVM met en cache les `Integer` boxés de -128 à 127 (le cache interne de `Integer.valueOf`,
 rempli à l'initialisation de la classe et garanti par la JLS, pas seulement un détail d'implémentation sur
 lequel on ne pourrait pas compter), donc `Integer a = 100; Integer b = 100; a == b` vaut `true` — les deux
@@ -51,6 +211,7 @@ primitives) pour comparer des types boxés, jamais `==` — il n'existe aucun se
 « assez sûr ».
 
 **Exemple :**
+
 ```java
 Integer a = 100, b = 100;
 Integer x = 200, y = 200;
@@ -69,7 +230,8 @@ d'une bizarrerie de la JVM — la JLS impose explicitement le cache de -128..127
 le fait que `==` « marche » dans cette plage n'est même pas un comportement indéfini sur lequel vous avez eu de
 la chance ; il est garanti de continuer à marcher jusqu'à ce qu'une valeur réelle franchisse la frontière.
 
-#### Q3. Qu'est-ce que le type erasure, et qu'est-ce que cela casse réellement ?
+#### Q10. Qu'est-ce que le type erasure, et qu'est-ce que cela casse réellement ?
+
 **Réponse :** L'information de type générique (`List<String>` vs `List<Integer>`) n'existe qu'à la compilation
 pour le contrôle de types ; le compilateur l'efface vers des raw types (`List`) avec des casts insérés, donc à
 l'exécution les deux ne sont que des `List`. Cela casse : la surcharge de deux méthodes qui ne diffèrent que par
@@ -87,6 +249,7 @@ fonctionne correctement. C'est la même raison pour laquelle `List<String>.class
 distinct de `List<Integer>.class` — il n'y a qu'un seul `List.class` à l'exécution.
 
 **Exemple :**
+
 ```java
 class Box<T> {
     void set(T value) { }
@@ -103,7 +266,8 @@ type générique à l'exécution », mais peu savent expliquer le mécanisme de 
 polymorphisme de continuer à fonctionner malgré cela — c'est la différence entre réciter le terme et comprendre
 ce que le compilateur a dû faire.
 
-#### Q4. Qu'apporte le compact canonical constructor d'un record que `@Data` de Lombok ne garantit pas structurellement ?
+#### Q11. Qu'apporte le compact canonical constructor d'un record que `@Data` de Lombok ne garantit pas structurellement ?
+
 **Réponse :** Le compact constructor d'un record (`record Range(int lo, int hi) { Range { if (lo > hi)
 throw new IllegalArgumentException(); } }`) exécute la validation *avant* l'affectation des champs, comme partie
 intrinsèque de l'unique façon de construire le type — il n'y a ni setter, ni second constructeur, ni builder
@@ -114,6 +278,7 @@ fonctionnalité du langage imposée par le compilateur, et non comme une convent
 violer discrètement en ajoutant un setter ou un second constructeur qui saute la validation.
 
 **Exemple :**
+
 ```java
 record Range(int lo, int hi) {
     Range { // compact constructor — runs before field assignment
@@ -135,7 +300,8 @@ moins de boilerplate » est le mauvais modèle mental — la garantie du record 
 l'impose), alors que l'immutabilité de `@Data` (si tant est qu'on ait pensé à `@Value` à la place) est une
 convention qu'un appel de setter ultérieur ou un framework basé sur la réflexion peut violer silencieusement.
 
-#### Q5. Comment le pattern matching pour `switch` se combine-t-il avec les sealed types, et pourquoi est-ce important pour l'exhaustivité ?
+#### Q12. Comment le pattern matching pour `switch` se combine-t-il avec les sealed types, et pourquoi est-ce important pour l'exhaustivité ?
+
 **Réponse :** Depuis Java 21, `switch` peut faire du pattern-matching directement sur les sous-types permis d'un
 sealed type : `switch (shape) { case Circle c -> ...; case Square s -> ...; case Triangle t -> ...; }`.
 Comme `Shape` est `sealed permits Circle, Square, Triangle`, le compilateur connaît l'ensemble complet des
@@ -150,6 +316,7 @@ désormais le switch comme complet, que chaque sous-type permis ait ou non son p
 sous-type nouvellement ajouté tombe silencieusement dans `default` au lieu de faire échouer la compilation.
 
 **Exemple :**
+
 ```java
 sealed interface Shape permits Circle, Square, Triangle {}
 record Circle(double r) implements Shape {}
@@ -170,9 +337,11 @@ double area(Shape shape) {
 
 **Pourquoi c'est un piège :** ajouter un `default -> throw new IllegalStateException()` défensif ressemble à
 une bonne pratique, mais cela réintroduit silencieusement exactement le trou à l'exécution que les sealed types
+
 + le switch exhaustif ont été conçus pour éliminer à la compilation.
 
-#### Q6. Où `Optional` aide-t-il, et où son usage dégrade-t-il le code ?
+#### Q13. Où `Optional` aide-t-il, et où son usage dégrade-t-il le code ?
+
 **Réponse :** `Optional<T>` a été conçu pour exactement une tâche : un *type de retour* qui dit « il peut ne pas
 y avoir de résultat » afin que l'appelant ne puisse pas oublier de gérer l'absence. Il n'est pas destiné à
 remplacer `null` partout. Mauvais usages que les seniors doivent savoir signaler : (1) comme **champ** ou **paramètre de méthode** — il n'est pas `Serializable`, ajoute une allocation et un troisième état (`null` *ou*
@@ -188,6 +357,7 @@ Souvenez-vous aussi qu'un retour `Optional` dans un hot path alloue, sauf si l'e
 qui compte dans des boucles serrées mais pas dans du code de service ordinaire.
 
 **Exemple :**
+
 ```java
 // Eager: loadDefaultFromDb() runs EVERY time, even when the user is present.
 User u = repo.findById(id).orElse(loadDefaultFromDb());
@@ -211,7 +381,8 @@ String city = repo.findById(id)
 classique parce que la version eager est invisible jusqu'à ce que l'argument ait un effet de bord
 (un insert en double, une requête lente à chaque requête).
 
-#### Q7. Quelles sont les façons courantes dont un pipeline `Stream` tourne mal, même lorsqu'il compile et « marche » dans un test ?
+#### Q14. Quelles sont les façons courantes dont un pipeline `Stream` tourne mal, même lorsqu'il compile et « marche » dans un test ?
+
 **Réponse :** Cinq cas récurrents. (1) **Laziness** : les opérations intermédiaires (`map`, `filter`,
 `peek`) ne font rien tant qu'une opération terminale ne s'exécute pas, donc un pipeline sans opération terminale
 ne fait silencieusement rien, et `peek` est une aide au debug, pas un endroit pour de la logique (il peut être
@@ -221,7 +392,7 @@ been operated upon or closed` — conserver plutôt un `Supplier<Stream<T>>` ou 
 (3) **Effets de bord avec les parallel streams** : `forEach(list::add)` depuis un stream parallèle mute
 une `ArrayList` non thread-safe depuis plusieurs threads — éléments perdus, `null`s ou
 `ArrayIndexOutOfBoundsException` ; le bon outil est `collect(...)`/`toList()`, qui construit des conteneurs par
-thread et les fusionne (et voir la Q21 pour comprendre pourquoi du travail bloquant dans un stream parallèle
+thread et les fusionne (et voir la Q30 pour comprendre pourquoi du travail bloquant dans un stream parallèle
 affame le common pool). (4) **Les variantes de List diffèrent** : `Stream.toList()` (Java 16) retourne une
 liste *non modifiable* qui accepte les `null`s ; `Collectors.toList()` retourne une `ArrayList` non spécifiée,
 en pratique mutable ; `Collectors.toUnmodifiableList()` rejette les `null`s — le code qui appelle ensuite
@@ -231,6 +402,7 @@ vous fournissez une merge function, et lève `NullPointerException` sur une vale
 n'apparaît que lorsque les données de production contiennent enfin un doublon.
 
 **Exemple :**
+
 ```java
 // (3) Broken: ArrayList is not thread-safe, parallel forEach races on it.
 List<Integer> out = new ArrayList<>();
@@ -254,7 +426,8 @@ Map<String, User> safe = users.stream()
 Les recruteurs utilisent `toMap` avec doublons et `forEach` parallèle précisément parce qu'ils montrent
 si vous avez déjà débuggé des streams en production plutôt que seulement lu un tutoriel.
 
-#### Q8. Pourquoi `double` est-il inadapté à l'argent, et quels sont les pièges de `BigDecimal` une fois qu'on change ?
+#### Q15. Pourquoi `double` est-il inadapté à l'argent, et quels sont les pièges de `BigDecimal` une fois qu'on change ?
+
 **Réponse :** `double` est une virgule flottante binaire : `0.1` n'a pas de représentation exacte, donc
 `0.1 + 0.2 == 0.30000000000000004` et les erreurs s'accumulent à travers les sommes, remises et lignes de taxe —
 un centime d'écart çà et là, ce dont les équipes de réconciliation et les auditeurs se soucient *bel et bien*.
@@ -263,7 +436,7 @@ il a ses propres pièges : (1)
 **`new BigDecimal(0.1)`** capture la valeur exacte du *double* (`0.1000000000000000055…`) — construire
 depuis une `String` ou avec `BigDecimal.valueOf(0.1)` ; (2) **`equals()` compare le scale**, donc
 `new BigDecimal("2.0").equals(new BigDecimal("2.00"))` vaut `false` — utiliser `compareTo() == 0`, et
-ne jamais utiliser `BigDecimal` comme clé de `HashMap` ou dans un `HashSet` sans normaliser le scale (Q11) ;
+ne jamais utiliser `BigDecimal` comme clé de `HashMap` ou dans un `HashSet` sans normaliser le scale (Q18) ;
 (3) **`divide()` sans `MathContext` ni scale** lève `ArithmeticException: Non-terminating
 decimal expansion` sur `1/3` ; (4) **le mode d'arrondi est une règle métier**, pas une valeur par défaut — `HALF_UP`
 est ce que la plupart des gens apprennent, `HALF_EVEN` (« arrondi du banquier ») est le standard comptable parce
@@ -272,6 +445,7 @@ sur le total de facture donne des résultats différents par construction, donc 
 scale de la devise est une donnée (`JPY` a 0 décimale, `KWD` en a 3), donc ne pas coder en dur `setScale(2)`.
 
 **Exemple :**
+
 ```java
 System.out.println(0.1 + 0.2);                                   // 0.30000000000000004
 System.out.println(new BigDecimal(0.1));                         // 0.1000000000000000055511151231257827...
@@ -295,7 +469,8 @@ sont là où naissent réellement les bugs financiers.
 
 ### Exceptions & ressources
 
-#### Q9. Que garantit réellement `try-with-resources`, et sur quelle interface repose-t-il ?
+#### Q16. Que garantit réellement `try-with-resources`, et sur quelle interface repose-t-il ?
+
 **Réponse :** Toute ressource implémentant `AutoCloseable` (ou `Closeable`, qui l'étend et
 restreint `close()` à ne lever que `IOException`) déclarée dans les parenthèses du `try(...)` voit son
 `close()` appelé automatiquement à la sortie du bloc — normale ou par exception — dans l'ordre **inverse**
@@ -306,6 +481,7 @@ l'autre comme le fait souvent un `try/finally` écrit à la main — une version
 `close()` lève aussi, ce qui est un bug réel et courant dans le code écrit avant Java 7.
 
 **Exemple :**
+
 ```java
 class Resource implements AutoCloseable {
     private final String name;
@@ -323,7 +499,8 @@ try (Resource r1 = new Resource("A"); Resource r2 = new Resource("B")) {
 mécanisme des exceptions suppressed, qui est exactement le détail qui compte lors du debug d'une
 stack trace de production contenant une section « Suppressed: » qu'un lecteur a survolée.
 
-#### Q10. Exceptions checked vs unchecked — quel est le véritable compromis de conception ?
+#### Q17. Exceptions checked vs unchecked — quel est le véritable compromis de conception ?
+
 **Réponse :** Les exceptions checked (sous-classes de `Exception` mais pas de `RuntimeException`) doivent être
 déclarées ou attrapées — le compilateur force l'appelant à reconnaître un mode de défaillance spécifique et
 récupérable (par ex. `IOException`). Les exceptions unchecked (`RuntimeException` et ses sous-classes)
@@ -341,6 +518,7 @@ ne cache pas seulement le boilerplate des exceptions checked — il peut cacher 
 `OutOfMemoryError` qui aurait dû faire planter le processus bruyamment.
 
 **Exemple :**
+
 ```java
 // Checked: caller is forced to decide how to handle a recoverable failure.
 void readConfig() throws IOException {
@@ -362,7 +540,8 @@ explique pourquoi c'est pire que des exceptions checked ou unchecked bien utilis
 
 ### Collections
 
-#### Q11. Décrivez ce qui se passe réellement dans `HashMap.put()` et `.get()`, et expliquez pourquoi un mauvais `hashCode()` est un vrai bug de performance.
+#### Q18. Décrivez ce qui se passe réellement dans `HashMap.put()` et `.get()`, et expliquez pourquoi un mauvais `hashCode()` est un vrai bug de performance.
+
 **Réponse :** `put()` calcule `hashCode()`, le disperse avec une fonction de mix interne
 (`h ^ (h >>> 16)`, pour replier les bits de poids fort dans les bits de poids faible afin que les tailles de table qui sont de petites puissances de
 deux gardent une bonne distribution), et choisit un index de bucket à partir de ce hash modulo la capacité
@@ -382,6 +561,7 @@ O(log n), la treeification vous sauvant en partie — mais une violation du cont
 écraser.
 
 **Exemple :**
+
 ```java
 class BadKey {
     final String id;
@@ -406,9 +586,10 @@ System.out.println(map.size()); // 2, not 1 — "duplicate" entries for an equal
 contrat `equals()`/`hashCode()` rompu n'est pas un ralentissement — c'est un bug de correction qui
 duplique silencieusement les données.
 
-#### Q12. Pourquoi un objet mutable avec un `hashCode()` basé sur ses champs est-il dangereux comme clé de `HashMap` ou élément de `HashSet` ?
+#### Q19. Pourquoi un objet mutable avec un `hashCode()` basé sur ses champs est-il dangereux comme clé de `HashMap` ou élément de `HashSet` ?
+
 **Réponse :** Une `HashMap`/`HashSet` range une entrée dans un bucket en utilisant le `hashCode()` de la clé *au
-moment de l'insertion* et ne le recalcule jamais (Q11). Si un champ qui participe à `hashCode()` /
+moment de l'insertion* et ne le recalcule jamais (Q18). Si un champ qui participe à `hashCode()` /
 `equals()` est muté ensuite, l'entrée reste dans l'ancien bucket alors que chaque lookup ultérieur
 hashe vers un *autre* — donc `contains()`, `get()` et `remove()` ratent tous un élément qui est
 manifestement toujours dans la collection (l'itération le trouve encore). Rien ne lève d'exception : l'entrée est
@@ -421,6 +602,7 @@ les clés et les membres de set comptent. Les conceptions sûres sont : utiliser
 retirer l'élément d'abord, le muter, puis le réinsérer.
 
 **Exemple :**
+
 ```java
 class Session {
     final String id;
@@ -453,7 +635,8 @@ immédiatement — le bug n'apparaît que lorsque quelque chose mute l'objet *al
 collection hashée*, souvent loin de l'endroit où il a été inséré, et le symptôme (un élément « fantôme »)
 apparaît bien après la mutation.
 
-#### Q13. Qu'est-ce qui cause `ConcurrentModificationException`, et quelle est la bonne correction ?
+#### Q20. Qu'est-ce qui cause `ConcurrentModificationException`, et quelle est la bonne correction ?
+
 **Réponse :** Les collections Java utilisent un itérateur fail-fast reposant sur un champ `modCount` ;
 l'itérateur capture `modCount` à sa création et le vérifie à chaque `next()`. Modifier structurellement
 la collection (add/remove, pas seulement mettre à jour une valeur via `set()`) en dehors de la propre méthode
@@ -469,6 +652,7 @@ offrent plutôt une itération faiblement cohérente qui peut ou non refléter l
 est un compromis différent, pas un compromis strictement plus sûr.
 
 **Exemple :**
+
 ```java
 List<String> names = new ArrayList<>(List.of("Ann", "Bob", "Cid"));
 
@@ -493,7 +677,8 @@ names.removeIf(n -> n.equals("Bob"));
 en boucle par index qui saute un élément après la suppression — les deux cachent un vrai bug au lieu de
 le corriger (la version par index saute silencieusement l'élément qui suit celui supprimé).
 
-#### Q14. Concevez un cache LRU thread-safe et borné from scratch. Quels sont les vrais compromis ?
+#### Q21. Concevez un cache LRU thread-safe et borné from scratch. Quels sont les vrais compromis ?
+
 **Réponse :** Une `LinkedHashMap` en mode access-order (`new LinkedHashMap<>(cap, 0.75f, true)`) avec
 `removeEldestEntry` redéfini pour évincer au-delà d'un seuil de taille vous donne la sémantique LRU presque
 gratuitement, car le mode access-order re-lie une entrée en queue de la liste doublement chaînée interne
@@ -511,6 +696,7 @@ signal recherché en entretien n'est pas de réciter les internes de Caffeine ; 
 concurrence sont en tension (chaque lecture est aussi une écriture dans la structure d'ordre).
 
 **Exemple :**
+
 ```java
 class LruCache<K, V> extends LinkedHashMap<K, V> {
     private final int capacity;
@@ -537,7 +723,50 @@ solution naïve du lock partout est elle-même l'amorce de la relance sur les co
 
 ### Concurrence & modèle mémoire
 
-#### Q15. Quelle est la vraie différence entre `synchronized` et `volatile` ?
+#### Q22. Qu'est-ce qu'une race condition, un deadlock et une famine de threads, et comment reconnaître et prévenir chacun ?
+
+**Réponse :** Ce sont les trois façons classiques dont la concurrence sur état partagé tourne mal, et elles échouent
+différemment. Une **race condition** est un bug où le résultat dépend d'un entrelacement malchanceux des threads : la
+forme typique est *check-then-act* (`if (slot.isFree()) slot.book()`) ou *read-modify-write* (`count++`, qui fait trois
+étapes, pas une). Elle produit des données fausses, pas un plantage, et seulement sous charge. On la corrige en rendant
+l'action composée atomique : un verrou (`synchronized`, `ReentrantLock`), une classe atomique
+(`AtomicLong.incrementAndGet`, `ConcurrentHashMap.compute`), ou en ne partageant tout simplement pas d'état mutable. Un
+**deadlock** est un cycle de threads qui détiennent chacun un verrou dont le suivant a besoin, si bien que personne
+n'avance ; il faut exclusion mutuelle, détention-attente, absence de préemption et attente circulaire, et en briser une
+suffit, le plus simplement en acquérant toujours les verrous dans un ordre global unique, ou avec `tryLock` et un délai.
+La **famine** (starvation) est un thread exécutable qui n'obtient jamais la ressource : un verrou non équitable toujours
+gagné par les autres, un thread de faible priorité derrière des threads occupés, ou un pool fixe dont tous les threads
+attendent des tâches placées derrière eux (*deadlock de pool*). On la prévient avec des verrous équitables là où c'est
+utile, des files bornées, des pools séparés par type de charge et des délais. Diagnostic : une race ne laisse aucune trace
+sauf des résultats faux (reproduire avec des tests de stress, par ex. jcstress) ; un deadlock apparaît dans un thread
+dump (`jstack <pid>` affiche « Found one Java-level deadlock ») ; la famine se voit par des threads `WAITING`/`BLOCKED`,
+une file qui grossit et peu de CPU.
+
+**Exemple :**
+
+```java
+// Race condition : deux requêtes peuvent toutes deux voir le créneau libre.
+if (!slot.isBooked()) { slot.book(patientId); }          // check-then-act, non atomique
+
+// Deadlock : ordre de verrouillage inversé.
+void transfer(Account a, Account b) {
+    synchronized (a) { synchronized (b) { /* déplacer */ } } // T1 : (x, y)  T2 : (y, x) -> deadlock
+}
+
+// Correctif : un ordre global unique, ici par id.
+void transfer(Account a, Account b) {
+    Account first = a.id() < b.id() ? a : b, second = first == a ? b : a;
+    synchronized (first) { synchronized (second) { /* déplacer */ } }
+}
+```
+
+**Pourquoi c'est un piège :** une race condition peut survivre des années car elle exige une vraie concurrence et un
+timing rare ; « ça marche sur ma machine » ne prouve rien. Et `volatile` ou une `ConcurrentHashMap` ne rendent pas une
+*séquence* d'opérations atomique (voir [Java Q23](java-core-jvm.md)). Les équivalents côté base de données sont traités
+dans [Persistence Q26](persistence-sql-postgres.md).
+
+#### Q23. Quelle est la vraie différence entre `synchronized` et `volatile` ?
+
 **Réponse :** `synchronized` fournit l'exclusion mutuelle (un seul thread exécute le bloc à la
 fois) **et** une arête happens-before : tout ce qu'un thread a fait avant de relâcher un lock est visible
 pour le thread suivant qui acquiert ce même lock, y compris les écritures simples (non volatile) faites
@@ -547,11 +776,12 @@ réordonner d'autres opérations mémoire de part et d'autre d'une lecture/écri
 threads peuvent encore se disputer pour incrémenter un `volatile int` et perdre une mise à jour, car `i++` est un
 read-modify-write qui n'est pas atomique même quand le champ est volatile. Le piège senior consiste à les traiter
 comme interchangeables : utiliser `volatile` pour un simple flag ou une référence quand on veut de la visibilité
-sans contention (un flag d'arrêt, une référence d'instance en double-checked locking — voir Q19), et
+sans contention (un flag d'arrêt, une référence d'instance en double-checked locking — voir Q28), et
 `synchronized` (ou un `Lock` explicite, ou une classe atomique) quand il faut protéger un invariant en plusieurs
 étapes, c'est-à-dire lorsque plus d'un champ/opération doit être observé ou mis à jour comme un tout.
 
 **Exemple :**
+
 ```java
 class Counter {
     private volatile int count = 0; // visibility only — no atomicity
@@ -569,6 +799,7 @@ class SafeCounter {
     }
 }
 ```
+
 Deux threads appelant `Counter.increment()` 100 000 fois chacun peuvent terminer avec un total nettement
 inférieur à 200 000 — `volatile` garantit que chaque thread finit par voir la dernière valeur, pas qu'aucun
 autre thread ne s'intercale entre la lecture et l'écriture.
@@ -577,7 +808,41 @@ autre thread ne s'intercale entre la lecture et l'écriture.
 cette question — volatile ne supprime que les bugs de lecture périmée, il ne fait rien contre les race conditions sur
 les opérations composées.
 
-#### Q16. Qu'est-ce que la « safe publication » dans le Java Memory Model, et pourquoi un autre thread peut-il voir un objet à moitié construit ?
+#### Q24. Qu'est-ce que l'immuabilité, et pourquoi les objets immuables sont-ils si utiles dans les applications concurrentes ?
+
+**Réponse :** Un objet immuable ne peut plus changer après sa construction : tous les champs sont `final`, affectés dans le
+constructeur, la classe ne peut pas être étendue (ou est un `record`), et aucune méthode n'expose d'état interne mutable.
+Comme rien ne peut jamais changer, il n'y a rien à synchroniser : un nombre quelconque de threads peuvent lire la même
+instance en même temps sans verrou, sans problème de visibilité (les champs `final` sont publiés en sécurité, voir
+[Java Q25](java-core-jvm.md)) et sans copies défensives à chaque frontière. Cela supprime des familles entières de bugs
+(races, lectures déchirées, `ConcurrentModificationException`), rend les objets sûrs comme clés de `HashMap` et valeurs de
+cache, et rend le raisonnement local. Le coût est l'allocation : chaque « modification » crée un nouvel objet
+(`LocalDate.plusDays`, `String.concat`), ce que la JVM gère bien pour de petites valeurs mais qui est inadapté à de grosses
+structures modifiées dans une boucle chaude ; on utilise alors un builder, une structure persistante ou un état mutable
+confiné. Les *composants* mutables sont la fuite habituelle : `final List<Slot> slots` n'est pas immuable si la liste peut
+encore être modifiée, donc on enveloppe avec `List.copyOf` en entrée et on expose `List.copyOf`/
+`Collections.unmodifiableList` en sortie.
+
+**Exemple :**
+
+```java
+public record Appointment(String id, String doctorId, Instant start, List<String> notes) {
+    public Appointment {                       // constructeur compact
+        notes = List.copyOf(notes);            // copie défensive : l'appelant ne pourra plus muter notre état
+    }
+    Appointment reschedule(Instant newStart) { // la « mutation » renvoie une nouvelle valeur
+        return new Appointment(id, doctorId, newStart, notes);
+    }
+}
+```
+
+**Pourquoi c'est un piège :** `final` ne gèle que la *référence*, pas l'objet pointé, et un record contenant une `List` ou
+une `Date` mutable n'est immuable qu'en surface. De plus, l'immuabilité protège l'objet, pas la *variable* : un
+`volatile Appointment current` exige encore un remplacement atomique (`AtomicReference.compareAndSet`) quand plusieurs
+threads le mettent à jour.
+
+#### Q25. Qu'est-ce que la « safe publication » dans le Java Memory Model, et pourquoi un autre thread peut-il voir un objet à moitié construit ?
+
 **Réponse :** Sans arête happens-before entre le thread qui construit un objet et le
 thread qui lit la référence, le JMM permet au lecteur de voir la *référence* comme non nulle alors que
 certains *champs de l'objet contiennent encore leurs valeurs par défaut* — le compilateur et le CPU sont libres de
@@ -590,11 +855,12 @@ garantie spéciale — une fois le constructeur terminé, tout thread qui voit l
 les valeurs correctes de ses champs `final` (et de tout ce qui n'est accessible que par eux) même
 à travers une data race — mais seulement si `this` ne *s'échappe* pas pendant la construction (enregistrer un
 listener, démarrer un thread, ou stocker `this` dans un static depuis le constructeur donne
-aux autres threads un objet partiellement construit). C'est la même règle de visibilité sur laquelle s'appuient la Q19
-pour le double-checked locking et la Q15 pour `volatile` ; sur x86 l'anomalie est rare à observer, ce qui est
+aux autres threads un objet partiellement construit). C'est la même règle de visibilité sur laquelle s'appuient la Q28
+pour le double-checked locking et la Q23 pour `volatile` ; sur x86 l'anomalie est rare à observer, ce qui est
 exactement pourquoi le bug survit aux tests et apparaît sur des serveurs ARM.
 
 **Exemple :**
+
 ```java
 class Config {
     int timeout;                         // non-final, non-volatile
@@ -622,7 +888,8 @@ Listener(EventBus bus) { bus.register(this); this.state = load(); } // bus threa
 car le réordonnancement dépend du matériel et du JIT. Les candidats qui disent « volatile ne sert que pour les
 flags » ratent que son vrai rôle est l'arête happens-before qui rend visible le *reste* d'un objet.
 
-#### Q17. Quand choisiriez-vous `ReentrantLock` (ou `StampedLock`) plutôt que `synchronized` ?
+#### Q26. Quand choisiriez-vous `ReentrantLock` (ou `StampedLock`) plutôt que `synchronized` ?
+
 **Réponse :** `synchronized` est le bon choix par défaut : il relâche le monitor automatiquement même sur
 une exception, ne peut pas être oublié, et la JVM l'optimise fortement. Ne recourez à
 `java.util.concurrent.locks` que lorsque vous avez besoin de quelque chose qu'il ne peut pas exprimer : **`tryLock()` /
@@ -635,11 +902,12 @@ la discipline : le unlock *doit* être dans un `finally`, sinon une seule except
 optimiste** (lire sans verrouiller, puis `validate(stamp)` ; réessayer sous un vrai read lock si un écrivain
 est intervenu), ce qui peut battre un read-write lock sous forte contention en lecture — mais il n'est **pas
 réentrant**, n'a pas de `Condition`s, et le ré-entrer depuis le même thread provoque un deadlock avec lui-même. Sur
-JDK 21–23, `synchronized` autour d'un I/O bloquant épingle aussi un virtual thread à son carrier (Q23,
+JDK 21–23, `synchronized` autour d'un I/O bloquant épingle aussi un virtual thread à son carrier (Q33,
 S11), ce qui est une raison d'utiliser `ReentrantLock` dans ce cas ; JDK 24 (JEP 491) a supprimé l'essentiel de ce
 pinning, donc l'argument s'est affaibli sur les JDK actuels.
 
 **Exemple :**
+
 ```java
 // Deadlock-avoiding transfer: give up and retry instead of waiting forever.
 boolean transfer(Account a, Account b, long amount) throws InterruptedException {
@@ -670,7 +938,8 @@ double distance() {
 débit est généralement négligeable sur les JVM modernes. La réponse senior porte sur les *capacités*
 (timeouts, interruption, conditions) et sur la responsabilité accrue de déverrouiller correctement.
 
-#### Q18. L'initialisation de classe peut-elle elle-même provoquer un deadlock, et comment se comporte l'échec d'un static initializer par la suite ?
+#### Q27. L'initialisation de classe peut-elle elle-même provoquer un deadlock, et comment se comporte l'échec d'un static initializer par la suite ?
+
 **Réponse :** Oui. La JVM garantit que chaque classe est initialisée exactement une fois en détenant un
 lock d'initialisation pendant l'exécution des initialiseurs `static` (JLS §12.4.2). Si l'initialiseur static de la classe `A`
 a besoin de la classe `B`, et celui de `B` a besoin de `A`, et que deux threads différents déclenchent `A` et `B`
@@ -683,9 +952,10 @@ est le comportement en cas d'échec : si un static initializer lève une excepti
 `NoClassDefFoundError: Could not initialize class X` — la classe est définitivement empoisonnée jusqu'au
 redémarrage, et la seconde erreur masque la cause d'origine (chercher dans les logs la *première*).
 Règles qui préviennent les deux : garder les static initializers triviaux, ne jamais y démarrer de threads ni y faire d'I/O,
-et casser les références statiques cycliques avec un lazy holder (Q19).
+et casser les références statiques cycliques avec un lazy holder (Q28).
 
 **Exemple :**
+
 ```java
 class A { static final B PARTNER = new B(); static void touch() {} }
 class B { static final A PARTNER = new A(); static void touch() {} }
@@ -706,12 +976,13 @@ class Settings {
 `NoClassDefFoundError` est le faux indice habituel lors d'un incident : les ingénieurs poursuivent un « jar manquant »
 qui est en réalité présent, alors que le vrai bug est la première erreur d'initialiseur, depuis longtemps sortie du scroll.
 
-#### Q19. Nommez les stratégies d'implémentation d'un Singleton thread-safe, et expliquez pourquoi Bill Pugh / static inner class est généralement préféré.
+#### Q28. Nommez les stratégies d'implémentation d'un Singleton thread-safe, et expliquez pourquoi Bill Pugh / static inner class est généralement préféré.
+
 **Réponse :** Quatre approches courantes : (1) l'initialisation eager — un champ `static final`,
 instancié au chargement de la classe, simple et thread-safe mais qui paie toujours le coût de construction
 même s'il n'est pas utilisé ; (2) un `getInstance()` synchronized — correct mais sérialise chaque appel pour toujours,
 même après l'existence de l'instance ; (3) le double-checked locking avec un champ `volatile` — lazy et
-rapide après le premier appel, mais facile à rater sans `volatile` (voir Q15) ; (4) la
+rapide après le premier appel, mais facile à rater sans `volatile` (voir Q23) ; (4) la
 holder class interne statique de Bill Pugh — une classe imbriquée statique privée détient l'instance `static final`, et
 la JVM ne charge (et donc n'initialise) cette classe imbriquée que la première fois qu'elle est référencée,
 ce qui donne une initialisation lazy sans aucune synchronisation, garantie par la thread-safety
@@ -729,6 +1000,7 @@ accidentelle ; Bill Pugh est le bon choix principalement quand le singleton ne p
 (par ex. il doit étendre une autre classe). »
 
 **Exemple :**
+
 ```java
 public class Registry {
     private Registry() { /* ... */ }
@@ -759,11 +1031,14 @@ public enum EnumRegistry {
 recruteur qui creuse (« et la réflexion ? ») teste si vous connaissez réellement la
 faille, et pas seulement le nom du pattern.
 
-#### Q20. Pourquoi les `ThreadLocal`s conviennent-ils mal au code concurrent moderne, et que change `ScopedValue` ?
+*Voir aussi :* [Design Patterns Q1](design-patterns.md) (quand un Singleton est vraiment justifié) et [Design Patterns Q15](design-patterns.md) (pourquoi c'est souvent un anti-pattern).
+
+#### Q29. Pourquoi les `ThreadLocal`s conviennent-ils mal au code concurrent moderne, et que change `ScopedValue` ?
+
 **Réponse :** Un `ThreadLocal` est un emplacement par thread, mutable et sans portée : n'importe qui peut le `set()`, il
 vit jusqu'à ce que quelqu'un pense à le `remove()`, et sur un thread poolé il fait fuiter silencieusement la
-valeur de la requête précédente dans la suivante (Q27). Il coûte aussi de la mémoire par thread, ce qui cesse
-d'être anodin à l'échelle des virtual threads (Q23) — un million de virtual threads signifie jusqu'à un million
+valeur de la requête précédente dans la suivante (Q37). Il coûte aussi de la mémoire par thread, ce qui cesse
+d'être anodin à l'échelle des virtual threads (Q33) — un million de virtual threads signifie jusqu'à un million
 de copies de chaque valeur de `ThreadLocal` — et `InheritableThreadLocal` copie les valeurs dans chaque thread
 enfant de façon eager. `ScopedValue` (une API preview dans JDK 21–24, finale dans JDK 25) corrige la conception
 plutôt que le symptôme : la valeur est **immuable**, **liée pour une portée bornée**
@@ -776,6 +1051,7 @@ vous ne pouvez pas migrer, gardez l'usage de `ThreadLocal` minuscule, encapsulez
 le vide toujours, et n'y stockez jamais d'objets lourds.
 
 **Exemple :**
+
 ```java
 // ThreadLocal: must be cleared manually or it leaks into the next task on a pooled thread.
 static final ThreadLocal<User> CURRENT = new ThreadLocal<>();
@@ -802,7 +1078,8 @@ abstraction, et pas seulement réciter la fuite.
 
 ### Executors & async
 
-#### Q21. Quelle est la différence entre utiliser `ExecutorService` et créer des objets `Thread` bruts, et quel est un piège courant avec le common fork-join pool ?
+#### Q30. Quelle est la différence entre utiliser `ExecutorService` et créer des objets `Thread` bruts, et quel est un piège courant avec le common fork-join pool ?
+
 **Réponse :** `ExecutorService` découple la soumission des tâches de la gestion des threads — vous soumettez
 des `Runnable`s ou `Callable`s à un pool de taille bornée (ou un virtual-thread-per-task), récupérez des
 `Future`s, et le pool gère la réutilisation, la mise en file et l'arrêt ; la création brute de `Thread` ne vous donne rien
@@ -816,6 +1093,7 @@ contrôlez pas. Le travail bloquant appartient à son propre executor dédié, d
 (souvent bien plus grand que le nombre de CPU, puisque les threads bloqués ne consomment pas de CPU).
 
 **Exemple :**
+
 ```java
 // Dangerous: a slow HTTP call inside parallelStream() eats a commonPool thread
 // that every other parallelStream() call in the JVM is also competing for.
@@ -834,7 +1112,42 @@ List<Future<String>> futures = urls.stream()
 ralentissement sans rapport apparent, apparemment aléatoire, dans une partie complètement différente de l'application qui
 utilise elle aussi `parallelStream()` ou des `CompletableFuture` async par défaut.
 
-#### Q22. Décrivez `thenApply` vs `thenCompose` vs `thenCombine` sur `CompletableFuture`, et nommez un piège courant.
+#### Q31. Quelle est la différence entre une charge CPU-bound et I/O-bound, et comment cela change-t-il le dimensionnement des pools de threads ?
+
+**Réponse :** Une tâche **CPU-bound** occupe un cœur à calculer (parsing, hachage, compression, génération de rapports) :
+sa vitesse est limitée par le nombre de cœurs, donc plus de threads que de cœurs n'ajoute que des changements de contexte.
+Une tâche **I/O-bound** passe l'essentiel de son temps à *attendre* (appel HTTP, requête SQL, disque, broker de
+messages) : le thread est bloqué et le CPU inactif, on peut donc lancer beaucoup plus de threads que de cœurs pour occuper
+le matériel. La formule classique est `threads ≈ cœurs × (1 + temps d'attente / temps de calcul)` : avec 8 cœurs et une
+tâche qui attend 90 ms pour 10 ms de calcul, on obtient environ 80 threads, alors qu'une tâche purement CPU en reçoit
+environ 8 (ou `cœurs + 1`). En pratique on ne mélange pas : on donne au calcul un petit pool fixe (ou
+`ForkJoinPool.commonPool()` / streams parallèles) et aux I/O bloquantes leur propre pool, plus grand mais *borné*, pour
+qu'une dépendance lente ne puisse ni affamer le calcul ni épuiser tous les threads. Les threads virtuels changent le côté
+I/O : on peut en créer un par tâche bloquante et cesser de dimensionner le pool à la main (voir
+[Java Q33](java-core-jvm.md)), mais ils n'apportent rien au CPU-bound, toujours limité par les cœurs. Mesurez avant de
+régler : CPU proche de 100 % avec une courte file d'exécution signale du CPU-bound ; CPU bas avec beaucoup de threads
+`WAITING` et une latence croissante signale de l'I/O-bound (voir [Java Q40](java-core-jvm.md) pour le profilage).
+
+**Exemple :**
+
+```java
+int cores = Runtime.getRuntime().availableProcessors();
+ExecutorService cpuPool = Executors.newFixedThreadPool(cores);           // calcul : ~cœurs
+ThreadPoolExecutor ioPool = new ThreadPoolExecutor(                       // appels bloquants : plus grand mais borné
+        50, 50, 60, TimeUnit.SECONDS, new ArrayBlockingQueue<>(500),
+        new ThreadPoolExecutor.CallerRunsPolicy());                       // contre-pression plutôt qu'une file non bornée
+
+CompletableFuture.supplyAsync(() -> patientApi.fetch(id), ioPool)         // attente réseau
+                 .thenApplyAsync(this::computeRiskScore, cpuPool);        // puis calcul
+```
+
+**Pourquoi c'est un piège :** un seul pool partagé pour tout laisse une rafale d'appels HTTP lents occuper tous les threads
+et affamer le calcul (et les health checks) ; et `newCachedThreadPool` pour de l'I/O n'a aucune borne, si bien qu'un aval
+lent finit en `OutOfMemoryError: unable to create native thread`. Voir [Java Q30](java-core-jvm.md) pour les pièges des
+executors.
+
+#### Q32. Décrivez `thenApply` vs `thenCompose` vs `thenCombine` sur `CompletableFuture`, et nommez un piège courant.
+
 **Réponse :** `thenApply` transforme le résultat avec une fonction simple (`T -> U`) — à utiliser quand
 l'étape suivante n'est pas elle-même async. `thenCompose` aplatit une étape qui *retourne* un autre
 `CompletableFuture` (`T -> CompletableFuture<U>`) — l'équivalent async de `flatMap` ; utiliser
@@ -843,9 +1156,10 @@ que celui qui le consomme a oublié de déballer une couche. `thenCombine` joint
 une fois les deux terminés, en exécutant une `BiFunction` sur les deux résultats. Le piège courant est d'appeler
 `.get()` ou `.join()` sur un future à l'intérieur du callback d'un autre future (ou pire, sur un thread
 de requête) — cela bloque un thread en attente d'un travail async, ce qui va à l'encontre de l'objectif et, sur le
-common pool, risque la même famine qu'à la Q21. Composez la chaîne au lieu de bloquer en cours de route.
+common pool, risque la même famine qu'à la Q30. Composez la chaîne au lieu de bloquer en cours de route.
 
 **Exemple :**
+
 ```java
 CompletableFuture<User> userFuture = fetchUser(id);
 
@@ -867,7 +1181,8 @@ CompletableFuture<Dashboard> dashboard =
 c'est un bug de forme de type, pas une erreur de syntaxe, donc il n'apparaît que lorsqu'un appelant essaie d'utiliser le
 résultat et obtient un `CompletableFuture` là où il attendait la vraie valeur.
 
-#### Q23. Quel problème les virtual threads (Project Loom) résolvent-ils réellement, et où échouent-ils encore ?
+#### Q33. Quel problème les virtual threads (Project Loom) résolvent-ils réellement, et où échouent-ils encore ?
+
 **Réponse :** Les platform threads sont de fines enveloppes autour de threads OS — coûteux à créer
 (stacks de l'ordre du mégaoctet) et limités en nombre (des milliers, pas des millions), ce qui explique pourquoi
 les serveurs I/O-bound à forte concurrence se sont historiquement tournés vers la programmation réactive/async
@@ -885,6 +1200,7 @@ objet — cesse de l'être, puisqu'il est maintenant multiplié par des ordres d
 `ThreadLocal` n'a jamais été conçu avec cette cardinalité en tête.
 
 **Exemple :**
+
 ```java
 try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
     for (int i = 0; i < 100_000; i++) {
@@ -903,8 +1219,9 @@ bloc `synchronized` ou un `ThreadLocal` surdimensionné soit sur le hot path —
 « qu'est-ce qui pourrait mal tourner ? » vérifie si vous connaissez les deux modes de défaillance concrets, pas seulement le
 bénéfice affiché.
 
-#### Q24. Quand choisiriez-vous des virtual threads plutôt qu'une stack réactive (WebFlux) pour un service I/O-bound à forte concurrence, et inversement ?
-**Réponse :** Les virtual threads (Q23) l'emportent quand le codebase, ses bibliothèques et son outillage de debug
+#### Q34. Quand choisiriez-vous des virtual threads plutôt qu'une stack réactive (WebFlux) pour un service I/O-bound à forte concurrence, et inversement ?
+
+**Réponse :** Les virtual threads (Q33) l'emportent quand le codebase, ses bibliothèques et son outillage de debug
 supposent du code bloquant et synchrone — la plupart des drivers JDBC, la plupart de la logique métier existante, des stack traces
 qui se lisent de haut en bas — et que vous voulez une concurrence à l'échelle réactive sans réécriture réactive
 complète ; vous obtenez cette scalabilité essentiellement « gratuitement » sur du code bloquant non modifié, et les thread
@@ -919,6 +1236,7 @@ pipeline entièrement non bloquant est l'exigence réelle, pas un choix par déf
 « le réactif, c'est la manière moderne ».
 
 **Exemple :**
+
 ```java
 // Virtual-thread style: ordinary blocking code, scales via cheap threads.
 @GetMapping("/orders/{id}")
@@ -941,7 +1259,8 @@ au lieu de choisir un vainqueur universel.
 
 ### Mémoire JVM & GC
 
-#### Q25. Expliquez l'analyse d'accessibilité (reachability) et les GC roots, et nommez deux algorithmes de garbage collection.
+#### Q35. Expliquez l'analyse d'accessibilité (reachability) et les GC roots, et nommez deux algorithmes de garbage collection.
+
 **Réponse :** La JVM n'utilise pas de comptage de références ; elle trace périodiquement l'accessibilité depuis un
 ensemble fixe de **GC roots** — variables locales et paramètres sur la stack de chaque thread vivant,
 champs statiques, références JNI détenues par du code natif, et quelques autres (monitors actifs, références
@@ -958,6 +1277,7 @@ pour faire le marquage et la relocalisation en concurrence avec les threads appl
 du live set.
 
 **Exemple :**
+
 ```java
 class Node {
     Node other;
@@ -981,7 +1301,8 @@ void demo() {
 Objective-C) supposent parfois que Java a le même problème de fuite par cycle que ces langages ont sans
 collector de cycles — le GC tracing de Java n'a jamais eu ce problème.
 
-#### Q26. Décrivez comment choisir entre G1, ZGC et Shenandoah pour un service sensible à la latence.
+#### Q36. Décrivez comment choisir entre G1, ZGC et Shenandoah pour un service sensible à la latence.
+
 **Réponse :** Partez de la contrainte réelle, pas du nom du collector : G1 est le défaut sûr —
 mature, bien compris, basé sur des régions, avec des objectifs de temps de pause ajustables (`-XX:MaxGCPauseMillis`) — et
 convient à la plupart des services où « une pause occasionnelle de quelques dizaines de millisecondes » est acceptable. Si le
@@ -989,7 +1310,7 @@ service a un budget de pause strict inférieur à 10 ms (ou à la milliseconde) 
 de trading, un chemin de real-time bidding — ZGC et Shenandoah sont les collectors concurrents à faible pause,
 qui font le marquage et le compactage en concurrence avec les threads applicatifs au lieu de stopper le monde
 pour cela ; ZGC en particulier fait évoluer le temps de pause indépendamment de la taille du heap (via colored pointers
-et load barriers, voir Q25), donc il reste plat même sur de très grands heaps (des centaines de Go), alors que
+et load barriers, voir Q35), donc il reste plat même sur de très grands heaps (des centaines de Go), alors que
 les pauses stop-the-world de G1 augmentent encore quelque peu avec un live set plus grand. Le compromis pour les deux
 collectors concurrents est un overhead CPU un peu plus élevé (le travail concurrent entre en compétition avec les threads
 applicatifs pour les cœurs) et, historiquement, un coût en débit par rapport à G1 — même si cet écart s'est réduit
@@ -999,7 +1320,8 @@ plutôt que de partir par défaut sur « ZGC est plus récent donc meilleur » �
 latence côté utilisateur ne tire rien des faibles pauses de ZGC et paie son overhead CPU sans aucun bénéfice.
 
 **Exemple :**
-```
+
+```yaml
 # G1 — safe default, tunable pause goal:
 -XX:+UseG1GC -XX:MaxGCPauseMillis=200
 
@@ -1016,7 +1338,8 @@ SLO de latence réel du service est un signal d'alarme — un job batch sans exi
 rien avec ZGC et en paie l'overhead pour rien, alors qu'un service avec un budget réel inférieur à 10 ms
 qui reste sur G1 « parce que c'est le défaut » ne satisfait pas sa propre exigence.
 
-#### Q27. Java a un garbage collection — comment une fuite mémoire peut-elle encore se produire ?
+#### Q37. Java a un garbage collection — comment une fuite mémoire peut-elle encore se produire ?
+
 **Réponse :** Le GC ne récupère que les objets *inaccessibles* ; une « fuite » en Java est en réalité une accessibilité
 involontaire — quelque chose détient encore une référence vers des objets dont plus personne n'a besoin, donc ils ne
 deviennent jamais éligibles à la collecte. Causes classiques : une collection `static` (cache, liste de listeners) qui
@@ -1024,12 +1347,13 @@ ne fait que grossir et n'est jamais élaguée ; des listeners/callbacks enregist
 tout le graphe d'objets qu'ils capturent ; et des valeurs de `ThreadLocal` non vidées avant qu'un thread ne soit
 rendu à un pool — comme les threads poolés vivent indéfiniment, tout ce qui reste dans leur map `ThreadLocal`
 vit avec eux, ce qui est une fuite particulièrement vicieuse dans les thread pools d'app-server car elle est
-invisible jusqu'à ce que le heap grossisse depuis des jours. Les virtual threads (Q23) ne suppriment pas ce risque ;
+invisible jusqu'à ce que le heap grossisse depuis des jours. Les virtual threads (Q33) ne suppriment pas ce risque ;
 ils peuvent l'aggraver en volume, car un mauvais usage de `ThreadLocal` qui était borné par « quelques centaines de
 platform threads dans le pool » devient non borné par « autant de virtual threads qui se trouvent être vivants
 en ce moment » si la valeur n'est jamais vidée.
 
 **Exemple :**
+
 ```java
 class RequestContext {
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[1_000_000]);
@@ -1047,7 +1371,8 @@ class RequestContext {
 le recruteur veut entendre qu'une fuite est un bug d'accessibilité dont l'*application* est responsable, et non
 quelque chose qu'on pourrait attendre d'un garbage collector qu'il détecte ou corrige.
 
-#### Q28. Quelle est la différence entre `StackOverflowError` et `OutOfMemoryError`, et d'où vient réellement chacune ?
+#### Q38. Quelle est la différence entre `StackOverflowError` et `OutOfMemoryError`, et d'où vient réellement chacune ?
+
 **Réponse :** Les deux sont des `Error`s (pas des `Exception`s — la JVM signale quelque chose dont l'application
 ne devrait généralement pas essayer de se remettre), mais elles viennent de régions mémoire différentes.
 `StackOverflowError` se produit quand la call stack d'un seul thread dépasse sa taille fixe — presque
@@ -1057,11 +1382,12 @@ le heap (`OutOfMemoryError: Java heap space`, quand les objets vivants plus le g
 heap configuré et que le GC ne peut pas en libérer assez), ou dans le metaspace (`OutOfMemoryError: Metaspace`, dû au
 chargement de trop de classes — un symptôme classique de fuite de classloader, voir S12), ou même à cause de trop de
 threads (`OutOfMemoryError: unable to create new native thread`, atteignant une limite de threads OS,
-ce qui est une raison de plus pour laquelle les virtual threads (Q23) ont changé le mode de défaillance du code à forte concurrence —
+ce qui est une raison de plus pour laquelle les virtual threads (Q33) ont changé le mode de défaillance du code à forte concurrence —
 cette erreur précise devient bien moins probable quand les threads sont bon marché) — le message spécifique après
 les deux-points est la première chose à lire, puisque la correction diffère complètement selon la région.
 
 **Exemple :**
+
 ```java
 // StackOverflowError — unbounded recursion, not a heap problem at all.
 long factorial(int n) {
@@ -1080,12 +1406,190 @@ while (true) {
 la stack » comme correction universelle pour les deux — cela traite le symptôme, pas la cause racine propre à chaque région,
 et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algorithme sous-jacent est réellement non borné.
 
+## 🔴 Expert / Ouvert
+
+### Internes de la JVM & performance
+
+#### Q39. Que fait le compilateur JIT, et que sont l'escape analysis et la désoptimisation ?
+
+**Réponse :** La JVM commence par **interpréter** le bytecode en le profilant. Les méthodes chaudes sont compilées par
+**C1** (rapide, optimisation légère), puis les plus chaudes par **C2** (ou Graal) avec des optimisations agressives
+fondées sur le profil observé : **inlining** (la plus importante, elle permet toutes les autres), déroulage de boucles,
+et dévirtualisation des appels d'interface qui n'ont jamais vu qu'une implémentation. L'**escape analysis** vérifie si
+un objet peut sortir de la méthode ou du thread ; sinon, le JIT peut éviter de l'allouer sur le tas (**scalar
+replacement**) et supprimer ses verrous. Quand une hypothèse tombe (une deuxième implémentation est chargée, une
+branche « impossible » est prise), la JVM **désoptimise** vers l'interpréteur et recompile plus tard. Conséquences : la
+performance demande un **warm-up** ; les micro-benchmarks sans **JMH** sont trompeurs (élimination de code mort, pas de
+warm-up) ; et les sites d'appel mégamorphiques (nombreuses implémentations) sont plus lents.
+
+**Exemple :**
+
+```yaml
+-XX:+UnlockDiagnosticVMOptions -XX:+PrintCompilation
+   1203  412   4   com.acme.Pricing::finalPrice (58 bytes)        <- C2 (tier 4)
+   1890  412   4   com.acme.Pricing::finalPrice   made not entrant   <- désoptimisée
+```
+
+#### Q40. Comment profiler un service Java lent ou gourmand en CPU en production ?
+
+**Réponse :** Partez des métriques (CPU, temps de pause GC, taux d'allocation, pools de threads) pour savoir quelle
+ressource sature. Utilisez ensuite des **profileurs à faible surcoût** utilisables en production : **Java Flight
+Recorder** (intégré au JDK, environ 1 % de surcoût : `jcmd <pid> JFR.start duration=60s filename=rec.jfr`, puis
+ouverture dans JDK Mission Control) donne échantillons CPU, allocations, verrous, GC et I/O ; **async-profiler** donne
+des **flame graphs** CPU, allocation et verrous précis, sans biais de safepoint. Lisez le flame graph du large vers
+l'étroit : les cadres larges sont là où passe le temps. Pour « c'est lent mais le CPU est bas », regardez les profils
+en temps réel (wall-clock), la contention de verrous et les thread dumps (`jcmd <pid> Thread.print`) à la recherche de
+threads qui attendent le pool, la base ou des verrous. Comparez avant et après un changement plutôt que de vous fier à
+l'intuition.
+
+**Exemple :**
+
+```text
+./asprof -e cpu -d 30 -f cpu.html <pid>
+flame graph : 41 % dans com.fasterxml.jackson...serialize  <- sérialisation d'une réponse de 5 Mo par requête
+./asprof -e alloc -d 30 -f alloc.html <pid>
+```
+
+#### Q41. GraalVM native image vs une JVM classique — quand cela en vaut-il la peine ?
+
+**Réponse :** Native image compile l'application à l'avance en un exécutable autonome, sous une **hypothèse de monde
+fermé** : tout ce qui est atteignable doit être connu au build. Gains : démarrage en dizaines de millisecondes et
+empreinte mémoire bien plus faible, ce qui convient aux fonctions serverless, aux CLI et aux charges qui descendent à
+zéro. Coûts : builds longs, réflexion, proxies et ressources à déclarer (l'AOT de Spring Boot 3 génère la plupart des
+hints, mais les bibliothèques sans métadonnées demandent une configuration manuelle), débit maximal inférieur à un JIT
+C2 chaud sauf avec l'optimisation guidée par profil, et un runtime différent à déboguer et superviser. Pour des
+services longue durée sur Kubernetes, une JVM classique avec **Class Data Sharing (AppCDS)**, le checkpoint/restore
+**CRaC**, ou le cache AOT de Leyden dans les JDK récents apporte souvent l'essentiel du gain au démarrage avec moins de
+contraintes.
+
+#### Q42. Comment fonctionne le chargement de classes, et qu'apporte JPMS (les modules) ?
+
+**Réponse :** Les classes sont chargées paresseusement par une hiérarchie de class loaders : **bootstrap** (cœur du
+JDK), **platform** et **application** (votre classpath), avec **délégation au parent** (on demande d'abord au parent).
+Les serveurs d'applications, les fat jars Spring Boot et les systèmes de plugins ajoutent leurs propres loaders. Une
+classe est identifiée par son nom **et** son loader, d'où les « `ClassCastException`: com.acme.Foo cannot be cast to
+com.acme.Foo » (deux loaders ont chargé la même classe), et d'où les fuites mémoire au redéploiement dans un conteneur,
+via un class loader maintenu en vie par un thread ou une référence statique. **JPMS** (modules Java 9) ajoute une
+**encapsulation forte** : un `module-info.java` déclare ce qu'il `requires` et quels packages il `exports` ; les packages
+non exportés sont inaccessibles même s'ils sont publics, et la réflexion exige `opens`. Il détecte au démarrage les
+packages scindés et les dépendances manquantes. La plupart des applications Spring tournent encore sur le classpath,
+mais c'est JPMS qui garde les internes du JDK fermés (d'où les options `--add-opens`) et permet des runtimes minimaux
+avec `jlink`.
+
+**Exemple :**
+
+```java
+module com.acme.billing {
+    requires java.sql;
+    exports com.acme.billing.api;          // API publique
+    opens com.acme.billing.model to com.fasterxml.jackson.databind;   // réflexion pour Jackson seulement
+}
+```
+
+#### Q43. Pourquoi les images natives consomment-elles si peu de mémoire et démarrent-elles si vite, et que sacrifie-t-on ?
+
+**Réponse :** Une JVM classique fait à l'exécution ce qu'une image native a fait une seule fois au build. Au démarrage,
+la JVM charge et vérifie les classes, interprète le bytecode, le profile, puis compile les méthodes chaudes avec C1/C2
+sur des threads d'arrière-plan ; cela coûte du temps (de centaines de ms à plusieurs secondes) et de la mémoire
+(Metaspace pour les métadonnées de classes, code cache du JIT, données de profilage, threads du compilateur et leur
+mémoire de travail, souvent 100-300 Mo en plus du heap). **Native Image** déplace ce travail au build : une **analyse de
+points-to** trouve tout ce qui est atteignable depuis `main` (le *monde fermé*) et **supprime le reste** (classes,
+méthodes inutilisées, même des parties du JDK) ; certaines classes sont **initialisées au build** et le graphe d'objets
+obtenu est écrit dans l'exécutable sous forme de **snapshot du heap de l'image**, donc l'application démarre avec son état
+déjà construit ; le code est du code machine dès le départ (ni interpréteur, ni JIT, ni warm-up), et un petit runtime
+(« Substrate VM ») avec un **Serial GC** simple et un petit heap par défaut remplace HotSpot. Résultat : typiquement
+~20-50 ms de démarrage et une mémoire résidente plusieurs fois plus faible que la même application sur JVM.
+Ce que l'on sacrifie : le **débit maximal** (C2 optimise avec de vrais profils d'exécution ; le code natif est compilé à
+l'aveugle sauf si on lui fournit un profil via la **PGO**, Oracle GraalVM), le **temps et la RAM de build** (minutes et
+plusieurs Go par build), les **fonctionnalités dynamiques** (réflexion, proxies, ressources et JNI doivent être connus au
+build) et l'**outillage** (pas de parité JFR/attach/`jcmd`, débogage différent). C'est une optimisation de démarrage et
+d'empreinte, pas une accélération générale.
+
+**Exemple :**
+
+```bash
+# Même service Spring Boot, mesuré après démarrage + une requête (valeurs indicatives)
+java -jar app.jar          # démarrage ~2,5 s   RSS ~380 Mo
+./target/app               # démarrage ~0,05 s  RSS ~70 Mo
+ps -o rss= -p <pid>        # mémoire résidente en Ko
+```
+
+#### Q44. Comment construit-on une application Spring Boot 3 en image native, étape par étape ?
+
+**Réponse :**
+
+1. **Installer un JDK GraalVM** (21+ pour Boot 3.x) et le vérifier : `sdk install java <version-graalvm>`, puis
+   `java -version` et `native-image --version` (Oracle GraalVM pour la PGO et G1 ; GraalVM CE sinon).
+2. **Utiliser le build AOT de Spring Boot.** `spring-boot-starter-parent` définit déjà le profil `native` et enregistre
+   `native-maven-plugin` ; Gradle demande le plugin `org.graalvm.buildtools.native`. Au build, Spring exécute le
+   **traitement AOT** : il évalue les conditions et génère le code des définitions de beans ainsi que les **hints**
+   de réflexion/proxy/ressources, au lieu de les découvrir à l'exécution.
+3. **Construire l'exécutable :** `mvn -Pnative native:compile` (Gradle : `./gradlew nativeCompile`). Le binaire arrive
+   dans `target/` ; comptez quelques minutes et 4-8 Go de RAM.
+4. **Ou construire directement une image de conteneur** avec les Cloud Native Buildpacks, sans GraalVM local :
+   `mvn -Pnative spring-boot:build-image` (Gradle : `./gradlew bootBuildImage`).
+5. **Corriger les métadonnées manquantes.** Tout ce qui est résolu dynamiquement (réflexion, mapping JSON de vos propres
+   classes, resource bundles, `Class.forName`, proxies JDK) doit être déclaré. Premier choix : les hints de Spring
+   (`@RegisterReflectionForBinding`, `@ImportRuntimeHints` avec un `RuntimeHintsRegistrar`) ; pour les bibliothèques,
+   le **dépôt de métadonnées d'atteignabilité GraalVM** (récupéré automatiquement par le plugin) ; en dernier recours :
+   lancer l'application sur la JVM avec l'**agent de traçage** pour générer la config JSON, puis ne garder que
+   l'utile.
+6. **Tester en mode natif**, pas seulement sur la JVM : `mvn -PnativeTest test` (Gradle : `./gradlew nativeTest`)
+   exécute la suite de tests compilée en image native ; lancer le binaire produit avec un smoke test en CI.
+7. **L'expédier léger.** Un Dockerfile multi-étapes qui copie le binaire dans une base minimale (distroless/`scratch`
+   avec liaison statique ou quasi statique : `--static --libc=musl` ou `--static-nolibc`). Limiter la mémoire avec les
+   options natives (`-Xmx`, `-Xms` sont supportées par le Serial GC de l'image) et comparer RSS et démarrage à la
+   référence JVM.
+8. **Ne régler que si nécessaire :** mode build rapide `-Ob` en dev, `-O3`/**PGO** en production pour le débit
+   (`--pgo-instrument`, charge représentative, rebuild avec `--pgo=default.iprof`), `--gc=G1` sur Oracle GraalVM quand
+   les pauses du Serial GC gênent sur de plus gros heaps.
+
+**Exemple :**
+
+```xml
+<!-- pom.xml : le parent fournit déjà le profil "native" ; les arguments de build supplémentaires vont ici -->
+<plugin>
+  <groupId>org.graalvm.buildtools</groupId>
+  <artifactId>native-maven-plugin</artifactId>
+  <configuration>
+    <buildArgs>
+      <buildArg>-Ob</buildArg>   <!-- builds de dev plus rapides ; à retirer en production -->
+    </buildArgs>
+  </configuration>
+</plugin>
+```
+
+```java
+@Configuration
+@ImportRuntimeHints(AcmeHints.class)
+class NativeConfig {}
+
+class AcmeHints implements RuntimeHintsRegistrar {
+    public void registerHints(RuntimeHints hints, ClassLoader cl) {
+        hints.reflection().registerType(InvoiceDto.class, MemberCategory.values()); // lu par Jackson via la réflexion
+        hints.resources().registerPattern("templates/*.html");                      // chargé depuis le classpath
+    }
+}
+```
+
+```bash
+# Générer les hints d'une bibliothèque sans métadonnées : exercer l'application sur la JVM avec l'agent
+java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar app.jar
+```
+
 ## 🎯 Scénarios réels
 
 ### S1. Un service de production lève `OutOfMemoryError: Java heap space` après un pic de trafic
+
 - **Symptômes :** Le service était sain pendant des semaines, puis lors d'un pic de trafic lié à une campagne marketing
   il se met à lever `OutOfMemoryError: Java heap space` et est OOMKilled ou redémarré par
   l'orchestrateur.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Récupérer un heap dump à la prochaine occurrence (`-XX:+HeapDumpOnOutOfMemoryError` devrait
   déjà être positionné en prod) et le charger dans un analyseur mémoire pour trouver le dominator tree — ce qui
   retient le plus de mémoire. Recouper avec le monitoring : cette taille de heap était-elle toujours limite et
@@ -1093,6 +1597,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   sans borne avec le volume de requêtes (une vraie fuite, probablement un cache ou une collection non bornée liée
   au nombre de requêtes) ?
 - **Exemple :**
+
   ```java
   // A classic accidental leak: caching per-request data in a static map that's
   // sized fine at low traffic but scales unboundedly with the traffic spike.
@@ -1102,6 +1607,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       return responseCache.computeIfAbsent(req.key(), k -> compute(req));
   }
   ```
+
 - **Résolution :** Si le heap est réellement sous-dimensionné, augmenter `-Xmx` et/ou ajouter de la capacité horizontale. Si
   c'est une fuite, corriger la référence qui retient (ajouter de l'éviction/une borne à la
   collection/au cache fautif, par ex. le remplacer par un cache Caffeine borné) et redéployer ; vérifier que le heap
@@ -1111,36 +1617,58 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   utiliser par défaut pour les nouveaux caches une implémentation bornée (Caffeine avec une taille max) plutôt qu'une simple
   `HashMap`.
 
+</details>
+
 ### S2. L'application se fige plusieurs secondes d'affilée, apparemment au hasard
+
 - **Symptômes :** Pas d'erreurs, pas de crashs, mais les graphes de latence montrent des pics périodiques où chaque
   requête se bloque pendant 2 à 5 secondes simultanément, puis récupère.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Ce schéma — tout se met en pause en même temps — est la signature d'une pause GC
   stop-the-world, pas de la logique applicative. Activer/consulter les logs GC (`-Xlog:gc*`) et corréler les
   horodatages des pauses avec les pics de latence ; s'ils coïncident, c'est confirmé.
 - **Exemple :**
-  ```
+
+  ```text
   [12.481s][info][gc] GC(42) Pause Full (Allocation Failure) 1998M->1950M(2048M) 2412.331ms
   ```
+
   Une ligne `Pause Full` de plus de 2 secondes coïncidant exactement avec un pic de latence de requête au même
   horodatage est la preuve qui confirme — pas une coïncidence à balayer.
+
 - **Résolution :** Selon ce que montre le log GC : si les pauses sont corrélées à des full GCs, la
   young generation est peut-être sous-dimensionnée (trop d'objets promus trop tôt) — ajuster le
   dimensionnement des générations avant de changer de collector. Si les pauses sont fréquentes mais que l'objectif de temps de pause
   lui-même est trop lâche, resserrer `-XX:MaxGCPauseMillis`. Si le service a un budget de latence réellement strict
-  que le collector actuel ne peut atteindre même ajusté, c'est le cas pour passer à ZGC/Shenandoah (Q26).
+  que le collector actuel ne peut atteindre même ajusté, c'est le cas pour passer à ZGC/Shenandoah (Q36).
 - **Prévention :** Envoyer les métriques de pauses GC sur le même dashboard que la latence des requêtes pour que cette
   corrélation soit une vérification de cinq secondes la prochaine fois, et non une nouvelle investigation ; définir un SLO de temps de
   pause GC à côté du SLO de latence des requêtes.
 
+</details>
+
 ### S3. `ConcurrentModificationException` apparaît par intermittence dans les logs de production
+
 - **Symptômes :** Un job en arrière-plan ou un handler de requête lève occasionnellement
   `ConcurrentModificationException`, mais ce n'est pas reproductible en local et cela n'arrive pas à
   chaque exécution.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Trouver chaque endroit où la collection de la stack trace est itérée et chaque endroit où
   elle est modifiée structurellement ; intermittent signifie que cela n'échoue que lorsqu'une modification tombe
   par hasard pendant une itération active ailleurs — souvent un champ partagé itéré dans un thread pendant qu'un
   autre thread (une tâche planifiée, un event listener) y ajoute/retire concurremment.
 - **Exemple :**
+
   ```java
   class SubscriptionRegistry {
       private final List<Listener> listeners = new ArrayList<>();
@@ -1154,8 +1682,9 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }
   }
   ```
+
 - **Résolution :** Si c'est une logique réellement mono-thread avec un mauvais schéma de remove-pendant-l'itération,
-  passer à `Iterator.remove()` ou `removeIf` (Q13). Si c'est un accès inter-threads à un état mutable partagé,
+  passer à `Iterator.remove()` ou `removeIf` (Q20). Si c'est un accès inter-threads à un état mutable partagé,
   c'est le vrai bug — soit rendre l'accès mono-thread (en passant par un seul
   executor), soit passer à une collection concurrente adaptée au schéma d'accès
   (`ConcurrentHashMap`, `CopyOnWriteArrayList` pour lecture majoritaire/écriture rare, ce qui convient bien à une liste de
@@ -1164,16 +1693,26 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   point d'attention en code review ; documenter la propriété (quel thread/composant a le droit de la muter) directement
   dans la déclaration du champ.
 
+</details>
+
 ### S4. Une recherche basée sur `HashMap` qui était rapide est devenue de plus en plus lente au fil des mois
+
 - **Symptômes :** Un cache ou un index indexé par un type d'objet personnalisé était rapide au lancement ; les temps de réponse
   de cette recherche ont dérivé à mesure que le jeu de données grossissait, de façon disproportionnée par rapport à la croissance du nombre
   d'entrées.
-- **Diagnostic :** Vérifier l'implémentation de `hashCode()` du type de clé (Q11). Un bug courant :
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Vérifier l'implémentation de `hashCode()` du type de clé (Q18). Un bug courant :
   `hashCode()` n'a jamais été redéfini (retombe sur le hash d'identité de `Object`, qui convient pour la
   distribution mais casse l'égalité logique entre instances construites séparément) *ou* a été
   redéfini incorrectement — par ex. basé sur un champ constant ou de faible cardinalité pour la plupart des
   entrées, ce qui regroupe la plupart des clés dans une poignée de buckets.
 - **Exemple :**
+
   ```java
   class OrderKey {
       final String region; // only 4 possible values across millions of orders
@@ -1186,6 +1725,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   }
   // Every key in the same region collapses into the same bucket — O(n) lookups.
   ```
+
 - **Résolution :** Corriger `hashCode()` pour qu'il incorpore tous les champs utilisés dans `equals()` avec une bonne
   distribution (`Objects.hash(region, orderId)` est le défaut sûr), et s'assurer que `equals()`
   et `hashCode()` restent cohérents (des objets égaux doivent avoir des hashes égaux). Vérifier en contrôlant la
@@ -1195,14 +1735,24 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   écrire à la main, et ajouter un test qui vérifie une distribution de hash raisonnable pour tout type de clé
   personnalisé utilisé dans une map sur un hot path.
 
+</details>
+
 ### S5. L'usage du heap grimpe régulièrement et ne redescend jamais, même sous faible charge
+
 - **Symptômes :** L'usage du heap après chaque cycle GC tend à monter sur plusieurs jours, sans lien avec le trafic
   actuel — un classique motif en dents de scie qui ne se réinitialise jamais sur le graphe mémoire.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** C'est une fuite, pas un problème de dimensionnement (le scénario de pic de S1 récupère entre les GCs ;
   celui-ci non). Heap dump plus analyse du dominator tree pour trouver ce qui grossit ; le coupable le plus courant
   est une `Map`/`List` `static` utilisée comme cache ad hoc avec des entrées ajoutées à chaque requête et
   jamais retirées — vérifier d'abord tout ce qui est `static`.
 - **Exemple :**
+
   ```java
   static final Map<String, Session> activeSessions = new HashMap<>();
 
@@ -1212,20 +1762,31 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       // session that ever logged in stays reachable via this static map.
   }
   ```
+
 - **Résolution :** Ajouter une borne/de l'éviction à la collection fautive (plafond de taille, TTL, ou passage à
   une vraie bibliothèque de cache), ou corriger la logique sous-jacente si les entrées auraient dû être retirées sur
-  un événement de cycle de vie qui ne se déclenche pas (par ex. un listener jamais désenregistré — voir Q27).
+  un événement de cycle de vie qui ne se déclenche pas (par ex. un listener jamais désenregistré — voir Q37).
 - **Prévention :** Interdire par défaut en code review les collections mutables `static` non bornées ; exiger que
   tout cache en mémoire intentionnel énonce explicitement sa borne et sa politique d'éviction.
 
+</details>
+
 ### S6. Le CPU reste collé près de 100 % sans augmentation proportionnelle du volume de requêtes
+
 - **Symptômes :** L'utilisation CPU monte et reste haute alors que le débit de requêtes reste plat ou
   baisse ; le service répond toujours techniquement, mais lentement.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Prendre un thread dump (ou plusieurs, à quelques secondes d'intervalle) et chercher des threads
   `RUNNABLE` dans la même méthode chaude d'un échantillon à l'autre — c'est une attente active ou une boucle de retry serrée, pas
   de l'attente I/O (qui apparaîtrait `WAITING`/`TIMED_WAITING`). Une cause courante : une boucle de retry sans
   backoff qui tourne contre une dépendance en échec, ou une boucle de polling avec un intervalle trop court.
 - **Exemple :**
+
   ```java
   while (true) {
       try {
@@ -1236,50 +1797,73 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }
   }
   ```
+
 - **Résolution :** Ajouter un backoff exponentiel (avec jitter) à la boucle de retry/polling, et plafonner les
   tentatives de retry ; s'il s'agit d'une vraie boucle chaude algorithmique, la profiler (async-profiler / JFR) pour trouver
   l'inefficacité réelle plutôt que de deviner.
 - **Prévention :** Ne jamais livrer une boucle de retry sans backoff ni limite de tentatives maximale ; ajouter une
   étape de runbook de thread dump sur CPU élevé pour que ce diagnostic soit routinier, et non un exercice d'urgence.
 
+</details>
+
 ### S7. Sous charge, les requêtes commencent à expirer alors que les dépendances aval sont saines
+
 - **Symptômes :** La latence et le taux d'erreurs grimpent fortement au-delà d'un certain seuil de requêtes concurrentes,
   alors que la base de données/les services aval affichent des temps de réponse normaux sur leurs propres
   dashboards.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Thread dump pendant le ralentissement ; chercher de nombreux threads `WAITING` sur la file de l'executor
   plutôt qu'en exécution active — c'est de l'épuisement de thread pool, des requêtes qui font la queue derrière un
   pool de taille fixe plutôt qu'un aval lent. Comparer la taille configurée du pool à la
   demande concurrente réelle, et vérifier si un handler fait du travail bloquant sur un pool dimensionné
-  pour autre chose (le piège du common pool de la Q21, ou le pool de traitement des requêtes d'un serveur web utilisé
+  pour autre chose (le piège du common pool de la Q30, ou le pool de traitement des requêtes d'un serveur web utilisé
   pour un appel bloquant lent).
 - **Exemple :**
+
   ```java
   @Async // uses a small default executor sized for lightweight tasks
   CompletableFuture<Report> generateReport() {
       return CompletableFuture.completedFuture(slowJdbcQuery()); // blocks that small pool's thread
   }
   ```
+
 - **Résolution :** Dimensionner le pool selon le besoin réel de concurrence (avec une file et une politique de
   rejet, pas non bornée), ou déplacer le travail bloquant hors du pool de traitement des requêtes vers un pool dédié
   dimensionné pour cela, ou passer aux virtual threads là où la « taille du pool » cesse d'être la contrainte pour
-  le travail I/O-bound (Q23).
+  le travail I/O-bound (Q33).
 - **Prévention :** Exposer la profondeur de la file de l'executor et le nombre de threads actifs comme métriques, pas seulement la
   latence des requêtes — une profondeur de file qui grimpe alors que la latence aval est plate est le signal spécifique
   de ce mode de défaillance, et il est invisible sans cette métrique.
 
+</details>
+
 ### S8. Deux services (ou deux chemins de code) se bloquent occasionnellement en deadlock et cessent de progresser
+
 - **Symptômes :** Un sous-ensemble de requêtes se bloque simplement pour toujours — pas d'erreur, aucun timeout ne se déclenche, pas de
   crash — jusqu'au redémarrage du processus.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Prendre un thread dump ; la JVM détecte et rapporte explicitement les deadlocks dans la sortie de
   `jstack` (« Found one Java-level deadlock »), en nommant les deux threads et les locks que chacun
   détient en attendant l'autre.
 - **Exemple :**
+
   ```java
   // Thread A:                          // Thread B:
   synchronized (accountA) {             synchronized (accountB) {
       synchronized (accountB) { ... }       synchronized (accountA) { ... } // opposite order -> deadlock
   }                                      }
   ```
+
 - **Résolution :** L'atténuation immédiate est de redémarrer l'instance bloquée (avec de l'alerting pour que ce ne soit
   pas silencieux). La vraie correction est d'établir un ordre d'acquisition des locks cohérent partout
   (toujours acquérir le lock A avant le lock B, jamais l'inverse dans aucun chemin de code — par ex. toujours verrouiller
@@ -1290,15 +1874,25 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   statique) ; préférer des utilitaires de concurrence de plus haut niveau (classes `java.util.concurrent`,
   `synchronized` sur un unique objet bien défini) aux schémas multi-locks faits main.
 
+</details>
+
 ### S9. Une comparaison de deux montants est correcte en test mais silencieusement fausse en production
+
 - **Symptômes :** Une comparaison entre deux valeurs `Integer` se comporte correctement en test (petites
   valeurs) mais se comporte mal par intermittence en production avec des nombres réels (plus grands) — une logique qui
   devrait être équivalente à une comparaison numérique prend silencieusement la mauvaise branche.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Faire un grep du chemin de code pour `==` entre types boxés (`Integer`, `Long`) ; c'est le
-  piège du cache d'autoboxing de la Q2 — les valeurs dans `[-128, 127]` sont par hasard `==`-égales par
+  piège du cache d'autoboxing de la Q9 — les valeurs dans `[-128, 127]` sont par hasard `==`-égales par
   spécification, celles hors de cette plage ne le sont pas, et des données de test qui restent commodément dans cette
   plage (petits prix unitaires, petites quantités) expliquent exactement pourquoi cela a passé la review et les tests.
 - **Exemple :**
+
   ```java
   class Invoice {
       Integer amountDue; // boxed — comes from a DB row mapper as an Integer
@@ -1309,6 +1903,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
                                                // silently wrong once a real invoice hits 200+
   }
   ```
+
 - **Résolution :** Remplacer `==` par `.equals()` pour les comparaisons de types boxés, ou unboxer en primitif
   `int`/`long` et comparer directement ceux-ci ; ajouter un test de non-régression utilisant spécifiquement une valeur hors de la plage
   du cache (par ex. un montant de facture de 500, pas 50).
@@ -1316,13 +1911,23 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   types boxés — cette classe de bug est assez courante pour valoir la peine d'être interdite mécaniquement plutôt que
   de compter sur la review.
 
+</details>
+
 ### S10. Une fonctionnalité fraîchement déployée plante avec `StackOverflowError` pour un sous-ensemble d'utilisateurs
+
 - **Symptômes :** Des erreurs n'apparaissent que pour certaines entrées (par ex. fils de commentaires profondément imbriqués, grands
   arbres de catégories) juste après la livraison d'une fonctionnalité qui traite un arbre ou un graphe récursivement.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** La stack trace elle-même est l'outil de diagnostic — elle montre les mêmes quelques frames
   répétées des centaines de fois, identifiant exactement quel appel récursif est non borné ; corréler
   les entrées en échec avec un imbriquement anormalement profond.
 - **Exemple :**
+
   ```java
   int countDescendants(Comment comment) {
       int total = comment.replies().size();
@@ -1332,6 +1937,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       return total;
   }
   ```
+
 - **Résolution :** Ajouter une limite de profondeur explicite avec une erreur claire avant que la propre limite de stack de la JVM
   ne soit atteinte (un `400 Bad Request` contrôlé vaut mieux qu'un crash incontrôlé), ou convertir la
   récursion en approche itérative avec une structure de données explicite pile/file si une profondeur
@@ -1340,16 +1946,26 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   de catégories, parsing JSON) a besoin d'une borne de profondeur explicite et testée dès la conception
   initiale, pas comme une réflexion après coup une fois que ça plante.
 
+</details>
+
 ### S11. Après la migration d'un service vers les virtual threads, le débit de type thread-pool se dégrade en réalité sous charge
+
 - **Symptômes :** Après la migration vers les virtual threads, le service dont on attendait une meilleure scalabilité
   montre au contraire de la contention sur les carrier threads — le débit plafonne bien en dessous des attentes, et
   les thread dumps montrent de nombreux virtual threads bloqués plutôt qu'en progression.
-- **Diagnostic :** Chercher des blocs ou méthodes `synchronized` sur le hot path (Q23). Tant que le pinning
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Chercher des blocs ou méthodes `synchronized` sur le hot path (Q33). Tant que le pinning
   n'avait pas été substantiellement amélioré dans les JDK récents, un virtual thread bloquant *à l'intérieur* d'un bloc `synchronized`
   ne peut pas être démonté de son platform thread carrier — il épingle le carrier, donc un appel
   I/O bloquant dans `synchronized` bloque ce carrier thread exactement comme l'ancien modèle, ce qui annule
   l'intérêt. Les événements de pinning de virtual threads de JFR (`jdk.VirtualThreadPinned`) le confirmeront.
 - **Exemple :**
+
   ```java
   synchronized void processOrder(Order order) {
       paymentClient.charge(order); // blocking network call while holding the monitor
@@ -1357,9 +1973,11 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       // duration of the network call — no unmounting happens inside synchronized
   }
   ```
+
 - **Résolution :** Remplacer `synchronized` par `java.util.concurrent.locks.ReentrantLock` autour de
   toute section qui fait aussi de l'I/O bloquant — `ReentrantLock` n'épingle pas le carrier thread de la
   même façon. Ne garder `synchronized` que pour des sections critiques courtes et non bloquantes.
+
   ```java
   private final ReentrantLock lock = new ReentrantLock();
 
@@ -1372,21 +1990,32 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }
   }
   ```
+
 - **Prévention :** Lors de l'adoption des virtual threads, auditer l'usage de `synchronized` sur tout chemin qui
   effectue aussi de l'I/O dans le cadre de la migration, et non après l'apparition d'une régression.
 
+</details>
+
 ### S12. L'usage du metaspace grossit à chaque redéploiement de l'application sur un app server de longue durée
+
 - **Symptômes :** `OutOfMemoryError: Metaspace` après plusieurs redéploiements sur la même instance JVM
   (une configuration d'app server à hot-redeploy), alors que le code applicatif lui-même n'a pas
   visiblement grossi.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** C'est une fuite de classloader — chaque redéploiement devrait laisser le classloader de l'ancienne application
   (et chaque classe qu'il a chargée) devenir du garbage une fois la nouvelle version en ligne, mais
   quelque chose détient encore une référence vers l'ancien classloader, donc aucune de ses classes n'est jamais
   déchargée et le metaspace accumule une copie complète des métadonnées de classes par redéploiement. Suspects
   habituels : un driver JDBC enregistré via `DriverManager` et jamais désenregistré, un `ThreadLocal`
-  contenant une instance d'une classe applicative sur un thread de pool de longue durée (Q27), ou une
+  contenant une instance d'une classe applicative sur un thread de pool de longue durée (Q37), ou une
   référence statique dans une bibliothèque qui survit au redéploiement.
 - **Exemple :**
+
   ```java
   // In a servlet context listener, on application shutdown:
   Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -1397,6 +2026,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }                                      // old webapp classloader reachable forever
   }
   ```
+
 - **Résolution :** Désenregistrer explicitement les drivers JDBC et vider les `ThreadLocal`s dans un shutdown hook,
   ou — la correction pragmatique que la plupart des équipes adoptent réellement — arrêter les hot redeploys et redémarrer le
   processus JVM à chaque déploiement, ce qui est de toute façon la pratique standard dans les déploiements
@@ -1404,17 +2034,27 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
 - **Prévention :** Dans un monde conteneurisé, éviter entièrement le pattern de hot-redeploy — un processus
   par version déployée, remplacé en bloc, évite toute cette classe de fuites.
 
+</details>
+
 ### S13. Sous charge, un service « singleton » est parfois construit plus d'une fois, causant des effets de bord en double
+
 - **Symptômes :** Un composant censé être une instance partagée unique (par ex. l'initialisation d'un registre de métriques,
   l'ouverture d'un connection pool) logue parfois son message « initializing » deux fois sous charge
   de démarrage concurrent, et des symptômes de ressources en double s'ensuivent en aval (métriques enregistrées deux fois,
   connection pool doublé).
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Vérifier l'implémentation du singleton pour le pattern double-checked-locking
   *sans* champ `volatile`, ou un `getInstance()` lazy sans aucune synchronisation — lors du premier accès
   concurrent, deux threads peuvent tous deux voir le champ à `null`, tous deux procéder à la
   construction d'une instance, et la seconde écriture écrase silencieusement la première (ou, sans
   `volatile`, un thread peut observer un objet partiellement construit à cause du réordonnancement d'instructions).
 - **Exemple :**
+
   ```java
   class MetricsRegistry {
       private static MetricsRegistry instance; // missing volatile
@@ -1431,27 +2071,39 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }
   }
   ```
-- **Résolution :** Passer au pattern static-holder-class de Bill Pugh (Q19), dont la JVM
+
+- **Résolution :** Passer au pattern static-holder-class de Bill Pugh (Q28), dont la JVM
   garantit qu'il est thread-safe sans aucune synchronisation nécessaire, ou ajouter `volatile` si le double-checked
   locking doit être conservé pour une raison quelconque.
 - **Prévention :** Adopter par défaut le pattern static-holder (ou un singleton `enum`) pour tout
   singleton fait main plutôt que le double-checked locking — c'est strictement plus simple et supprime
   toute cette classe de défaillances.
 
+</details>
+
 ### S14. Les temps de pause GC se dégradent nettement juste après une mise à niveau du JDK/du collector
+
 - **Symptômes :** Après la mise à niveau de la version du JDK (ou le changement de collector par défaut), la latence p99
   régresse alors que le débit et le CPU semblent similaires à avant.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Comparer les logs GC avant et après ; une cause courante est que les flags de dimensionnement du heap
   (`-Xmx`, `-Xms`, ratios de générations) réglés pour le comportement de l'ancien collector ne se transposent pas
   proprement aux défauts du nouveau — par ex. la taille de région de G1 et l'objectif de temps de pause interagissent
   différemment avec une taille de heap donnée que le collector qu'il a remplacé.
 - **Exemple :**
-  ```
+
+  ```text
   # Old flags, tuned for an older collector's defaults, carried over verbatim:
   -Xmx4g -XX:NewRatio=2 -XX:MaxGCPauseMillis=500
   # New collector's own recommended starting point, re-tuned instead of copied:
   -Xmx4g -XX:MaxGCPauseMillis=100
   ```
+
 - **Résolution :** Re-régler à partir du point de départ recommandé par le collector lui-même plutôt que de
   reporter les anciens flags tels quels ; définir un objectif `-XX:MaxGCPauseMillis` explicite correspondant au
   SLO réel et laisser G1 (ou le nouveau collector) adapter le dimensionnement des régions pour l'atteindre, puis mesurer de nouveau
@@ -1460,16 +2112,26 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   déploiement sensible à la performance exigeant un test de charge et une comparaison de logs GC avant d'atteindre la production, et non un
   simple bump de dépendance de routine.
 
+</details>
+
 ### S15. Les `NullPointerException`s explosent juste après la mise à niveau d'une dépendance de bibliothèque
+
 - **Symptômes :** Un service auparavant stable commence à lever des `NullPointerException` à plusieurs
   endroits d'appel sans rapport immédiatement après le bump de version d'une dépendance, sans aucun changement de code
   applicatif.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Vérifier le changelog de la dépendance pour une méthode qui retournait auparavant une sentinelle
   (une collection vide, une chaîne vide) et retourne maintenant `null` dans certains cas, ou — de plus en plus
   courant — une méthode qui a changé son type de retour en `Optional<T>`, et des appelants qui faisaient un
   accès direct à un champ/une méthode sur l'ancien type de retour appellent maintenant directement à travers l'enveloppe
   `Optional` ou la déballent incorrectement (`.get()` sans vérifier `.isPresent()`).
 - **Exemple :**
+
   ```java
   // Old library version: findById returned User, or null if not found.
   User user = repository.findById(id);
@@ -1481,6 +2143,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
                               // or a lazy caller casts/ignores the change and gets an NPE
                               // from treating the Optional itself as the User
   ```
+
 - **Résolution :** Corriger chaque site d'appel pour gérer correctement le nouveau contrat — un `Optional` doit être
   consommé avec `.map()`/`.orElse()`/`.ifPresent()`, et non avec un `.get()` appelé à l'aveugle ; figer la
   version de la dépendance en attendant la correction si le problème se propage plus vite qu'on ne peut le patcher.
@@ -1488,15 +2151,25 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   avant de les bumper, plutôt que de faire des mises à niveau automatiques ; activer un analyseur statique de vérification de nullabilité
   là où les conventions du codebase le permettent.
 
+</details>
+
 ### S16. Le débit plafonne sous forte concurrence alors que le CPU a de la marge
+
 - **Symptômes :** Ajouter plus de charge concurrente n'augmente pas le débit au-delà d'un certain point, et
   l'utilisation CPU reste bien en dessous de 100 % — le système n'est pas limité par le calcul, mais il ne
   passe pas non plus à l'échelle.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Thread dump sous charge ; chercher de nombreux threads `BLOCKED` (pas `WAITING` sur de l'I/O,
   spécifiquement `BLOCKED` à l'entrée d'un monitor) tous en file sur la même méthode `synchronized` — c'est de la
   contention de lock sur une section critique trop grossière, sérialisant du travail qui n'avait pas besoin
   de l'être.
 - **Exemple :**
+
   ```java
   class RequestCounter {
       private long total = 0;
@@ -1508,10 +2181,12 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }                                                                   // serialized behind
   }                                                                       // the same monitor
   ```
+
 - **Résolution :** Réduire la section critique au seul état mutable réellement partagé (ne pas
   synchroniser toute la méthode si seule la mise à jour d'un compteur doit être protégée), passer à une
   structure à grain plus fin ou lock-free — ici, un `AtomicLong` pour `total` et une
   `ConcurrentHashMap` pour le cache supprime entièrement le lock partagé :
+
   ```java
   class RequestCounter {
       private final AtomicLong total = new AtomicLong();
@@ -1523,18 +2198,29 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
       }
   }
   ```
+
   Si la ressource disputée est réellement une dépendance séquentielle unique partagée, c'est un vrai
   goulot d'étranglement architectural à repenser (par ex. en partitionnant la charge pour que différentes
   requêtes ne se disputent pas du tout le même lock).
+
 - **Prévention :** Garder les blocs `synchronized` aussi petits que possible par défaut, et tester en charge le nouveau
   code à état partagé sous une concurrence réaliste avant sa livraison — ce mode de défaillance n'apparaît souvent pas
   avant que le trafic n'atteigne l'échelle de production.
 
+</details>
+
 ### S17. La latence grimpe à plusieurs minutes pendant un ralentissement aval, puis le service meurt avec `OutOfMemoryError`
+
 - **Symptômes :** Un service de notification de paiement répond normalement en 40 ms. Quand une API partenaire
   se met à répondre en 3 s au lieu de 100 ms, le p99 de *notre* endpoint dépasse 60 s en quelques
   minutes — bien après que le partenaire a récupéré — et finalement les pods sont OOMKilled. Le CPU est bas
   tout du long, et le nombre de threads ne grossit jamais.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** CPU bas plus nombre de threads plat signifie que le travail *attend*, sans s'exécuter. Un thread
   dump (`jcmd <pid> Thread.print`, pris deux fois à ~10 s d'intervalle) montre les 8 threads du pool bloqués dans le
   même appel HTTP partenaire. L'indice est la file : exposer
@@ -1543,66 +2229,94 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   (`jmap -histo:live <pid>`) est dominé par des instances de `FutureTask` / lambda. La cause est
   `Executors.newFixedThreadPool(8)` : sa file est une `LinkedBlockingQueue` *non bornée*, donc il ne
   dit jamais « non » — chaque tâche soumise attend son tour derrière tout ce qui la précède, ce qui transforme un
-  ralentissement transitoire en minutes de latence puis en épuisement du heap (Q21).
+  ralentissement transitoire en minutes de latence puis en épuisement du heap (Q30).
 - **Exemple :**
+
   ```java
   // The unbounded queue is the hidden default — no back-pressure anywhere.
   ExecutorService pool = Executors.newFixedThreadPool(8);
   void onPayment(Payment p) { pool.submit(() -> partner.notify(p)); }  // always accepted
   ```
+
 - **Résolution :** Atténuer d'abord : délester la charge ou scaler horizontalement, et redémarrer pour vider la file. Correction de fond —
   une file bornée avec une politique de rejet explicite, plus un timeout sur l'appel partenaire pour qu'une
   dépendance lente ne puisse pas retenir un thread indéfiniment :
+
   ```java
   ThreadPoolExecutor pool = new ThreadPoolExecutor(
       8, 8, 0L, TimeUnit.SECONDS,
       new ArrayBlockingQueue<>(200),                    // bounded: ~200 waiting tasks max
       new ThreadPoolExecutor.CallerRunsPolicy());       // or AbortPolicy -> return 503 upstream
   ```
+
   `CallerRunsPolicy` ralentit le producteur (back-pressure naturelle) ; `AbortPolicy` échoue rapidement pour que
   l'appelant puisse réessayer ou dégrader. Vérifier en rejouant le ralentissement du partenaire lors d'un test de charge
   (retarder le stub à 3 s) et en contrôlant que la latence atteint un plateau, que la file reste à son plafond, et que
   le heap reste plat.
+
 - **Prévention :** Interdire `Executors.newFixedThreadPool`/`newCachedThreadPool` en code review au profit
   d'un `ThreadPoolExecutor` explicite (ou d'un bean partagé et configuré) ; alerter sur la profondeur de file et le
   temps d'attente des tâches, pas seulement sur le CPU ; chaque appel sortant reçoit un timeout (connect + read).
 
+</details>
+
 ### S18. Les dates sont parfois fausses, ou le parsing lève de bizarres `NumberFormatException`s, uniquement sous charge
+
 - **Symptômes :** Un job d'import et une API partagent un utilitaire qui formate et parse des dates.
   Parfois une facture est estampillée avec la date d'une *autre* ligne, et les logs montrent
   `NumberFormatException: multiple points`, `ArrayIndexOutOfBoundsException`, ou
   `NumberFormatException: For input string: ""`. Cela ne se reproduit jamais avec une seule requête.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Des erreurs bizarres, non déterministes et *corrélées à la charge* sont la
   signature d'un état mutable partagé. Faire un grep de `SimpleDateFormat` (et `DecimalFormat`,
   `NumberFormat`) dans un champ `static final` — ils contiennent un `Calendar` interne et des buffers de travail
   réécrits à chaque appel, donc deux threads appelant `format()`/`parse()`
   concurremment corrompent l'état intermédiaire l'un de l'autre. `SimpleDateFormat` est documenté comme non
-  thread-safe ; le bug n'apparaît que lorsque deux appels se chevauchent réellement (Q15).
+  thread-safe ; le bug n'apparaît que lorsque deux appels se chevauchent réellement (Q23).
 - **Exemple :**
+
   ```java
   class DateUtil {
       static final SimpleDateFormat FMT = new SimpleDateFormat("yyyy-MM-dd"); // shared, mutable
       static String format(Date d) { return FMT.format(d); }                 // racy
   }
   ```
+
 - **Résolution :** Le remplacer par l'API `java.time`, immuable et thread-safe — un seul
   `DateTimeFormatter` partagé convient :
+
   ```java
   static final DateTimeFormatter FMT = DateTimeFormatter.ISO_LOCAL_DATE;
   static String format(LocalDate d) { return FMT.format(d); }
   ```
+
   Si un appelant legacy doit garder `SimpleDateFormat`, créer une nouvelle instance par appel (assez peu coûteux)
   plutôt que d'ajouter `synchronized`, qui sérialise chaque opération de date de l'application. Vérifier avec
   un test qui martèle la méthode depuis 32 threads pendant quelques secondes et vérifie que chaque résultat
   correspond à une baseline mono-thread.
+
 - **Prévention :** Ajouter une règle d'analyse statique qui signale un `SimpleDateFormat`/`Calendar` `static`
   (vérifications Error Prone `JdkObsolete`/`SimpleDateFormat`, SonarQube), et standardiser sur `java.time`.
 
+</details>
+
 ### S19. Le pod est OOMKilled alors que le dashboard du heap n'en montre qu'environ 40 % utilisé
+
 - **Symptômes :** Une gateway basée sur Netty avec `-Xmx2g` dans un conteneur de 3 GiB redémarre toutes les quelques
   heures avec `OOMKilled` (exit 137, Kubernetes affiche `Reason: OOMKilled`). Pas d'
   `OutOfMemoryError` dans les logs, aucun heap dump écrit, et le graphe du heap est confortablement
   en dessous de la limite à chaque redémarrage.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Le kernel a tué le *processus* pour dépassement de la limite du conteneur, qui compte
   tout ce que la JVM mappe — pas seulement le heap. Comparer le RSS du conteneur au heap : un grand écart signifie
   de la mémoire native. Activer le Native Memory Tracking (`-XX:NativeMemoryTracking=summary`) et exécuter
@@ -1613,11 +2327,13 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   du conteneur. Autres consommateurs natifs à écarter avec le même outil : Metaspace (S12), stacks de threads
   (nombre de `Thread` × `-Xss`), et le code cache.
 - **Exemple :**
+
   ```java
   // Off-heap allocation whose lifetime is tied to a tiny on-heap wrapper.
   ByteBuffer buf = ByteBuffer.allocateDirect(8 * 1024 * 1024);  // 8 MiB, invisible to -Xmx
   // Thousands of these per minute + a heap that rarely needs collecting = native growth.
   ```
+
 - **Résolution :** Le plafonner et le budgéter : définir `-XX:MaxDirectMemorySize` explicitement, et dimensionner le
   conteneur comme heap + Metaspace + direct + (threads × stack) + ~10–20 % de marge, plutôt que de
   régler `-Xmx` près de la limite du conteneur. Préférer `-XX:MaxRAMPercentage=60` à un
@@ -1628,10 +2344,19 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   Metaspace) sur un dashboard à côté du heap ; activer NMT dans un soak test de staging ; documenter la formule du budget mémoire dans le
   runbook du service.
 
+</details>
+
 ### S20. Un job planifié se déclenche une heure trop tôt, deux fois, ou pas du tout le week-end du changement d'heure
+
 - **Symptômes :** Un job de règlement quotidien à 02:30 et une fonctionnalité « expire dans 24 heures » fonctionnent toute l'année,
   puis le dernier dimanche de mars il ne s'exécute pas du tout, et le dernier dimanche d'octobre il
   s'exécute deux fois. Des clients d'une région voient aussi des heures d'expiration décalées d'une heure.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Corréler les dates de l'incident avec les transitions DST — un indice fort en soi.
   Puis chercher `LocalDateTime` utilisé pour représenter un *instant* ou pour ajouter des durées :
   `LocalDateTime` n'a pas de zone, donc il ne peut pas savoir que 02:30 n'existe pas la nuit du passage à l'heure d'été
@@ -1639,6 +2364,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   « 24 heures » implémenté avec `plusDays(1)` vs `plus(Duration.ofHours(24))`, qui diffèrent d'une
   heure à travers une transition.
 - **Exemple :**
+
   ```java
   ZoneId paris = ZoneId.of("Europe/Paris");
 
@@ -1650,6 +2376,7 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   day.plusDays(1);                     // 2026-03-29T12:00+02:00 — same wall-clock time
   day.plus(Duration.ofHours(24));      // 2026-03-29T13:00+02:00 — exactly 24 elapsed hours
   ```
+
 - **Résolution :** Décider pour chaque champ s'il s'agit d'un **instant** ou d'une **règle d'heure murale**. Stocker et
   comparer les instants en `Instant`/UTC (`timestamptz` dans PostgreSQL). Pour « chaque jour à 02:30
   heure locale », conserver la règle (`LocalTime` + `ZoneId`) et *calculer* chaque occurrence avec
@@ -1662,24 +2389,35 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   `java.time.Clock` au lieu d'appeler `now()` pour que les tests du jour de DST soient triviaux, et garder les dates DST
   de chaque région d'exploitation dans la suite de tests.
 
+</details>
+
 ### S21. Un job de « nettoyage » dit avoir supprimé les sessions expirées, pourtant la mémoire continue de croître et des sessions périmées apparaissent encore
+
 - **Symptômes :** Un `HashSet<Session>` suit les sessions actives. Une tâche planifiée appelle
   `remove()` sur les expirées et logue `removed=true`, mais le `size()` du set continue de monter, l'usage du heap
   grimpe régulièrement, et certains utilisateurs sont encore traités comme connectés après déconnexion. Aucune exception
   nulle part.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** `size()` grossit alors que `remove()` ne réussit que pour *certains* éléments, donc
   suspecter le hashing : un élément qui ne peut plus être retrouvé par son propre hash. Un heap dump montre le
   set contenant bien plus d'objets `Session` que n'en justifie toute logique métier ; itérer et
-  appeler `set.contains(each)` dessus renvoie `false` pour beaucoup. C'est le motif de la Q12 —
+  appeler `set.contains(each)` dessus renvoie `false` pour beaucoup. C'est le motif de la Q19 —
   `hashCode()` inclut un champ mutable (`state`, `lastSeen`) qui a changé *après* l'insertion, donc
   l'entrée se trouve dans le mauvais bucket et `contains` comme `remove` la ratent.
 - **Exemple :**
+
   ```java
   Set<Session> active = new HashSet<>();
   active.add(session);                // hashed with state = "OPEN"
   session.state = "EXPIRED";          // mutated while inside the set
   active.remove(session);             // false — looks in the "EXPIRED" bucket, entry is orphaned
   ```
+
 - **Résolution :** Immédiat : reconstruire le set (`new HashSet<>(old)` re-hashe chaque élément avec
   ses champs actuels) ou le vider via `iterator().remove()` / `removeIf`, qui parcourent les buckets
   au lieu de hasher. Correction de fond : faire dépendre l'identité uniquement de données immuables — implémenter
@@ -1690,26 +2428,37 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   si une classe est utilisée dans un `HashSet` ou comme clé de `HashMap`, chaque champ de `hashCode()` doit être
   `final`. Certains analyseurs statiques (vérifications de type `MutableKey` d'Error Prone) peuvent l'imposer.
 
+</details>
+
 ### S22. Le service se bloque au démarrage environ un déploiement sur vingt, sans erreur et sans usage CPU
+
 - **Symptômes :** Après un déploiement, une instance reste « starting » pour toujours : la readiness probe ne
   passe jamais, le CPU est proche de 0, et les logs s'arrêtent en plein démarrage sans exception. Redémarrer le pod règle le problème,
   ce qui en fait une légende de déploiement instable plutôt qu'un ticket. Cela arrive plus souvent quand
   l'instance démarre avec plus de CPU disponibles (plus de threads de démarrage parallèles).
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Prendre deux thread dumps (`jcmd <pid> Thread.print`) à quelques secondes d'intervalle et les comparer.
   Deux threads applicatifs sont bloqués avec la frame `at com.acme.Catalog.<clinit>` /
   `at com.acme.Pricing.<clinit>`, chacun attendant que la classe de l'autre finisse de s'initialiser.
-  `<clinit>` est l'indice : c'est le deadlock d'initialisation de classe de la Q18, et le rapport standard de la JVM
+  `<clinit>` est l'indice : c'est le deadlock d'initialisation de classe de la Q27, et le rapport standard de la JVM
   « Found one Java-level deadlock » ne le liste souvent *pas*, donc un rapport vide n'est
   pas une preuve d'innocence. Il est intermittent parce qu'il exige que les deux classes soient touchées en premier par deux threads de
   démarrage parallèles (par ex. un initialiseur de beans parallèle) dans la même fenêtre.
 - **Exemple :**
+
   ```java
   class Catalog { static final Pricing PRICING = new Pricing(); /* ... */ }
   class Pricing { static final Catalog CATALOG = new Catalog(); /* needs Catalog.<clinit> to finish */ }
   // Thread 1 initializes Catalog, needs Pricing; thread 2 initializes Pricing, needs Catalog.
   ```
+
 - **Résolution :** Casser le cycle pour qu'aucun static initializer ne dépende de l'initialisation d'une autre
-  classe : rendre un côté lazy (un holder Bill Pugh, Q19) ou injecter la dépendance à l'exécution
+  classe : rendre un côté lazy (un holder Bill Pugh, Q28) ou injecter la dépendance à l'exécution
   au lieu de la résoudre dans un bloc `static` ; sortir tout I/O ou câblage de `<clinit>`. En
   palliatif, forcer un ordre d'initialisation fixe au démarrage depuis un seul thread (toucher `Catalog`
   avant de démarrer le travail parallèle). Vérifier en exécutant le démarrage 200 fois en boucle dans la CI avec
@@ -1719,33 +2468,294 @@ et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algo
   échoue si l'application n'est pas prête dans une limite donnée, et capturer un thread dump automatiquement quand
   la readiness expire pour que la prochaine occurrence s'explique d'elle-même.
 
+</details>
+
+### S23. Le service fonctionne sur la JVM mais échoue en image native avec `NoSuchMethodException` ou un JSON vide
+
+- **Symptômes :** Après le passage du build en image native, l'application démarre vite mais un endpoint renvoie `{}`
+  ou une `500` avec `NoSuchMethodException` / `ClassNotFoundException` / « no serializer found ». Le même code et les
+  mêmes tests passent sur une JVM classique, et le chemin en échec n'est emprunté que par certaines requêtes.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher le diagnostic, la résolution et la prévention</summary>
+
+- **Diagnostic :** L'analyse en monde fermé a supprimé ou n'a pas enregistré un élément uniquement atteint par
+  **réflexion**, **proxy dynamique**, **recherche de ressource** ou `Class.forName` ; la JVM le résout à l'exécution,
+  l'image native ne le peut pas. Lire la première ligne de la stack trace : la classe ou le membre manquant y est nommé.
+  Reproduire sur la JVM avec l'agent de traçage (`-agentlib:native-image-agent=...`) en exerçant cet endpoint, et
+  comparer le `reflect-config.json` généré avec ce que le build contient déjà.
+- **Exemple :**
+
+  ```java
+  record InvoiceDto(String id, BigDecimal total) {}      // uniquement touché par Jackson, via la réflexion
+
+  // Correctif : en informer le moteur AOT
+  @RegisterReflectionForBinding(InvoiceDto.class)
+  @RestController class InvoiceController { /* ... */ }
+  ```
+
+- **Résolution :** Enregistrer le type avec les hints de Spring (`@RegisterReflectionForBinding`,
+  `RuntimeHintsRegistrar`) ou les métadonnées de la bibliothèque ; mettre à jour la bibliothèque si une version plus
+  récente fournit des métadonnées d'atteignabilité. Éviter `Class.forName` avec des noms calculés et le scan du
+  classpath dans son propre code.
+- **Prévention :** Exécuter les tests d'intégration en mode natif en CI (`mvn -PnativeTest test`) avec un smoke test qui
+  appelle chaque endpoint, afin qu'un hint manquant fasse échouer le build plutôt que la production. Préférer les
+  bibliothèques connues pour supporter le natif.
+
+</details>
+
+### S24. Le build natif manque de mémoire ou dure plus de 20 minutes en CI
+
+- **Symptômes :** `mvn -Pnative native:compile` est tué dans le pipeline (code 137 ou « OutOfMemoryError during image
+  generation »), ou réussit mais chaque build prend 15-25 minutes et bloque chaque merge.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher le diagnostic, la résolution et la prévention</summary>
+
+- **Diagnostic :** Le compilateur natif fait une analyse de programme entier puis la génération de code dans un processus
+  séparé, qui demande plusieurs Go de RAM et est limité par le CPU. Comparer la limite mémoire du runner au pic RSS
+  rapporté par le builder (`--emit build-report`, ou `-H:+PrintAnalysisCallTree` pour creuser) et vérifier si un arbre de
+  dépendances énorme gonfle l'atteignabilité.
+- **Exemple :**
+
+  ```bash
+  # pom.xml <buildArgs> : plafonner le heap du builder, mode rapide pour les builds hors release
+  <buildArg>-J-Xmx8g</buildArg>
+  <buildArg>-Ob</buildArg>
+  mvn -Pnative native:compile
+  ```
+
+- **Résolution :** Donner au job un runner avec 8 Go+ et plus de cœurs ; utiliser `-Ob` (build rapide) pour les builds
+  de PR et le build entièrement optimisé seulement pour la release ; ne construire l'image native **que sur main/tag**,
+  les PR exécutant les tests JVM et `nativeTest` de façon planifiée ; mettre en cache le dépôt Maven/Gradle. Retirer les
+  dépendances inutilisées, chacune agrandit l'analyse.
+- **Prévention :** Traiter le natif comme un artefact de release : un build optimisé par release candidate, une taille de
+  runner dédiée et un budget de temps de build suivi comme n'importe quel SLO de pipeline.
+
+</details>
+
+### S25. Après le passage au natif, la mémoire a baissé mais le débit et la latence de queue sous charge soutenue se sont dégradés
+
+- **Symptômes :** Une API très sollicitée en image native utilise 5x moins de mémoire et démarre instantanément, mais à
+  charge élevée stable son p99 et ses requêtes/seconde sont pires que l'ancien déploiement JVM, et des pauses GC
+  apparaissent sur un heap plus grand.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher le diagnostic, la résolution et la prévention</summary>
+
+- **Diagnostic :** C'est le compromis attendu, pas un bug. Le compilateur **C2** d'une JVM chaude optimise avec de vrais
+  profils d'exécution (inlining, spéculation), alors que l'image native a été compilée à l'avance sans ces données. Côté
+  GC, GraalVM CE utilise le **Serial GC** (mono-thread, stop-the-world), qui souffre quand le heap et le taux
+  d'allocation augmentent. Comparer le **même test de charge** sur les deux artefacts et regarder les logs GC
+  (`-XX:+PrintGC` dans l'image) et le CPU.
+- **Exemple :**
+
+  ```bash
+  # Oracle GraalVM : optimisation guidée par profil + collecteur parallèle (<buildArg> du pom.xml)
+  --pgo-instrument                     # build 1 : binaire instrumenté
+  ./target/app                         # charge représentative -> default.iprof
+  --pgo=default.iprof  --gc=G1         # build 2 : optimisé avec le profil
+  ```
+
+- **Résolution :** Si le service est longue durée et limité par le débit, **rester sur la JVM** (éventuellement avec
+  AppCDS ou CRaC pour le démarrage). Si le natif reste souhaité pour l'empreinte, ajouter la PGO et `--gc=G1`, et
+  dimensionner le heap explicitement.
+- **Prévention :** Décider avec un benchmark de votre propre charge avant de migrer ; adopter le natif pour des problèmes
+  de démarrage/d'empreinte (serverless, scale-to-zero, nombreuses petites instances), pas comme accélération générique.
+
+</details>
+
+### S26. Les cold starts Lambda atteignent 6 secondes : faut-il passer la fonction Spring Boot en image native ?
+
+- **Symptômes :** Une Lambda Java derrière API Gateway affiche des cold starts de 5-6 s et les utilisateurs remarquent la
+  première requête après inactivité. L'équipe propose de réécrire en Go ; vous suggérez de garder Java.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher le diagnostic, la résolution et la prévention</summary>
+
+- **Diagnostic :** Cold start = init du runtime + chargement de classes + démarrage du framework + warm-up du JIT.
+  Mesurer la durée d'init dans les logs Lambda (`Init Duration`) et ce que fait le framework au démarrage (scan de
+  beans, clients du SDK AWS, gros classpath). Les options échangent effort contre gain : classpath réduit et init
+  paresseuse (faible effort) ; **SnapStart** (restaure un snapshot de la JVM initialisée, sans changement de build, avec
+  ses propres précautions sur l'unicité et les connexions) ; **image native** (meilleur cold start et mémoire, coût de
+  build et de compatibilité le plus élevé).
+- **Exemple :**
+
+  ```yaml
+  # SAM : essayer SnapStart d'abord, il ne demande pas de build natif
+  Resources:
+    Fn:
+      Type: AWS::Serverless::Function
+      Properties:
+        Runtime: java21
+        SnapStart: { ApplyOn: PublishedVersions }
+  ```
+
+- **Résolution :** Mesurer, puis escalader : init paresseuse et dépendances plus légères, puis SnapStart ; passer au natif
+  quand le démarrage doit tenir en dizaines de ms ou quand la mémoire allouée (facturée au Go-s) peut baisser nettement.
+  Pour le natif, utiliser un runtime personnalisé ou le Lambda web adapter et exécuter `nativeTest` en CI.
+- **Prévention :** Suivre le cold start et le p99 comme métriques de release, garder des fonctions petites et
+  mono-usage, et réévaluer la décision quand le JDK livre de meilleures fonctions de démarrage (CRaC, cache AOT Leyden).
+
+</details>
+
+## 🗣️ Questions posées en entretien
+
+Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une courte réponse type : approfondissez avec les questions et scénarios détaillés ci-dessus, et dites la réponse à voix haute.
+
+### Collections & concurrence
+
+#### R1. Différence entre `HashMap` et `ConcurrentHashMap`.
+
+**Réponse :** `HashMap` n'est pas thread-safe : des écritures concurrentes peuvent perdre des mises à jour, corrompre les buckets ou (avant Java 8) boucler indéfiniment au redimensionnement.
+
+`ConcurrentHashMap` est sûre : CAS plus verrou par bin pour les écritures, lectures sans verrou, pas de clé ni valeur `null`, itérateurs faiblement cohérents, opérations composées atomiques (`computeIfAbsent`, `merge`).
+
+Elle ne rend pas atomique une séquence *check-then-act* faite en plusieurs appels.
+
+#### R2. Votre `HashMap` est accédée par plusieurs threads. Quels problèmes peuvent survenir, et comment les corriger ?
+
+**Réponse :** Mises à jour perdues, lectures obsolètes (pas de happens-before), structure corrompue au redimensionnement, `ConcurrentModificationException`, `size()` incohérent.
+
+Corrections, dans l'ordre : éviter le partage (confinement à un thread ou immuabilité), `ConcurrentHashMap` avec des méthodes atomiques, ou un verrou explicite quand plusieurs opérations doivent être atomiques ensemble.
+
+`Collections.synchronizedMap` en dernier recours : l'itération exige encore un verrou manuel.
+
+#### R3. L'application a une race condition qui provoque des paiements en double. Comment l'identifier et la résoudre ?
+
+**Réponse :** Identifier : reproduire avec un test concurrent, chercher un check-then-act (`if (!paid) pay()`), comparer logs et lignes en base par clé de paiement/idempotence. Résoudre côté données, pas avec un verrou JVM (inefficace avec plusieurs instances) : **contrainte d'unicité** sur la clé d'idempotence, en-tête d'idempotency key, `SELECT … FOR UPDATE` ou `@Version` optimiste, et machine à états (`PENDING → PAID`) avec un `UPDATE … WHERE status='PENDING'` conditionnel.
+
+#### R4. Plusieurs threads mettent à jour le même enregistrement. Comment garantir la cohérence ?
+
+**Réponse :** En mémoire : `AtomicXxx`/`LongAdder`, `synchronized`/`ReentrantLock` ou `ConcurrentHashMap.compute`. En base : **verrouillage optimiste** (`@Version`, nouvel essai en cas de conflit) quand les conflits sont rares, **pessimiste** (`FOR UPDATE`) quand ils sont fréquents ou que les essais coûtent cher, ou un `UPDATE … SET x = x + 1` atomique. Entre instances, seule la base (ou un verrou distribué) fait foi.
+
+### Threads & asynchrone
+
+#### R5. Votre application crée des milliers de threads et le CPU explose. Que faites-vous ?
+
+**Réponse :** Prendre un thread dump (`jcmd <pid> Thread.print`) et un profil pour voir si les threads sont runnable, bloqués ou en attente. La cause est souvent `new Thread`/`newCachedThreadPool` non bornés et le changement de contexte.
+
+Correction : `ThreadPoolExecutor` borné avec file bornée et politique de rejet, dimensionné selon la charge (CPU : ≈ cœurs ; E/S : plus), et **threads virtuels** en Java 21 pour les E/S bloquantes. Ajouter métriques et alertes sur les pools.
+
+#### R6. Différence entre `ExecutorService` et `CompletableFuture`.
+
+**Réponse :** `ExecutorService` est un pool qui exécute des tâches et renvoie un `Future` simple (`get()` bloquant, pas de composition). `CompletableFuture` est un conteneur de résultat avec une API de composition non bloquante (`thenApply`, `thenCompose`, `allOf`, `exceptionally`). Ils se combinent : `supplyAsync(task, executor)`.
+
+#### R7. `CompletableFuture` crée-t-il son propre pool de threads ? Lequel utilise-t-il par défaut ?
+
+**Réponse :** Pas de pool propre. Les méthodes `*Async` sans executor utilisent `ForkJoinPool.commonPool()` (ou un thread par tâche si le parallélisme du pool commun est 1). Il est partagé avec les streams parallèles et dimensionné pour le CPU : y faire des E/S bloquantes affame tout. Toujours passer un executor dédié pour les appels bloquants.
+
+#### R8. Une API REST prend 30 secondes car elle appelle trois services. Comment l'optimiser ?
+
+**Réponse :** Mesurer d'abord (traçage : quel appel domine ?).
+
+Si les appels sont indépendants, les lancer **en parallèle** (`CompletableFuture.allOf` avec executor dédié, ou concurrence structurée/threads virtuels) : la latence devient le *max* et non la *somme*.
+
+Puis : timeouts par appel, cache des données stables, endpoints en lot au lieu de N appels, circuit breaker avec repli, ou passage en asynchrone (202 + polling/webhook) si le travail est intrinsèquement long.
+
+### Mémoire & chaînes
+
+#### R9. Expliquez la gestion mémoire de Java et les différentes zones mémoire de la JVM.
+
+**Réponse :** **Heap** (young : eden + survivors ; old ; géré par le GC), **Metaspace** (métadonnées de classes, mémoire native), **piles de threads** (frames, variables locales), **registre PC** (par thread), **pile des méthodes natives**, plus buffers directs et code cache hors heap. Les objets vivent sur le heap ; références et primitifs dans les frames ; le GC récupère les objets inaccessibles.
+
+#### R10. Qu'est-ce que le registre PC ?
+
+**Réponse :** Une petite zone par thread qui contient l'adresse de l'instruction JVM en cours (indéfinie pendant une méthode native). C'est ce qui permet à un thread de reprendre après un changement de contexte.
+
+#### R11. Expliquez String Pool vs mémoire Heap.
+
+**Réponse :** Le string pool (chaînes internées) fait partie du heap depuis Java 7. Les littéraux et les chaînes `intern()` y sont partagés ; `new String(...)` crée un objet distinct sur le heap, hors du pool sauf s'il est interné.
+
+#### R12. Que se passe-t-il avec `new String("hello")` si "hello" existe déjà dans le String Pool ?
+
+**Réponse :** Le littéral `"hello"` reste dans le pool, et `new` alloue quand même un **second objet distinct** sur le heap avec les mêmes caractères. Donc `"hello" == new String("hello")` vaut `false`, et deux objets existent. `.intern()` renvoie celui du pool.
+
+#### R13. Différence entre `==` et `.equals()` pour `String`.
+
+**Réponse :** `==` compare les références (même objet ?), `.equals()` compare le contenu. Les littéraux peuvent être `==` car poolés, ce qui cache le bug dans les tests. Toujours `.equals()` (ou `Objects.equals` pour la gestion du null).
+
+## 🎤 Quiz oral
+
+Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.
+
+1. Q8. Pourquoi `String` est-elle immuable, et qu'est-ce que le string pool ?
+2. Q12. Comment le pattern matching pour `switch` se combine-t-il avec les sealed types, et pourquoi est-ce important pour l'exhaustivité ?
+3. Q3. Quel est le contrat `equals`/`hashCode`, et que se passe-t-il si on n'en redéfinit qu'un ?
+4. Q20. Qu'est-ce qui cause `ConcurrentModificationException`, et quelle est la bonne correction ?
+5. Q25. Qu'est-ce que la « safe publication » dans le Java Memory Model, et pourquoi un autre thread peut-il voir un objet à moitié construit ?
+6. Q40. Comment profiler un service Java lent ou gourmand en CPU en production ?
+7. Q34. Quand choisiriez-vous des virtual threads plutôt qu'une stack réactive (WebFlux) pour un service I/O-bound à forte concurrence, et inversement ?
+8. Q38. Quelle est la différence entre `StackOverflowError` et `OutOfMemoryError`, et d'où vient réellement chacune ?
+9. S1. Un service de production lève `OutOfMemoryError: Java heap space` après un pic de trafic
+10. S22. Le service se bloque au démarrage environ un déploiement sur vingt, sans erreur et sans usage CPU
+
 ## 📌 Cheat-sheet
 
-- **Chaîne de collisions `HashMap`** → arbre dès qu'un bucket a >8 entrées et que la table a ≥64 buckets, retour en liste sous 6 entrées ; un mauvais `hashCode()` dégrade O(1) vers O(log n) — mais un contrat `equals()`/`hashCode()` rompu *duplique* silencieusement les clés, ce qui est pire que lent.
-- **`ConcurrentModificationException`** → itérateur fail-fast + `modCount` ; corriger avec `Iterator.remove()`/`removeIf`, pas avec un remove-pendant-l'itération manuel ni un contournement par index.
-- **Singleton, classé :** `enum` (le meilleur — bloque aussi les attaques par réflexion/désérialisation) ≈ static holder de Bill Pugh (le meilleur quand ce ne peut pas être un enum) > double-checked locking avec `volatile` > accesseur synchronized > `static final` eager.
-- **`synchronized`** = exclusion mutuelle + une arête happens-before (visibilité de tout ce qui précède le relâchement du lock). **`volatile`** = visibilité seulement, pas d'atomicité pour les opérations composées comme `i++`.
-- **GC roots** : locales de stack, champs statiques, références JNI — accessibilité, pas comptage de références ; les cycles ne sont pas des fuites.
-- **Virtual threads** = bon marché, gérés par la JVM, démontés sur I/O bloquant — mais `synchronized` autour d'I/O épingle le carrier thread, et une habitude de `ThreadLocal` inoffensive à l'échelle des platform threads ne l'est pas à l'échelle des virtual threads.
-- **Piège du common pool** : `parallelStream()` et les `CompletableFuture` async par défaut partagent un unique `ForkJoinPool.commonPool()` à l'échelle de la JVM — un appel bloquant dans l'un ou l'autre peut affamer du code sans rapport ailleurs dans le processus.
-- **`thenCompose` vs `thenApply`** : utiliser `thenCompose` quand l'étape suivante retourne elle-même un `CompletableFuture`, sinon on obtient un future imbriqué par erreur.
-- **Cache d'`Integer`** : -128..127 est *spécifié*, pas une coïncidence — `==` « marche » par contrat dans cette plage, casse (aussi par contrat) en dehors ; toujours utiliser `.equals()` ou unboxer.
-- **try-with-resources** ferme dans l'ordre inverse ; l'exception du bloc try l'emporte, l'exception de `close()` est rattachée comme suppressed — un bloc `finally` écrit à la main perd souvent silencieusement l'une des deux.
-- **Exceptions checked** = conditions récupérables imposées par le compilateur ; **unchecked** = erreurs de programmation. `catch (Exception e) {}` est l'anti-pattern que ces deux conceptions cherchent à empêcher.
-- **Type erasure** casse : la surcharge par paramètre générique, la création de tableau générique, `instanceof ParameterizedType` — le compilateur rafistole le polymorphisme autour avec des bridge methods synthétiques.
-- **Sealed + pattern matching de switch** = exhaustivité vérifiée par le compilateur — mais ajouter une branche `default` défensive jette cette garantie.
-- **Fuite malgré le GC** = accessibilité involontaire : collections statiques, listeners non retirés, `ThreadLocal` non vidé sur des threads poolés (pire à l'échelle des virtual threads).
-- **`StackOverflowError`** = région stack, récursion non bornée. **`OutOfMemoryError`** = région heap/metaspace/native-thread — lire le message après les deux-points ; relever `-Xmx`/`-Xss` retarde, sans le corriger, un algorithme réellement non borné.
-- **Collectors :** G1 = défaut sûr, objectif de pause ajustable. ZGC/Shenandoah = concurrents, pauses sub-ms plates quelle que soit la taille du heap, un certain coût CPU/débit — choisir selon le SLO de latence réel du service, pas selon la réputation.
-- **Clés de hash mutables** : un champ utilisé dans `hashCode()` qui change après l'insertion orpheline l'entrée — `contains`/`remove` la ratent, elle fuit ; indexer sur des ids/records immuables.
-- **`Optional`** : un *type de retour* uniquement (pas champ/paramètre) ; `orElse(x)` évalue `x` de façon eager, `orElseGet` de façon lazy ; `get()` ne fait que déplacer l'exception — utiliser `orElseThrow`/`map`/`flatMap`.
-- **Streams** : lazy jusqu'à une opération terminale, à usage unique, ne jamais muter d'état partagé depuis `parallel().forEach` ; `Stream.toList()` est non modifiable, `Collectors.toMap` lève sur clés dupliquées sans merge function.
-- **Safe publication** : pas de happens-before = un autre thread peut voir la référence mais des valeurs de champs par défaut ; utiliser `volatile`/`final`/init statique/locks, et ne jamais laisser fuiter `this` depuis un constructeur.
-- **`ThreadLocal` vs `ScopedValue`** : `ThreadLocal` est mutable et sans portée (fuit sur les threads poolés, lourd à l'échelle des virtual threads) ; `ScopedValue` (final en JDK 25) est immuable, borné, nettoyé automatiquement.
-- **`ReentrantLock`/`StampedLock`** : à choisir pour les timeouts de `tryLock`, l'interruptibilité, plusieurs `Condition`s, les lectures optimistes — toujours `unlock()` dans `finally` ; `StampedLock` n'est pas réentrant. Le pinning de virtual threads par `synchronized` a été en grande partie supprimé dans JDK 24.
-- **Deadlock d'initialisation de classe** : des static initializers cycliques entre threads se bloquent dans `<clinit>` (souvent invisibles au détecteur de deadlock) ; un initialiseur en échec empoisonne la classe (`NoClassDefFoundError` ensuite) — lire la *première* erreur.
-- **Argent** : jamais `double` ; `BigDecimal` depuis `String`/`valueOf`, `compareTo` et non `equals` (scale), `divide` exige un scale/`MathContext`, le mode d'arrondi (`HALF_EVEN` vs `HALF_UP`) et le *point* d'arrondi sont des règles métier.
-- **File d'executor non bornée** (`newFixedThreadPool`) = pas de back-pressure : la latence grimpe pendant des minutes, puis OOM — utiliser un `ThreadPoolExecutor` borné + politique de rejet + timeouts.
-- **`SimpleDateFormat`/`DecimalFormat` partagé** = sortie corrompue sous charge — utiliser les formatters immuables de `java.time`.
-- **OOMKilled avec un heap sain** = mémoire native (direct buffers, Metaspace, stacks de threads) : budgéter heap + non-heap dans la limite du conteneur, utiliser NMT (`jcmd VM.native_memory`).
-- **DST** : `LocalDateTime` n'a pas de zone — gaps et overlaps cassent les planifications en heure murale ; stocker `Instant`, calculer les planifications locales avec `ZonedDateTime`, injecter une `Clock` pour les tests.
+### Collections et égalité
+
+*À retenir d'abord :* (1) redéfinir `equals()` et `hashCode()` ensemble ; (2) ne jamais comparer des objets avec `==` ; (3) ne jamais retirer d'une liste pendant qu'on la parcourt ; (4) utiliser des clés immuables dans les maps.
+
+- **Bucket de `HashMap`** — un emplacement qui contient les entrées dont les clés ont le même hash. Dès qu'un bucket a plus de 8 entrées et que la table a au moins 64 buckets, Java transforme la chaîne en arbre ; retour en liste sous 6 entrées. *Un mauvais `hashCode()` dégrade O(1) vers O(log n).*
+- **Contrat `equals()`/`hashCode()`** — deux objets égaux doivent renvoyer le même hash. *Si on le rompt, la map *duplique* silencieusement les clés, ce qui est pire que lent.*
+- **Clés de hash mutables** — si un champ utilisé dans `hashCode()` change après l'insertion, l'entrée se retrouve dans le mauvais bucket. *`contains`/`remove` ne la trouvent plus et elle fuit ; indexer sur des ids ou records immuables.*
+- **`ConcurrentModificationException`** — levée par les itérateurs *fail-fast* (ils vérifient un compteur de modifications, `modCount`, à chaque pas) quand la collection change pendant la boucle. *Correction : `Iterator.remove()` ou `removeIf`, pas un remove manuel pendant l'itération ni un contournement par index.*
+
+  ```java
+  list.removeIf(x -> x.isExpired());   // sûr
+  ```
+
+- **Cache d'`Integer`** — Java réutilise les objets `Integer` de -128 à 127 (c'est *spécifié*, pas une coïncidence). *`==` « marche » par contrat dans cette plage, casse (aussi par contrat) en dehors ; toujours utiliser `.equals()` ou unboxer.*
+- **`Optional`** — un conteneur pour « peut-être pas de valeur ». *À utiliser uniquement comme type de retour, pas pour un champ ni un paramètre.*
+- **`Optional.orElse` vs `orElseGet`** — `orElse(x)` évalue toujours `x` (eager) ; `orElseGet(() -> x)` seulement si vide (lazy). *`get()` ne fait que déplacer l'exception : préférer `orElseThrow`, `map` ou `flatMap`.*
+- **Streams** — un pipeline lazy (rien ne s'exécute avant une opération *terminale* comme `collect`) et à usage unique. *Ne jamais muter d'état partagé depuis `parallel().forEach`.*
+- **`Stream.toList()` vs `Collectors.toMap`** — `toList()` renvoie une liste non modifiable. *`toMap` lève une exception sur des clés dupliquées sans merge function.*
+
+### Design patterns et fonctionnalités du langage
+
+*À retenir d'abord :* (1) préférer un `enum` pour un singleton ; (2) attraper des exceptions précises, jamais un `catch (Exception e) {}` vide ; (3) utiliser try-with-resources pour tout ce qui se ferme.
+
+- **Singleton, classé du meilleur au pire** — `enum` (bloque aussi les attaques par réflexion/désérialisation) ≈ static holder de Bill Pugh (une classe interne statique privée qui porte l'instance ; le meilleur quand ce ne peut pas être un enum) > double-checked locking avec `volatile` > accesseur `synchronized` > `static final` eager.
+- **try-with-resources** — ferme automatiquement les ressources, dans l'ordre inverse de l'ouverture. *Si le bloc try et `close()` lèvent tous deux, l'exception du try l'emporte et celle de `close()` est rattachée comme « suppressed » ; un `finally` écrit à la main perd souvent silencieusement l'une des deux.*
+- **Exceptions checked vs unchecked** — checked = conditions récupérables que le compilateur impose de gérer ; unchecked = erreurs de programmation. *`catch (Exception e) {}` est l'anti-pattern que ces deux conceptions cherchent à empêcher.*
+- **Type erasure** — les generics sont effacés à la compilation, la JVM ne voit plus `List<String>`. *Ça casse la surcharge par paramètre générique, la création de tableau générique et `instanceof ParameterizedType` ; le compilateur rafistole le polymorphisme avec des bridge methods synthétiques.* *(avancé)*
+- **Sealed + pattern matching de `switch`** — le compilateur vérifie que tous les cas sont couverts (exhaustivité). *Ajouter une branche `default` défensive jette cette garantie.*
+- **Argent** — jamais `double`. Construire `BigDecimal` depuis une `String` ou `valueOf`. *Comparer avec `compareTo`, pas `equals` (qui compare aussi le scale : `2.0` vs `2.00`).*
+- **`BigDecimal.divide` et arrondi** — `divide` exige un scale ou un `MathContext`. *Le mode d'arrondi (`HALF_EVEN` vs `HALF_UP`) et le point d'arrondi sont des règles métier, pas des détails techniques.*
+- **`SimpleDateFormat`/`DecimalFormat` partagé** — non thread-safe. *Sous charge, la sortie est corrompue ; utiliser les formatters immuables de `java.time`.*
+- **DST (heure d'été/hiver)** — `LocalDateTime` n'a pas de fuseau, donc les gaps et overlaps cassent les planifications en heure murale. *Stocker un `Instant`, calculer les planifications locales avec `ZonedDateTime`, injecter une `Clock` pour les tests.*
+
+### Concurrence
+
+*À retenir d'abord :* (1) `volatile` = visibilité, pas atomicité ; (2) `synchronized` = lock + visibilité ; (3) ne pas bloquer le common pool ; (4) borner les files des pools de threads.
+
+- **`synchronized`** — exclusion mutuelle (un seul thread à la fois) plus une arête *happens-before* : tout ce qui est écrit avant le relâchement du lock est visible du thread suivant qui le prend.
+- **`volatile`** — garantit que les autres threads voient la dernière valeur, rien de plus. *Pas d'atomicité pour les opérations composées comme `i++` (lecture-modification-écriture).*
+- **Safe publication** — transmettre correctement un objet à un autre thread. *Sans happens-before, l'autre thread peut voir la référence mais des valeurs de champs par défaut (`0`/`null`). Utiliser `volatile`, `final`, init statique ou locks, et ne jamais laisser fuiter `this` depuis un constructeur.*
+- **Piège du common pool** — `parallelStream()` et les `CompletableFuture` async par défaut partagent un unique pool à l'échelle de la JVM, `ForkJoinPool.commonPool()`. *Un appel bloquant dans l'un ou l'autre peut affamer du code sans rapport ailleurs dans le processus.*
+- **`thenCompose` vs `thenApply`** — `thenApply` transforme une valeur ; `thenCompose` enchaîne une étape qui retourne elle-même un `CompletableFuture`. *Utiliser `thenApply` à cet endroit donne un future imbriqué par erreur.*
+- **File d'executor non bornée** (`newFixedThreadPool`) — la file grandit sans limite, donc pas de back-pressure (aucun signal pour ralentir les appelants). *La latence grimpe pendant des minutes, puis OOM (`OutOfMemoryError`) ; utiliser un `ThreadPoolExecutor` borné + politique de rejet + timeouts.*
+- **Virtual threads** — des threads bon marché gérés par la JVM, démontés de leur carrier thread (thread OS) pendant un I/O bloquant. *Pièges : `synchronized` autour d'I/O épingle le carrier thread ; une habitude de `ThreadLocal` inoffensive avec les platform threads ne l'est pas à l'échelle des virtual threads.*
+- **`ThreadLocal` vs `ScopedValue`** — `ThreadLocal` est mutable et sans portée (fuit sur les threads poolés, lourd avec les virtual threads). *`ScopedValue` (final en JDK 25) est immuable, borné et nettoyé automatiquement.*
+- **`ReentrantLock`/`StampedLock`** — à choisir pour les timeouts de `tryLock`, l'interruptibilité, plusieurs `Condition`s ou les lectures optimistes. *Toujours `unlock()` dans `finally` ; `StampedLock` n'est pas réentrant. Le pinning de virtual threads par `synchronized` a été en grande partie supprimé dans JDK 24.* *(avancé)*
+- **Deadlock d'initialisation de classe** — des static initializers cycliques entre threads se bloquent dans `<clinit>` (la méthode d'initialisation de classe), souvent invisibles au détecteur de deadlock. *Un initialiseur en échec empoisonne la classe (`NoClassDefFoundError` ensuite) : lire la *première* erreur.* *(avancé)*
+
+### Mémoire, GC et JVM
+
+*À retenir d'abord :* (1) le GC libère ce qui est *inaccessible*, pas ce qui est inutilisé ; (2) `StackOverflowError` = récursion trop profonde, `OutOfMemoryError` = mémoire épuisée dans une région ; (3) un conteneur peut être OOMKilled même avec un heap sain.
+
+- **GC roots** — les points de départ que le GC suit pour trouver les objets vivants : locales de stack, champs statiques, références JNI (code natif). *Il se base sur l'accessibilité, pas sur le comptage de références : les cycles ne sont pas des fuites.*
+- **Fuite malgré le GC** — accessibilité involontaire. *Causes typiques : collections statiques, listeners non retirés, `ThreadLocal` non vidé sur des threads poolés (pire à l'échelle des virtual threads).*
+- **`StackOverflowError`** — la région stack est pleine, en général à cause d'une récursion non bornée.
+- **`OutOfMemoryError`** — région heap, metaspace ou native-thread épuisée : lire le message après les deux-points. *Relever `-Xmx`/`-Xss` (taille max du heap / de la stack d'un thread) retarde, sans le corriger, un algorithme réellement non borné.*
+- **Collectors** — G1 = défaut sûr, objectif de pause ajustable. ZGC/Shenandoah = concurrents, pauses sub-ms plates quelle que soit la taille du heap, avec un certain coût CPU/débit. *Choisir selon le SLO (objectif) de latence réel du service, pas selon la réputation.*
+- **OOMKilled avec un heap sain** — le coupable est la mémoire native (direct buffers, Metaspace, stacks de threads). *Budgéter heap + non-heap dans la limite du conteneur et inspecter avec NMT (Native Memory Tracking) : `jcmd VM.native_memory`.*
+- **Native image vs JVM** — Native Image compile à l'avance sous une hypothèse de monde fermé : le code mort est supprimé, les classes sont initialisées au build, ni JIT/interpréteur/Metaspace à l'exécution. *Gains : démarrage en dizaines de ms, RSS plusieurs fois plus faible. Coûts : débit maximal inférieur (utiliser la PGO), builds longs, réflexion/proxies à déclarer, outillage plus faible. À choisir pour serverless/CLI/scale-to-zero ; garder la JVM (plus AppCDS/CRaC) pour les services longue durée limités par le débit.*

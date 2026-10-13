@@ -3,6 +3,7 @@
 ## Undo mistakes
 
 ### Discard or unstage changes
+
 ```bash
 git restore file.txt                     # discard unstaged changes (unrecoverable)
 git restore --staged file.txt            # unstage, keep the edits
@@ -12,6 +13,7 @@ git clean -fd                            # delete them
 ```
 
 ### Fix the last commit
+
 ```bash
 git commit --amend                       # edit the message
 git add forgotten.txt && git commit --amend --no-edit   # add a file, keep the message
@@ -19,6 +21,7 @@ git commit --amend --author="Name <me@example.com>" --no-edit
 ```
 
 ### Undo commits
+
 ```bash
 git reset --soft HEAD~1                  # undo commit, keep changes staged
 git reset HEAD~1                         # undo commit, keep changes unstaged (--mixed)
@@ -35,6 +38,7 @@ git revert HEAD~3..HEAD                  # revert the last 3 commits
 | `commit --amend` | Yes | No |
 
 ### Committed to the wrong branch
+
 ```bash
 git switch -c feature/right-branch       # new branch at current commit
 git switch main
@@ -42,6 +46,7 @@ git reset --hard origin/main             # move main back
 ```
 
 ### Force push safely
+
 ```bash
 git push --force-with-lease              # refuses if someone else pushed meanwhile
 ```
@@ -57,10 +62,12 @@ git stash push -p                        # choose hunks interactively
 git stash push -- src/Foo.java           # only one path
 git stash list
 ```
+
 ```text
 stash@{0}: On main: wip: login form
 stash@{1}: WIP on main: 3f2a1bc Fix typo
 ```
+
 ```bash
 git stash show -p stash@{0}              # see the diff
 git stash pop                            # apply latest and drop it
@@ -75,10 +82,12 @@ git stash clear                          # delete all (careful)
 ## Interactive rebase
 
 ### Clean up the last N commits
+
 ```bash
 git rebase -i HEAD~4
 git rebase -i origin/main                # everything since branching
 ```
+
 ```text
 pick   a1b2c3 Add login endpoint
 squash d4e5f6 fix typo
@@ -96,6 +105,7 @@ drop   0d1e2f debug logging
 | `drop` | Delete the commit |
 
 ### Autosquash workflow
+
 ```bash
 git commit --fixup a1b2c3                # mark a fix for an earlier commit
 git rebase -i --autosquash origin/main   # fixups are reordered automatically
@@ -103,6 +113,7 @@ git config --global rebase.autosquash true
 ```
 
 ### Rebase onto and conflicts
+
 ```bash
 git rebase main                          # replay my branch on top of main
 git rebase --onto main old-base feature  # move feature from old-base onto main
@@ -158,11 +169,13 @@ Records where `HEAD` and branches pointed, locally, for ~90 days. It is the undo
 ```bash
 git reflog
 ```
+
 ```text
 3f2a1bc HEAD@{0}: reset: moving to HEAD~3
 9d8c7b6 HEAD@{1}: commit: Add invoice export
 5e4d3c2 HEAD@{2}: rebase (finish): returning to refs/heads/feature
 ```
+
 ```bash
 git reset --hard HEAD@{1}                # go back to before the reset
 git branch rescue 9d8c7b6                # or keep the lost commit on a branch
@@ -228,6 +241,7 @@ git branch -vv                           # tracking info
 ## Useful config and aliases
 
 ### Config
+
 ```bash
 git config --global user.name "Iheb Sahloul"
 git config --global user.email "me@example.com"
@@ -243,6 +257,7 @@ git config --global --list --show-origin
 ```
 
 ### Aliases
+
 ```bash
 git config --global alias.st "status -sb"
 git config --global alias.lg "log --oneline --graph --decorate --all"
@@ -254,12 +269,14 @@ git config --global alias.wip "!git add -A && git commit -m wip"
 ```
 
 ### Per-directory identity (~/.gitconfig)
+
 ```text
 [includeIf "gitdir:~/work/"]
     path = ~/.gitconfig-work
 ```
 
 ### .gitignore already-tracked files
+
 ```bash
 git rm --cached secrets.env              # untrack but keep on disk
 echo "secrets.env" >> .gitignore

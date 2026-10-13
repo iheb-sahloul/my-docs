@@ -2,7 +2,7 @@
 
 Ma documentation technique personnelle : notes et références auxquelles je veux revenir.
 
-# Roadmap — Ingénieur Senior Java / React → Tech Lead
+## Roadmap — Ingénieur Senior Java / React → Tech Lead
 
 Une carte détaillée de ce qu'il faut maîtriser pour devenir ingénieur full-stack Java / React senior et
 évoluer vers des rôles de tech lead. Elle couvre le code, les données, le messaging, le frontend, le DevOps,
@@ -113,8 +113,8 @@ détaillées de ce site.
 | Spring Cloud / résilience     | 🔴     | Config, gateway, Resilience4j (circuit breaker, retry, bulkhead)              |
 
 **Pour aller plus loin :** [Java Core & JVM](interviews/java-core-jvm.md) · [Spring & Architecture](interviews/spring-architecture.md) ·
-[Java 25](tech/backend/java-25.md) · [ArchUnit](tech/backend/arch-unit.md) · [Notes Java](notes/java.md) ·
-[Bonnes pratiques Java](best-practices/java.md) · [Streams dans IntelliJ](tech/backend/java-stream-intellij.md)
+[Notes Java](notes/java.md) · [Bonnes pratiques Java](best-practices/java.md) · [Bonnes pratiques Spring Boot](best-practices/spring-boot.md) ·
+[Tests](interviews/testing.md) · [Bonnes pratiques de tests](best-practices/testing.md) · [Live coding](interviews/coding.md)
 
 **Pratique**
 
@@ -162,8 +162,7 @@ détaillées de ce site.
 | Évolution de schéma            | 🔴     | Avro/Protobuf, Schema Registry, compatibilité ascendante/descendante          |
 | Webhooks, retries, DLQs        | 🟡     | Backoff exponentiel avec jitter, poison messages, rejeu                       |
 
-**Pour aller plus loin :** [Messaging](interviews/messaging-rabbitmq-kafka.md) · [Guidelines API](tech/backend/api-guidelines.md) ·
-[AAA](tech/backend/aaa.md)
+**Pour aller plus loin :** [Messaging](interviews/messaging-rabbitmq-kafka.md) · [Bonnes pratiques REST](best-practices/rest-api.md) · [Bonnes pratiques Messaging](best-practices/messaging.md) · [Notes Kafka & RabbitMQ](notes/messaging.md)
 
 **Pratique**
 
@@ -205,7 +204,7 @@ détaillées de ce site.
 | Sécurité frontend              | 🟡     | XSS, CSP, CSRF, stockage des tokens, hygiène des dépendances                  |
 | Architecture frontend          | 🔴     | Dossiers par fonctionnalité, bibliothèque UI partagée, micro-frontends (et leur coût) |
 
-**Pour aller plus loin :** [React & TypeScript](interviews/react-typescript.md) · Skill : `vercel-react-best-practices`
+**Pour aller plus loin :** [React & TypeScript](interviews/react-typescript.md) · [Bonnes pratiques React](best-practices/react-typescript.md) · Skill : `vercel-react-best-practices`
 
 **Pratique**
 
@@ -232,9 +231,8 @@ détaillées de ce site.
 | Gestion des incidents          | 🔴     | Astreinte, runbooks, postmortems sans reproche                                |
 | GitOps & plateforme            | 🔴     | Argo CD / Flux, plateformes internes de développement, golden paths           |
 
-**Pour aller plus loin :** [Full Stack & DevOps](interviews/fullstack-devops-k8s.md) · [kubectl](tech/devops/kubectl.md) ·
-[Helm](tech/devops/helm.md) · [Git](notes/git.md) · Shell : [grep](tech/shell/grep.md), [sed](tech/shell/sed.md),
-[awk](tech/shell/awk.md), [jq](tech/shell/jq.md), [curl](tech/shell/curl.md)
+**Pour aller plus loin :** [Full Stack & DevOps](interviews/fullstack-devops-k8s.md) · [Cloud (AWS)](interviews/cloud-aws.md) · [Notes Kubernetes](notes/kubernetes.md) ·
+[Notes Docker](notes/docker.md) · [Git](notes/git.md) · [Linux](notes/linux.md) · [curl & jq](notes/http-curl-jq.md) · [Terraform](notes/terraform.md)
 
 **Pratique**
 
@@ -257,7 +255,7 @@ détaillées de ce site.
 | Threat modeling                | 🔴     | STRIDE, diagrammes de flux de données, revues de sécurité intégrées à la conception |
 | SDLC sécurisé                  | 🔴     | SAST/DAST dans les pipelines, security champions, suivi des pentests          |
 
-**Pour aller plus loin :** [System Design & Leadership](interviews/system-design-leadership.md) (section OWASP)
+**Pour aller plus loin :** [Sécurité](interviews/security.md) · [Bonnes pratiques de sécurité](best-practices/security.md) · [System Design](interviews/system-design.md) (section OWASP)
 
 ---
 
@@ -278,8 +276,8 @@ détaillées de ce site.
 | Dette technique                         | 🔴     | L'identifier, la quantifier, la prioriser, négocier du temps pour elle |
 | Team topologies & loi de Conway         | 🔴     | L'architecture reflète la structure de communication — concevez les deux |
 
-**Pour aller plus loin :** [Architecture hexagonale](architecture/hexagonal.md) · [Spring & Architecture](interviews/spring-architecture.md) ·
-[Dette technique](tech/tech-debt.md) · [ArchUnit](tech/backend/arch-unit.md)
+**Pour aller plus loin :** [Spring & Architecture](interviews/spring-architecture.md) · [Design Patterns](interviews/design-patterns.md) ·
+[System Design](interviews/system-design.md) · [Bonnes pratiques d'architecture](best-practices/architecture.md)
 
 **Pratique**
 
@@ -326,7 +324,7 @@ détaillées de ce site.
 - [ ] Système de réservation (concurrence, double réservation)
 - [ ] Pipeline de métriques / de logs
 
-**Pour aller plus loin :** [System Design & Leadership](interviews/system-design-leadership.md)
+**Pour aller plus loin :** [System Design](interviews/system-design.md)
 
 ---
 
@@ -339,7 +337,7 @@ détaillées de ce site.
 | Context engineering            | 🟡     | Instructions projet (`CLAUDE.md`), skills, serveurs MCP, hooks                |
 | Adoption & gouvernance en équipe | 🔴   | Guidelines, sécurité (secrets, prompt injection), mesure de l'impact          |
 
-**Pour aller plus loin :** [Claude Code & Dev assisté par IA](interviews/claude-code.md)
+**Pour aller plus loin :** [Ingénierie IA & Claude Code](interviews/claude-code.md)
 
 ---
 
@@ -373,7 +371,7 @@ détaillées de ce site.
 | Recrutement                    | Entretiens structurés, évaluation équitable, plans d'onboarding               |
 | Sécurité psychologique         | Culture sans reproche, admettre ses propres erreurs, rendre sûr le fait de poser des questions |
 
-**Pour aller plus loin :** [System Design & Leadership](interviews/system-design-leadership.md)
+**Pour aller plus loin :** [Leadership](interviews/leadership-behavioral.md)
 
 **Pratique**
 
@@ -436,11 +434,11 @@ Un parcours réaliste en travaillant à temps plein. Adaptez-le à votre point d
 | Frontend                  | *Learning TypeScript* · docs react.dev · *Refactoring UI* · web.dev (performance & accessibilité)  |
 | Leadership                | *The Staff Engineer's Path* (Reilly) · *The Manager's Path* (Fournier) · *An Elegant Puzzle* (Larson) · *Team Topologies* · *Radical Candor* |
 
-**Plus :** [Lectures complémentaires](interviews/further-reading.md)
-
 ---
 
 ## Grille d'auto-évaluation {#self-assessment-checklist}
+
+Cette grille suit votre niveau de carrière sur plusieurs mois. Pour être prêt la veille d'un entretien, utilisez la [checklist d'entretien blanc](interviews/mock-interview.md).
 
 ### 🟢 Confirmé → Senior
 

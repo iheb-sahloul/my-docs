@@ -1,10 +1,9 @@
 # Bonnes pratiques Docker, Kubernetes & DevOps
 
-
-
 ## 🐳 Images Docker
 
 ### Utilisez des builds multi-stage
+
 Construisez dans une étape avec toute la chaîne d'outils, et ne copiez que le résultat dans une petite image
 d'exécution.
 
@@ -26,6 +25,7 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 ```
 
 ### Figez les versions des images de base
+
 Utilisez un tag de version précis, ou un digest pour une reproductibilité totale. Jamais `latest`.
 
 **Pourquoi c'est une bonne pratique :** `latest` pointe vers ce qui a été poussé en dernier. Le même Dockerfile
@@ -38,6 +38,7 @@ mettre à jour afin que les montées de version soient relues et testées.
 ✅ `FROM node:22.11-alpine` ou `FROM node:22.11-alpine@sha256:...`
 
 ### Ordonnez les couches de la moins à la plus souvent modifiée
+
 Copiez d'abord les fichiers de dépendances et installez les dépendances, puis copiez le code source.
 
 **Pourquoi c'est une bonne pratique :** Docker met chaque couche en cache et reconstruit tout ce qui suit la
@@ -55,6 +56,7 @@ RUN npm run build
 ```
 
 ### Ajoutez un `.dockerignore`
+
 Excluez `.git`, `node_modules`, `target`, les fichiers `.env` locaux et les dossiers d'IDE du contexte de build.
 
 **Pourquoi c'est une bonne pratique :** sans lui, `COPY . .` envoie tout le répertoire au build, y compris un
@@ -65,6 +67,7 @@ par quiconque possède l'image.
 ✅ `.dockerignore` : `.git`, `node_modules`, `target`, `.env*`, `*.log`
 
 ### Ne tournez pas en root
+
 Créez un utilisateur non root dans l'image et basculez dessus avec `USER`.
 
 **Pourquoi c'est une bonne pratique :** par défaut, le processus du conteneur tourne en root. Si l'application est
@@ -79,6 +82,7 @@ USER 10001
 ```
 
 ### Ne mettez jamais de secrets dans l'image
+
 Ne faites pas de `COPY` d'identifiants et ne les définissez pas avec `ENV` / `ARG`. Injectez-les à l'exécution
 (Secret Kubernetes, vault). Utilisez `RUN --mount=type=secret` si le build lui-même en a besoin.
 
@@ -93,6 +97,7 @@ de CI, le poste d'un développeur) obtient le secret, et le renouveler oblige à
 ## 📦 Conteneurs à l'exécution
 
 ### Utilisez la forme exec et gérez `SIGTERM`
+
 Écrivez `ENTRYPOINT` / `CMD` sous forme de tableau JSON, et faites en sorte que l'application termine le travail
 en cours quand elle reçoit `SIGTERM`.
 
@@ -105,6 +110,7 @@ fait de l'application le PID 1, elle reçoit donc le signal et peut s'arrêter p
 ✅ `ENTRYPOINT ["java", "-jar", "/app/app.jar"]`
 
 ### Un processus par conteneur, logs sur stdout
+
 Lancez un seul processus principal par conteneur, et écrivez les logs sur stdout / stderr, pas dans des fichiers.
 
 **Pourquoi c'est une bonne pratique :** le cycle de vie du conteneur suit son processus principal : si vous en
@@ -119,6 +125,7 @@ son redémarrage. Loggez en JSON pour que l'agrégateur puisse indexer les champ
 ## ☸️ Kubernetes
 
 ### Définissez les requests et limits de ressources
+
 Donnez à chaque conteneur des `requests` CPU et mémoire, et une `limit` mémoire.
 
 **Pourquoi c'est une bonne pratique :** le scheduler place les pods selon leurs `requests`. Sans elles, il entasse
@@ -136,6 +143,7 @@ resources:
 ```
 
 ### Configurez correctement les probes liveness, readiness et startup
+
 La readiness décide si le pod reçoit du trafic. La liveness décide s'il est redémarré. La startup protège les
 démarrages lents.
 
@@ -154,6 +162,7 @@ readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
 ```
 
 ### Gardez la configuration dans des ConfigMaps et des Secrets
+
 Stockez la configuration propre à chaque environnement dans des `ConfigMap` et les identifiants dans des `Secret`
 (idéalement synchronisés depuis un vault), pas dans l'image.
 
@@ -167,6 +176,7 @@ Sealed Secrets plutôt que de les commiter.
 ✅ `envFrom: [{ configMapRef: { name: app-config } }, { secretRef: { name: app-secrets } }]`
 
 ### Lancez plusieurs réplicas avec un `PodDisruptionBudget`
+
 Lancez au moins 2 réplicas de tout ce qui est exposé aux utilisateurs, répartis sur plusieurs nœuds, et
 protégez-les avec un `PodDisruptionBudget`.
 
@@ -186,6 +196,7 @@ spec:
 ```
 
 ### Utilisez des rolling updates avec `maxUnavailable: 0`
+
 Configurez la stratégie de déploiement pour que les nouveaux pods soient prêts avant que les anciens ne soient
 supprimés.
 
@@ -196,9 +207,52 @@ Revenez en arrière avec `kubectl rollout undo`.
 
 ✅ `strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }`
 
+Tout ce qui précède dans un seul manifeste :
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: orders }
+spec:
+  replicas: 3
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  selector: { matchLabels: { app: orders } }
+  template:
+    metadata: { labels: { app: orders } }
+    spec:
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: orders } }
+      securityContext: { runAsNonRoot: true }
+      containers:
+        - name: orders
+          image: registry.example.com/orders:3f9c2ab   # immutable tag, never latest
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: app-config }
+            - secretRef: { name: app-secrets }
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { memory: 512Mi }
+          startupProbe:   { httpGet: { path: /actuator/health/liveness,  port: 8080 }, failureThreshold: 30, periodSeconds: 5 }
+          livenessProbe:  { httpGet: { path: /actuator/health/liveness,  port: 8080 } }
+          readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: orders }
+spec:
+  minAvailable: 1
+  selector: { matchLabels: { app: orders } }
+```
+
 ## ⎈ Helm
 
 ### Un chart, un fichier de values par environnement
+
 Gardez un seul chart avec des valeurs par défaut raisonnables dans `values.yaml`, et ne surchargez que ce qui
 diffère dans `values-<env>.yaml`.
 
@@ -211,6 +265,7 @@ et visible dans un seul diff.
 ✅ `helm upgrade --install orders ./chart -f values.yaml -f values-prod.yaml`
 
 ### Lintez et rendez les charts en CI
+
 Lancez `helm lint` et `helm template` (plus un validateur de schéma comme kubeconform) à chaque modification.
 
 **Pourquoi c'est une bonne pratique :** une erreur de template ou une mauvaise indentation YAML n'est découverte
@@ -223,6 +278,7 @@ qui vont changer.
 ## 🚀 CI/CD
 
 ### Construisez une fois, promouvez le même artefact
+
 Construisez l'image une seule fois, taguez-la avec le SHA du commit, et déployez cette même image dans tous les
 environnements.
 
@@ -236,6 +292,7 @@ cassent les deux.
 ✅ `myapp:3f9c2ab` construit une fois, promu dev → staging → prod
 
 ### Scannez les images et les dépendances dans le pipeline
+
 Scannez les images (Trivy, Grype) et les dépendances à chaque build, et faites échouer le build sur les
 vulnérabilités critiques.
 
@@ -245,3 +302,33 @@ vous avez livrés il y a des mois. Scanner en CI bloque les problèmes connus av
 production, et scanner régulièrement les images en cours d'exécution vous dit quand il faut reconstruire.
 
 ✅ `trivy image --exit-code 1 --severity CRITICAL myapp:3f9c2ab`
+
+Un pipeline minimal qui construit une fois, scanne, et promeut la même image taguée par SHA (configuration des accès au cluster omise) :
+
+```yaml
+# .github/workflows/ci.yml
+name: ci
+on: { push: { branches: [main] } }
+permissions: { contents: read, packages: write }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./mvnw -B verify                       # fail fast: tests before anything else
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - run: |
+          IMAGE=ghcr.io/${{ github.repository }}:${GITHUB_SHA::7}
+          docker build -t "$IMAGE" .
+          docker run --rm aquasec/trivy image --exit-code 1 --severity CRITICAL "$IMAGE"
+          docker push "$IMAGE"                      # build once, push once
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging                            # prod uses its own environment with required reviewers
+    steps:
+      - uses: actions/checkout@v4
+      - run: helm upgrade --install orders ./chart -f values.yaml -f values-staging.yaml --set image.tag=${GITHUB_SHA::7} --atomic
+```

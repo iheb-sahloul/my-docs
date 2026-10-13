@@ -1,10 +1,9 @@
 # React & TypeScript Best Practices
 
-
-
 ## 🔷 TypeScript
 
 ### Turn on `strict` mode
+
 Set `"strict": true` in `tsconfig.json`, and add `noUncheckedIndexedAccess` if you can.
 
 **Why it's a best practice:** without `strict`, `null` and `undefined` are accepted everywhere and untyped
@@ -15,6 +14,7 @@ which they are. Turning it on late is painful, so start with it.
 ✅ `{ "compilerOptions": { "strict": true, "noUncheckedIndexedAccess": true } }`
 
 ### Use `unknown`, not `any`
+
 Type values you don't know yet (API responses, `JSON.parse`, `catch` errors) as `unknown`, and narrow them before
 use.
 
@@ -34,6 +34,7 @@ const user = User.parse(await res.json());
 ```
 
 ### Model state with discriminated unions
+
 Represent states that exclude each other as a union with a `status` (or `kind`) field, not as several optional
 booleans.
 
@@ -53,7 +54,21 @@ type State =
   | { status: 'success'; data: User };
 ```
 
+Render it with a `switch`; the `never` check makes the compiler fail when someone adds a new status and forgets a branch:
+
+```tsx
+function UserView({ state }: { state: State }) {
+  switch (state.status) {
+    case 'loading': return <Spinner />;
+    case 'error':   return <ErrorMessage error={state.error} />;
+    case 'success': return <Profile user={state.data} />;
+    default: { const _exhaustive: never = state; return _exhaustive; }
+  }
+}
+```
+
 ### Use `satisfies` and `as const` instead of `as`
+
 Check a value against a type with `satisfies`, and freeze literal values with `as const`. Avoid `as` casts.
 
 **Why it's a best practice:** `value as User` tells the compiler to trust you, even when the value is missing
@@ -74,6 +89,7 @@ const config = { port: 3000 } satisfies Config;
 ## ⚛️ State & rendering
 
 ### Derive values instead of syncing them with `useEffect`
+
 If a value can be computed from props or state, compute it during render. Don't store it in another state and
 update it in an effect.
 
@@ -92,6 +108,7 @@ const fullName = `${first} ${last}`;
 ```
 
 ### Never mutate state
+
 Always create a new object or array when updating state.
 
 **Why it's a best practice:** React compares state by reference. If you `push` into the existing array and call
@@ -109,6 +126,7 @@ setItems(prev => [...prev, newItem]);
 ```
 
 ### Use stable, unique `key`s in lists
+
 Use an id from the data as `key`, not the array index.
 
 **Why it's a best practice:** React uses the key to match elements between renders. With the index, removing
@@ -121,6 +139,7 @@ for static lists that never change order.
 ✅ `items.map(item => <Row key={item.id} item={item} />)`
 
 ### Declare every effect dependency and clean up
+
 List everything the effect uses in the dependency array (let the `react-hooks/exhaustive-deps` lint rule do it),
 and return a cleanup function for subscriptions, timers and requests.
 
@@ -139,6 +158,7 @@ useEffect(() => {
 ```
 
 ### Use a data-fetching library for server state
+
 Fetch server data with TanStack Query (or SWR, or your framework's loaders) instead of `useState` + `useEffect`.
 
 **Why it's a best practice:** hand-written fetching in effects has to handle loading and error states, race
@@ -154,7 +174,18 @@ const { data, isPending, error } = useQuery({
 });
 ```
 
+After a mutation, invalidate the key instead of patching state by hand:
+
+```tsx
+const queryClient = useQueryClient();
+const rename = useMutation({
+  mutationFn: (name: string) => updateUser(id, { name }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user', id] }),
+});
+```
+
 ### Memoize only when you've measured a problem
+
 Don't wrap every value in `useMemo` and every function in `useCallback` by default.
 
 **Why it's a best practice:** memoization isn't free: it costs memory, a dependency comparison on every render,
@@ -168,6 +199,7 @@ React Compiler memoizes automatically, which makes most manual cases unnecessary
 ## 🧩 Components
 
 ### Keep components small and extract custom hooks
+
 One component, one job. Move stateful logic (fetching, subscriptions, form handling) into custom hooks.
 
 **Why it's a best practice:** a 500-line component mixing data fetching, business rules and markup is hard to
@@ -178,7 +210,18 @@ easy to reuse and to show in Storybook.
 ⛔ a `CheckoutPage` with 12 `useState`s and 4 `useEffect`s
 ✅ `const cart = useCart(); const payment = usePayment();` + `<CartSummary cart={cart} />`
 
+```tsx
+// ✅ the hook owns the logic, the component only renders
+function useCart() {
+  const [items, setItems] = useState<Item[]>([]);
+  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);   // derived, not stored
+  const add = (item: Item) => setItems(prev => [...prev, item]);
+  return { items, total, add };
+}
+```
+
 ### Type props explicitly and avoid prop drilling
+
 Declare a `Props` type for each component. When the same prop is passed through 3+ levels, use composition
 (`children`) or a context.
 
@@ -196,6 +239,7 @@ function Button({ variant, onClick, children }: ButtonProps) { /* ... */ }
 ## ♿ Forms & accessibility
 
 ### Use semantic HTML
+
 Use `<button>` for actions, `<a href>` for navigation, `<label>` for inputs, and headings in order.
 
 **Why it's a best practice:** a `<div onClick>` can't be reached with the keyboard, isn't announced as a button
@@ -207,6 +251,7 @@ assistive technology, and clicking the label no longer focuses the input.
 ✅ `<button type="button" onClick={save}>Save</button>`, `<label>Email <input type="email" /></label>`
 
 ### Validate forms with a schema
+
 Use a form library (React Hook Form) with a schema (zod) instead of ad-hoc checks in `onChange` handlers.
 
 **Why it's a best practice:** hand-written validation is scattered and inconsistent, and the rules often
@@ -219,4 +264,76 @@ server must validate again, since any client can bypass it.
 const schema = z.object({ email: z.string().email(), age: z.number().int().min(18) });
 type FormValues = z.infer<typeof schema>;
 const form = useForm<FormValues>({ resolver: zodResolver(schema) });
+```
+
+## ⚡ Performance
+
+### Split code by route
+
+Load each route's code with `lazy()` and `<Suspense>`, so the first page downloads only what it needs.
+
+**Why it's a best practice:** a single bundle grows with every feature, and users pay for the admin screens on
+the login page. Route-level splitting is the cut with the best ratio of gain to complexity. Check the result with a
+bundle analyser and a size budget in CI, so a heavy dependency (a full date or chart library) is noticed in review,
+not in production.
+
+```tsx
+// ✅
+const Reports = lazy(() => import('./pages/Reports'));
+<Suspense fallback={<Spinner />}><Reports /></Suspense>
+```
+
+### Virtualize long lists
+
+Render only the visible rows of lists and tables with hundreds of items (TanStack Virtual, react-window).
+
+**Why it's a best practice:** 5,000 rows means 5,000 component trees and tens of thousands of DOM nodes; every
+re-render and every keystroke in a filter gets slow, and INP suffers. Virtualization keeps the DOM size constant
+whatever the data size. Paginate on the server first when users don't really need all rows.
+
+## 🛡️ Errors & security
+
+### Put error boundaries around independent areas
+
+Wrap routes and independent widgets in error boundaries with a useful fallback, and report the error.
+
+**Why it's a best practice:** without one, an exception during rendering unmounts the whole app and leaves a blank
+page. A boundary per route or widget keeps the rest of the screen usable and gives you a place to send the error to
+monitoring. Error boundaries don't catch errors in event handlers or async code; handle those where they happen.
+
+```tsx
+// ✅ react-error-boundary
+<ErrorBoundary FallbackComponent={WidgetError} onError={reportError}>
+  <RevenueChart />
+</ErrorBoundary>
+```
+
+### Never render untrusted HTML without sanitizing it
+
+Let React escape content; if you must use `dangerouslySetInnerHTML`, sanitize with DOMPurify first.
+
+**Why it's a best practice:** JSX escapes text by default, which blocks most XSS. `dangerouslySetInnerHTML`,
+`href={userInput}` (a `javascript:` URL) and injecting HTML from a CMS bypass that protection. An XSS can read
+anything the page can, including tokens kept in `localStorage`; see the [security best practices](security.md) for
+token storage and CSP.
+
+⛔ `<div dangerouslySetInnerHTML={{ __html: comment.body }} />`
+✅ `<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.body) }} />`
+
+## 🧪 Testing
+
+### Test behaviour through the UI, and mock the network, not the components
+
+Query by role and label with React Testing Library, and mock HTTP with MSW rather than mocking hooks or modules.
+
+**Why it's a best practice:** tests that check component state or internal calls break on every refactor and pass
+when the user-visible behaviour is broken. Role queries test what the user sees and also check accessibility. MSW
+intercepts requests at the network level, so the same handlers work in unit tests, Storybook and local development,
+and the real fetching code runs. Details are in the [testing best practices](testing.md).
+
+```tsx
+// ✅
+server.use(http.get('/api/orders', () => HttpResponse.json([{ id: 1, total: 42 }])));
+render(<OrdersPage />);
+expect(await screen.findByRole('row', { name: /42/ })).toBeInTheDocument();
 ```

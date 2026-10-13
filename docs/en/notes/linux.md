@@ -3,6 +3,7 @@
 ## Files and directories
 
 ### Navigate and list
+
 ```bash
 ls -lah                                        # long, all, human sizes
 ls -lt | head                                  # newest first
@@ -11,6 +12,7 @@ pwd; cd -                                      # cd - = previous directory
 ```
 
 ### Find files
+
 ```bash
 find . -name "*.log" -mtime +7                 # older than 7 days
 find . -type f -size +100M
@@ -21,6 +23,7 @@ locate nginx.conf                              # uses a prebuilt index (updatedb
 ```
 
 ### Copy, move, link, remove
+
 ```bash
 cp -a src/ dst/                                # archive: keep perms/times/symlinks
 rsync -avh --progress src/ user@host:/data/    # trailing slash on src = contents only
@@ -31,6 +34,7 @@ rm -rf build/                                  # no undo, double-check the path
 ```
 
 ### View files
+
 ```bash
 less +F app.log                                # follow like tail -f, Ctrl-C to browse, q to quit
 tail -f app.log
@@ -42,6 +46,7 @@ stat file                                      # size, perms, timestamps
 ```
 
 ### Archives
+
 ```bash
 tar czf backup.tgz dir/                        # create gzip
 tar xzf backup.tgz -C /tmp                     # extract into /tmp
@@ -55,9 +60,11 @@ gzip -k file                                   # keep original
 ## Permissions
 
 ### Read and change
+
 ```bash
 ls -l script.sh
 ```
+
 ```text
 -rwxr-xr-- 1 alice dev 1204 Sep 29 10:12 script.sh
 ```
@@ -86,6 +93,7 @@ umask                                          # default mask (022 -> files 644,
 ```
 
 ### Special bits and ACLs
+
 ```bash
 chmod u+s file                                 # setuid
 chmod g+s dir                                  # new files inherit group
@@ -95,6 +103,7 @@ getfacl file
 ```
 
 ### Users and groups
+
 ```bash
 id                                             # uid, gid, groups
 whoami
@@ -110,6 +119,7 @@ sudo -u postgres psql
 ## Processes
 
 ### Inspect
+
 ```bash
 ps aux | grep java
 ps -ef --forest                                # tree view
@@ -121,6 +131,7 @@ uptime                                         # load average: 1/5/15 min
 ```
 
 ### Signals
+
 ```bash
 kill 1234                                      # SIGTERM: graceful
 kill -9 1234                                   # SIGKILL: last resort
@@ -130,6 +141,7 @@ killall nginx
 ```
 
 ### Background and job control
+
 ```bash
 long_cmd &                                     # background
 Ctrl-Z; bg; fg; jobs                           # suspend, resume in bg/fg, list
@@ -140,6 +152,7 @@ tmux attach -t work
 ```
 
 ### What is a process doing?
+
 ```bash
 lsof -p 1234                                   # open files
 ls -l /proc/1234/fd | wc -l                    # FD count
@@ -152,6 +165,7 @@ cat /proc/1234/status | grep -E 'VmRSS|Threads'
 ## Network
 
 ### Addresses, routes, DNS
+
 ```bash
 ip -br addr                                    # brief interface list
 ip route
@@ -163,18 +177,21 @@ cat /etc/resolv.conf
 ```
 
 ### Listening ports and connections
+
 ```bash
 ss -tulpn                                      # TCP+UDP listening, with process
 ss -tn state established '( dport = :443 )'
 ss -s                                          # summary
 lsof -i :8080                                  # who owns this port?
 ```
+
 ```text
 Netid State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process
 tcp   LISTEN 0      4096   0.0.0.0:8080      0.0.0.0:*         users:(("java",pid=1234,fd=9))
 ```
 
 ### Test connectivity
+
 ```bash
 ping -c 4 host
 traceroute host                                # or: mtr host
@@ -187,6 +204,7 @@ wget -c https://example.com/big.iso            # resumable download
 ```
 
 ### Firewall (quick look)
+
 ```bash
 sudo ufw status verbose
 sudo ufw allow 8080/tcp
@@ -195,6 +213,7 @@ sudo nft list ruleset
 ```
 
 ### Capture traffic
+
 ```bash
 sudo tcpdump -i any port 5432 -nn -c 20
 sudo tcpdump -i eth0 host 10.0.0.5 -w cap.pcap # open in Wireshark
@@ -205,6 +224,7 @@ sudo tcpdump -i eth0 host 10.0.0.5 -w cap.pcap # open in Wireshark
 ## Disk and memory
 
 ### Space
+
 ```bash
 df -h                                          # per filesystem
 df -i                                          # inodes (full inodes = "no space" with free bytes)
@@ -215,6 +235,7 @@ lsblk -f                                       # devices, filesystems, mountpoin
 ```
 
 ### Find what fills the disk
+
 ```bash
 du -xh / --max-depth=2 2>/dev/null | sort -rh | head -15
 sudo lsof +L1                                  # deleted files still held open by a process
@@ -223,9 +244,11 @@ sudo journalctl --vacuum-size=500M
 ```
 
 ### Memory
+
 ```bash
 free -h
 ```
+
 ```text
                total        used        free      shared  buff/cache   available
 Mem:            15Gi       6.1Gi       1.2Gi       300Mi       8.0Gi       9.0Gi
@@ -239,6 +262,7 @@ sudo dmesg -T | grep -i -E 'oom|killed process'
 ```
 
 ### Mounts
+
 ```bash
 mount | grep ext4
 sudo mount /dev/sdb1 /mnt/data
@@ -252,6 +276,7 @@ UUID=1234-abcd  /mnt/data  ext4  defaults,nofail  0  2
 ## systemd
 
 ### Manage services
+
 ```bash
 systemctl status nginx
 sudo systemctl start|stop|restart|reload nginx
@@ -264,6 +289,7 @@ sudo systemctl daemon-reload                   # after editing unit files
 ```
 
 ### Logs (journald)
+
 ```bash
 journalctl -u nginx -f                         # follow
 journalctl -u nginx --since "1 hour ago"
@@ -274,6 +300,7 @@ journalctl -k                                  # kernel messages
 ```
 
 ### A minimal service unit
+
 ```ini
 # /etc/systemd/system/myapp.service
 [Unit]
@@ -292,12 +319,14 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 ```
+
 ```bash
 sudo systemctl daemon-reload && sudo systemctl enable --now myapp
 sudo systemctl edit nginx                      # drop-in override, safer than editing the packaged unit
 ```
 
 ### Timers and cron
+
 ```bash
 systemctl list-timers
 crontab -e
@@ -311,6 +340,7 @@ crontab -e
 ## Text tools
 
 ### grep
+
 ```bash
 grep -rn "TODO" src/                           # recursive with line numbers
 grep -rniI --include="*.java" "OrderService" .
@@ -321,6 +351,7 @@ grep -c ERROR app.log                          # count
 ```
 
 ### sed, awk, cut
+
 ```bash
 sed -i 's/foo/bar/g' file                      # in place (macOS: sed -i '' ...)
 sed -n '10,20p' file                           # print lines 10-20
@@ -332,6 +363,7 @@ cut -d, -f1,3 data.csv
 ```
 
 ### sort, uniq, xargs, tr
+
 ```bash
 sort file | uniq -c | sort -rn | head          # top repeated lines
 awk '{print $1}' access.log | sort | uniq -c | sort -rn | head   # top client IPs
@@ -341,6 +373,7 @@ tee out.txt                                    # write and pass through
 ```
 
 ### JSON
+
 ```bash
 curl -s https://api.example.com/users | jq '.[] | {id, name}'
 jq -r '.items[].metadata.name' pods.json
@@ -348,6 +381,7 @@ jq '.[] | select(.age > 30)' users.json
 ```
 
 ### Redirection
+
 ```bash
 cmd > out.txt                                  # stdout, overwrite
 cmd >> out.txt                                 # append
@@ -363,6 +397,7 @@ diff <(sort a.txt) <(sort b.txt)               # process substitution
 ## SSH
 
 ### Connect and copy
+
 ```bash
 ssh user@host
 ssh -p 2222 -i ~/.ssh/id_ed25519 user@host
@@ -372,6 +407,7 @@ scp -r user@host:/var/log/app ./logs
 ```
 
 ### Keys
+
 ```bash
 ssh-keygen -t ed25519 -C "me@example.com"
 ssh-copy-id user@host                          # install public key
@@ -380,6 +416,7 @@ chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_ed25519 ~/.ssh/authorized_keys
 ```
 
 ### Tunnels
+
 ```bash
 ssh -L 5433:db.internal:5432 user@bastion      # local: localhost:5433 -> db.internal:5432
 ssh -R 9000:localhost:3000 user@host           # remote: host:9000 -> my localhost:3000
@@ -388,6 +425,7 @@ ssh -N -f -L 5433:db.internal:5432 user@bastion   # no shell, background
 ```
 
 ### ~/.ssh/config
+
 ```text
 Host bastion
   HostName bastion.example.com
@@ -402,6 +440,7 @@ Host *
   ServerAliveInterval 30
   AddKeysToAgent yes
 ```
+
 ```bash
 ssh db-prod                                    # goes through bastion automatically
 ssh -J bastion user@10.0.0.7                   # one-off jump host
@@ -412,6 +451,7 @@ ssh -J bastion user@10.0.0.7                   # one-off jump host
 ## Shell tips
 
 ### History and shortcuts
+
 ```bash
 !!                                             # repeat last command
 sudo !!                                        # ...with sudo
@@ -422,6 +462,7 @@ Ctrl-W / Ctrl-U                                # delete word / to start
 ```
 
 ### Safe scripts
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail                              # exit on error, unset var, pipe failure
@@ -429,6 +470,7 @@ trap 'echo "failed at line $LINENO"' ERR
 ```
 
 ### Environment
+
 ```bash
 env | sort
 export JAVA_HOME=/usr/lib/jvm/temurin-21
@@ -437,6 +479,7 @@ which -a java                                  # all matches on PATH
 ```
 
 ### System info
+
 ```bash
 uname -a
 cat /etc/os-release

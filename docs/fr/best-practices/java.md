@@ -1,10 +1,9 @@
 # Bonnes pratiques Java
 
-
-
 ## 🛡️ Null safety & Optional
 
 ### N'utilisez pas `Optional` comme champ ou paramètre
+
 `Optional` est fait uniquement pour les types de retour. Il dit à l'appelant : « cette méthode peut ne rien
 renvoyer, gère ce cas ».
 
@@ -22,6 +21,7 @@ attendent pas. Gardez le champ nullable et ne l'enveloppez que dans le getter.
 ✅ `public Optional<Address> getAddress() { return Optional.ofNullable(address); }`
 
 ### N'appelez pas `Optional.get()` à l'aveugle
+
 Utilisez `orElseThrow`, `orElse`, `orElseGet`, `map` ou `ifPresent` au lieu de `get()`.
 
 **Pourquoi c'est une bonne pratique :** `get()` sur un `Optional` vide lève `NoSuchElementException`, qui n'est
@@ -33,6 +33,7 @@ erreur métier qui porte du contexte et peut être convertie en réponse adapté
 ✅ `userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id))`
 
 ### Renvoyez des collections vides, jamais `null`
+
 Une méthode qui renvoie une collection doit renvoyer une collection vide quand il n'y a rien à renvoyer.
 
 **Pourquoi c'est une bonne pratique :** les appelants peuvent alors itérer, streamer ou appeler `size()`
@@ -45,6 +46,7 @@ partagées, donc rien n'est alloué.
 ✅ `return List.of();`
 
 ### Échouez vite sur `null` aux frontières
+
 Validez les arguments obligatoires là où ils entrent dans votre objet (constructeurs, méthodes publiques) au lieu
 de laisser `null` circuler dans le système.
 
@@ -63,6 +65,7 @@ public OrderService(OrderRepository repository) {
 ## 🚨 Exceptions & logging
 
 ### N'avalez jamais une exception
+
 Chaque bloc `catch` doit soit traiter l'erreur, soit la relancer (enveloppée si besoin) avec la cause d'origine.
 
 **Pourquoi c'est une bonne pratique :** un `catch` vide transforme un échec en perte de données silencieuse : la
@@ -82,6 +85,7 @@ try { save(order); } catch (SQLException e) {
 ```
 
 ### Attrapez des exceptions précises, pas `Exception`
+
 N'attrapez que les exceptions que vous attendez et savez traiter. N'utilisez pas non plus les exceptions pour
 contrôler le flux.
 
@@ -101,6 +105,7 @@ try { return Integer.parseInt(input); } catch (NumberFormatException e) { return
 ```
 
 ### Loggez avec des placeholders et passez l'exception en dernier
+
 Utilisez les placeholders `{}` au lieu de la concaténation, et passez l'exception elle-même comme dernier
 argument.
 
@@ -116,6 +121,7 @@ où se trouve la vraie cause. Le message peut même être `null`.
 ## 🔌 Gestion des ressources
 
 ### Fermez les ressources avec try-with-resources
+
 Tout ce qui implémente `AutoCloseable` (streams, connexions JDBC, statements, result sets, clients HTTP) doit
 être ouvert dans un bloc `try (...)`.
 
@@ -141,6 +147,7 @@ try (InputStream in = Files.newInputStream(path)) {
 ## 🧱 Conception d'objets & immuabilité
 
 ### Préférez les records pour les value objects
+
 Utilisez un `record` pour les classes qui ne font que porter des données et sont définies par leurs valeurs
 (montants, coordonnées, DTO, identifiants).
 
@@ -154,6 +161,7 @@ Résultat : une ligne au lieu de ~50 lignes de boilerplate qu'il faudrait aussi 
 ✅ `record Money(BigDecimal amount, Currency currency) {}`
 
 ### Préférez l'immuabilité
+
 Rendez les champs `final`, n'exposez pas de setters, et faites des copies défensives des entrées et sorties
 mutables.
 
@@ -176,6 +184,7 @@ public List<Line> lines() { return lines; }
 ```
 
 ### Redéfinissez `equals` et `hashCode` ensemble
+
 Si deux objets sont `equals`, ils doivent avoir le même `hashCode`.
 
 **Pourquoi c'est une bonne pratique :** les collections à base de hash utilisent d'abord `hashCode` pour trouver
@@ -186,6 +195,7 @@ change après son insertion, son hash change, la map cherche dans le mauvais buc
 (toujours en mémoire, mais inaccessible). Solution la plus simple : utilisez un record.
 
 ### Préférez les factories statiques ou les builders aux constructeurs télescopiques
+
 Quand un constructeur a plus de 3–4 paramètres, ou plusieurs du même type, utilisez un builder ou des méthodes
 factory statiques nommées (`Money.of(...)`, `Duration.ofSeconds(...)`).
 
@@ -199,6 +209,7 @@ dix surcharges de constructeur.
 ✅ `Pizza.builder().size("L").cheese(true).ham(true).build()`
 
 ### Préférez la composition à l'héritage
+
 Réutilisez du comportement en gardant une instance d'une autre classe et en lui déléguant les appels, plutôt
 qu'en l'étendant.
 
@@ -226,6 +237,7 @@ class CountingSet<E> {
 ```
 
 ### Déclarez avec des interfaces, pas des implémentations
+
 Utilisez l'interface (`List`, `Map`, `Set`) comme type des variables, champs, paramètres et types de retour.
 N'utilisez la classe concrète qu'après `new`.
 
@@ -239,6 +251,7 @@ fait de l'implémentation une partie de votre API, et vous ne pourrez plus la ch
 ✅ `List<Order> orders = new ArrayList<>();`
 
 ### Utilisez des enums plutôt que des constantes int / String
+
 Représentez un ensemble fixe de valeurs avec un `enum`.
 
 **Pourquoi c'est une bonne pratique :** avec des constantes `int` ou `String`, le compilateur accepte n'importe
@@ -261,6 +274,7 @@ void update(Status status) { ... }
 ## 🧰 Bibliothèque standard : le bon type pour le bon usage
 
 ### Utilisez `BigDecimal` pour l'argent
+
 N'utilisez jamais `double` ou `float` pour des montants qui doivent être exacts.
 
 **Pourquoi c'est une bonne pratique :** `double` est un nombre à virgule flottante binaire, et la plupart des
@@ -291,6 +305,7 @@ a.compareTo(b) == 0
 ```
 
 ### Utilisez `java.time`, pas `Date` / `Calendar`
+
 Utilisez l'API `java.time` (Java 8+). Stockez des `Instant` (UTC), et ne convertissez en `ZonedDateTime` que pour
 l'affichage.
 
@@ -306,6 +321,7 @@ serveurs dans des fuseaux différents. Le fuseau de l'utilisateur est une questi
 ✅ `Instant.now()`, `DateTimeFormatter.ISO_INSTANT`
 
 ### Utilisez `StringBuilder` dans les boucles
+
 Ne concaténez pas des chaînes avec `+` dans une boucle.
 
 **Pourquoi c'est une bonne pratique :** `String` est immuable, donc chaque `+=` alloue une nouvelle chaîne et
@@ -327,6 +343,7 @@ for (String name : names) csv.append(name).append(',');
 ## 🌊 Streams & style fonctionnel
 
 ### Pas d'effets de bord dans les opérations de stream
+
 Les opérations de stream (`map`, `filter`, `forEach`...) ne doivent pas modifier d'état externe. Construisez le
 résultat avec une opération terminale (`toList()`, `collect`, `reduce`).
 
@@ -348,6 +365,7 @@ List<String> result = orders.stream().filter(Order::isPaid).map(Order::id).toLis
 ## 🧵 Concurrence
 
 ### Ne gérez pas les threads à la main
+
 Utilisez un `ExecutorService` (ou les virtual threads à partir de Java 21) au lieu de `new Thread()`, et des
 collections concurrentes au lieu des wrappers `synchronized`.
 
@@ -371,6 +389,7 @@ counts.merge(key, 1, Integer::sum);
 ```
 
 ### Nettoyez toujours les `ThreadLocal`
+
 Appelez `remove()` dans un bloc `finally` une fois la requête ou la tâche terminée.
 
 **Pourquoi c'est une bonne pratique :** les conteneurs de servlets et les executors réutilisent des threads d'un
@@ -392,6 +411,7 @@ try {
 ```
 
 ### Arrêtez toujours les executors
+
 Un `ExecutorService` que vous créez doit être arrêté. À partir de Java 19, ouvrez-le dans un bloc
 try-with-resources.
 
@@ -413,6 +433,7 @@ try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
 ```
 
 ### Donnez un executor à `CompletableFuture` et gérez ses erreurs
+
 Passez votre propre executor aux méthodes `*Async`, et terminez la chaîne par `exceptionally` ou `handle`.
 
 **Pourquoi c'est une bonne pratique :** sans executor, `supplyAsync` s'exécute sur le
@@ -432,6 +453,7 @@ CompletableFuture.supplyAsync(() -> client.fetch(id), ioExecutor)
 ```
 
 ### Utilisez les atomiques pour un état partagé simple
+
 Pour un compteur ou un flag partagé, utilisez `AtomicInteger`, `AtomicLong`, `LongAdder` ou `AtomicBoolean`.
 N'utilisez `volatile` que pour une valeur unique écrite par un thread et lue par d'autres.
 
@@ -445,6 +467,7 @@ mettent à jour le même compteur, comme des métriques de requêtes.
 ✅ `private final AtomicInteger count = new AtomicInteger(); ... count.incrementAndGet();`
 
 ### Prenez toujours les verrous dans le même ordre
+
 Quand du code a besoin de plusieurs verrous, tous les threads doivent les prendre dans le même ordre global.
 
 **Pourquoi c'est une bonne pratique :** si le thread A verrouille `from` puis `to`, et que le thread B fait un
@@ -464,6 +487,7 @@ synchronized (first) { synchronized (second) { move(from, to, amount); } }
 ```
 
 ### Ne bloquez pas de virtual threads dans un `synchronized` (avant Java 24)
+
 En Java 21–23, utilisez un `ReentrantLock` au lieu de `synchronized` autour des appels bloquants exécutés par des
 virtual threads.
 
@@ -485,6 +509,7 @@ try { response = httpClient.send(request, ofString()); } finally { lock.unlock()
 ## 🧬 Génériques & collections
 
 ### N'utilisez jamais de types bruts
+
 Donnez toujours son paramètre à un type générique : `List<String>`, pas `List`. Utilisez `List<?>` quand le type
 n'a pas d'importance.
 
@@ -504,6 +529,7 @@ List<String> names = new ArrayList<>();
 ```
 
 ### Utilisez des wildcards bornés dans les API (PECS)
+
 « Producer `extends`, consumer `super` » : utilisez `? extends T` pour un paramètre dans lequel vous lisez,
 `? super T` pour un paramètre dans lequel vous écrivez.
 
@@ -516,6 +542,7 @@ des nombres. Les wildcards permettent à l'API d'accepter tous les types qui fon
 ✅ `double sum(List<? extends Number> numbers)`
 
 ### Choisissez la bonne collection
+
 Utilisez `ArrayList` par défaut, `ArrayDeque` pour les piles et les files, `EnumMap` / `EnumSet` pour les clés
 enum, et `LinkedHashMap` quand l'ordre d'itération compte.
 
@@ -529,6 +556,7 @@ peut changer d'une version du JDK à l'autre, donc les tests qui en dépendent c
 ✅ `Deque<Task> stack = new ArrayDeque<>();`, `new ArrayList<>()`
 
 ### Ne modifiez pas une collection pendant que vous l'itérez
+
 Utilisez `removeIf`, un `Iterator.remove()` explicite, ou construisez une nouvelle collection.
 
 **Pourquoi c'est une bonne pratique :** supprimer d'une `ArrayList` dans une boucle for-each lève une
@@ -545,6 +573,7 @@ orders.removeIf(Order::isCancelled);
 ```
 
 ### Sachez que `List.of` et ses cousins sont immuables et refusent `null`
+
 `List.of`, `Set.of`, `Map.of`, `List.copyOf` et `Stream.toList()` renvoient des collections non modifiables.
 `List.of` et `copyOf` lèvent aussi une exception sur les éléments `null`.
 
@@ -560,6 +589,7 @@ résultat, renvoyez `new ArrayList<>(...)` et dites-le.
 ## ✨ Java moderne
 
 ### N'utilisez `var` que quand le type est évident
+
 Utilisez `var` quand la partie droite montre déjà le type (`new`, une factory, un cast). Écrivez le type sinon.
 
 **Pourquoi c'est une bonne pratique :** `var` supprime du bruit comme `Map<String, List<Order>> map = new
@@ -571,6 +601,7 @@ savoir ce qu'est `result`, et les code reviews se font sans IDE. `var` infère a
 ✅ `var orders = new ArrayList<Order>();`, `Order order = service.process(input);`
 
 ### Préférez les switch expressions
+
 Utilisez `switch` comme expression avec des flèches (`->`), pas l'ancienne instruction avec `break`.
 
 **Pourquoi c'est une bonne pratique :** l'ancien `switch` passe au cas suivant quand vous oubliez un `break`
@@ -597,6 +628,7 @@ String label = switch (status) {
 ```
 
 ### Utilisez le pattern matching plutôt que des casts
+
 Utilisez `instanceof` avec une variable liée, et les record patterns pour décomposer un record.
 
 **Pourquoi c'est une bonne pratique :** `if (o instanceof Order) { Order order = (Order) o; ... }` répète le
@@ -608,6 +640,7 @@ pattern matching teste et caste en une seule étape, et la variable n'existe que
 ✅ `if (shape instanceof Circle(double r)) { ... }`
 
 ### Utilisez des types scellés pour les hiérarchies fermées
+
 Quand un type a un ensemble fixe de sous-types (moyens de paiement, événements, résultats), déclarez-le `sealed` et
 listez-les avec `permits`.
 
@@ -632,6 +665,7 @@ String describe(Payment p) {
 ```
 
 ### Utilisez les text blocks pour les chaînes multi-lignes
+
 Écrivez le SQL, le JSON et les autres chaînes multi-lignes sous forme de text blocks `"""`.
 
 **Pourquoi c'est une bonne pratique :** des lignes concaténées avec `"\n" +` et des guillemets échappés sont
@@ -651,9 +685,60 @@ String json = """
         """.formatted(name);
 ```
 
-## 🧪 Tests & conception d'API
+## 🚀 Native image & démarrage
+
+### Choisissez l'image native pour le démarrage et l'empreinte, pas pour la vitesse
+
+Construisez une image native GraalVM quand la charge est limitée par le démarrage ou la mémoire (serverless, CLI,
+scale-to-zero, nombreuses petites instances). Gardez la JVM pour les services longue durée limités par le débit.
+
+**Pourquoi c'est une bonne pratique :** une image native démarre en dizaines de millisecondes et consomme une fraction de
+la mémoire, car le JIT, les métadonnées de classes et le profilage ont disparu et le code mort a été supprimé au build.
+Le prix : un débit maximal inférieur à un JIT C2 chaud, des builds longs et un runtime en monde fermé. Essayez d'abord
+AppCDS, CRaC ou SnapStart : ils apportent souvent l'essentiel du gain au démarrage sans ces contraintes. Comparez
+toujours les deux artefacts sous votre propre charge.
+
+⛔ Passer au natif « parce que c'est plus rapide » pour une API très sollicitée qui tourne des semaines
+✅ Natif pour une Lambda ou une CLI avec un problème de cold start ; JVM + AppCDS pour l'API longue durée
+
+### Écrivez du code compatible AOT : évitez la réflexion à l'exécution et le scan du classpath
+
+Préférez l'injection par constructeur et une configuration explicite à `Class.forName`, à la réflexion calculée et au
+scan de classpath maison. Quand la réflexion est inévitable, déclarez-la avec `@RegisterReflectionForBinding` ou un
+`RuntimeHintsRegistrar`.
+
+**Pourquoi c'est une bonne pratique :** le compilateur natif ne garde que ce qu'il peut prouver atteignable au build.
+Tout ce qui est retrouvé par son nom à l'exécution est supprimé silencieusement et échoue plus tard avec
+`NoSuchMethodException` ou un corps JSON vide, souvent sur un chemin rarement utilisé. Des hints explicites en font
+une décision de build que l'on peut relire et tester.
+
+⛔ `Class.forName(config.get("handler")).getDeclaredConstructor().newInstance()`
+✅ `Map<String, Handler> handlers` injectée par Spring, plus un hint pour tout DTO lu par réflexion
+
+### Exécutez aussi les tests en mode natif
+
+Lancez `mvn -PnativeTest test` (ou `./gradlew nativeTest`) et un smoke test sur le binaire construit en CI, pas seulement
+la suite de tests JVM.
+
+**Pourquoi c'est une bonne pratique :** du code peut passer tous les tests JVM et casser dans l'image, car les
+métadonnées de réflexion ou de ressources manquantes n'apparaissent qu'à l'exécution de l'exécutable compilé. Les builds
+natifs sont lents : exécutez-les sur main et les branches de release et utilisez `-Ob` (build rapide) ailleurs.
+
+### Utilisez la PGO et le bon GC quand le débit natif compte
+
+Si une image native doit aussi soutenir un débit élevé, construisez avec l'optimisation guidée par profil
+(`--pgo-instrument`, charge représentative, rebuild avec `--pgo=default.iprof`) et envisagez `--gc=G1` sur Oracle
+GraalVM pour de plus gros heaps.
+
+**Pourquoi c'est une bonne pratique :** par défaut l'image est compilée sans profils d'exécution et utilise le Serial GC,
+c'est ce que l'on sacrifie par rapport à C2 et G1. La PGO restaure une grande partie de l'optimisation et un collecteur
+parallèle évite de longues pauses stop-the-world ; les deux demandent un benchmark sur votre propre charge pour se
+justifier.
+
+## 🧭 Conception du code & des API
 
 ### Injectez les dépendances et l'horloge
+
 Recevez les collaborateurs, et une `Clock` quand le temps compte, en paramètres du constructeur au lieu de les
 créer dans la classe ou d'appeler des méthodes statiques.
 
@@ -672,6 +757,7 @@ boolean isExpired(Clock clock) { return Instant.now(clock).isAfter(expiresAt); }
 ```
 
 ### Gardez la visibilité la plus réduite possible
+
 Rendez les classes et membres `private` ou package-private par défaut, et `public` seulement quand un autre
 package en a besoin.
 
@@ -685,6 +771,7 @@ package-private.
 ✅ `class OrderMapper`
 
 ### Exceptions unchecked pour les bugs, exceptions métier pour les erreurs métier
+
 Levez `IllegalArgumentException` / `IllegalStateException` pour les erreurs de programmation. Créez des exceptions
 précises (`InsufficientFundsException`) pour les règles métier auxquelles l'appelant peut réagir.
 
@@ -699,6 +786,7 @@ le peut pas.
 ✅ `throw new InsufficientFundsException(accountId, missing);`
 
 ### Gardez des méthodes courtes qui font une seule chose
+
 Une méthode doit faire une seule chose, à un seul niveau d'abstraction. Extrayez une méthode nommée quand un bloc a
 besoin d'un commentaire pour être compris.
 
@@ -726,6 +814,7 @@ void checkout(Cart cart) {
 ```
 
 ### Nommez les choses selon ce qu'elles signifient
+
 Utilisez des noms qui disent ce qu'est une valeur dans le domaine, pas son type. Évitez les abréviations et les
 noms génériques comme `data`, `info`, `manager`, `tmp`.
 

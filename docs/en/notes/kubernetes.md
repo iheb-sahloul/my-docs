@@ -3,6 +3,7 @@
 ## Context and namespaces
 
 ### Contexts (clusters)
+
 ```bash
 kubectl config get-contexts
 kubectl config current-context
@@ -11,6 +12,7 @@ kubectl config set-context --current --namespace=payments   # default namespace 
 ```
 
 ### Namespaces
+
 ```bash
 kubectl get ns
 kubectl create ns staging
@@ -19,6 +21,7 @@ kubectl get pods -A                            # all namespaces
 ```
 
 ### Handy aliases
+
 ```bash
 alias k=kubectl
 source <(kubectl completion zsh)
@@ -30,6 +33,7 @@ complete -o default -F __start_kubectl k       # bash
 ## Daily kubectl
 
 ### Get resources
+
 ```bash
 kubectl get pods
 kubectl get pods -o wide                       # node + IP
@@ -45,6 +49,7 @@ kubectl get pods -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,STATU
 ```
 
 ### Typical output
+
 ```text
 NAME                   READY   STATUS             RESTARTS      AGE
 api-7d9c8b6f5d-4xk2p   1/1     Running            0             3h
@@ -52,6 +57,7 @@ api-7d9c8b6f5d-9zq7m   0/1     CrashLoopBackOff   6 (45s ago)   10m
 ```
 
 ### Describe, apply, delete
+
 ```bash
 kubectl describe pod api-7d9c8b6f5d-9zq7m      # events at the bottom are the useful part
 kubectl apply -f deploy.yaml
@@ -63,6 +69,7 @@ kubectl delete pod api-7d9c --grace-period=0 --force   # stuck pod (last resort)
 ```
 
 ### Generate YAML instead of writing it
+
 ```bash
 kubectl create deploy api --image=myapp:1.0 --replicas=2 --dry-run=client -o yaml > deploy.yaml
 kubectl expose deploy api --port=80 --target-port=8080 --dry-run=client -o yaml
@@ -70,6 +77,7 @@ kubectl explain deployment.spec.strategy       # built-in field docs
 ```
 
 ### Edit and patch live objects
+
 ```bash
 kubectl edit deploy api
 kubectl scale deploy api --replicas=5
@@ -85,6 +93,7 @@ kubectl patch deploy api -p '{"spec":{"replicas":3}}'
 ## Debugging pods
 
 ### Logs
+
 ```bash
 kubectl logs api-7d9c
 kubectl logs -f api-7d9c --tail=100
@@ -95,6 +104,7 @@ kubectl logs deploy/api --since=10m
 ```
 
 ### Exec, port-forward, copy
+
 ```bash
 kubectl exec -it api-7d9c -- sh
 kubectl exec api-7d9c -- env
@@ -104,6 +114,7 @@ kubectl cp api-7d9c:/tmp/heap.hprof ./heap.hprof
 ```
 
 ### Ephemeral debug container (image has no shell)
+
 ```bash
 kubectl debug -it api-7d9c --image=nicolaka/netshoot --target=api
 kubectl debug node/worker-1 -it --image=busybox        # host access on a node
@@ -124,9 +135,11 @@ kubectl run tmp --rm -it --image=busybox --restart=Never -- sh
 | `Running` but `0/1 READY` | Readiness probe failing | Probe path/port, `describe` events |
 
 ### Why is it restarting?
+
 ```bash
 kubectl describe pod api-7d9c | grep -A6 'Last State'
 ```
+
 ```text
     Last State:     Terminated
       Reason:       OOMKilled
@@ -134,6 +147,7 @@ kubectl describe pod api-7d9c | grep -A6 'Last State'
 ```
 
 ### Events, resource usage
+
 ```bash
 kubectl get events --sort-by=.lastTimestamp
 kubectl get events --field-selector type=Warning
@@ -143,6 +157,7 @@ kubectl top pod --containers
 ```
 
 ### Service has no endpoints?
+
 ```bash
 kubectl get endpoints api                      # empty = selector matches no ready pod
 kubectl get svc api -o jsonpath='{.spec.selector}'
@@ -154,6 +169,7 @@ kubectl get pods -l app=api                    # do these labels match?
 ## Troubleshooting: find the cause, then fix it
 
 Method, always in this order:
+
 ```bash
 kubectl get pod api-7d9c -o wide               # STATUS, RESTARTS, node
 kubectl describe pod api-7d9c                  # read the Events at the bottom first
@@ -181,6 +197,7 @@ kubectl exec -it api-7d9c -- sh                # check env, files, DNS from insi
 | DNS fails in a pod | CoreDNS down / wrong name | `kubectl exec x -- nslookup api` | Use `svc.namespace.svc.cluster.local`, check `kubectl -n kube-system get pods -l k8s-app=kube-dns` |
 
 Applied fix, then verify:
+
 ```bash
 kubectl apply -f deployment.yaml
 kubectl rollout status deploy/api
@@ -192,6 +209,7 @@ kubectl get pods -l app=api -w
 ## Rollouts
 
 ### Deploy, watch, undo
+
 ```bash
 kubectl set image deploy/api api=myapp:1.2
 kubectl rollout status deploy/api              # blocks until done or failed
@@ -205,12 +223,14 @@ kubectl rollout resume deploy/api
 ```
 
 ### Autoscaling
+
 ```bash
 kubectl autoscale deploy api --min=2 --max=10 --cpu-percent=70
 kubectl get hpa
 ```
 
 ### Drain a node for maintenance
+
 ```bash
 kubectl cordon worker-1                        # no new pods
 kubectl drain worker-1 --ignore-daemonsets --delete-emptydir-data
@@ -222,12 +242,14 @@ kubectl uncordon worker-1
 ## Config and secrets
 
 ### ConfigMap
+
 ```bash
 kubectl create configmap app-config --from-literal=LOG_LEVEL=info --from-file=application.yml
 kubectl get cm app-config -o yaml
 ```
 
 ### Secret
+
 ```bash
 kubectl create secret generic db-creds --from-literal=password='s3cr3t'
 kubectl create secret docker-registry regcred \
@@ -238,6 +260,7 @@ kubectl get secret db-creds -o jsonpath='{.data.password}' | base64 -d
 Secrets are only base64-encoded, not encrypted. Enable encryption at rest or use an external secret store.
 
 ### Use them in a pod
+
 ```yaml
 containers:
   - name: api
@@ -261,6 +284,7 @@ volumes:
 ## Manifests
 
 ### Deployment
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -299,6 +323,7 @@ spec:
 `requests` drive scheduling, `limits` are enforced at runtime (memory over the limit = OOMKilled, CPU over the limit = throttled).
 
 ### Service
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -320,6 +345,7 @@ spec:
 | `ExternalName` | DNS CNAME to an outside host |
 
 ### Ingress
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -343,6 +369,7 @@ spec:
 ```
 
 ### CronJob
+
 ```yaml
 apiVersion: batch/v1
 kind: CronJob
@@ -362,11 +389,13 @@ spec:
               image: myapp:1.0
               args: ["report", "--daily"]
 ```
+
 ```bash
 kubectl create job --from=cronjob/nightly-report manual-run-1   # trigger now
 ```
 
 ### PersistentVolumeClaim
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -383,6 +412,7 @@ spec:
 ## Access and RBAC
 
 ### Who can do what
+
 ```bash
 kubectl auth can-i create pods -n staging
 kubectl auth can-i --list
@@ -391,6 +421,7 @@ kubectl get rolebindings,clusterrolebindings -A | grep my-user
 ```
 
 ### Grant a service account read access
+
 ```bash
 kubectl create serviceaccount ci -n staging
 kubectl create role pod-reader --verb=get,list,watch --resource=pods -n staging
@@ -402,17 +433,20 @@ kubectl create rolebinding ci-pod-reader --role=pod-reader --serviceaccount=stag
 ## Useful one-liners
 
 ### Restart every pod stuck in a bad state
+
 ```bash
 kubectl get pods -A | grep -E 'CrashLoopBackOff|Error|ImagePullBackOff'
 kubectl delete pod --field-selector=status.phase=Failed -A
 ```
 
 ### Images running in the cluster
+
 ```bash
 kubectl get pods -A -o jsonpath='{range .items[*]}{.spec.containers[*].image}{"\n"}{end}' | tr ' ' '\n' | sort | uniq -c
 ```
 
 ### Which node runs which pod
+
 ```bash
 kubectl get pods -o wide --sort-by=.spec.nodeName
 ```

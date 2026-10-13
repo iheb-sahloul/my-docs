@@ -2,6 +2,8 @@
 
 Notes pour un développeur. Les formats de fichiers concrets sont ceux de Claude Code ; les concepts s'appliquent à n'importe quelle stack.
 
+Pour vous entraîner sur ces sujets sous forme de questions d'entretien, voir [Ingénierie IA & Claude Code](../interviews/claude-code.md).
+
 ## 1. Fondamentaux des LLM
 
 Un LLM est un prédicteur de token suivant, entraîné sur un énorme corpus puis ajusté pour suivre des instructions. Il ne « cherche » rien et ne « connaît » pas les faits de façon fiable ; il génère la suite la plus plausible de son entrée.
@@ -21,9 +23,11 @@ Un LLM est un prédicteur de token suivant, entraîné sur un énorme corpus pui
 | **Date limite des connaissances** | Le modèle ignore les événements récents et vos données privées ; injectez-les au moment de l'appel |
 
 ### Familles de modèles en pratique
+
 Choisissez par tâche, pas par marque : petit/rapide (classification, routage, extraction), moyen (la plupart du code et du chat), grand/raisonnement (planification, débogage difficile, agents). Commencez par le moins cher qui passe vos évaluations.
 
 ### Appel d'API minimal (Python, SDK Anthropic)
+
 ```python
 import anthropic
 client = anthropic.Anthropic()          # lit ANTHROPIC_API_KEY dans l'environnement, ne codez jamais les clés en dur
@@ -38,6 +42,7 @@ print(resp.content[0].text, resp.stop_reason, resp.usage)
 ```
 
 ### Sortie structurée
+
 Ne faites jamais de regex sur du texte libre. Demandez du JSON conforme à un schéma (ou forcez-le via un outil/`response_format`), **validez-le** (Pydantic, Zod, Jackson), et en cas d'échec réessayez une fois en renvoyant l'erreur de validation.
 
 ## 2. L'essentiel du prompting
@@ -52,6 +57,7 @@ Ne faites jamais de regex sur du texte libre. Demandez du JSON conforme à un sc
 - Prompt système = comportement durable. Tour utilisateur = la tâche.
 
 Modèle :
+
 ```text
 Role: senior Java reviewer.
 Task: review the diff below for bugs and security issues only.
@@ -59,6 +65,8 @@ Constraints: max 5 findings, ordered by severity, cite file:line.
 Output: JSON [{"file","line","severity","issue","fix"}]
 <diff>...</diff>
 ```
+
+- Plus d'exemples à copier-coller : [Prompts IA pour ingénieurs seniors](../best-practices/ai-prompts.md).
 
 ## 3. RAG (Retrieval-Augmented Generation)
 
@@ -76,6 +84,7 @@ flowchart LR
 ```
 
 ### Éléments clés
+
 | Élément | Notes |
 |---|---|
 | **Embedding** | Un modèle transforme le texte en vecteur (ex. 768-3072 flottants). Sens proche → vecteurs proches (similarité cosinus). Utilisez le **même modèle** pour les documents et les requêtes |
@@ -87,6 +96,7 @@ flowchart LR
 | **Réécriture de requête** | Réécrivez les relances de chat en requêtes autonomes ; éventuellement, découpez les questions à plusieurs volets |
 
 ### Exemple pgvector
+
 ```sql
 CREATE EXTENSION vector;
 CREATE TABLE chunks (
@@ -98,6 +108,7 @@ CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
 SELECT source, content FROM chunks
 ORDER BY embedding <=> :query_embedding LIMIT 5;
 ```
+
 ```python
 def answer(question: str) -> str:
     q_vec = embed(question)                                  # API d'embedding
@@ -108,11 +119,13 @@ def answer(question: str) -> str:
 ```
 
 ### Évaluer un RAG (séparément, récupération puis génération)
+
 - **Récupération** : recall@k / taux de succès : le top-k contient-il le passage qui répond à la question ? Constituez 30-100 paires vraie question → source attendue.
 - **Génération** : fidélité (réponse appuyée par le contexte ?), pertinence, refus correct quand le contexte ne contient pas la réponse. LLM-as-judge plus contrôles humains ponctuels.
 - Changez un seul réglage à la fois (taille des chunks, k, reranker) et relancez le jeu de tests.
 
 ### Modes de défaillance courants
+
 | Symptôme | Cause probable / correction |
 |---|---|
 | Le bon doc existe mais n'est pas récupéré | Mauvais découpage, embedding inadapté, besoin de recherche hybride / réécrire la requête |
@@ -122,6 +135,7 @@ def answer(question: str) -> str:
 | Réponses périmées | Pas de pipeline de ré-indexation quand un document change |
 
 ### RAG vs fine-tuning vs contexte long
+
 | Besoin | Solution |
 |---|---|
 | Connaissance fraîche/privée/changeante, citations, contrôle d'accès | **RAG** |
@@ -136,6 +150,7 @@ Le modèle ne peut pas agir ; il **vous demande d'exécuter un outil** et vous l
 user → LLM → "call get_weather(city='Tunis')"   (stop_reason = tool_use)
 your code runs the function → sends the result back → LLM → final answer
 ```
+
 - Un outil = nom + **description** + schéma JSON des entrées. La description est un prompt : le modèle choisit les outils en la lisant, donc distinguez clairement les outils similaires.
 - Votre code exécute les outils, donc **c'est vous** qui imposez permissions, validation et limites.
 - **MCP (Model Context Protocol)** : standard ouvert pour qu'un serveur d'outils (GitHub, Postgres, Jira, système de fichiers...) fonctionne avec n'importe quel client compatible. Utilisez MCP pour les capacités réutilisées entre applications, un simple outil interne pour une seule application.
@@ -150,17 +165,20 @@ while not done and steps < MAX:
     if response wants tools: run them, append results to messages
     else: done, return response
 ```
+
 - **Workflow vs agent** : si les étapes sont connues d'avance, écrivez un workflow fixe (chaînage de prompts, routage, appels parallèles). N'utilisez un agent autonome que si le chemin est inconnu. La structure la plus simple qui marche gagne (moins chère, testable, prévisible).
 - Agent = modèle + outils + prompt système + boucle + garde-fous + gestion du contexte.
 
 ## 6. Étapes de construction, Claude Code
 
 ### 6.1 Skill (instructions réutilisables + scripts optionnels)
+
 Un skill est un dossier que le modèle charge **à la demande** quand sa `description` correspond à la tâche. Seuls le nom et la description restent dans le contexte ; le corps se charge au déclenchement (contexte bon marché).
 
 1. Choisissez une tâche répétable (notes de version, checklist de revue de PR, conventions de migration de BD).
 2. Créez le dossier : `.claude/skills/<name>/` pour le projet ou `~/.claude/skills/<name>/` en personnel.
 3. Écrivez `SKILL.md` :
+
 ```markdown
 ---
 name: db-migration
@@ -173,6 +191,7 @@ description: Use when writing or reviewing a Flyway/Liquibase migration. Covers 
 3. Create indexes with `CREATE INDEX CONCURRENTLY`.
 See [checklist](checklist.md). Run `scripts/lint.sh <file>` before finishing.
 ```
+
 4. Ajoutez éventuellement `checklist.md`, `templates/`, `scripts/` à côté (référencés depuis `SKILL.md`, chargés seulement si besoin).
 5. Testez : demandez une tâche censée le déclencher (`/db-migration` ou langage naturel). S'il ne se déclenche pas, **réécrivez la `description`** (c'est le déclencheur). S'il se déclenche à tort, rendez-la plus étroite.
 6. Committez-le dans git pour que l'équipe le partage.
@@ -180,10 +199,12 @@ See [checklist](checklist.md). Run `scripts/lint.sh <file>` before finishing.
 Conseils : la description dit *quoi* et *quand* ; gardez `SKILL.md` court, poussez le détail dans des fichiers liés ; travail déterministe → un script, pas de la prose.
 
 ### 6.2 Subagent (worker spécialisé avec son propre contexte)
+
 Tourne dans une **fenêtre de contexte séparée** avec son propre prompt système et des outils restreints, puis ne renvoie qu'un résumé. Utilisez-le pour isoler un travail bruyant (grosses recherches, analyse de logs), pour exécuter des tâches en parallèle, ou pour imposer un rôle aux permissions limitées.
 
 1. Créez `.claude/agents/<name>.md` (projet) ou `~/.claude/agents/<name>.md` (personnel), ou utilisez `/agents`.
 2. Écrivez le frontmatter + le prompt système :
+
 ```markdown
 ---
 name: security-reviewer
@@ -196,13 +217,16 @@ You are a security reviewer. Review only the changed files (`git diff`).
 Report findings as: severity, file:line, issue, fix. Do not modify files.
 If nothing found, say so explicitly.
 ```
+
 3. Invocation : automatique (Claude fait correspondre la `description`), par son nom (« use the security-reviewer agent on this diff »), ou depuis un autre agent.
 4. Règles de conception : un seul rôle clair par subagent ; outils au moindre privilège ; une `description` précise (elle pilote la délégation) ; précisez le **format de sortie** car le parent ne voit que le message final ; les subagents ne voient pas la conversation du parent, donc passez le contexte nécessaire dans la tâche.
 
 ### 6.3 Plugin (empaqueter et distribuer)
+
 Un plugin regroupe skills, subagents, commandes slash, hooks et serveurs MCP pour qu'une équipe les installe en une commande.
 
 1. Structure :
+
 ```text
 my-plugin/
 ├── .claude-plugin/
@@ -213,7 +237,9 @@ my-plugin/
 ├── hooks/hooks.json         # automatisation déterministe
 └── .mcp.json                # serveurs MCP
 ```
+
 2. Manifeste :
+
 ```json
 {
   "name": "my-plugin",
@@ -222,8 +248,10 @@ my-plugin/
   "author": { "name": "Your Team" }
 }
 ```
+
 3. Test en local : `claude --plugin-dir ./my-plugin`, puis essayez chaque composant.
 4. Distribuez via une **marketplace** (un dépôt git avec `.claude-plugin/marketplace.json` listant les plugins) :
+
 ```json
 {
   "name": "team-marketplace",
@@ -231,13 +259,16 @@ my-plugin/
   "plugins": [ { "name": "my-plugin", "source": "./my-plugin", "description": "Team conventions" } ]
 }
 ```
+
 5. Les utilisateurs installent : `/plugin marketplace add <org>/<repo>` puis `/plugin install my-plugin@team-marketplace`.
 6. Incrémentez `version` à chaque release. Relisez les plugins tiers avant de les installer (ils exécutent du code et des hooks).
 
 ### 6.4 Hooks (garde-fous déterministes)
+
 Commandes shell lancées par le harness sur des événements (`PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`...), configurées dans `settings.json` ou le `hooks.json` d'un plugin. Utilisez-les pour ce qui doit **toujours** arriver (formater après édition, bloquer `rm -rf`, lancer les tests) ; les instructions d'un prompt sont consultatives, les hooks sont appliqués.
 
 ### 6.5 Votre propre agent (Agent SDK ou API brute)
+
 1. **Définissez le travail et les critères de succès** (à quoi ressemble « terminé » ? comment le mesurer ?).
 2. **Essayez d'abord un simple workflow** ; ne passez à l'agent que si les étapes ne peuvent pas être prédéterminées.
 3. **Concevez les outils** : peu nombreux, bien nommés, descriptions claires, schémas JSON stricts, sorties petites et utiles, messages d'erreur exploitables. Préférez les outils en lecture seule ; contrôlez les destructifs.
@@ -250,6 +281,7 @@ Commandes shell lancées par le harness sur des événements (`PreToolUse`, `Pos
 10. **Itérez à partir des échecs** : lisez les traces en échec, corrigez d'abord la description de l'outil ou le prompt, ajoutez l'échec au jeu d'évaluation.
 
 Boucle minimale codée à la main :
+
 ```python
 def run_agent(task, tools, max_steps=15):
     messages = [{"role": "user", "content": task}]

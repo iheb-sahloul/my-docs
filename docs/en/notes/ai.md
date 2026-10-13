@@ -2,6 +2,8 @@
 
 Notes for a software developer. Concrete file formats are Claude Code's; the concepts apply to any stack.
 
+To practise these topics as interview questions, see [AI Engineering & Claude Code](../interviews/claude-code.md).
+
 ## 1. LLM fundamentals
 
 An LLM is a next-token predictor trained on a huge corpus, then tuned to follow instructions. It does not "look things up" or "know" facts reliably; it generates the most plausible continuation of its input.
@@ -21,9 +23,11 @@ An LLM is a next-token predictor trained on a huge corpus, then tuned to follow 
 | **Knowledge cutoff** | The model does not know recent events or your private data; inject them at call time |
 
 ### Model families in practice
+
 Pick per task, not per brand: small/fast (classification, routing, extraction), mid (most coding and chat), large/reasoning (planning, hard debugging, agents). Start with the cheapest that passes your evals.
 
 ### Minimal API call (Python, Anthropic SDK)
+
 ```python
 import anthropic
 client = anthropic.Anthropic()          # reads ANTHROPIC_API_KEY from env, never hard-code keys
@@ -38,6 +42,7 @@ print(resp.content[0].text, resp.stop_reason, resp.usage)
 ```
 
 ### Structured output
+
 Never regex free text. Ask for JSON matching a schema (or force it through a tool/`response_format`), **validate it** (Pydantic, Zod, Jackson), and on failure retry once feeding the validation error back.
 
 ## 2. Prompting essentials
@@ -50,8 +55,10 @@ Never regex free text. Ask for JSON matching a schema (or force it through a too
 - **Say what to do, not only what to avoid.** Give an exit: "If unsure, say 'unknown'."
 - **Iterate like code**: version prompts in git, keep a small test set, change one thing at a time.
 - System prompt = durable behaviour. User turn = the task.
+- More copy-paste examples: [AI Prompts for Senior Engineers](../best-practices/ai-prompts.md).
 
 Template:
+
 ```text
 Role: senior Java reviewer.
 Task: review the diff below for bugs and security issues only.
@@ -76,6 +83,7 @@ flowchart LR
 ```
 
 ### Key pieces
+
 | Piece | Notes |
 |---|---|
 | **Embedding** | A model turns text into a vector (e.g. 768-3072 floats). Similar meaning → close vectors (cosine similarity). Use the **same model** for documents and queries |
@@ -87,6 +95,7 @@ flowchart LR
 | **Query rewriting** | Rewrite chat follow-ups into standalone queries; optionally split multi-part questions |
 
 ### pgvector example
+
 ```sql
 CREATE EXTENSION vector;
 CREATE TABLE chunks (
@@ -98,6 +107,7 @@ CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
 SELECT source, content FROM chunks
 ORDER BY embedding <=> :query_embedding LIMIT 5;
 ```
+
 ```python
 def answer(question: str) -> str:
     q_vec = embed(question)                                  # embedding API
@@ -108,11 +118,13 @@ def answer(question: str) -> str:
 ```
 
 ### Evaluate RAG (separately, retrieval then generation)
+
 - **Retrieval**: recall@k / hit rate: does the top-k contain the passage that answers the question? Build 30-100 real Q → expected-source pairs.
 - **Generation**: faithfulness (answer supported by context?), relevance, correct refusal when context lacks the answer. LLM-as-judge plus human spot checks.
 - Change one knob at a time (chunk size, k, reranker) and re-run the set.
 
 ### Common failure modes
+
 | Symptom | Likely cause / fix |
 |---|---|
 | Right doc exists but not retrieved | Bad chunking, embedding mismatch, need hybrid search / rewrite the query |
@@ -122,6 +134,7 @@ def answer(question: str) -> str:
 | Stale answers | No re-index pipeline on document change |
 
 ### RAG vs fine-tuning vs long context
+
 | Need | Use |
 |---|---|
 | Fresh/private/changing knowledge, citations, access control | **RAG** |
@@ -136,6 +149,7 @@ The model cannot act; it **asks you to run a tool** and you feed the result back
 user → LLM → "call get_weather(city='Tunis')"   (stop_reason = tool_use)
 your code runs the function → sends the result back → LLM → final answer
 ```
+
 - A tool = name + **description** + JSON schema of inputs. The description is a prompt: the model picks tools by reading it, so make similar tools clearly different.
 - Your code executes tools, so **you** enforce permissions, validation and limits.
 - **MCP (Model Context Protocol)**: open standard so one tool server (GitHub, Postgres, Jira, filesystem...) works with any compatible client. Use MCP for capabilities reused across apps, a plain in-app tool for one app.
@@ -150,17 +164,20 @@ while not done and steps < MAX:
     if response wants tools: run them, append results to messages
     else: done, return response
 ```
+
 - **Workflow vs agent**: if the steps are known in advance, write a fixed workflow (prompt chaining, routing, parallel calls). Use an autonomous agent only when the path is unknown. The simplest structure that works wins (cheaper, testable, predictable).
 - Agent = model + tools + system prompt + loop + guardrails + context management.
 
 ## 6. Build steps, Claude Code
 
 ### 6.1 Skill (reusable instructions + optional scripts)
+
 A skill is a folder the model loads **on demand** when its `description` matches the task. Only the name/description sit in context; the body loads when triggered (cheap context).
 
 1. Pick a repeatable task (release notes, PR review checklist, DB migration conventions).
 2. Create the folder: project `.claude/skills/<name>/` or personal `~/.claude/skills/<name>/`.
 3. Write `SKILL.md`:
+
 ```markdown
 ---
 name: db-migration
@@ -173,6 +190,7 @@ description: Use when writing or reviewing a Flyway/Liquibase migration. Covers 
 3. Create indexes with `CREATE INDEX CONCURRENTLY`.
 See [checklist](checklist.md). Run `scripts/lint.sh <file>` before finishing.
 ```
+
 4. Optionally add `checklist.md`, `templates/`, `scripts/` next to it (referenced from `SKILL.md`, loaded only when needed).
 5. Test: ask for a task that should trigger it (`/db-migration` or plain language). If it does not trigger, **rewrite the `description`** (it is the trigger). If it triggers wrongly, make it narrower.
 6. Commit it to git so the team shares it.
@@ -180,10 +198,12 @@ See [checklist](checklist.md). Run `scripts/lint.sh <file>` before finishing.
 Tips: description says *what* and *when*; keep `SKILL.md` short, push detail into linked files; deterministic work → a script, not prose.
 
 ### 6.2 Subagent (specialised worker with its own context)
+
 Runs in a **separate context window** with its own system prompt and restricted tools, then returns only a summary. Use it to isolate noisy work (big searches, log analysis), to run tasks in parallel, or to enforce a role with limited permissions.
 
 1. Create `.claude/agents/<name>.md` (project) or `~/.claude/agents/<name>.md` (personal), or use `/agents`.
 2. Write frontmatter + system prompt:
+
 ```markdown
 ---
 name: security-reviewer
@@ -196,13 +216,16 @@ You are a security reviewer. Review only the changed files (`git diff`).
 Report findings as: severity, file:line, issue, fix. Do not modify files.
 If nothing found, say so explicitly.
 ```
+
 3. Invoke: automatically (Claude matches the `description`), by name ("use the security-reviewer agent on this diff"), or from another agent.
 4. Design rules: one clear job per subagent; least-privilege tools; a precise `description` (drives delegation); specify the **output format** since the parent only sees the final message; subagents don't see the parent conversation, so pass the needed context in the task.
 
 ### 6.3 Plugin (package and distribute)
+
 A plugin bundles skills, subagents, slash commands, hooks and MCP servers so a team installs them in one command.
 
 1. Layout:
+
 ```text
 my-plugin/
 ├── .claude-plugin/
@@ -213,7 +236,9 @@ my-plugin/
 ├── hooks/hooks.json         # deterministic automation
 └── .mcp.json                # MCP servers
 ```
+
 2. Manifest:
+
 ```json
 {
   "name": "my-plugin",
@@ -222,8 +247,10 @@ my-plugin/
   "author": { "name": "Your Team" }
 }
 ```
+
 3. Test locally: `claude --plugin-dir ./my-plugin`, then try each component.
 4. Distribute with a **marketplace** (a git repo with `.claude-plugin/marketplace.json` listing plugins):
+
 ```json
 {
   "name": "team-marketplace",
@@ -231,13 +258,16 @@ my-plugin/
   "plugins": [ { "name": "my-plugin", "source": "./my-plugin", "description": "Team conventions" } ]
 }
 ```
+
 5. Users install: `/plugin marketplace add <org>/<repo>` then `/plugin install my-plugin@team-marketplace`.
 6. Bump `version` on each release. Review third-party plugins before installing (they run code and hooks).
 
 ### 6.4 Hooks (deterministic guardrails)
+
 Shell commands run by the harness on events (`PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`...), configured in `settings.json` or a plugin's `hooks.json`. Use them for what must **always** happen (format after edit, block `rm -rf`, run tests); instructions in a prompt are advisory, hooks are enforced.
 
 ### 6.5 Your own agent (Agent SDK or raw API)
+
 1. **Define the job and success criteria** (what does "done" look like? how will you measure it?).
 2. **Try a plain workflow first**; only go agentic if the steps can't be predetermined.
 3. **Design tools**: few, well-named, clear descriptions, strict JSON schemas, small helpful outputs, actionable error messages. Prefer read-only tools; gate destructive ones.
@@ -250,6 +280,7 @@ Shell commands run by the harness on events (`PreToolUse`, `PostToolUse`, `Sessi
 10. **Iterate from failures**: read failed traces, fix the tool description or prompt first, add the failure to the eval set.
 
 Minimal hand-rolled loop:
+
 ```python
 def run_agent(task, tools, max_steps=15):
     messages = [{"role": "user", "content": task}]

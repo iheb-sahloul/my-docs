@@ -1,10 +1,9 @@
 # REST API Best Practices
 
-
-
 ## 🏷️ Resources & naming
 
 ### Name resources with plural nouns
+
 Model URLs as collections of things (`/orders`, `/orders/42/items`), not actions.
 
 **Why it's a best practice:** the HTTP method already says the action, so `/getOrders` and `/createOrder` say it
@@ -25,6 +24,7 @@ GET  /orders/42/items
 ```
 
 ### Use HTTP methods for their meaning
+
 `GET` reads, `POST` creates, `PUT` replaces, `PATCH` partially updates, `DELETE` removes.
 
 **Why it's a best practice:** proxies, browsers and caches rely on these semantics. A `GET` that changes data
@@ -42,6 +42,7 @@ ResponseEntity<Void> cancel(@PathVariable long id) { ... }
 ```
 
 ### Model actions as sub-resources when CRUD isn't enough
+
 For real business actions, create a noun for the result (`/orders/42/cancellation`, `/payments`) instead of RPC verbs in the path.
 
 **Why it's a best practice:** it keeps the uniform interface, and the new resource can be read back, listed, and
@@ -58,6 +59,7 @@ POST /orders/42/cancellations   { "reason": "late" }
 ## 📟 Status codes & errors
 
 ### Return accurate status codes
+
 Use 200/201/204 for success, 4xx when the client is wrong, 5xx when the server is. Never return 200 with an error body.
 
 **Why it's a best practice:** monitoring, retries, circuit breakers and client libraries all branch on the
@@ -80,6 +82,7 @@ void delete(@PathVariable long id) { service.delete(id); }
 ```
 
 ### Know the 400 / 401 / 403 / 404 / 409 / 422 difference
+
 401 means "not authenticated", 403 "authenticated but not allowed", 404 "doesn't exist", 409 "conflicts with current state", 422 "well-formed but semantically invalid".
 
 **Why it's a best practice:** clients act differently on each: 401 triggers a token refresh, 403 shows "no
@@ -94,6 +97,7 @@ GET  /orders/9 (someone else's order)      -> 404 Not Found
 ```
 
 ### Return errors as RFC 9457 Problem Details
+
 Use one error format everywhere: `application/problem+json` with `type`, `title`, `status`, `detail`, plus your own fields.
 
 **Why it's a best practice:** when each endpoint invents its own error JSON, every client writes special-case
@@ -119,6 +123,7 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 ```
 
 ### Report all validation errors at once
+
 Return every invalid field in one response, not the first one found.
 
 **Why it's a best practice:** if a form has 5 problems and the API reports one per call, the user needs 5
@@ -140,6 +145,7 @@ round trips. A list of field errors lets the UI highlight all of them.
 ## 📄 Collections
 
 ### Always paginate collections
+
 Every list endpoint takes `page`/`size` or a cursor, with a default and a maximum size.
 
 **Why it's a best practice:** `GET /orders` works with 100 rows in dev and returns 4 million in production: out
@@ -159,6 +165,7 @@ Page<OrderResponse> list(@PageableDefault(size = 20) Pageable pageable) {
 ```
 
 ### Prefer cursor pagination for large or changing data
+
 Use a cursor (`?after=<last id>`) rather than `OFFSET` for feeds and big tables.
 
 **Why it's a best practice:** `OFFSET 1000000` makes the database read and discard a million rows, so page
@@ -174,6 +181,7 @@ SELECT * FROM orders WHERE id < :lastId ORDER BY id DESC LIMIT 20;
 ```
 
 ### Support filtering and sorting with a whitelist
+
 Accept `?status=PAID&sort=createdAt,desc` on known fields only.
 
 **Why it's a best practice:** passing the `sort` value straight to the query allows sorting on unindexed or
@@ -188,6 +196,7 @@ private static final Set<String> SORTABLE = Set.of("createdAt", "total");
 ## 🧬 Payloads
 
 ### Expose DTOs, not entities
+
 Map entities to request and response records at the API boundary.
 
 **Why it's a best practice:** an entity exposed directly ties your database schema to the public contract:
@@ -206,6 +215,7 @@ record OrderResponse(long id, String status, BigDecimal total, Instant createdAt
 ```
 
 ### Use consistent formats for dates, money and enums
+
 Send dates as ISO 8601 UTC (`2026-03-01T10:15:30Z`), money as a decimal string or minor units plus a currency, and enums as stable strings.
 
 **Why it's a best practice:** `03/04/2026` is March or April depending on the reader. A `double` for money gives
@@ -223,6 +233,7 @@ Use `BigDecimal` server-side.
 ## 🔄 Reliability & evolution
 
 ### Make unsafe operations idempotent with an `Idempotency-Key`
+
 Let clients send a unique key with `POST` and return the stored result on a repeat.
 
 **Why it's a best practice:** networks fail after the server processed the request but before the client saw
@@ -242,6 +253,7 @@ ResponseEntity<PaymentResponse> pay(@RequestHeader("Idempotency-Key") String key
 ```
 
 ### Use optimistic concurrency with ETags
+
 Return an `ETag` (or a `version`) and require `If-Match` on updates. Respond 412 or 409 on mismatch.
 
 **Why it's a best practice:** two users edit the same record; the second `PUT` silently overwrites the first
@@ -259,6 +271,7 @@ ResponseEntity<ProductResponse> update(@PathVariable long id,
 ```
 
 ### Version the API and avoid breaking changes
+
 Put a version in the URL (`/v1/`) or header, and only add optional fields within a version.
 
 **Why it's a best practice:** once mobile apps and partners depend on your JSON, renaming or removing a field
@@ -274,6 +287,7 @@ GET /v2/users/7   -> { "fullName": "Ann B." }
 ```
 
 ### Validate input and document the contract with OpenAPI
+
 Annotate request types with Bean Validation and generate an OpenAPI spec (springdoc), checked in or published from CI.
 
 **Why it's a best practice:** an undocumented API is learned by trial and error, and hand-written docs drift.

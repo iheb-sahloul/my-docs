@@ -3,6 +3,7 @@
 ## 🗺️ Entity mapping
 
 ### Make every association `LAZY`
+
 Set `fetch = FetchType.LAZY` on `@ManyToOne` and `@OneToOne`. (`@OneToMany` and `@ManyToMany` are already lazy.)
 
 **Why it's a best practice:** `@ManyToOne` and `@OneToOne` are `EAGER` by default. Every time you load an
@@ -14,6 +15,7 @@ need it (fetch join, entity graph). Lazy by default, fetch explicitly per use ca
 ✅ `@ManyToOne(fetch = FetchType.LAZY) private Customer customer;`
 
 ### Prefer `SEQUENCE` over `IDENTITY` for ids
+
 Use `@GeneratedValue(strategy = GenerationType.SEQUENCE)` with an `allocationSize` matching the sequence
 increment.
 
@@ -25,7 +27,19 @@ JDBC batches (`hibernate.jdbc.batch_size`). Postgres sequences are cheap and mad
 ⛔ `@GeneratedValue(strategy = GenerationType.IDENTITY)`
 ✅ `@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")` + `@SequenceGenerator(name = "order_seq", allocationSize = 50)`
 
+Enable JDBC batching so the ids you pre-allocated actually pay off:
+
+```yaml
+spring.jpa.properties.hibernate:
+  jdbc.batch_size: 50
+  order_inserts: true
+  order_updates: true
+```
+
+The database side must match, or ids collide: `CREATE SEQUENCE order_seq INCREMENT BY 50;`
+
 ### Implement `equals` / `hashCode` carefully on entities
+
 Base them on a natural business key, or on the id with a constant `hashCode`. Never use Lombok `@Data` on an
 entity.
 
@@ -43,6 +57,7 @@ loading, or a `StackOverflowError` on bidirectional relations. Its `toString` ha
 ```
 
 ### Use optimistic locking with `@Version`
+
 Add a `@Version` column to entities that can be edited concurrently.
 
 **Why it's a best practice:** without it, two users load the same row, both edit it, and the second save
@@ -52,9 +67,20 @@ ask the user to reload. It costs one integer column and no locks.
 
 ✅ `@Version private long version;`
 
+Catch the conflict where you can tell the user something useful:
+
+```java
+try {
+    orderService.update(id, command);          // save() flushes UPDATE ... WHERE version = ?
+} catch (ObjectOptimisticLockingFailureException e) {
+    throw new ResponseStatusException(HttpStatus.CONFLICT, "Modified by someone else, reload");
+}
+```
+
 ## ⚡ Queries & performance
 
 ### Avoid N+1 queries
+
 When you need an association for a list of entities, fetch it in the same query with a `JOIN FETCH` or an
 `@EntityGraph`.
 
@@ -73,7 +99,17 @@ orders.forEach(o -> print(o.getCustomer().getName()));
 List<Order> findAllWithCustomer();
 ```
 
+Same result without writing JPQL, and it composes with derived queries:
+
+```java
+@EntityGraph(attributePaths = "customer")
+List<Order> findByStatus(Status status);
+```
+
+Don't join-fetch two collections at once (`MultipleBagFetchException`, or a cartesian product): fetch one, and use `@BatchSize` for the other.
+
 ### Read with projections, not entities
+
 For read-only screens and APIs, select only the columns you need into a DTO or interface projection.
 
 **Why it's a best practice:** loading entities means selecting every column, creating managed objects, keeping
@@ -84,6 +120,7 @@ wasted memory and CPU. A projection runs a narrower query and returns plain obje
 ✅ `@Query("select new com.acme.OrderSummary(o.id, o.total, o.createdAt) from Order o where o.status = :s")`
 
 ### Use keyset pagination for large tables
+
 For deep pagination or infinite scroll, paginate with `WHERE id > :lastId ORDER BY id LIMIT n` instead of a big
 `OFFSET`.
 
@@ -101,6 +138,7 @@ SELECT * FROM orders WHERE id > :last_seen_id ORDER BY id LIMIT 20;
 ```
 
 ### Index foreign keys and filtered columns, and check with `EXPLAIN`
+
 Create indexes for columns used in `WHERE`, `JOIN` and `ORDER BY`, including foreign keys. Verify the plan with
 `EXPLAIN (ANALYZE, BUFFERS)`.
 
@@ -112,7 +150,21 @@ table. Guessing is unreliable: `EXPLAIN ANALYZE` shows whether the index is used
 ⛔ `order_line.order_id` with no index
 ✅ `CREATE INDEX idx_order_line_order_id ON order_line (order_id);`
 
+Reading the plan:
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM order_line WHERE order_id = 42;
+
+⛔ Seq Scan on order_line  (cost=0.00..18334.00 rows=5 ...) (actual time=0.02..95.4 rows=5 loops=1)
+     Filter: (order_id = 42)   Rows Removed by Filter: 1000000
+
+✅ Index Scan using idx_order_line_order_id  (cost=0.42..8.44 rows=5 ...) (actual time=0.03..0.05 rows=5 loops=1)
+```
+
+Red flags: `Seq Scan` on a big table, `Rows Removed by Filter` far above rows returned, and estimated `rows` far from `actual rows` (stale statistics: run `ANALYZE`).
+
 ### Always use bind parameters
+
 Pass values as parameters (`?`, `:name`), never by concatenating them into the SQL string.
 
 **Why it's a best practice:** concatenation is SQL injection: `name = "x' OR '1'='1"` returns every row, and
@@ -124,6 +176,7 @@ native queries too.
 ✅ `em.createQuery("from User where name = :name").setParameter("name", name)`
 
 ### Keep transactions short
+
 Open a transaction, do the database work, commit. No user input, remote calls or long computations in between.
 
 **Why it's a best practice:** a long transaction holds its row locks, blocking other writers, and prevents
@@ -137,6 +190,7 @@ connection left `idle in transaction` holds everything open indefinitely. Set
 ## 🐘 Postgres types & schema
 
 ### Use `timestamptz`, `numeric` and `text`
+
 Store instants in `timestamptz`, money in `numeric(p, s)`, and strings in `text` (or `varchar(n)` only when the
 limit is a real rule).
 
@@ -150,6 +204,7 @@ Postgres, `text` and `varchar` perform the same, so an arbitrary `varchar(255)` 
 ✅ `created_at timestamptz`, `amount numeric(19, 4)`
 
 ### Put integrity rules in the database
+
 Declare `NOT NULL`, `UNIQUE`, `FOREIGN KEY` and `CHECK` constraints in the schema, not only in application code.
 
 **Why it's a best practice:** application checks race: two requests both check "email not taken" and both
@@ -162,6 +217,7 @@ another service). Constraints also document the model for anyone reading the sch
 ## 🚚 Migrations
 
 ### Version the schema with Flyway or Liquibase
+
 Every schema change is a migration file in the repository. Never use `ddl-auto=update` (or `create`) outside
 local development.
 
@@ -175,6 +231,7 @@ match.
 ✅ `db/migration/V12__add_order_status.sql` + `ddl-auto: validate`
 
 ### Write migrations that don't lock production
+
 Create indexes with `CREATE INDEX CONCURRENTLY`, add columns as nullable (or with a constant default), and split
 breaking changes into expand / contract steps.
 
@@ -185,3 +242,20 @@ rolling deploy: add the new column, deploy code that writes both, backfill, swit
 
 ⛔ `CREATE INDEX idx_orders_status ON orders (status);`
 ✅ `CREATE INDEX CONCURRENTLY idx_orders_status ON orders (status);`
+
+Full expand / contract example: renaming `orders.state` to `orders.status` without downtime, one release per step.
+
+```sql
+-- V20 (release 1, expand): add the new column; old code keeps working
+ALTER TABLE orders ADD COLUMN status text;
+
+-- release 1 code writes both columns; V21 backfills in small batches
+UPDATE orders SET status = state WHERE status IS NULL AND id BETWEEN 1 AND 50000;
+
+-- V22 (release 2): reads switch to status; add the constraint without a long lock
+ALTER TABLE orders ADD CONSTRAINT orders_status_nn CHECK (status IS NOT NULL) NOT VALID;
+ALTER TABLE orders VALIDATE CONSTRAINT orders_status_nn;
+
+-- V23 (release 3, contract): nothing reads `state` anymore
+ALTER TABLE orders DROP COLUMN state;
+```

@@ -1,10 +1,9 @@
 # Bonnes pratiques d'observabilité
 
-
-
 ## 📜 Logs
 
 ### Utilisez des logs structurés (JSON)
+
 Émettez un objet JSON par ligne avec des noms de champs fixes, au lieu de texte libre.
 
 **Pourquoi c'est une bonne pratique :** faire un grep de « Order 42 failed for user ann » marche sur un serveur ;
@@ -24,6 +23,7 @@ logging.structured.format.console: ecs     # ou logstash, gelf
 ```
 
 ### Utilisez SLF4J avec des messages paramétrés
+
 Loguez avec `log.info("... {}", value)`, jamais par concaténation de chaînes ni avec `System.out`.
 
 **Pourquoi c'est une bonne pratique :** la concaténation construit la chaîne même quand le niveau est désactivé, ce
@@ -41,6 +41,7 @@ log.debug("Order saved id={} total={}", order.id(), order.total());
 ```
 
 ### Choisissez les niveaux de log délibérément
+
 `ERROR` = quelqu'un doit agir, `WARN` = inattendu mais géré, `INFO` = événements métier, `DEBUG` = diagnostic, `TRACE` = très détaillé.
 
 **Pourquoi c'est une bonne pratique :** si tout est `ERROR`, les alertes se déclenchent sans cesse et sont mises en
@@ -59,6 +60,7 @@ log.error("Payment provider unreachable orderId={}", orderId, ex);
 ```
 
 ### Loguez l'exception une seule fois, avec sa stack trace
+
 Passez l'exception en dernier argument, et loguez-la à l'endroit où vous la traitez, pas à chaque couche.
 
 **Pourquoi c'est une bonne pratique :** loguer et relancer à chaque couche imprime la même stack trace 4 fois, donc une
@@ -79,6 +81,7 @@ ProblemDetail handle(OrderStorageException ex) {
 ```
 
 ### Ajoutez du contexte avec le MDC
+
 Placez les valeurs propres à la requête (`requestId`, `userId`, `tenant`) dans le MDC via un filtre, pour que chaque ligne les porte.
 
 **Pourquoi c'est une bonne pratique :** dans un service chargé, les lignes de log de 200 requêtes concurrentes sont
@@ -99,6 +102,7 @@ class RequestContextFilter extends OncePerRequestFilter {
 ```
 
 ### Ne loguez jamais de secrets ni de données personnelles
+
 Masquez les mots de passe, tokens, numéros de carte et données personnelles, et évitez de loguer des corps de requête entiers.
 
 **Pourquoi c'est une bonne pratique :** les logs sont expédiés à des tiers, conservés des mois, et lisibles par de
@@ -116,6 +120,7 @@ log.info("Checkout started userId={} items={}", user.id(), cart.size());
 ## 📊 Métriques
 
 ### Exposez les métriques avec Micrometer et Prometheus
+
 Ajoutez `spring-boot-starter-actuator` et `micrometer-registry-prometheus`, puis scrapez `/actuator/prometheus`.
 
 **Pourquoi c'est une bonne pratique :** les logs disent ce qui s'est passé une fois ; les métriques disent comment le
@@ -131,6 +136,7 @@ management:
 ```
 
 ### Mesurez les signaux RED et USE
+
 Pour chaque service, suivez Rate, Errors, Duration (requêtes) et Utilization, Saturation, Errors (ressources comme les pools et les files).
 
 **Pourquoi c'est une bonne pratique :** des centaines de métriques sont inutiles sans liste de contrôle. RED répond à
@@ -146,6 +152,7 @@ Saturation hikaricp_connections_pending
 ```
 
 ### Ajoutez des métriques métier et personnalisées avec un ensemble borné de tags
+
 Comptez ce qui intéresse le métier (commandes passées, paiements échoués) et gardez des valeurs de tags à faible cardinalité.
 
 **Pourquoi c'est une bonne pratique :** « le CPU va bien » pendant que les paiements échouent en silence est une panne
@@ -163,6 +170,7 @@ Timer.builder("payment.duration").publishPercentileHistogram().register(registry
 ```
 
 ### Préférez les percentiles aux moyennes
+
 Suivez la latence p50, p95 et p99 avec des histogrammes.
 
 **Pourquoi c'est une bonne pratique :** une moyenne de 120 ms peut cacher 1 % de requêtes qui prennent 8 s. Les
@@ -179,6 +187,7 @@ management.metrics.distribution.slo.http.server.requests: 100ms,500ms,1s
 ## 🧵 Traçage
 
 ### Propagez le contexte de trace entre les services
+
 Utilisez Micrometer Tracing avec OpenTelemetry, les en-têtes W3C `traceparent`, et ajoutez l'id de trace à vos logs.
 
 **Pourquoi c'est une bonne pratique :** une requête utilisateur peut toucher 8 services ; sans id de trace partagé, on
@@ -195,6 +204,7 @@ logging.pattern.correlation: "[${spring.application.name:},%X{traceId:-},%X{span
 ```
 
 ### Échantillonnez les traces intelligemment
+
 Échantillonnez un pourcentage en production (ou utilisez un échantillonnage tail-based qui garde les erreurs et les traces lentes).
 
 **Pourquoi c'est une bonne pratique :** stocker 100 % des traces à fort trafic coûte cher et est souvent inutile,
@@ -210,6 +220,7 @@ management.tracing.sampling.probability: 0.05
 ```
 
 ### Ajoutez des spans personnalisés autour des opérations importantes
+
 Encadrez les étapes métier clés ou les appels externes avec une `Observation` (ou `@Observed`) portant un nom à faible cardinalité.
 
 **Pourquoi c'est une bonne pratique :** l'instrumentation automatique couvre HTTP et JDBC, mais pas « calculer le prix
@@ -225,12 +236,10 @@ public Quote quote(Cart cart) { ... }
 ## ❤️ Santé & alertes
 
 ### Exposez des sondes de liveness et de readiness séparées
+
 Utilisez `/actuator/health/liveness` et `/actuator/health/readiness`, et branchez-les sur Kubernetes.
 
-**Pourquoi c'est une bonne pratique :** la liveness répond à « dois-je redémarrer ceci ? », la readiness répond à
-« dois-je envoyer du trafic ? ». Si une panne de base de données fait échouer la liveness, Kubernetes redémarre tous
-les pods en boucle et aggrave la situation. Le bon comportement est d'arrêter le routage (readiness) et de garder
-les pods en marche. Utilisez aussi la readiness pour éviter de recevoir du trafic avant la fin du warm-up.
+**Pourquoi :** traité dans [Configurez correctement les probes liveness, readiness et startup](docker-k8s-devops.md#configurez-correctement-les-probes-liveness-readiness-et-startup).
 
 ```yaml
 # ✅
@@ -244,6 +253,7 @@ readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
 ```
 
 ### Arrêtez-vous proprement
+
 Activez l'arrêt gracieux pour que les requêtes en cours se terminent avant la sortie du pod.
 
 **Pourquoi c'est une bonne pratique :** sans cela, chaque déploiement coupe les requêtes en cours, ce qui donne aux
@@ -256,6 +266,7 @@ spring.lifecycle.timeout-per-shutdown-phase: 30s
 ```
 
 ### Alertez sur les symptômes, pas sur les causes
+
 Réveillez sur les problèmes visibles par l'utilisateur (taux d'erreur, consommation du budget de SLO de latence, absence de trafic), et gardez le CPU et le disque en tickets ou en tableaux de bord.
 
 **Pourquoi c'est une bonne pratique :** « CPU à 85 % » peut être parfaitement normal et réveille quelqu'un à 3 h du
@@ -278,6 +289,7 @@ manquée. Alerter sur un SLO (par exemple, 99,9 % des requêtes sous 500 ms) lie
 ```
 
 ### Donnez à chaque alerte un responsable et un runbook
+
 Chaque page renvoie vers un runbook qui dit ce que cela signifie, comment vérifier et comment atténuer. Supprimez les alertes sur lesquelles personne n'agit.
 
 **Pourquoi c'est une bonne pratique :** à 3 h du matin, personne ne se souvient de ce que signifie `queue_depth_high`.
@@ -292,6 +304,7 @@ annotations:
 ```
 
 ### Définissez des SLO et suivez le budget d'erreur
+
 Fixez un objectif (disons 99,9 % de disponibilité sur 30 jours) et mesurez-le à partir des vraies métriques de requêtes.
 
 **Pourquoi c'est une bonne pratique :** 99,9 % autorise environ 43 minutes d'indisponibilité par 30 jours, 99,99 %

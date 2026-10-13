@@ -1,10 +1,9 @@
 # Git Best Practices
 
-
-
 ## 📝 Commits
 
 ### Make small, atomic commits
+
 One commit is one logical change that builds and passes tests on its own.
 
 **Why it's a best practice:** a commit named "stuff" with 40 files can't be reviewed, reverted or bisected.
@@ -22,6 +21,7 @@ git commit -m "fix(orders): reject negative quantities"
 ```
 
 ### Follow Conventional Commits
+
 Format messages as `type(scope): summary`, with types such as `feat`, `fix`, `docs`, `refactor`, `test`, `chore`.
 
 **Why it's a best practice:** a consistent format makes `git log --oneline` readable, and tools can generate
@@ -41,6 +41,7 @@ feat(api)!: remove deprecated /v1/users endpoint
 ```
 
 ### Write the subject in the imperative, and explain why in the body
+
 Keep the subject under about 50 characters ("Add", not "Added"), and use the body for the reason, not the diff.
 
 **Why it's a best practice:** the diff already shows what changed; only the message can say why. Six months
@@ -61,6 +62,7 @@ Closes #482
 ```
 
 ### Never rewrite history that others have pulled
+
 Amend, rebase or force-push only your own unshared branches. Use `--force-with-lease` if you must.
 
 **Why it's a best practice:** rewriting shared commits gives everyone else diverging histories, duplicate
@@ -78,6 +80,7 @@ git push --force-with-lease origin feature/login
 ## 🌿 Branching
 
 ### Use short-lived branches off main
+
 Branch per task, merge within days, and delete the branch after merge. Prefer trunk-based development or GitHub Flow.
 
 **Why it's a best practice:** the longer a branch lives, the more it diverges and the more painful the merge:
@@ -94,6 +97,7 @@ git branch -d feat/order-export
 ```
 
 ### Name branches with a type and a ticket
+
 Use `feat/`, `fix/`, `chore/` prefixes and, if you have a tracker, the ticket id.
 
 **Why it's a best practice:** `my-branch2` says nothing on a list of 40 remote branches. Prefixes allow
@@ -109,6 +113,7 @@ fix/PAY-201-null-currency
 ```
 
 ### Protect the main branch
+
 Require pull requests, at least one approval, and passing CI. Disallow force-push and direct commits.
 
 **Why it's a best practice:** without protection, one bad push or a Friday-evening hotfix breaks the build for
@@ -125,6 +130,7 @@ Require linear history (optional)
 ## 🔍 Pull requests & reviews
 
 ### Keep pull requests small and focused
+
 Aim for under about 400 changed lines and one purpose. Split refactors from behavior changes.
 
 **Why it's a best practice:** review quality drops sharply with size: studies of code review show reviewers
@@ -142,6 +148,7 @@ PR 3: feat: CSV export of orders
 ```
 
 ### Write a pull request description that helps the reviewer
+
 State what and why, how you tested it, and anything risky. Link the issue and add screenshots for UI changes.
 
 **Why it's a best practice:** the reviewer lacks your context. A clear description turns a 30-minute puzzle
@@ -159,6 +166,7 @@ New endpoint only; no schema changes.
 ```
 
 ### Review the code, automate the style
+
 Let formatters and linters (Spotless, Checkstyle) fail the build, so reviews focus on design, correctness and tests.
 
 **Why it's a best practice:** arguments about braces waste review time and irritate people. A tool is
@@ -175,6 +183,7 @@ consistent and never tired. Reviewers then have the energy to find the missing n
 ## 🔀 Integrating changes
 
 ### Rebase your local branch, merge (or squash) into main
+
 Rebase a private feature branch on the latest main to update it. Integrate into main by squash or merge commit through the PR.
 
 **Why it's a best practice:** rebasing your own branch keeps the history linear and free of "Merge main into
@@ -191,6 +200,7 @@ git rebase -i origin/main
 ```
 
 ### Resolve conflicts on purpose, and enable rerere
+
 Read both sides, run the tests after resolving, and turn on `git rerere` to remember resolutions.
 
 **Why it's a best practice:** picking "ours" or "theirs" for a whole file silently drops someone's work.
@@ -206,6 +216,7 @@ git config --global merge.conflictstyle zdiff3
 ## 🔐 Safety & automation
 
 ### Never commit secrets, and scan for them
+
 Keep keys and passwords out of Git, use `.gitignore`, and run a scanner (gitleaks) in a pre-commit hook and in CI.
 
 **Why it's a best practice:** removing a file in a later commit doesn't remove it from history, and anyone who
@@ -222,6 +233,7 @@ gitleaks protect --staged      # in a pre-commit hook
 ```
 
 ### Automate checks with Git hooks
+
 Use pre-commit hooks (Husky, lefthook, pre-commit) for formatting and secrets, and commit-msg for message rules. Repeat them in CI.
 
 **Why it's a best practice:** catching a formatting error or a leaked key in 2 seconds locally is better than a
@@ -239,6 +251,7 @@ commit-msg:
 ```
 
 ### Tag releases with annotated, semantic-version tags
+
 Create `vMAJOR.MINOR.PATCH` annotated tags on the released commit and push them.
 
 **Why it's a best practice:** a tag is the permanent answer to "what code is running in production?". Annotated
@@ -255,6 +268,7 @@ git push origin v1.4.0
 ```
 
 ### Keep generated files and large binaries out of Git
+
 Ignore build output (`target/`, `node_modules/`) and store big binaries in Git LFS or an artifact registry.
 
 **Why it's a best practice:** every version of a binary stays in history forever: ten 50 MB jars make each clone
@@ -270,6 +284,7 @@ build/
 ```
 
 ### Recover with reflog instead of panicking
+
 Use `git reflog` to find lost commits, and prefer `git revert` for published mistakes.
 
 **Why it's a best practice:** Git rarely destroys committed work: for about 90 days the reflog still points to

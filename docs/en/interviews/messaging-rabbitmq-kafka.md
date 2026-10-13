@@ -5,6 +5,9 @@
 ### Why messaging
 
 #### Q1. Why use a message broker instead of a direct synchronous call between services?
+
+> **In plain words:** A broker is a mailbox between services: the sender drops the message and moves on, even if the receiver is slow or down.
+
 A direct call couples the caller to the callee's availability and latency in real time — if the
 callee is slow or down, the caller is blocked or fails immediately. A broker decouples them in
 time and failure: the producer publishes and moves on, the consumer processes when able, and a
@@ -13,7 +16,20 @@ also decouples *cardinality* — one event can fan out to multiple independent c
 order-placed event triggering billing, shipping, and analytics) without the producer knowing or
 caring who's listening.
 
+**Example:**
+
+```java
+// Synchronous: checkout fails if any downstream is slow or down
+billing.charge(order); shipping.schedule(order); analytics.track(order);
+
+// Async: publish once, return immediately; 3 independent subscribers
+rabbit.convertAndSend("orders.events", "order.placed", new OrderPlaced(order.id()));
+```
+
 #### Q2. When do you reach for synchronous request/response instead of async messaging?
+
+> **In plain words:** Use a direct call when you need the answer right now (e.g. "is this card valid?"). Use messaging when the work can happen later.
+
 Synchronous calls (REST/gRPC) fit when the caller genuinely needs the result *right now* to
 proceed (a payment authorization the checkout flow can't continue without, a read the UI is
 waiting to render) and when a temporary unavailability of the callee should be a visible failure
@@ -24,7 +40,20 @@ consumers is the actual requirement. Many real systems mix both: a synchronous c
 critical-path decision, with async events published afterward for everything that can happen
 eventually.
 
+**Example:**
+
+```java
+// Needs the answer now -> synchronous (fail visibly)
+PaymentResult r = paymentClient.authorize(order.id(), order.total());   // REST/gRPC + timeout
+
+// Nobody waits for it -> async event, after the critical-path decision
+if (r.approved()) events.publish(new OrderConfirmed(order.id()));        // e-mail, analytics, shipping
+```
+
 #### Q3. What's the difference between a queue (point-to-point) and a topic (publish/subscribe), and how do competing consumers fit in?
+
+> **In plain words:** A queue gives each message to one worker. A topic gives a copy to every subscriber. Several workers on one queue share the load.
+
 In a **point-to-point** queue each message is delivered to exactly *one* consumer: several
 instances of the same service reading one queue are **competing consumers** that share the
 workload, which is how you scale processing horizontally (10 workers draining one `emails` queue).
@@ -40,9 +69,22 @@ partition count (Q11). Getting this wrong has two classic symptoms: two differen
 sharing one queue/group so each sees only *half* the events, or a scaled-out service where every
 instance has its own group and so processes every message N times.
 
+**Example:**
+
+```properties
+# Same group.id = competing consumers (each message to ONE instance)
+billing-service:   group.id=billing     # 3 instances share the partitions
+# Different group.id = pub/sub (each group gets the full stream)
+shipping-service:  group.id=shipping
+# Bug: a new service copy-pasted with group.id=billing steals half of billing's events
+```
+
 ### Broker models
 
 #### Q4. Describe RabbitMQ's core model: exchange, queue, binding, routing key.
+
+> **In plain words:** RabbitMQ: producers send to an exchange, which uses bindings and a routing key to decide which queue gets the message.
+
 A producer never publishes directly to a queue — it publishes to an **exchange**, which routes
 the message to zero or more **queues** based on **bindings** (rules connecting an exchange to a
 queue) and, depending on exchange type, a **routing key**. A `direct` exchange routes to queues
@@ -52,7 +94,20 @@ entirely and broadcasts to every bound queue. Consumers subscribe to queues, not
 exchange/binding layer is what gives RabbitMQ flexible routing without producers needing to know
 which queues exist.
 
+**Example:**
+
+```text
+exchange "orders" (type=topic)
+  binding "order.*.created"  -> queue billing     # order.eu.created, order.us.created
+  binding "order.#"          -> queue audit       # everything under order.
+publish(exchange="orders", routingKey="order.eu.created")  # delivered to billing AND audit
+publish(exchange="orders", routingKey="order.eu.cancelled")# audit only
+```
+
 #### Q5. Describe Kafka's core model: topic, partition, offset, consumer group.
+
+> **In plain words:** Kafka: a topic is a log split into partitions. Each message has a position (offset). A consumer group splits the partitions among its members.
+
 A **topic** is an append-only log, split into one or more **partitions** for parallelism — each
 partition is its own independently ordered, append-only sequence, and a message's position in it
 is its **offset**. Producers write to a partition (chosen by a key's hash, or round-robin if no
@@ -63,9 +118,23 @@ partitions gets full parallelism, and multiple independent consumer groups can e
 entire topic independently (unlike a RabbitMQ queue, where one message goes to one consumer,
 period).
 
+**Example:**
+
+```bash
+$ kafka-topics.sh --create --topic orders --partitions 3 --bootstrap-server localhost:9092
+$ kafka-consumer-groups.sh --describe --group billing --bootstrap-server localhost:9092
+GROUP    TOPIC   PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG  CONSUMER-ID
+billing  orders  0          120             125             5    c1
+billing  orders  1          98              98              0    c2
+billing  orders  2          140             141             1    c3   # 1 partition = 1 consumer in the group
+```
+
 ### Delivery semantics
 
 #### Q6. What's the difference between at-most-once, at-least-once, and exactly-once delivery?
+
+> **In plain words:** At-most-once: may lose messages. At-least-once: may duplicate them. Exactly-once: no loss and no duplicates, but hard and only for limited cases.
+
 **At-most-once**: a message is delivered zero or one times — if anything fails after send, it's
 simply lost, never retried (fire-and-forget). **At-least-once**: a message is guaranteed to be
 delivered one or more times — failures trigger a retry/redelivery, but that means a consumer can
@@ -77,7 +146,20 @@ boundary (producer → topic → consumer offset commit, all Kafka-internal), no
 extended to an arbitrary external side effect the consumer performs (charging a card, sending an
 email) — that final side effect still needs application-level idempotency (Q13).
 
+**Example:**
+
+```java
+// at-most-once: ack/commit BEFORE processing -> a crash loses the message
+consumer.commitSync(); process(record);
+// at-least-once: commit AFTER processing -> a crash means redelivery (duplicate)
+process(record); consumer.commitSync();
+// exactly-once effect = at-least-once + idempotent process() (see Q13, Q29)
+```
+
 #### Q7. What do acknowledgements do in a message broker, and what happens to a message whose consumer crashes before acknowledging?
+
+> **In plain words:** An ack means "I'm done, you can delete it". If the consumer crashes before the ack, the broker sends the message again.
+
 An acknowledgement is the consumer telling the broker "I have processed this — you may forget
 it". Until it arrives, the broker keeps the message and treats it as *in flight*. If the consumer
 dies, its connection drops, or it explicitly rejects (`nack`/`reject`), the broker makes the
@@ -85,17 +167,34 @@ message available again — **redelivering** it, to the same or another consumer
 mechanism behind at-least-once delivery (Q6): acknowledging *after* processing means a crash
 mid-way causes a duplicate, never a loss; acknowledging *before* processing (auto-ack) turns a
 crash into silent message loss (at-most-once). A rejected message can be requeued, dropped or
-routed to a dead-letter queue (Q22) — requeueing a message that always fails creates an endless
-hot loop, which is why a retry limit matters (Q23). Kafka has no per-message ack: the equivalent
+routed to a dead-letter queue (Q23) — requeueing a message that always fails creates an endless
+hot loop, which is why a retry limit matters (Q24). Kafka has no per-message ack: the equivalent
 is committing the consumer group's *offset*, meaning "everything up to here is done" (Q17), so an
 offset committed too early loses messages and one committed too late causes reprocessing.
 Either way, redelivery is normal operation, which is why consumers must be idempotent (Q13).
+
+**Example:**
+
+```java
+@RabbitListener(queues = "orders")
+void handle(Order o, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
+    try {
+        process(o);
+        ch.basicAck(tag, false);          // done: broker may forget it
+    } catch (Exception e) {
+        ch.basicNack(tag, false, false);  // requeue=false -> dead-letter queue, no hot loop
+    }                                    // crash before ack -> redelivered with redelivered=true
+}
+```
 
 ## 🟡 Senior traps
 
 ### Broker comparison & retention
 
 #### Q8. What's the core architectural difference between RabbitMQ and Kafka, and how does it drive when you'd pick each?
+
+> **In plain words:** RabbitMQ pushes messages to consumers and deletes them once handled. Kafka keeps a log that consumers read at their own pace.
+
 **Answer:** RabbitMQ is a traditional message broker: a "smart broker, simple consumer" model —
 the broker owns routing (exchanges/bindings), tracks per-message delivery/acknowledgment state,
 and once a message is acknowledged and consumed, it's gone from the queue for good. Kafka is a
@@ -111,6 +210,7 @@ in the broker — a Kafka consumer decides what a message means and what to do w
 never inspects content.
 
 **Example:**
+
 ```java
 // RabbitMQ: the broker makes the routing decision via bindings — the publisher just picks a key.
 channel.exchangeDeclare("orders", BuiltinExchangeType.TOPIC);
@@ -132,6 +232,9 @@ consume-and-gone model can't provide) means picking the tool by reputation, not 
 architecture the requirement actually needs.
 
 #### Q9. Kafka retention vs RabbitMQ TTL — how do the two systems' mental models around message lifetime differ?
+
+> **In plain words:** Kafka keeps messages for a set time even after they are read. RabbitMQ removes them once consumed or expired (TTL).
+
 **Answer:** Kafka retains messages for a configured period or size *regardless of consumption* —
 a message stays in the log and can be re-read by re-seeking an offset, or read fresh by an
 entirely new consumer group starting from the beginning, until retention expires it; consumption
@@ -144,7 +247,8 @@ RabbitMQ does not — once consumed, a message is gone, and building replay on t
 means the producer or consumer has to separately persist the history itself.
 
 **Example:**
-```
+
+```text
 # Kafka: retained for 7 days regardless of consumption; a new consumer group can start
 # from the beginning and read the full 7 days of history.
 retention.ms=604800000
@@ -161,6 +265,9 @@ acked, no matter how recently that happened.
 ### Ordering & partitioning
 
 #### Q10. What ordering guarantees do Kafka and RabbitMQ actually provide, and what commonly breaks them?
+
+> **In plain words:** Kafka keeps order only inside one partition. Retries, several consumers, or different keys can scramble the order.
+
 **Answer:** Kafka guarantees order only *within a single partition* — messages with the same key
 always land in the same partition and are read in the order they were written, but there's no
 ordering guarantee *across* partitions. The common way ordering breaks: choosing a
@@ -174,6 +281,7 @@ consumers concurrently, finishing in either order) — so ordering per-entity in
 requires routing all messages for that entity to the same queue *and* a single consumer for it.
 
 **Example:**
+
 ```java
 // No key -> Kafka distributes round-robin across partitions -> no ordering relationship
 // between "created" and "cancelled" for the same order at all.
@@ -192,6 +300,9 @@ qualifier, and the gap stays invisible in low-traffic testing where round-robin 
 to keep related events close together.
 
 #### Q11. How do you choose a Kafka topic's partition count, and what happens if you need to change it later?
+
+> **In plain words:** More partitions means more consumers can work in parallel. You can add partitions later, but the key-to-partition mapping changes.
+
 **Answer:** Partition count sets the ceiling on consumer parallelism within a group (more
 partitions than consumers means some consumers handle multiple partitions; more consumers than
 partitions means some consumers sit idle) — so choose based on target throughput and expected
@@ -204,7 +315,8 @@ ordering for a key (Q10) needs to account for this discontinuity at the moment o
 Partition count cannot be *decreased* at all in Kafka without recreating the topic entirely.
 
 **Example:**
-```
+
+```bash
 $ kafka-topics.sh --alter --topic orders --partitions 12 --bootstrap-server broker:9092
 # New messages for a given key now hash into 1 of 12 partitions instead of 1 of 6 — a key
 # that always landed in partition 3 before may now land in partition 9, while its older
@@ -218,6 +330,9 @@ messages, a real and easy-to-miss correctness risk for any ordering-dependent co
 free scaling lever.
 
 #### Q12. What challenges come up with message priority or fairness across many queues/topics?
+
+> **In plain words:** If everything shares one queue, a big or urgent job can starve the others. Use separate queues or priorities so everyone gets a turn.
+
 **Answer:** RabbitMQ supports explicit priority queues (a priority field per message, with the
 broker generally delivering higher-priority messages first) — but priority queues add real broker
 overhead and don't guarantee strict ordering under load, only a bias toward higher priority.
@@ -230,6 +345,7 @@ problem brokers don't solve for you — it typically needs an application-level 
 token-bucket shared across those consumers, independent of the messaging layer.
 
 **Example:**
+
 ```java
 // Kafka has no native priority — the common workaround is separate topics per tier,
 // with consumer capacity biased toward the high-priority topic.
@@ -248,6 +364,9 @@ strict priority ordering on top of them is building on a guarantee that was neve
 ### Delivery guarantees & idempotency
 
 #### Q13. Why must a consumer be idempotent even when the messaging system claims "exactly-once" or "at-least-once with dedup"?
+
+> **In plain words:** A message can be delivered twice even with "exactly-once" claims, so the consumer must give the same result when it runs twice.
+
 **Answer:** Because the boundary the broker can guarantee (message delivered to the consumer,
 offset committed) is not the same boundary as the consumer's actual side effect (a database
 write, an email sent, a card charged) — a crash between "processed the message" and "committed
@@ -258,6 +377,7 @@ model) because it's the only place that actually knows both "did I do this side 
 I receive this message" at the same time.
 
 **Example:**
+
 ```java
 void handle(Message msg) {
     chargeCard(msg.orderId(), msg.amount()); // side effect completes...
@@ -276,6 +396,9 @@ topic), not an arbitrary external side effect like a card charge that lives enti
 broker's own transaction boundary.
 
 #### Q14. What are the common idempotency strategies for a message consumer?
+
+> **In plain words:** Common ways: a unique key checked in the database, an upsert, or a table of already-processed message IDs.
+
 **Answer:** (1) A unique business key (order ID, idempotency key from the producer) enforced as a
 database unique constraint on the table the side effect writes to — a duplicate processing
 attempt hits the constraint and is treated as a no-op, not an error, which is the most robust
@@ -288,6 +411,7 @@ possible (`SET status = 'shipped'` is idempotent regardless of how many times it
 cheaper than detecting duplicates when it's achievable.
 
 **Example:**
+
 ```sql
 -- Fragile: check-then-insert is two statements, not one — two redelivered copies of the same
 -- message, processed concurrently by two consumer threads, can both pass the SELECT before
@@ -308,6 +432,9 @@ approach is preferred specifically because it makes the database the single atom
 instead of relying on two separate round-trips never overlapping.
 
 #### Q15. What do Kafka transactions and RabbitMQ publisher confirms each actually guarantee?
+
+> **In plain words:** Kafka transactions: several writes succeed or fail together. RabbitMQ publisher confirms: the broker tells the sender it received the message.
+
 **Answer:** Kafka transactions let a producer atomically write to multiple partitions/topics
 *and* atomically commit a consumer's offset alongside a produced output — this is what backs
 Kafka's "exactly-once" claim for a read-process-write pipeline (consume from topic A, produce to
@@ -320,6 +447,7 @@ idea it failed. The common trap: treating publisher confirms as an end-to-end de
 when they only cover producer→broker, not broker→consumer→successful processing.
 
 **Example:**
+
 ```java
 // Kafka transactional producer — atomic across produce + offset commit.
 producer.initTransactions();
@@ -339,6 +467,9 @@ handled end-to-end" — both mechanisms stop at the broker's own boundary; what 
 with the message afterward is outside either guarantee entirely.
 
 #### Q16. Which producer and broker settings decide whether a Kafka message survives a broker failure?
+
+> **In plain words:** To survive a broker crash: `acks=all`, replication factor 3, `min.insync.replicas=2`, and no unclean leader election.
+
 **Answer:** Durability is the combination of four settings, and it is only as strong as the
 weakest one. **`acks`** says when the producer considers a write done: `0` = fire and forget,
 `1` = the partition leader wrote it (lost if the leader dies before followers replicate — the
@@ -357,10 +488,11 @@ record twice and — with `max.in.flight.requests.per.connection <= 5` — doesn
 Set a bounded `delivery.timeout.ms` so `send()` eventually fails visibly instead of retrying
 forever, and *check the result* (callback / `Future`), because a fire-and-forget `send()` that
 fails is otherwise invisible. Note the limits: idempotence covers one producer session on one
-partition; it is not end-to-end exactly-once (Q15, Q28), and durability on the broker side still
+partition; it is not end-to-end exactly-once (Q15, Q29), and durability on the broker side still
 depends on the OS flush/replication model, not on `fsync` per message.
 
 **Example:**
+
 ```properties
 # producer
 acks=all
@@ -372,6 +504,7 @@ max.in.flight.requests.per.connection=5
 min.insync.replicas=2
 unclean.leader.election.enable=false
 ```
+
 ```java
 producer.send(record, (metadata, ex) -> {
     if (ex != null) failureMetrics.increment();   // never ignore the callback
@@ -385,6 +518,9 @@ placebo — both look fine on every happy-path test and only fail during a real 
 ### Consumers, offsets & rebalancing
 
 #### Q17. Auto-commit vs manual offset commit in a Kafka consumer — what's the trade-off?
+
+> **In plain words:** Auto-commit is easy but can lose or repeat messages. Manual commit after processing is safer and gives you control.
+
 **Answer:** Auto-commit periodically commits the latest consumed offset on a timer, regardless of
 whether the message was actually fully processed — simple, but it can commit an offset for a
 message that's still being processed (or that failed) right before a crash, silently skipping it
@@ -396,6 +532,7 @@ after successful processing for anything where losing a message silently is unac
 is most production use cases — auto-commit's simplicity is rarely worth its data-loss window.
 
 **Example:**
+
 ```java
 // Auto-commit: offset advances on a timer, independent of whether processing succeeded.
 props.put("enable.auto.commit", "true");
@@ -415,6 +552,9 @@ specific moment, rare enough to never surface until real production volume and r
 infrastructure churn make it inevitable.
 
 #### Q18. How do RabbitMQ acknowledgments and prefetch count interact, and why does prefetch matter?
+
+> **In plain words:** Prefetch limits how many unacked messages a consumer holds. Too high and one worker hoards messages; too low and it sits idle.
+
 **Answer:** A consumer acks a message once it's done processing it; an unacked message that the
 consumer disconnects on (or explicitly nacks) gets requeued for redelivery — this is RabbitMQ's
 at-least-once mechanism. **Prefetch count** limits how many unacknowledged messages the broker
@@ -428,6 +568,7 @@ match how many messages a single consumer can meaningfully process concurrently,
 possible for throughput."
 
 **Example:**
+
 ```java
 channel.basicQos(1); // strict one-at-a-time — safest, but caps this consumer's own throughput
 
@@ -442,6 +583,9 @@ crash into a large thundering-herd requeue, so it should be sized to actual per-
 concurrent capacity, not maximized by default.
 
 #### Q19. What happens during a Kafka consumer group rebalance, and why can it cause duplicate processing?
+
+> **In plain words:** A rebalance moves partitions between consumers. Work done but not yet committed gets processed again by the new owner.
+
 **Answer:** A rebalance reassigns partitions across the consumers in a group — triggered by a
 consumer joining, leaving (including a perceived failure from a missed heartbeat), or a partition
 count change. During a rebalance, consumption pauses while partitions are reassigned, and
@@ -454,6 +598,7 @@ offset-commit strategy is — rebalances make at-least-once redelivery a routine
 edge case.
 
 **Example:**
+
 ```java
 while (true) {
     ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
@@ -472,6 +617,9 @@ routine occurrence that idempotency (Q13/Q14) must handle unconditionally, not a
 shrug off.
 
 #### Q20. Why can a *slow* Kafka consumer — not a crashed one — trigger endless rebalances, and which settings control it?
+
+> **In plain words:** If a consumer takes too long between `poll()` calls, Kafka thinks it died and rebalances. Tune `max.poll.interval.ms` and `max.poll.records`.
+
 **Answer:** A consumer must call `poll()` again within **`max.poll.interval.ms`** (default 5
 minutes); heartbeats are sent by a *separate background thread* (governed by
 `session.timeout.ms` and `heartbeat.interval.ms`), so a consumer can look perfectly healthy to the
@@ -490,6 +638,7 @@ worker pool while continuing to poll (carefully committing only completed offset
 and static membership (`group.instance.id`) so a rolling restart doesn't reshuffle everything.
 
 **Example:**
+
 ```properties
 max.poll.records=50                 # 50 records * ~2s each = ~100s, well under the interval
 max.poll.interval.ms=300000
@@ -497,6 +646,7 @@ session.timeout.ms=45000
 heartbeat.interval.ms=15000
 partition.assignment.strategy=org.apache.kafka.clients.consumer.CooperativeStickyAssignor
 ```
+
 ```java
 // Bad: 500 records x 3s each = 1500s between polls -> the consumer is evicted every time.
 for (ConsumerRecord<String, Order> r : consumer.poll(Duration.ofSeconds(1))) {
@@ -509,6 +659,9 @@ is being repeatedly evicted; and the standard reflex — bump `max.poll.interval
 the slow handler until load rises.
 
 #### Q21. What happens when a consumer can't keep up with the rate messages arrive, and how do you handle it?
+
+> **In plain words:** Messages pile up (lag). Fix by adding consumers (up to the partition count), speeding up processing, or batching.
+
 **Answer:** Backlog builds — in Kafka, consumer lag (the gap between the latest offset and the
 consumer's committed offset) grows; in RabbitMQ, queue depth grows, and past a configured
 memory/disk threshold, RabbitMQ can trigger a flow-control alarm that blocks publishers entirely
@@ -521,7 +674,8 @@ backpressure mechanism, limiting how much a broker will push ahead of a consumer
 processing rate.
 
 **Example:**
-```
+
+```bash
 $ kafka-consumer-groups.sh --bootstrap-server broker:9092 --describe --group billing-group
 TOPIC   PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG
 orders  0          482910          511200          28290
@@ -533,18 +687,50 @@ count is already the ceiling (Q11) or whether per-message processing time itself
 throwing more consumers at a problem that's actually partition-bound or latency-bound changes
 nothing.
 
+#### Q22. How do you monitor consumer lag, and what should you alert on?
+
+> **In plain words:** Lag is how far behind the consumers are. Alert when it keeps growing or when the delay breaks your promise, not on a fixed number.
+
+**Answer:** Lag is the difference between the latest offset of each partition and the group's committed offset.
+
+Collect it from outside the consumer, since a stuck consumer can't report its own lag: kafka-exporter or Burrow for Prometheus, or the managed metrics of MSK or Confluent Cloud.
+
+Look at it **per partition** (one hot or stuck partition hides in a total) and, ideally, as **time lag**: how old the oldest unprocessed message is, which maps directly to an SLO ("billing events processed within 5 minutes").
+
+Alert on time lag above the SLO or on lag that keeps growing over a window, not on a fixed message count, which is meaningless when traffic changes. For RabbitMQ the equivalents are queue depth, `messages_unacknowledged` and consumer count per queue.
+
+Dashboard lag next to the consume rate, processing time and rebalance count, so the cause is visible.
+
+**Example:**
+
+```yaml
+# Prometheus (kafka-exporter / kminion style metrics)
+- alert: BillingConsumerFallingBehind
+  expr: max by (consumergroup, partition) (kafka_consumergroup_lag_seconds{consumergroup="billing"}) > 300
+  for: 10m
+- alert: BillingConsumerStuck
+  expr: sum(rate(kafka_consumergroup_current_offset{consumergroup="billing"}[10m])) == 0
+        and sum(kafka_consumergroup_lag{consumergroup="billing"}) > 0
+```
+
+**Why it's a trap:** a "lag > 10,000 messages" alert fires every morning peak and gets muted, while a consumer stuck on one low-traffic partition never reaches the threshold.
+
 ### Failure handling
 
-#### Q22. What is a dead-letter queue, and why does a production system need one?
+#### Q23. What is a dead-letter queue, and why does a production system need one?
+
+> **In plain words:** A DLQ is a "failed messages" box. Bad messages go there so they stop blocking the others and you can inspect them later.
+
 **Answer:** A dead-letter queue (DLQ) is where messages go after they've failed processing beyond
 a configured retry limit, or expired, or were explicitly rejected without requeue — instead of
-being retried forever (blocking the queue behind a message that can never succeed, Q23) or
+being retried forever (blocking the queue behind a message that can never succeed, Q24) or
 silently discarded (losing the event with no trace). It exists so a "poison pill" message doesn't
 stall processing of every message behind it, while still preserving the failed message for
 investigation, manual reprocessing, or alerting, rather than the two bad alternatives of infinite
 retry or silent loss.
 
 **Example:**
+
 ```java
 Map<String, Object> args = new HashMap<>();
 args.put("x-dead-letter-exchange", "dlx");
@@ -559,17 +745,21 @@ channel.queueDeclare("orders-queue", true, false, false, args);
 routing but no consumer or alert watching it is just a slower, quieter version of the exact data
 loss it was built to prevent (S9).
 
-#### Q23. What is a "poison pill" message, and how do you handle one without stalling the whole queue?
+#### Q24. What is a "poison pill" message, and how do you handle one without stalling the whole queue?
+
+> **In plain words:** A poison pill is a message that always fails. Retry a few times, then move it to the DLQ so the queue keeps moving.
+
 **Answer:** A poison pill is a message that can never be successfully processed — malformed data,
 a bug triggered by that specific payload, a reference to an entity that was since deleted — so
 every redelivery attempt fails identically and, without a limit, it retries forever. On RabbitMQ,
 an unlimited requeue-on-nack loop means that message (and, if ordering/prefetch keeps it at the
 front, everything behind it) never makes progress. The fix: configure a maximum delivery/retry
 count (RabbitMQ's `x-death` header tracking, or an application-level retry counter), and once
-exceeded, route the message to a dead-letter queue (Q22) instead of requeueing again — this lets
+exceeded, route the message to a dead-letter queue (Q23) instead of requeueing again — this lets
 processing continue past the poison pill while preserving it for investigation.
 
 **Example:**
+
 ```java
 int deathCount = getXDeathCount(delivery); // reads RabbitMQ's x-death header count
 if (deathCount >= MAX_RETRIES) {
@@ -585,7 +775,10 @@ correct for a transient failure (a downstream timeout) but catastrophic for a po
 without a bounded count it's indistinguishable from an infinite retry loop that never lets the
 queue drain.
 
-#### Q24. How do you design retries with backoff for a Kafka (or RabbitMQ) consumer without blocking the stream?
+#### Q25. How do you design retries with backoff for a Kafka (or RabbitMQ) consumer without blocking the stream?
+
+> **In plain words:** Don't sleep inside the consumer. Send the failed message to a retry topic with a delay (growing each time) so the main flow keeps going.
+
 **Answer:** Retrying *in place* is the simplest option and it is fine for a short, transient
 blip: sleep and retry the same record a few times. But in Kafka a partition is a strict sequence,
 so an in-place retry **blocks everything behind it** — one failing record with a 10-minute backoff
@@ -594,17 +787,18 @@ stalls the whole partition (head-of-line blocking), and long sleeps also risk th
 elsewhere and let the main topic continue: publish it to a chain of *retry topics* with
 increasing delays (`orders-retry-5s`, `orders-retry-1m`, `orders-retry-10m`) whose consumers wait
 until the record's timestamp plus the delay, and after the final attempt send it to a
-dead-letter topic (Q22). RabbitMQ does the same with a per-queue TTL and a dead-letter exchange
+dead-letter topic (Q23). RabbitMQ does the same with a per-queue TTL and a dead-letter exchange
 that routes expired messages back to the work exchange (a delay queue) — or the delayed-message
 plugin. The costs: **ordering is no longer preserved** for the retried record (later messages for
 the same key overtake it), so it is only acceptable when handlers are order-independent or
 version-checked; there are more topics/queues to operate; and headers need an attempt counter.
 Whichever mechanism, the policy matters more than the plumbing: retry only **transient** errors
-(timeouts, 503s) and send **permanent** ones (validation failure, poison pill, Q23) straight to the
+(timeouts, 503s) and send **permanent** ones (validation failure, poison pill, Q24) straight to the
 DLT; use **exponential backoff with jitter** so many consumers don't retry in lockstep (S17);
 cap attempts; and keep handlers idempotent (Q13) since every retry is a potential duplicate.
 
 **Example:**
+
 ```java
 @RetryableTopic(
     attempts = "4",
@@ -624,7 +818,10 @@ that turns a small outage into a large one.
 
 ### Patterns & schemas
 
-#### Q25. Saga pattern — orchestration vs choreography — what's the actual difference and trade-off?
+#### Q26. Saga pattern — orchestration vs choreography — what's the actual difference and trade-off?
+
+> **In plain words:** A saga splits a big transaction into small local steps with undo actions. Orchestration: one coordinator. Choreography: services react to events.
+
 **Answer:** Both handle a distributed transaction across services without a two-phase-commit
 (which doesn't scale across independently-owned services) by breaking it into a sequence of
 local transactions, each with a corresponding compensating transaction to undo it if a later step
@@ -640,6 +837,7 @@ logic for the whole saga. Orchestration tends to win as the number of steps and 
 visibility grows; choreography tends to win for simpler, more loosely-coupled flows.
 
 **Example:**
+
 ```java
 // Orchestration: one place makes every decision and knows the whole flow.
 try {
@@ -660,7 +858,10 @@ ignores that decoupling has a real cost — debuggability — a senior answer pi
 complexity and the team's actual need for centralized visibility, not decoupling as an
 unconditional virtue.
 
-#### Q26. What is the outbox pattern, and what problem does it solve?
+#### Q27. What is the outbox pattern, and what problem does it solve?
+
+> **In plain words:** The outbox saves the event in the same database transaction as the data, then a separate process publishes it. This avoids "saved but not sent".
+
 **Answer:** The problem: a service that needs to both write to its own database *and* publish an
 event about that write (e.g. save an order, then publish `OrderCreated`) can't do both atomically
 as two separate operations — a crash between the DB commit and the message publish leaves the
@@ -675,6 +876,7 @@ effectively-exactly-once event publication tied to the business write, at the co
 publish delay and the extra outbox table/relay infrastructure.
 
 **Example:**
+
 ```sql
 BEGIN;
 INSERT INTO orders (id, status) VALUES ('123', 'created');
@@ -691,7 +893,10 @@ to the database second (or vice versa) with a try/catch around whichever call co
 moves *which direction* the failure can happen in — it doesn't remove the fundamental
 non-atomicity; only writing both inside one database transaction actually closes the gap.
 
-#### Q27. Why does schema evolution matter for messages, and what tools address it?
+#### Q28. Why does schema evolution matter for messages, and what tools address it?
+
+> **In plain words:** Producers and consumers deploy separately, so message formats must change without breaking old readers. Use a schema registry and compatible changes.
+
 **Answer:** A producer and its consumers are independently deployed services — a producer adding
 a required field, renaming a field, or changing a type can silently break every consumer that
 deserializes the message the old way, and unlike a synchronous API where a client would get an
@@ -706,6 +911,7 @@ without a transition period). Even without a formal schema registry, the discipl
 worth applying manually with plain JSON.
 
 **Example:**
+
 ```json
 // Backward-compatible: new field is optional with a default — old consumers reading new
 // messages simply don't see it; new consumers reading old messages get the default.
@@ -724,7 +930,10 @@ version of this that doesn't eventually rely on someone remembering a Slack mess
 
 ### Delivery guarantees
 
-#### Q28. Design an exactly-once-processing payment consumer on Kafka. Walk through the full approach.
+#### Q29. Design an exactly-once-processing payment consumer on Kafka. Walk through the full approach.
+
+> **In plain words:** Treat the payment as at-least-once, then make the charge idempotent with a unique payment ID so a replay does nothing.
+
 Start from the premise that "exactly-once" for the actual side effect (charging a card, crediting
 a balance) has to be engineered at the application layer, not assumed from the broker (Q6/Q13).
 Concretely: the consumer reads a payment-request message, and within a single database
@@ -740,9 +949,26 @@ processing of the business side effect, built from an at-least-once delivery gua
 idempotent, transactionally-safe consumer — which is the general pattern, not something specific
 to payments.
 
+**Example:**
+
+```java
+@KafkaListener(topics = "payments", groupId = "ledger")   // enable.auto.commit=false
+@Transactional
+void on(ConsumerRecord<String, PaymentRequest> rec, Acknowledgment ack) {
+    if (processedRepo.existsById(rec.value().paymentId())) { ack.acknowledge(); return; }  // replay: no-op
+    ledger.debit(rec.value().account(), rec.value().amount());
+    processedRepo.save(new Processed(rec.value().paymentId()));   // PK = idempotency key
+}   // 1) DB commit  2) then offset commit: crash in between -> redelivery -> caught by the check
+```
+
+*See also:* [System Design Q41](system-design.md) for the HTTP side: idempotency keys and client timeouts.
+
 ### Workflows & event design
 
-#### Q29. Design a saga for order → payment → inventory reservation → shipping. Choose orchestration or choreography and explain the compensations.
+#### Q30. Design a saga for order → payment → inventory reservation → shipping. Choose orchestration or choreography and explain the compensations.
+
+> **In plain words:** Choose orchestration for a clear linear flow: one coordinator calls each step and runs the undo steps (compensations) in reverse if one fails.
+
 Orchestration is the stronger fit here specifically because the flow has a clear linear
 dependency chain and failure at any step has a well-defined, specific undo — exactly the case
 where a central coordinator's visibility earns its cost. Flow: the orchestrator creates the order
@@ -757,14 +983,26 @@ idempotent (a refund call that times out and gets retried shouldn't refund twice
 pattern doesn't remove the need for idempotency, it just adds a coordination layer on top of
 services that still individually need it (Q13 applies to every step and every compensation).
 
-#### Q30. Compare dual writes, a polling outbox and log-based CDC (Debezium) for publishing events reliably. When do you use which?
+**Example:**
+
+```text
+happy path:  createOrder(PENDING) -> authorizePayment -> reserveStock -> scheduleShipping -> CONFIRMED
+failure:     createOrder -> authorizePayment OK -> reserveStock FAILS (out of stock)
+           -> voidPayment(paymentId)      # idempotent: keyed by paymentId, safe to retry
+           -> order = FAILED               # shipping never called
+```
+
+#### Q31. Compare dual writes, a polling outbox and log-based CDC (Debezium) for publishing events reliably. When do you use which?
+
+> **In plain words:** Dual write can lose data. A polling outbox is simple. Log-based CDC (Debezium) scales best but needs more operations work.
+
 A **dual write** — commit to the database, then publish to the broker in the same method — is
-the anti-pattern the outbox exists to prevent (Q26): a crash or broker outage between the two
+the anti-pattern the outbox exists to prevent (Q27): a crash or broker outage between the two
 steps loses the event or publishes one for a rolled-back write, and no retry logic can tell which
 happened. The **polling outbox** writes the event to an `outbox` table in the business
 transaction and a relay polls unpublished rows: simple, needs no extra infrastructure, and easy
 to reason about; its costs are polling latency and load, concurrency between several relay
-instances (use `FOR UPDATE SKIP LOCKED`, module 3 Q17), keeping ordering per aggregate,
+instances (use `FOR UPDATE SKIP LOCKED`, [Persistence Q27](persistence-sql-postgres.md)), keeping ordering per aggregate,
 deleting published rows, and at-least-once publication (a crash between publish and "mark sent"
 duplicates). **Log-based CDC** — Debezium reading PostgreSQL's WAL via a logical replication
 slot, ideally with the outbox event router — removes polling: events are captured in commit order
@@ -779,7 +1017,23 @@ the polling outbox for modest volume and few services; move to Debezium when pol
 latency becomes the bottleneck, or when many downstream systems need change streams — and never
 publish directly from business code.
 
-#### Q31. Should an event carry the data, or only say something happened? Compare notification events, event-carried state transfer and event sourcing.
+**Example:**
+
+```sql
+-- Polling outbox: written in the SAME transaction as the business change
+begin;
+  insert into orders (id, status) values (123, 'PLACED');
+  insert into outbox (id, aggregate_id, type, payload) values (gen_random_uuid(), 123, 'OrderPlaced', '{"orderId":123}');
+commit;
+-- relay (several instances safe):
+select * from outbox where published_at is null order by id limit 100 for update skip locked;
+-- publish to the broker, then: update outbox set published_at = now() where id = ...
+```
+
+#### Q32. Should an event carry the data, or only say something happened? Compare notification events, event-carried state transfer and event sourcing.
+
+> **In plain words:** Notification: "something happened". State transfer: the event holds the data. Event sourcing: the events are the source of truth.
+
 These three are different contracts, and confusing them is a frequent source of coupling. A
 **notification event** is thin — `{"orderId": 123, "type": "OrderPlaced"}` — and consumers call
 back to the owning service for details. It keeps events small and the owner authoritative, but
@@ -788,21 +1042,33 @@ state than the event described). **Event-carried state transfer** puts the data 
 into the event (or publishes the entity's full new state, ideal for a compacted topic), so
 consumers build their own local read models and never call back: services stay autonomous and fast
 and survive the producer's outage, at the price of larger events, a schema that becomes a public
-contract (Q27), duplicated data that is *eventually* consistent, and the risk of
+contract (Q28), duplicated data that is *eventually* consistent, and the risk of
 leaking fields consumers shouldn't have. **Event sourcing** is a different idea altogether: the
 events *are* the source of truth in the owning service — current state is a fold over the
 append-only log of `OrderPlaced`, `ItemAdded`, `OrderCancelled` — giving a complete audit trail,
 time travel and the ability to rebuild any projection, but demanding real investment in event
 versioning/upcasting, snapshots for long streams, projections and CQRS, and "delete" (GDPR)
 becomes hard because the log is immutable. They are not a ladder you climb: most systems want
-event-carried state transfer between services and ordinary CRUD (plus an outbox, Q26) inside them;
+event-carried state transfer between services and ordinary CRUD (plus an outbox, Q27) inside them;
 notification events fit when payloads are large or sensitive; event sourcing fits domains where
 the history *is* the product (ledgers, bookings, trading). I'd choose per boundary, and
 explicitly name the consistency each consumer can tolerate.
 
+**Example:**
+
+```json
+// Notification (thin): consumers must call back
+{ "type": "OrderPlaced", "orderId": 123 }
+// Event-carried state transfer: self-sufficient, no callback
+{ "type": "OrderPlaced", "orderId": 123, "customerId": 7, "items": [{"sku": "A1", "qty": 2}], "total": 59.90, "version": 4 }
+```
+
 ### Platform decisions
 
-#### Q32. When is migrating from RabbitMQ to Kafka actually justified, and what does that migration cost?
+#### Q33. When is migrating from RabbitMQ to Kafka actually justified, and what does that migration cost?
+
+> **In plain words:** Move to Kafka only if you need replay, huge throughput, or many independent readers. Expect rework, new skills and a migration period.
+
 Justified when the driving need has become one of: replay/reprocessing capability that RabbitMQ
 structurally can't provide (Q9); throughput has outgrown what RabbitMQ's per-message broker
 bookkeeping handles well; or multiple independent consumer groups genuinely need to read the same
@@ -813,18 +1079,29 @@ remains a better architectural fit and a wholesale migration adds real cost for 
 benefit. The migration itself costs more than swapping a client library: consumers built around
 RabbitMQ's ack-and-gone model need to be redesigned around offset management and idempotent
 reprocessing (Q13) as a first-class concern, partition/key design needs to be chosen deliberately
-for ordering needs (Q10), and the operational model (Kafka's own cluster/ZooKeeper-or-KRaft
+for ordering needs (Q10), and the operational model (Kafka's own cluster (KRaft; ZooKeeper was removed in Kafka 4.0)
 management, partition rebalancing) is a genuinely different operational burden — this is a
 multi-quarter architectural change for a system of any real size, not a drop-in replacement, and
 should be scoped and justified as such rather than done because Kafka is the trendier choice.
 
-#### Q33. How would you replicate Kafka data across regions, and what do you have to give up?
+**Example:**
+
+```text
+Rule of thumb: RabbitMQ is enough when ~2k msg/s, tasks are consumed once, no replay
+Move to Kafka when: 3 teams need the same stream at their own pace
+          + replay last 7 days after a bug + 50k msg/s
+Migration step: dual-publish to both for a while, move consumers one by one, then cut RabbitMQ
+```
+
+#### Q34. How would you replicate Kafka data across regions, and what do you have to give up?
+
+> **In plain words:** Copy data between regions with MirrorMaker or similar. You give up strict ordering across regions and accept some delay and duplicates.
+
 Kafka clusters are designed to live inside one region (low-latency links between brokers), so
 cross-region is done by a **replicator** that consumes from cluster A and produces to cluster B:
 MirrorMaker 2 (built on Kafka Connect), Confluent Cluster Linking or equivalents. The main design
 choice is topology. **Active-passive**: region A serves traffic, B holds a copy and takes over on
-disaster — simple to reason about, but replication is *asynchronous*, so the recovery point (RPO,
-module 7 Q21) is whatever hadn't been mirrored yet, and failing over means re-pointing producers
+disaster — simple to reason about, but replication is *asynchronous*, so the recovery point (RPO, [System Design Q31](system-design.md)) is whatever hadn't been mirrored yet, and failing over means re-pointing producers
 and consumers and choosing where consumers resume, since offsets in B are *not* the same numbers
 as in A (MM2 translates committed offsets, imperfectly; the safe assumption is "resume slightly
 earlier and de-duplicate", i.e. idempotent consumers, Q13). **Active-active**: each region
@@ -841,17 +1118,67 @@ default: active-passive with idempotent consumers and a scheduled failover drill
 only when the business genuinely needs local writes in both regions and can define entity
 ownership.
 
+**Example:**
+
+```properties
+# MirrorMaker 2 (connect-mirror-maker.properties) - active-passive
+clusters = us, eu
+us.bootstrap.servers = kafka-us:9092
+eu.bootstrap.servers = kafka-eu:9092
+us->eu.enabled = true
+us->eu.topics = orders.*
+sync.group.offsets.enabled = true     # translate committed offsets (imperfect: resume earlier, dedupe)
+# topic in eu is named us.orders  (origin prefix avoids loops)
+```
+
+#### Q35. When would you use Kafka Streams (or ksqlDB) instead of a plain consumer?
+
+> **In plain words:** A normal consumer is enough for "read, process, save". Use Kafka Streams when you need joins, windows or counts over a stream.
+
+**Answer:** A plain `@KafkaListener` is enough for "consume, call a service, write to a database".
+
+**Kafka Streams** is a library (not a cluster) for **stateful stream processing inside your service**: joins between topics, windowed aggregations (orders per minute per merchant), deduplication and enrichment, with the state kept in local RocksDB stores backed by **changelog topics**, so it survives restarts and moves with partitions.
+
+It provides exactly-once processing from Kafka to Kafka. **ksqlDB** offers the same operations in SQL on a separate server, which suits teams that prefer to write queries rather than code.
+
+The costs: more topics to operate (repartition and changelog topics), state restoration time after rebalances, careful key and partition design (joins need co-partitioned topics), and a new mental model.
+
+Consider Flink for very large state, complex event time or processing outside Kafka.
+
+**Example:**
+
+```java
+builder.stream("payments", Consumed.with(Serdes.String(), paymentSerde))
+       .groupByKey()                                                   // key = merchantId
+       .windowedBy(TimeWindows.ofSizeWithNoGrace(Duration.ofMinutes(1)))
+       .aggregate(() -> 0L, (merchant, p, total) -> total + p.amountCents(), Materialized.with(Serdes.String(), Serdes.Long()))
+       .toStream()
+       .filter((window, total) -> total > 1_000_000)                    // > 10k per minute: fraud check
+       .map((window, total) -> KeyValue.pair(window.key(), new Alert(window.key(), total)))
+       .to("fraud-alerts", Produced.with(Serdes.String(), alertSerde));
+```
+
+**Why it's a trap:** building windowed counts by hand in a consumer with an in-memory map works until the first rebalance or restart, when the state is lost or double counted.
+
 ## 🎯 Real-world scenarios
 
 ### S1. A customer is charged twice for the same order
+
 - **Symptoms:** A payment-processing consumer occasionally processes the same order-placed
   message twice, resulting in a duplicate charge, reported by customers or caught by
   reconciliation.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Check whether the payment consumer is idempotent (Q13/Q14) — the most common root
   cause is a consumer that processes the side effect and *then* commits the offset, but crashes
   or times out in between, causing redelivery that the consumer has no way to recognize as a
   duplicate.
 - **Example:**
+
   ```java
   // The bug pattern this incident traces back to:
   chargeCard(order.customerId(), order.amount()); // completes — the customer is charged
@@ -859,6 +1186,7 @@ ownership.
   // Restart redelivers the same message; chargeCard() runs again with nothing recognizing
   // it as a duplicate.
   ```
+
 - **Resolution:** Add a unique constraint on the payment/order idempotency key at the database
   level, so a duplicate processing attempt is rejected or safely no-ops instead of charging
   again; issue refunds for any customers already double-charged by this gap.
@@ -866,31 +1194,52 @@ ownership.
   external, hard-to-undo side effect (charging money, sending an irreversible notification) — not
   an optional hardening step added after an incident.
 
+</details>
+
 ### S2. Messages pile up in a queue and stop being processed entirely
+
 - **Symptoms:** Queue depth grows steadily; consumers are running and appear healthy, but
   throughput has dropped to zero or near-zero.
-- **Diagnosis:** Check whether the message at the head of the queue is a poison pill (Q23) — a
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Check whether the message at the head of the queue is a poison pill (Q24) — a
   malformed or bug-triggering message that fails every time, and without a retry limit, gets
   redelivered and re-fails in a loop, blocking progress on everything behind it if ordering or
   prefetch keeps it at the front.
 - **Example:**
-  ```
+
+  ```bash
   $ rabbitmqctl list_queues name messages messages_unacknowledged
   orders-queue   48213   1
   ```
+
   A queue depth growing steadily while `messages_unacknowledged` stays pinned at exactly `1` is
   the signature of one message being redelivered and re-failed in a loop, never draining, while
   everything behind it waits.
+
 - **Resolution:** Manually identify and remove/reroute the specific stuck message to unblock the
   queue immediately, then add a maximum retry count with dead-lettering so this can't recur
   silently.
 - **Prevention:** Every consumer needs a bounded retry count and a DLQ target configured from the
   start — "retry forever" should never be the default behavior for message processing.
 
+</details>
+
 ### S3. Kafka consumer lag grows steadily and doesn't recover even during low-traffic periods
+
 - **Symptoms:** The gap between the latest produced offset and the consumer group's committed
   offset keeps widening over days, including during periods when message production volume is
   normal or even low.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** This means processing throughput is structurally below production rate, not a
   temporary spike — check whether the consumer count matches the partition count (more
   consumers can't help if partitions are the bottleneck, Q11), whether each message's processing
@@ -898,15 +1247,18 @@ ownership.
   rebalance loop (Q19, possibly from consumers frequently restarting) is repeatedly interrupting
   progress.
 - **Example:**
-  ```
+
+  ```bash
   $ kafka-consumer-groups.sh --describe --group billing-group --bootstrap-server broker:9092
   TOPIC   PARTITION  LAG
   orders  0          182004
   orders  1          179664
   ```
+
   Lag climbing steadily across *every* partition, not just one, points at a structural
   throughput deficit (too few consumers, or a per-message latency regression) rather than a
   transient blip localized to one partition.
+
 - **Resolution:** Scale consumers up to the partition count if under-provisioned, profile and fix
   the per-message processing time if that's the actual bottleneck, or increase partition count
   (accepting Q11's key-mapping discontinuity) if the topic itself is under-partitioned for the
@@ -914,18 +1266,29 @@ ownership.
 - **Prevention:** Alert on consumer lag trend (not just an absolute threshold) so a structural
   slowdown is caught while it's still a minor gap, not after days of unprocessed backlog.
 
+</details>
+
 ### S4. RabbitMQ starts blocking all publishers across the broker
+
 - **Symptoms:** Publishing suddenly fails or hangs across seemingly unrelated queues, not just
   the one that was actually backing up.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Check for a memory or disk alarm — RabbitMQ's flow control blocks *all*
   publishers broker-wide once configured memory or disk thresholds are exceeded, as a protective
   measure against running out of resources entirely; a single queue backing up because its
   consumers stalled can be the actual root cause even though the symptom looks broker-wide.
 - **Example:**
-  ```
+
+  ```text
   2024-03-11 09:41:02 [warning] <0.612.0> vm_memory_high_watermark set. Memory used: 6.42GB Limit: 6.40GB
   2024-03-11 09:41:02 [warning] <0.612.0> Blocking all publishers until this alarm clears...
   ```
+
 - **Resolution:** Identify and fix the actual stalled consumer(s) causing the backing-up queue,
   free up disk/memory, and once below the alarm threshold, publishing resumes automatically —
   but scaling consumers or adding queue length limits (with dead-lettering) prevents the same
@@ -934,19 +1297,30 @@ ownership.
   degrades gracefully (rejecting/dead-lettering new messages) instead of exhausting broker-wide
   resources and taking down every publisher.
 
+</details>
+
 ### S5. A "cancel order" event is processed before the corresponding "create order" event, leaving the order active
+
 - **Symptoms:** An order that was created and immediately cancelled ends up active (create
   processed after cancel) instead of cancelled, intermittently, for a small fraction of orders.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Check the partition/routing key used for these events (Q10) — if create and
   cancel events for the same order aren't guaranteed to land in the same partition (Kafka) or be
   processed by the same single consumer (RabbitMQ), there's no ordering guarantee between them at
   all, and under load they can be processed out of order.
 - **Example:**
+
   ```java
   // Unkeyed publish -> round-robin across partitions -> no ordering guarantee at all.
   producer.send(new ProducerRecord<>("orders", null, createdEvent));
   producer.send(new ProducerRecord<>("orders", null, cancelledEvent));
   ```
+
 - **Resolution:** Key both events on the order ID so they're guaranteed to land in the same
   Kafka partition (processed in send order by a single consumer within that partition), or route
   both to the same RabbitMQ queue with single-consumer processing for that entity; add a
@@ -956,22 +1330,34 @@ ownership.
   start for any event stream where sequence matters, and add state-machine guards in consumers as
   standard practice rather than assuming delivery order is guaranteed.
 
+</details>
+
 ### S6. Consumers repeatedly process the same batch of messages during a period of frequent restarts
+
 - **Symptoms:** Duplicate processing correlates specifically with deployment windows or a flapping
   consumer instance (crash-looping, or an aggressive autoscaler repeatedly adding/removing
   instances).
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Each consumer join/leave triggers a Kafka rebalance (Q19); if consumers are
   restarting frequently, rebalances happen frequently, and any in-flight, not-yet-committed batch
   gets reprocessed by whichever consumer picks up that partition next — a "rebalance storm" from
   flapping instances multiplies the duplicate-processing rate far above the normal baseline.
 - **Example:**
-  ```
+
+  ```text
   2024-03-11 10:02:01 INFO [ConsumerCoordinator] Group billing-group rebalancing, member consumer-3 joined
   2024-03-11 10:02:47 INFO [ConsumerCoordinator] Group billing-group rebalancing, member consumer-3 left
   2024-03-11 10:03:12 INFO [ConsumerCoordinator] Group billing-group rebalancing, member consumer-3 joined
   ```
+
   `consumer-3` flapping every 30–60 seconds — each join/leave triggers a fresh rebalance that
   reprocesses whatever that partition's last uncommitted batch was.
+
 - **Resolution:** Fix the underlying flapping (a crash-looping bug, or an autoscaler configured
   too aggressively for this workload), and separately, ensure consumer shutdown is graceful
   (commit offsets and leave the group cleanly on `SIGTERM` rather than being killed mid-batch)
@@ -980,66 +1366,101 @@ ownership.
   — but tuning session/heartbeat timeouts appropriately and fixing flapping instances directly
   reduces how often that safety net actually gets exercised.
 
+</details>
+
 ### S7. A record shows as saved in the database, but the corresponding downstream service never received the event about it
+
 - **Symptoms:** An order exists in the database, but the shipping service never got the
   `OrderCreated` event and has no record of needing to ship it — discovered only when a customer
   asks where their order is.
-- **Diagnosis:** Classic dual-write inconsistency (Q26) — the service committed the database
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Classic dual-write inconsistency (Q27) — the service committed the database
   write and crashed (or the publish call itself failed) before successfully publishing the event,
   and because the DB write and the message publish weren't atomic, one succeeded without the
   other.
 - **Example:**
+
   ```java
   orderRepository.save(order);                      // commits — the order exists in the DB
   eventPublisher.publish(orderCreatedEvent(order));  // times out here — never actually sent
   // No transaction spans both calls; a failure between them is invisible until a customer
   // notices the order was never shipped.
   ```
+
 - **Resolution:** Immediate mitigation is manually identifying and republishing events for the
   affected records (a reconciliation script comparing "orders in DB" against "events observed
-  downstream"). The structural fix is the outbox pattern (Q26) — write the event to an outbox
+  downstream"). The structural fix is the outbox pattern (Q27) — write the event to an outbox
   table in the same transaction as the business write, and have a separate relay process publish
   from the outbox, guaranteeing the two can't diverge.
 - **Prevention:** Treat "how does the event reliably get published" as a required design question
   for any write that must trigger a downstream event, the same way transaction boundaries are a
   required question for any multi-step database write.
 
+</details>
+
 ### S8. Consumers start throwing deserialization errors right after a producer deploys a change
+
 - **Symptoms:** Multiple consumers of a topic begin failing (or silently misparsing) messages
   immediately following an unrelated-looking producer deployment.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** The producer changed the message schema in a backward-incompatible way — removed
   a field a consumer required, changed a field's type, or renamed something — without any
   compatibility check catching it before publish, since no schema registry (or equivalent
-  discipline) was enforcing compatibility rules (Q27).
+  discipline) was enforcing compatibility rules (Q28).
 - **Example:**
-  ```
+
+  ```text
   org.apache.avro.AvroTypeException: Found orders, expecting orders,
       missing required field customerId
   	at org.apache.avro.io.parsing.Symbol$...
   ```
+
   The producer's last deploy removed `customerId` from the schema with no default — every
   consumer still expecting it fails on the very next message it reads.
+
 - **Resolution:** Roll back the producer's schema change if possible, or ship a compatible fix
   (restore the field, or update every consumer simultaneously if the change genuinely can't be
   backward-compatible — coordinated carefully since consumers deploy independently).
-- **Prevention:** Adopt a schema registry with enforced compatibility mode (Q27) so an
+- **Prevention:** Adopt a schema registry with enforced compatibility mode (Q28) so an
   incompatible change is rejected at publish time in CI/staging, not discovered by consumers
   failing in production.
 
+</details>
+
 ### S9. A dead-letter queue is discovered, weeks later, to contain thousands of unprocessed business events
+
 - **Symptoms:** An audit or unrelated investigation turns up a DLQ that's been silently
   accumulating failed messages for weeks — representing real business events (orders, payments)
   that were never actually completed.
-- **Diagnosis:** A DLQ was correctly configured to catch failures (Q22, Q23), but no alerting was
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** A DLQ was correctly configured to catch failures (Q23, Q24), but no alerting was
   ever set up on it — messages landing there succeeded at the narrow goal of "don't block the
   main queue" but the broader goal of "someone finds out and fixes it" was never wired up.
 - **Example:**
-  ```
+
+  ```bash
   $ rabbitmqctl list_queues name messages
   orders-dlq   14382
   ```
+
   14,382 messages accumulated with zero alerting configured on this queue's depth — each one
   represents a business event that never actually completed.
+
 - **Resolution:** Triage the DLQ contents — for each message, determine whether it can be safely
   reprocessed now (transient failure since resolved) or needs manual business-side reconciliation
   (permanently invalid, needs a human decision on what should have happened).
@@ -1047,23 +1468,35 @@ ownership.
   slower-motion silent failure — alerting on any DLQ message arriving (or on depth exceeding a
   small threshold) needs to ship alongside the DLQ itself, not as a follow-up task that slips.
 
+</details>
+
 ### S10. One consumer instance processes most of the messages while others sit mostly idle
+
 - **Symptoms:** Uneven load across a RabbitMQ consumer pool — monitoring shows one or two
   consumers consistently far busier than the rest, despite all consumers being identically
   configured and capable.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Check the prefetch count (Q18) — a high or unbounded prefetch lets the broker
   push a large batch to whichever consumer happens to ask first, and if that consumer is even
   marginally faster to acknowledge, it keeps getting handed more work in a feedback loop, while
   slower consumers wait idle for their turn.
 - **Example:**
-  ```
+
+  ```text
   consumer-a: 8420 messages processed
   consumer-b: 412 messages processed
   consumer-c: 390 messages processed
   ```
+
   `consumer-a` is only marginally faster to ack, but with prefetch unbounded the broker keeps
   handing it the next batch before `b`/`c` ever get a look — a feedback loop, not a meaningful
   difference in consumer capability.
+
 - **Resolution:** Lower the prefetch count (commonly to 1, or a small number matched to actual
   per-consumer concurrent-processing capacity) so the broker distributes messages more evenly as
   each consumer finishes and acks, rather than front-loading one consumer with a large batch.
@@ -1071,14 +1504,24 @@ ownership.
   rather than leaving it unbounded — unbounded prefetch is rarely actually the right throughput
   optimization it appears to be.
 
+</details>
+
 ### S11. A Kafka topic can't scale consumer throughput no matter how many consumer instances are added
+
 - **Symptoms:** Adding more instances to a consumer group has no effect on total throughput past
   a certain point, even though each instance has spare capacity.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Partition count (Q11) is the hard ceiling on parallelism within a consumer group
   — if the topic has, say, 4 partitions, a 5th consumer in the group simply sits idle with no
   partition assigned, no matter how much capacity it has.
 - **Example:**
-  ```
+
+  ```bash
   $ kafka-consumer-groups.sh --describe --group orders-group --bootstrap-server broker:9092
   CONSUMER-ID   PARTITION
   consumer-1    0
@@ -1087,6 +1530,7 @@ ownership.
   consumer-4    3
   consumer-5    -           <- no partition assigned, sitting idle
   ```
+
 - **Resolution:** Increase the topic's partition count to match the actual required parallelism
   (accepting the key-mapping discontinuity from Q11 for any ordering-dependent keys), then scale
   consumers up to match.
@@ -1094,14 +1538,24 @@ ownership.
   increasing it later is disruptive to per-key ordering, and decreasing it isn't possible at all
   without recreating the topic.
 
+</details>
+
 ### S12. A saga gets stuck halfway through, with some services having completed their step and others not
+
 - **Symptoms:** An order-payment-inventory-shipping saga fails at the inventory step, the
   orchestrator triggers a payment refund compensation, but the refund call itself times out or
   fails — the saga is now in an ambiguous state: was the payment refunded or not?
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** The compensating transaction itself failed, which the original saga design
   didn't fully account for — compensations were treated as "always succeed" rather than needing
   the same reliability (retry, idempotency) as the forward steps.
 - **Example:**
+
   ```java
   // Stable version's saga step expects:
   record ReserveRequest(String orderId, int quantity) {}
@@ -1110,28 +1564,40 @@ ownership.
   record ReserveRequest(String orderId, int quantity, String warehouseId) {}
   // A compensation call built against the old contract fails against the new one mid-saga.
   ```
+
 - **Resolution:** Retry the failed compensation with the same idempotency guarantees a forward
-  step would need (Q29's point that compensations aren't exempt from Q13); if retries are
+  step would need (Q30's point that compensations aren't exempt from Q13); if retries are
   genuinely exhausted, the saga needs an explicit "stuck, needs manual intervention" state with
   alerting, rather than silently appearing complete or silently disappearing.
 - **Prevention:** Design every compensating transaction with the same rigor as forward
   transactions from the start — idempotent, retryable, and with an explicit terminal failure
   state that pages a human rather than looping forever or failing silently.
 
+</details>
+
 ### S13. Users receive the same notification email multiple times for a single event
+
 - **Symptoms:** A "your order has shipped" email (or similar transactional notification) is sent
   two or three times to the same user for the same shipment.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** The notification consumer isn't idempotent (Q13) — under normal at-least-once
   delivery (a rebalance, a retry after a transient failure right after the email was sent but
   before the offset committed), the same message is redelivered and the "send email" side effect
   simply re-executes, since sending an email has no natural idempotency the way a database
   `UPDATE` does.
 - **Example:**
+
   ```java
   if (notificationLog.exists(shipmentId)) return; // already sent — treat as a no-op
   sendShippedEmail(user, shipmentId);
   notificationLog.recordSent(shipmentId); // ideally written in the same transaction as the check
   ```
+
 - **Resolution:** Add an idempotency check specific to this side effect — record "notification
   sent for shipment X" in a table with a unique constraint on the shipment/event ID, checked (and
   inserted, in the same transaction as calling the email provider, or at least before it) before
@@ -1141,10 +1607,19 @@ ownership.
   explicit dedup record — don't assume "the message system handles duplicates," since it usually
   guarantees the opposite (at-least-once, not exactly-once for external side effects).
 
+</details>
+
 ### S14. During a broker outage, some services silently lose messages while others hang entirely
+
 - **Symptoms:** A brief broker outage causes very different behavior across services — some
   producers' publish calls hang until timeout, others appear to succeed but the message never
   actually arrives once the broker recovers.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Check each producer's acknowledgment configuration — a producer with no wait for
   acknowledgment (RabbitMQ without publisher confirms, or Kafka's `acks=0`) considers the publish
   "done" the instant it's sent over the socket, with no confirmation the broker actually received
@@ -1152,10 +1627,12 @@ ownership.
   producer none the wiser; a producer configured to wait for full acknowledgment blocks/retries
   until it gets one, which is why it hangs instead.
 - **Example:**
+
   ```java
   props.put("acks", "0");   // fire-and-forget — the call returns before the broker even replies
   props.put("acks", "all"); // waits for full replication acknowledgment — blocks/retries instead
   ```
+
 - **Resolution:** Standardize on an acknowledgment level appropriate to the message's importance
   — `acks=all`/publisher confirms with a bounded retry-then-fail (not indefinite hang) for
   anything that can't be silently lost, giving the producer a clear signal it needs to
@@ -1166,15 +1643,25 @@ ownership.
   bounded timeout with an explicit fallback for any producer that would otherwise hang
   indefinitely during a broker outage.
 
+</details>
+
 ### S15. A batch of events is discovered to have simply vanished, with no error anywhere
+
 - **Symptoms:** A gap in expected downstream data corresponds to a period where the responsible
   consumer was down (a deployment, an incident) for longer than usual — and once it came back up,
   those specific messages were never processed, with no error logged anywhere.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Check message TTL configuration (Q9, RabbitMQ) — if the consumer was down
   longer than the configured TTL, the messages expired and were either silently dropped or routed
   to a DLQ that also wasn't being monitored (S9) before anyone noticed; this is functionally
   silent data loss even though the broker "worked correctly" according to its own configuration.
 - **Example:**
+
   ```java
   Map<String, Object> args = new HashMap<>();
   args.put("x-message-ttl", 1_800_000); // 30 minutes
@@ -1182,6 +1669,7 @@ ownership.
   // simply dropped by the broker, with nothing left to reprocess afterward.
   channel.queueDeclare("shipments-queue", true, false, false, args);
   ```
+
 - **Resolution:** If a DLQ captured the expired messages, reprocess them from there; if TTL was
   configured with no dead-lettering fallback at all, the messages are genuinely unrecoverable and
   need business-side reconciliation for the gap.
@@ -1190,16 +1678,26 @@ ownership.
   itself should be set with realistic worst-case consumer downtime in mind, not just
   happy-path expectations.
 
+</details>
+
 ### S16. Increasing a topic's partition count to improve throughput breaks a downstream consumer's assumptions
+
 - **Symptoms:** Shortly after a topic's partition count is increased to help with a lag problem
   (S11's fix), a different downstream consumer starts exhibiting the ordering-violation symptom
   from S5, for keys that previously never had ordering issues.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Increasing partition count (Q11) changes the key → partition hash mapping going
   forward — a key that consistently landed in partition 3 before now lands in a different
   partition for new messages, while older messages for that same key remain in partition 3's
   history; a consumer relying on "all messages for this key have always been in the same
   partition, so I can safely track per-partition state" breaks the moment repartitioning happens.
 - **Example:**
+
   ```java
   // Fragile: assumes a key's entire history lives in one partition forever.
   Map<Integer, State> statePerPartition = new HashMap<>();
@@ -1209,6 +1707,7 @@ ownership.
   // After repartitioning, a key that used to always hash to partition 3 now hashes to
   // partition 9 for new messages — this map now splits one logical entity's state in two.
   ```
+
 - **Resolution:** For the specific consumer relying on this assumption, it needs to be redesigned
   to not depend on a stable key-to-partition mapping across the topic's lifetime (track state by
   key across all partitions it might appear in, not by partition), since this is often not
@@ -1218,19 +1717,29 @@ ownership.
   requiring an explicit audit of every consumer's ordering assumptions, not just a throughput
   lever to pull freely.
 
+</details>
+
 ### S17. A short downstream blip turns into a 40-minute outage because every consumer retries at once
+
 - **Symptoms:** A payment provider returns `503`s for ~30 seconds. The order-processing
   consumers stay red for 40 minutes: consumer lag climbs to millions, the provider's own
   status page shows recovery, yet it keeps rate-limiting us (`429`), and error logs show the
   same records failing repeatedly at high speed.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Compare request rate to the provider *during* the incident with normal: it is
   5–10x higher. The consumers retry instantly and unconditionally (a tight `retry` loop, or a
   broker that requeues on `nack` immediately), so every failure multiplies traffic exactly when
   the dependency is weakest, and when it recovers it is immediately flattened by the backlog plus
   the retries — a **retry storm**. Because all instances failed at the same instant, their retry
   attempts are synchronized as well. Check for: no backoff, no jitter, no attempt cap, requeue
-  with `requeue=true` on every failure, and no circuit breaker (Q30 of module 2).
+  with `requeue=true` on every failure, and no circuit breaker ([Spring Q35](spring-architecture.md)).
 - **Example:**
+
   ```java
   @RabbitListener(queues = "payments")
   void handle(Payment p) {
@@ -1240,9 +1749,10 @@ ownership.
   // but the container config had:  spring.rabbitmq.listener.simple.default-requeue-rejected=true
   //   -> the message goes straight back to the head of the queue and fails again in microseconds
   ```
+
 - **Resolution:** Stop the bleeding: pause the consumers (or scale them to zero) until the provider
   is healthy, then resume gradually. Root fix: retries with **exponential backoff and jitter**
-  and a bounded attempt count (Q24), a **circuit breaker** that pauses consumption while the
+  and a bounded attempt count (Q25), a **circuit breaker** that pauses consumption while the
   dependency is open (`KafkaListenerEndpointRegistry.pause()`, or Resilience4j), dead-lettering after
   the last attempt, and a rate limit on outbound calls. Verify with a chaos test: make the stub
   return `503` for 30 s and assert that outbound request rate stays below a cap, and that lag
@@ -1251,12 +1761,23 @@ ownership.
   per-listener ad hoc loops; circuit breaker plus bulkhead per dependency; dashboards for retry
   count and outbound rate; game-day exercises that inject dependency failures.
 
+*See also:* [System Design S14](system-design.md) for the same failure mode across synchronous services.
+
+</details>
+
 ### S18. A consumer group keeps rebalancing, lag climbs, and the same messages are processed again and again
+
 - **Symptoms:** After a release that added a call to an enrichment service, a Kafka consumer
   group shows constant activity but almost no progress: lag rises steadily, logs are full of
   `Member consumer-billing-3 ... has left the group` / `Attempt to heartbeat failed since group is
   rebalancing` and `CommitFailedException: ... the time between subsequent calls to poll() was
   longer than the configured max.poll.interval.ms`. Duplicate side effects appear downstream.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Multiply *records per poll* by *time per record*. The consumer polls up to
   `max.poll.records=500`; the new enrichment call takes ~1 s, so a batch needs ~500 s, above
   the 300 s `max.poll.interval.ms` — the consumer is evicted mid-batch, can't commit, and its
@@ -1264,12 +1785,14 @@ ownership.
   Confirm from broker-side group logs and consumer metrics `time-between-poll-avg/max`, and with
   a thread dump of a consumer showing it inside the remote call.
 - **Example:**
+
   ```java
   @KafkaListener(topics = "invoices", groupId = "billing")
   void onBatch(List<Invoice> batch) {          // up to 500 records per poll
       for (Invoice i : batch) enrichment.lookup(i);   // ~1s each, no timeout -> 500s+
   }
   ```
+
 - **Resolution:** Shrink the batch (`max.poll.records=50`), add a hard timeout to the enrichment
   call, and — if the work is genuinely slow — parallelize it with a bounded worker pool while
   the poll loop keeps calling `poll()` (or `pause()` the partitions) and only commit offsets of
@@ -1281,11 +1804,20 @@ ownership.
   interval; load-test any new synchronous call inside a listener; make every remote call inside a
   consumer have a timeout; keep consumers idempotent because rebalances will still happen.
 
+</details>
+
 ### S19. Replaying the dead-letter queue after a bug fix sends customers duplicate emails and re-charges some of them
+
 - **Symptoms:** A bug had dead-lettered 80,000 `OrderShipped` events over three days. After the
   fix, an engineer "shovels" the whole DLQ back to the main queue. Within minutes, customers get
   duplicate shipping emails, the partner API rate-limits us, and about 300 customers are charged
   twice.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** Inspect the DLQ contents and headers (`x-death` in RabbitMQ, the original topic /
   exception headers in a Kafka DLT). Many messages *were* partially processed before failing (the
   handler charged the card, then crashed on the email step), and the fixed handler isn't
@@ -1293,12 +1825,14 @@ ownership.
   throttling, since 80k messages arrive at once, and some are simply stale (an `OrderShipped` for an
   order cancelled since).
 - **Example:**
+
   ```java
   void handle(OrderShipped e) {
       payments.capture(e.orderId());     // step 1 succeeded on the first attempt...
       mail.sendShipped(e.orderId());     // ...step 2 threw -> message dead-lettered
   }                                      // replay -> step 1 runs again -> double capture
   ```
+
 - **Resolution:** Immediately stop the replay and quantify the damage (query captures by
   `orderId` having count > 1; refund/void the duplicates; apologize to customers where mails
   went out twice). Fix properly before replaying again: make each step idempotent (dedupe by
@@ -1307,15 +1841,24 @@ ownership.
   and verify results; keep the original message ids so idempotency holds.
 - **Prevention:** A DLQ runbook that says "diagnose, fix, make idempotent, replay a canary
   batch, then throttle the rest"; a replay tool with rate limiting and dry-run; alerts on DLQ
-  depth *and* age (Q22, S9); idempotency keys on every side-effecting step — including calls to
+  depth *and* age (Q23, S9); idempotency keys on every side-effecting step — including calls to
   payment providers.
 
+</details>
+
 ### S20. Publishing intermittently fails with `RecordTooLargeException` (or the broker drops the connection) for a few big orders
+
 - **Symptoms:** Most orders flow normally, but a small percentage — those with hundreds of line
   items or an attached PDF — never reach downstream services. Producer logs show
   `org.apache.kafka.common.errors.RecordTooLargeException: The message is 1,347,220 bytes when
   serialized which is larger than 1,048,576` (or RabbitMQ closes the channel on an oversized
   frame). The DB row was saved.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** The failing records are the large ones: compare failure to payload size. Kafka's
   producer `max.request.size` (default 1 MiB) and the broker/topic `message.max.bytes` /
   `max.message.bytes` reject them; the consumer's `fetch.max.bytes`/`max.partition.fetch.bytes`
@@ -1323,26 +1866,37 @@ ownership.
   where consumers need an identifier and a few fields — and that the failure was swallowed
   (fire-and-forget `send()`) so the order existed in the DB with no event (Q16, S7).
 - **Example:**
+
   ```java
   // Event carries the full invoice PDF (base64) plus every line item.
   kafkaTemplate.send("orders", order.id(), new OrderCreated(order.id(), order.pdfBase64(), order.lines()));
   ```
+
 - **Resolution:** Don't raise limits blindly (bigger records inflate memory, replication time and
   rebalance risk). Use the **claim-check pattern**: store the large payload in object storage
   (S3/Blob) or the database and publish a small event holding a reference plus the fields
-  consumers actually need (Q31); compress if the payload is text. Handle the send result — on
+  consumers actually need (Q32); compress if the payload is text. Handle the send result — on
   failure, keep the outbox row and alert instead of dropping it. Verify with a test that publishes
   a 20 MB attachment and asserts that the event stays under ~10 KB and downstream can fetch the
   document.
 - **Prevention:** Set an explicit maximum event size in the contract and validate it in the
   producer wrapper; monitor `record-size-max`; a schema review checklist item "does this
-  event embed blobs?"; make publish failures visible through the outbox (Q26).
+  event embed blobs?"; make publish failures visible through the outbox (Q27).
+
+</details>
 
 ### S21. After a broker crash, orders that the producer confirmed are missing from the topic
+
 - **Symptoms:** A broker in a 3-node Kafka cluster crashed and restarted. Everything recovered,
   but reconciliation shows ~2,000 orders whose `OrderCreated` events the producer logged as
   successfully sent are absent from the topic; downstream systems never saw them. No errors were
   reported at the time.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** "Acknowledged but gone" means the acknowledgement was given before the record
   was replicated. Check producer config: `acks=1`, so the leader confirmed after writing to its
   own log; it then crashed before followers copied those records, and a follower missing them
@@ -1351,11 +1905,13 @@ ownership.
   `unclean.leader.election.enable=true` (Q16). The cluster metrics show a leader election and
   `UnderReplicatedPartitions` at the crash time.
 - **Example:**
+
   ```properties
   # producer                                # topic
   acks=1                                    replication.factor=3
                                             min.insync.replicas=1
   ```
+
 - **Resolution:** Recover data from the source of truth — re-emit the missing events from the
   database/outbox by comparing order ids (which requires idempotent consumers, Q13). Then fix
   the durability settings: `acks=all`, `enable.idempotence=true`, `min.insync.replicas=2`,
@@ -1366,28 +1922,42 @@ ownership.
   provisioning so individual teams don't choose `acks=1` by accident; run broker failure drills
   regularly; add reconciliation between the database and the topic for critical flows.
 
+</details>
+
 ### S22. The PostgreSQL disk fills up and the primary stops accepting writes, days after a CDC connector "just stopped"
+
 - **Symptoms:** A Debezium connector feeding the orders outbox failed one weekend and nobody
   noticed. Days later the database volume alerts at 90%, then 100%: the primary goes read-only or
   crashes, taking the whole platform down. The tables themselves haven't grown; the `pg_wal`
   directory is hundreds of GB.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
 - **Diagnosis:** A logical replication slot forces PostgreSQL to retain all WAL the slot's
   consumer hasn't yet confirmed. With the connector dead, the slot is inactive and its
   `restart_lsn` never advances:
+
   ```sql
   select slot_name, active,
          pg_size_pretty(pg_wal_lsn_diff(pg_current_wal_lsn(), restart_lsn)) as retained_wal
   from pg_replication_slots;
   --  debezium_orders | f | 412 GB
   ```
+
   Then find *why* the connector stopped (Kafka Connect task failed, schema change it couldn't
-  handle, broker unreachable) in the Connect logs (Q30).
+  handle, broker unreachable) in the Connect logs (Q31).
+
 - **Example:**
+
   ```json
   { "name": "orders-outbox", "config": {
       "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
       "slot.name": "debezium_orders", "plugin.name": "pgoutput" } }
   ```
+
 - **Resolution:** Emergency: free disk first, then either restart/fix the connector so it drains
   the slot, or — if recovery is impossible in time — drop the slot
   (`select pg_drop_replication_slot('debezium_orders');`), accepting that the connector needs a new
@@ -1399,32 +1969,126 @@ ownership.
   monitor disk with a forecast, keep a runbook for "connector down > 1 hour", and treat every
   replication slot as a resource with an owner.
 
+</details>
+
+## 🗣️ Reported interview questions
+
+Questions reported from real interviews, grouped by topic. Each has a short model answer: expand it with the detailed questions and scenarios above, and say the answer aloud.
+
+### Kafka consumers
+
+#### R1. A Kafka consumer processes the same message twice. How do you handle it?
+
+**Answer:** Assume at-least-once delivery and make the consumer **idempotent**: dedupe by message/business key (unique constraint or processed-IDs table), use upserts, or the transactional outbox/inbox. Commit offsets only after processing, and keep the dedupe check and the side-effect in one transaction. Reduce duplicates by tuning `max.poll.interval.ms` and avoiding rebalances.
+
+#### R2. One Kafka partition has much higher traffic than others. How do you fix it?
+
+**Answer:** That is a **hot key**/skewed partitioning. Check the key distribution; choose a higher-cardinality key, add a salt/suffix to spread the hot key (losing strict order for that key), use a custom partitioner, or split the hot entity into its own topic. Increasing partitions alone does not help (the same key still hashes to one partition).
+
+#### R3. Consumer lag keeps increasing. How do you investigate?
+
+**Answer:** Compare produce rate to consume rate (`kafka-consumer-groups --describe`, lag per partition). If all partitions lag: consumers are too slow (slow downstream, DB, GC, small batches): profile, batch, scale consumers up to partition count. If one partition lags: hot key or a stuck message. Also check frequent rebalances and a poison message blocking retries.
+
+#### R4. A message fails repeatedly during processing. What should happen next?
+
+**Answer:** Retry a bounded number of times with backoff (in-memory or via retry topics), then route to a **dead-letter topic** with the error and metadata so the partition is not blocked. Alert on DLQ depth, and keep a tool to replay after the fix (the consumer must be idempotent). Distinguish transient errors (retry) from poison messages (DLQ immediately).
+
+#### R5. How do you guarantee message ordering for a customer?
+
+**Answer:** Kafka orders only **within a partition**: use the customer ID as the key so all its events go to one partition, with one consumer per partition. Producer: `enable.idempotence=true` and `max.in.flight.requests.per.connection ≤ 5` (or `acks=all`) to keep order on retries. Do not change the partition count casually, and avoid parallel processing inside a partition unless you re-order by key.
+
+#### R6. How would Kafka partitions help with ordering?
+
+**Answer:** Same key → same partition → strict order for that key; different keys are processed in parallel across partitions. So ordering per account and throughput scale together. Global ordering would need one partition, which gives up scaling.
+
+#### R7. How would you process 100,000 messages per second in Kafka?
+
+**Answer:** Partition enough (target ≈ 10–20 MB/s per partition, and ≥ number of consumers), batch on the producer (`linger.ms`, `batch.size`, compression `lz4`/`zstd`), `acks=all` with replication 3, consumers sized to partitions with batch processing and `max.poll.records`, avoid per-message sync I/O, and monitor lag. Load-test to find the real bottleneck, often the downstream DB.
+
+### Microservice communication
+
+#### R8. How do microservices communicate with each other?
+
+**Answer:** **Synchronous**: REST/gRPC for queries and commands that need an immediate answer. **Asynchronous**: events/messages (Kafka, RabbitMQ) for decoupling, fan-out and resilience. Combine with timeouts, retries, circuit breakers, idempotency and service discovery/gateway.
+
+#### R9. When would you use REST vs Kafka? (and gRPC?)
+
+**Answer:** REST: simple request/response, public APIs, ubiquitous tooling. gRPC: internal low-latency, strongly typed, streaming. Kafka: decoupled, high-throughput, replayable events where the caller does not need the answer now and consumers must survive downtime. Rule of thumb: query → sync; state change others react to → event.
+
+## 🎤 Oral quiz
+
+Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.
+
+1. Q1. Why use a message broker instead of a direct synchronous call between services?
+2. Q4. Describe RabbitMQ's core model: exchange, queue, binding, routing key.
+3. Q7. What do acknowledgements do in a message broker, and what happens to a message whose consumer crashes before acknowledging?
+4. Q8. What's the core architectural difference between RabbitMQ and Kafka, and how does it drive when you'd pick each?
+5. Q18. How do RabbitMQ acknowledgments and prefetch count interact, and why does prefetch matter?
+6. Q28. Why does schema evolution matter for messages, and what tools address it?
+7. Q29. Design an exactly-once-processing payment consumer on Kafka. Walk through the full approach.
+8. Q34. How would you replicate Kafka data across regions, and what do you have to give up?
+9. S1. A customer is charged twice for the same order
+10. S22. The PostgreSQL disk fills up and the primary stops accepting writes, days after a CDC connector "just stopped"
+
 ## 📌 Cheat-sheet
 
-- **RabbitMQ** = smart broker (routing, per-message delivery tracking), consumed message is gone. **Kafka** = dumb broker (append-only log, retains regardless of consumption), enables replay.
-- **Delivery semantics**: at-most-once (fire-and-forget, can lose) vs at-least-once (default in practice, can duplicate) vs exactly-once (broker-internal only — app side effects still need idempotency).
-- **Idempotency strategies**: unique constraint on a business key (strongest — atomic, no check-then-insert race), processed-message log, or naturally idempotent operations (`SET x = y`, not `x += 1`).
-- **Kafka ordering** = per-partition only; key choice determines which entities share ordering guarantees.
-- **RabbitMQ ordering** = per-queue with a single consumer only; multiple consumers on one queue breaks it.
-- **DLQ** = required for any consumer with a bounded retry count; a DLQ with no alerting is silent data loss, not a safety net.
-- **Kafka rebalance** = triggered by join/leave/partition change; causes reprocessing of uncommitted batches → idempotency is not optional.
-- **Offset commit**: manual, after successful processing, for at-least-once correctness; auto-commit risks silent loss.
-- **Prefetch (RabbitMQ)**: low = fair distribution, safer on crash; unbounded = throughput but uneven load and big requeue spikes on crash.
-- **Saga**: orchestration (central, visible, easy to reason about) vs choreography (decoupled, harder to trace) — compensations need the same idempotency/retry rigor as forward steps.
-- **Outbox pattern**: write event + business data in one DB transaction; a relay process publishes from the outbox — solves the dual-write problem.
-- **Poison pill**: bounded retry count + DLQ, never unlimited requeue.
-- **Schema evolution**: schema registry (Avro/Protobuf) enforces backward compatibility at publish time; additive-optional-field-with-default is always safe.
-- **Kafka partition count**: ceiling on parallelism, can increase (breaks key→partition mapping for new messages) but never decrease.
-- **Publisher confirms / Kafka acks**: confirm producer→broker persistence only — never end-to-end processing guarantee.
-- **Dual-write problem**: DB write + message publish is never atomic across two systems by default — outbox pattern is the standard fix.
-</content>
-- **Queue vs topic**: competing consumers *share* a queue (scale-out); pub/sub gives *each* subscriber its own queue/consumer group — same `group.id` = compete, different `group.id` = fan-out; parallelism ≤ partitions.
-- **Ack semantics**: ack after processing = at-least-once (crash → redelivery); auto-ack = at-most-once; Kafka's equivalent is the committed offset. Requeue-on-failure without a limit is a hot loop.
-- **Kafka durability** = `acks=all` + `min.insync.replicas=2` + RF 3 + `unclean.leader.election.enable=false` + idempotent producer + *check the send result*; `acks=1` loses acknowledged data on leader failure.
-- **`max.poll.interval.ms`**: heartbeats come from a separate thread, so a slow processing loop gets evicted while "healthy" → rebalance loop; shrink `max.poll.records`, timeout downstream calls, cooperative assignor, static membership.
-- **Retries**: in-place retry blocks the partition; use retry topics/TTL+DLX with exponential backoff + jitter, cap attempts, retry only transient errors, expect lost ordering, keep handlers idempotent.
-- **Multi-region Kafka**: MM2/cluster linking is async (RPO > 0), offsets differ across clusters, active-active needs entity ownership/conflict rules; stretch cluster = zero RPO at latency cost.
-- **Event content**: notification (thin, call back) vs event-carried state (fat, autonomous consumers, schema = contract) vs event sourcing (log is the truth, needs versioning/snapshots).
-- **Publishing reliably**: never dual-write; polling outbox (simple, `SKIP LOCKED`) → Debezium CDC (low latency, but replication slots can fill the disk — cap with `max_slot_wal_keep_size`, alert on lag).
-- **DLQ replay is a deploy**: fix, make idempotent, replay a canary batch, then throttle; filter stale events.
-- **Big payloads**: claim-check (store blob elsewhere, publish a reference); don't just raise `max.request.size`.
+### Core concepts
+
+> **Start here:** RabbitMQ is a smart broker that forgets consumed messages, Kafka is a log that keeps them; assume messages can arrive twice; ordering is limited.
+
+- **RabbitMQ** — a *smart broker*: it routes messages and tracks delivery per message. *A consumed message is gone.*
+- **Kafka** — a *dumb broker*: an append-only log that retains messages regardless of consumption. *This is what enables replay.*
+- **Queue vs topic** — competing consumers *share* a queue (scale-out). Pub/sub gives *each* subscriber its own queue/consumer group. *In Kafka, same `group.id` = compete, different `group.id` = fan-out (everyone gets every message).*
+- **Parallelism** — in Kafka, consumers in a group ≤ partitions. *Extra consumers sit idle.*
+- **Kafka ordering** — guaranteed per partition only. *The key you choose decides which entities share an ordering guarantee (e.g. key = `orderId`).*
+- **RabbitMQ ordering** — guaranteed per queue with a single consumer only. *Multiple consumers on one queue breaks it.*
+- **Kafka partition count** — the ceiling on parallelism. *Can be increased (this breaks key→partition mapping for new messages) but never decreased.*
+
+### Delivery guarantees and acks
+
+> **Start here:** ack only after processing (at-least-once), so duplicates will happen and your handlers must be idempotent.
+
+- **At-most-once** — fire-and-forget. *Can lose messages.*
+- **At-least-once** — the default in practice. *Can duplicate messages.*
+- **Exactly-once** — only inside the broker. *Your app's side effects (emails, DB writes) still need idempotency.*
+- **Idempotent** — processing the same message twice gives the same result as once.
+- **Idempotency: unique constraint** — put a unique constraint on a business key. *The strongest option: atomic, with no check-then-insert race.*
+- **Idempotency: processed-message log** — record handled message IDs and skip repeats.
+- **Idempotency: naturally idempotent operations** — `SET x = y`, not `x += 1`.
+- **Ack semantics** — ack after processing = at-least-once (a crash causes redelivery). Auto-ack = at-most-once. *Kafka's equivalent of an ack is the committed offset.*
+- **Requeue on failure** — putting a failed message straight back. *Without a limit it becomes a hot loop.*
+- **Offset commit** — Kafka's "I've processed up to here" marker. *Commit manually, after successful processing, for at-least-once; auto-commit risks silent loss.*
+- **Publisher confirms / Kafka `acks`** — the broker's receipt for a published message. *They only confirm producer→broker persistence, never end-to-end processing.*
+- **Prefetch (RabbitMQ)** — how many unacked messages a consumer holds. *Low = fair distribution, safer on crash. Unbounded = throughput, but uneven load and big requeue spikes on crash.*
+
+### Failures, retries and DLQ
+
+> **Start here:** bound your retries, send what still fails to a DLQ, and alert on that DLQ.
+
+- **DLQ** (dead-letter queue, where failed messages are parked) — required for any consumer with a bounded retry count. *A DLQ with no alerting is silent data loss, not a safety net.*
+- **Poison pill** — a message that always fails. *Use a bounded retry count + DLQ, never unlimited requeue.*
+- **Retries** — an in-place retry blocks the partition. *Use retry topics or TTL+DLX (dead-letter exchange) with exponential backoff + jitter (random delay), cap attempts, retry only transient errors, expect lost ordering, keep handlers idempotent.*
+- **DLQ replay is a deploy** — treat it like one. *Fix the bug, make the handler idempotent, replay a canary batch, then throttle; filter stale events.*
+- **Kafka rebalance** — partitions are reassigned when a consumer joins/leaves or partitions change. *Uncommitted batches are reprocessed, so idempotency is not optional.*
+- **`max.poll.interval.ms`** — max time allowed between polls. *Heartbeats come from a separate thread, so a slow processing loop is evicted while "healthy" and causes a rebalance loop.* *(advanced)*
+- **Fixing the rebalance loop** — shrink `max.poll.records`, set timeouts on downstream calls, use the cooperative assignor, use static membership. *(advanced)*
+
+### Reliable publishing and patterns
+
+> **Start here:** never write to the DB and publish a message as two separate steps; use the outbox pattern.
+
+- **Dual-write problem** — a DB write + a message publish is never atomic across two systems. *Crash between them = lost or phantom event.*
+- **Outbox pattern** — write the event and the business data in one DB transaction; a relay process publishes from the outbox table. *The standard fix for dual-write.*
+- **Polling outbox** — the relay periodically reads the table. *Simple; use `SKIP LOCKED` so several relays don't grab the same rows.*
+- **Debezium CDC** (change data capture, reading the DB's log) — low latency. *Replication slots can fill the disk: cap with `max_slot_wal_keep_size` and alert on lag.* *(advanced)*
+- **Saga** — a multi-service workflow made of local steps with compensations (undo steps). *Orchestration = central, visible, easy to reason about. Choreography = decoupled, harder to trace. Compensations need the same idempotency/retry rigor as forward steps.*
+- **Event content** — notification (thin event, consumer calls back), event-carried state (fat event, autonomous consumers, schema = contract), event sourcing (the log is the truth, needs versioning/snapshots).
+- **Big payloads** — claim-check: store the blob elsewhere and publish a reference. *Don't just raise `max.request.size`.*
+
+### Kafka operations and evolution
+
+> **Start here:** for durability use `acks=all` and check the send result; evolve schemas additively.
+
+- **Kafka durability** — `acks=all` + `min.insync.replicas=2` + RF (replication factor) 3 + `unclean.leader.election.enable=false` + idempotent producer + *check the send result*. *`acks=1` loses acknowledged data on leader failure.*
+- **Schema evolution** — a schema registry (Avro/Protobuf) enforces backward compatibility at publish time. *Adding an optional field with a default is always safe.*
+- **Multi-region Kafka** — MM2 (MirrorMaker 2)/cluster linking is async (RPO > 0, i.e. some data can be lost). *Offsets differ across clusters; active-active needs entity ownership/conflict rules; a stretch cluster gives zero RPO at a latency cost.* *(advanced)*

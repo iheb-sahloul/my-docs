@@ -1,10 +1,9 @@
 # Bonnes pratiques Spring Boot
 
-
-
 ## 💉 Injection de dépendances & configuration
 
 ### Utilisez l'injection par constructeur
+
 Injectez les dépendances par le constructeur, dans des champs `final`. N'utilisez pas `@Autowired` sur les champs.
 
 **Pourquoi c'est une bonne pratique :** avec l'injection par champ, la classe ne peut pas être créée sans Spring :
@@ -30,6 +29,7 @@ class OrderService {
 ```
 
 ### Regroupez les paramètres avec `@ConfigurationProperties`
+
 Liez les paramètres associés à une classe typée et validée (un record convient) au lieu de disperser des
 annotations `@Value`.
 
@@ -51,14 +51,11 @@ record PaymentProperties(@NotNull URI url, Duration timeout) {}
 ```
 
 ### Ne commitez jamais de secrets dans `application.yml`
+
 Gardez les mots de passe, clés d'API et tokens hors du dépôt. Lisez-les depuis des variables d'environnement, un
 secret monté, ou un vault.
 
-**Pourquoi c'est une bonne pratique :** tout ce qui est poussé sur Git reste dans son historique pour toujours,
-même après suppression, et est copié dans chaque clone et chaque runner de CI. Les identifiants divulgués sont
-l'une des causes de fuite les plus courantes. Spring Boot résout `${DB_PASSWORD}` depuis l'environnement
-nativement, donc le fichier ne contient que la référence. Utilisez les profils (`application-dev.yml`) pour les
-différences non secrètes entre environnements.
+**Pourquoi :** traité dans [Gardez les secrets hors du code et de Git](security.md#gardez-les-secrets-hors-du-code-et-de-git).
 
 ⛔ `spring.datasource.password: s3cr3t`
 ✅ `spring.datasource.password: ${DB_PASSWORD}`
@@ -66,6 +63,7 @@ différences non secrètes entre environnements.
 ## 🔁 Transactions
 
 ### Placez `@Transactional` sur les méthodes publiques des services
+
 Déclarez les transactions dans la couche service, sur des méthodes publiques appelées depuis un autre bean.
 
 **Pourquoi c'est une bonne pratique :** Spring applique `@Transactional` via un proxy autour du bean. Un appel
@@ -86,6 +84,7 @@ public void importAll(List<Order> orders) { ... }
 ```
 
 ### Gardez les transactions courtes, et marquez les lectures `readOnly`
+
 N'appelez pas de services distants, n'envoyez pas d'emails et n'attendez rien de lent dans une transaction.
 Utilisez `@Transactional(readOnly = true)` pour les requêtes de lecture.
 
@@ -100,6 +99,7 @@ d'orienter vers un réplica.
 ✅ enregistrer dans la transaction, débiter après le commit via `@TransactionalEventListener(phase = AFTER_COMMIT)`
 
 ### Sachez ce qui déclenche un rollback
+
 Par défaut, seules les exceptions unchecked (`RuntimeException`, `Error`) déclenchent un rollback. Utilisez
 `rollbackFor` si vous levez des exceptions checked.
 
@@ -112,6 +112,7 @@ comportement par défaut ne convient pas.
 ✅ `@Transactional(rollbackFor = TransferException.class)`
 
 ### Désactivez Open Session in View
+
 Mettez `spring.jpa.open-in-view: false`.
 
 **Pourquoi c'est une bonne pratique :** l'option est activée par défaut, et garde la session Hibernate (et une
@@ -126,18 +127,16 @@ transaction. Sous charge, les connexions restent occupées pendant le rendu de l
 ## 🌐 API REST
 
 ### Renvoyez des DTO, pas des entités
+
 Convertissez les entités en DTO de requête / réponse (records) à la frontière du contrôleur.
 
-**Pourquoi c'est une bonne pratique :** sérialiser une entité JPA expose tous ses champs, y compris ceux que vous
-ne vouliez pas publier (hash de mot de passe, flags internes), déclenche du lazy loading pendant la sérialisation,
-et peut boucler à l'infini sur les relations bidirectionnelles. Accepter une entité en entrée permet aux clients
-de modifier des champs qu'ils ne devraient pas (`id`, `role`) : c'est du mass assignment. Un DTO rend le contrat
-d'API explicite, et vous pouvez refactorer la base sans casser les clients.
+**Pourquoi :** traité dans [Exposez des DTO, pas des entités](rest-api.md#exposez-des-dto-pas-des-entites).
 
 ⛔ `@GetMapping("/{id}") User get(@PathVariable Long id)`
 ✅ `@GetMapping("/{id}") UserResponse get(@PathVariable Long id)`
 
 ### Validez les entrées avec `@Valid`
+
 Placez des contraintes Bean Validation sur les DTO de requête et ajoutez `@Valid` sur le paramètre du contrôleur.
 
 **Pourquoi c'est une bonne pratique :** le contrôleur est une frontière de confiance : n'importe quel client peut
@@ -154,6 +153,7 @@ UserResponse create(@Valid @RequestBody CreateUserRequest request) { ... }
 ```
 
 ### Gérez les erreurs à un seul endroit avec `ProblemDetail`
+
 Convertissez les exceptions en réponses HTTP dans un `@RestControllerAdvice`, et renvoyez des corps `ProblemDetail`
 (RFC 9457).
 
@@ -174,20 +174,37 @@ class ApiExceptionHandler {
 }
 ```
 
+Faites de même pour les erreurs de validation, afin que les clients reçoivent les erreurs par champ et non un 400 générique :
+
+```java
+@ExceptionHandler(MethodArgumentNotValidException.class)
+ProblemDetail handle(MethodArgumentNotValidException e) {
+    var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
+    problem.setProperty("errors", e.getFieldErrors().stream()
+        .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (a, b) -> a)));
+    return problem;
+}
+```
+
 ### Paginez les endpoints de collection
+
 Ne renvoyez jamais une liste non bornée. Acceptez un `Pageable` (ou un curseur) et plafonnez la taille de page.
 
-**Pourquoi c'est une bonne pratique :** `findAll()` fonctionne en dev avec 50 lignes et fait tomber le service en
-production avec 5 millions : toutes les lignes sont chargées en mémoire et sérialisées en une seule réponse.
-Fixez un maximum avec `spring.data.web.pageable.max-page-size` pour qu'un client ne puisse pas demander
-`size=1000000`.
+**Pourquoi :** traité dans [Paginez toujours les collections](rest-api.md#paginez-toujours-les-collections).
 
 ⛔ `List<OrderResponse> list()` → `repository.findAll()`
 ✅ `Page<OrderResponse> list(Pageable pageable)` → `repository.findAll(pageable)`
 
+```yaml
+spring.data.web.pageable:
+  default-page-size: 20
+  max-page-size: 100     # size=1000000 est plafonné silencieusement
+```
+
 ## 📈 Exploitation
 
 ### Exposez health, readiness et liveness avec Actuator
+
 Ajoutez `spring-boot-starter-actuator`, n'exposez que les endpoints nécessaires, et utilisez les groupes liveness /
 readiness pour les probes Kubernetes.
 
@@ -205,6 +222,7 @@ management:
 ```
 
 ### Arrêtez l'application proprement
+
 Mettez `server.shutdown: graceful` et un `spring.lifecycle.timeout-per-shutdown-phase`.
 
 **Pourquoi c'est une bonne pratique :** lors d'un déploiement, l'ancien pod reçoit `SIGTERM`. Sans arrêt propre,
@@ -217,25 +235,35 @@ comportement par défaut depuis Spring Boot 3.4.)
 ## 🧪 Tests
 
 ### Utilisez des tests de slice, pas `@SpringBootTest` partout
+
 Utilisez `@WebMvcTest` pour les contrôleurs, `@DataJpaTest` pour les repositories, et de simples tests unitaires
 pour les services. Gardez `@SpringBootTest` pour quelques tests de bout en bout.
 
-**Pourquoi c'est une bonne pratique :** `@SpringBootTest` démarre toute l'application pour chaque configuration de
-contexte différente : c'est lent, et un `@MockitoBean` dans une classe de test crée un nouveau contexte. Les tests
-lents sont lancés moins souvent. Une slice ne charge que les beans d'une couche et démarre en une fraction du
-temps. Les services avec injection par constructeur n'ont pas du tout besoin de Spring :
-`new OrderService(fakeRepository)`.
+**Pourquoi :** traité dans [Utilisez des tranches de test plutôt que @SpringBootTest partout](testing.md#utilisez-des-tranches-de-test-plutot-que-springboottest-partout).
 
 ⛔ `@SpringBootTest` pour tester un mapping JSON dans un contrôleur
 ✅ `@WebMvcTest(OrderController.class)` + `MockMvc`
 
+```java
+@WebMvcTest(OrderController.class)
+class OrderControllerTest {
+    @Autowired MockMvc mvc;
+    @MockitoBean OrderService service;        // seule la couche web est chargée
+
+    @Test void returns404WhenUnknown() throws Exception {
+        when(service.get(42L)).thenThrow(new OrderNotFoundException(42L));
+        mvc.perform(get("/orders/42"))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.detail").value("Order 42 not found"));
+    }
+}
+```
+
 ### Testez contre une vraie base avec Testcontainers
+
 Lancez les tests de repository et d'intégration sur le même moteur de base de données qu'en production, pas H2.
 
-**Pourquoi c'est une bonne pratique :** H2 accepte du SQL que Postgres refuse et inversement : types différents
-(`jsonb`, `timestamptz`), fonctions, comportement des verrous et des contraintes. Les tests passent sur H2 et la
-requête échoue en production. Testcontainers démarre un vrai Postgres dans Docker, et avec `@ServiceConnection`
-(Boot 3.1+) Spring configure automatiquement la datasource.
+**Pourquoi :** traité dans [Utilisez Testcontainers, pas H2, pour les tests de base de données](testing.md#utilisez-testcontainers-pas-h2-pour-les-tests-de-base-de-donnees).
 
 ```java
 // ✅

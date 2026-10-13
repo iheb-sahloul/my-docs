@@ -1,10 +1,9 @@
 # Java Best Practices
 
-
-
 ## 🛡️ Null safety & Optional
 
 ### Don't use `Optional` as a field or parameter
+
 `Optional` is meant for return types only. It tells the caller "this method may have no result, handle it".
 
 **Why it's a best practice:** `Optional` was designed as a return-type signal, not a general-purpose container.
@@ -20,6 +19,7 @@ session replication), and most frameworks don't expect it. Keep the field nullab
 ✅ `public Optional<Address> getAddress() { return Optional.ofNullable(address); }`
 
 ### Don't call `Optional.get()` blindly
+
 Use `orElseThrow`, `orElse`, `orElseGet`, `map` or `ifPresent` instead of `get()`.
 
 **Why it's a best practice:** `get()` on an empty `Optional` throws `NoSuchElementException`, which is just a
@@ -31,6 +31,7 @@ domain error that carries context and can be mapped to a proper response (e.g. a
 ✅ `userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id))`
 
 ### Return empty collections, never `null`
+
 A method that returns a collection should return an empty one when there's nothing to return.
 
 **Why it's a best practice:** callers can then iterate, stream or call `size()` directly. Returning `null`
@@ -42,6 +43,7 @@ and only on the "no data" path, which is the least tested one. There's no perfor
 ✅ `return List.of();`
 
 ### Fail fast on `null` at boundaries
+
 Validate required arguments where they enter your object (constructors, public methods) instead of letting
 `null` travel through the system.
 
@@ -60,6 +62,7 @@ public OrderService(OrderRepository repository) {
 ## 🚨 Exceptions & logging
 
 ### Never swallow exceptions
+
 Every `catch` block must either handle the error, or rethrow it (wrapped if needed) with the original cause.
 
 **Why it's a best practice:** an empty `catch` turns a failure into silent data loss: the order wasn't saved,
@@ -78,6 +81,7 @@ try { save(order); } catch (SQLException e) {
 ```
 
 ### Catch specific exceptions, not `Exception`
+
 Catch only the exceptions you expect and know how to handle. Don't use exceptions for control flow either.
 
 **Why it's a best practice:** `catch (Exception e)` also catches the ones you didn't plan for:
@@ -95,6 +99,7 @@ try { return Integer.parseInt(input); } catch (NumberFormatException e) { return
 ```
 
 ### Log with placeholders and pass the exception last
+
 Use `{}` placeholders instead of string concatenation, and pass the exception itself as the last argument.
 
 **Why it's a best practice:** with placeholders, the message is only built if the log level is enabled, so
@@ -109,6 +114,7 @@ be `null`.
 ## 🔌 Resource management
 
 ### Close resources with try-with-resources
+
 Anything that implements `AutoCloseable` (streams, JDBC connections, statements, result sets, HTTP clients)
 should be opened in a `try (...)` block.
 
@@ -133,6 +139,7 @@ try (InputStream in = Files.newInputStream(path)) {
 ## 🧱 Object design & immutability
 
 ### Prefer records for value objects
+
 Use a `record` for classes that only carry data and are defined by their values (money, coordinates, DTOs,
 ids).
 
@@ -146,6 +153,7 @@ maintained.
 ✅ `record Money(BigDecimal amount, Currency currency) {}`
 
 ### Prefer immutability
+
 Make fields `final`, don't expose setters, and make defensive copies of mutable inputs and outputs.
 
 **Why it's a best practice:** an immutable object can be shared between threads without locks, since there's
@@ -166,6 +174,7 @@ public List<Line> lines() { return lines; }
 ```
 
 ### Override `equals` and `hashCode` together
+
 If two objects are `equals`, they must have the same `hashCode`.
 
 **Why it's a best practice:** hash-based collections first use `hashCode` to find the bucket, then `equals`
@@ -175,6 +184,7 @@ fields in either: if a key changes after being inserted, its hash changes, the m
 and the entry is lost (still in memory, but unreachable). Simplest fix: use a record.
 
 ### Prefer static factories or builders over telescoping constructors
+
 When a constructor has more than 3–4 parameters, or several of the same type, use a builder or named static
 factory methods (`Money.of(...)`, `Duration.ofSeconds(...)`).
 
@@ -187,6 +197,7 @@ intent, can return cached instances or a subtype, and avoid having ten construct
 ✅ `Pizza.builder().size("L").cheese(true).ham(true).build()`
 
 ### Prefer composition over inheritance
+
 Reuse behaviour by holding an instance of another class and delegating to it, instead of extending it.
 
 **Why it's a best practice:** inheritance couples you to the parent's implementation details, not just its
@@ -213,6 +224,7 @@ class CountingSet<E> {
 ```
 
 ### Declare with interfaces, not implementations
+
 Use the interface (`List`, `Map`, `Set`) as the type of variables, fields, parameters and return types. Use the
 concrete class only after `new`.
 
@@ -226,6 +238,7 @@ change it later without breaking callers.
 ✅ `List<Order> orders = new ArrayList<>();`
 
 ### Use enums instead of int / String constants
+
 Represent a fixed set of values with an `enum`.
 
 **Why it's a best practice:** with `int` or `String` constants, the compiler accepts any value: `update(42)`
@@ -247,6 +260,7 @@ void update(Status status) { ... }
 ## 🧰 Standard library: the right type for the job
 
 ### Use `BigDecimal` for money
+
 Never use `double` or `float` for amounts that must be exact.
 
 **Why it's a best practice:** `double` is binary floating point, and most decimal fractions (0.1, 0.2) have no
@@ -275,6 +289,7 @@ a.compareTo(b) == 0
 ```
 
 ### Use `java.time`, not `Date` / `Calendar`
+
 Use the `java.time` API (Java 8+). Store `Instant` (UTC), convert to a `ZonedDateTime` only for display.
 
 **Why it's a best practice:** `Date` and `Calendar` are mutable (anyone holding a reference can change the
@@ -289,6 +304,7 @@ concern.
 ✅ `Instant.now()`, `DateTimeFormatter.ISO_INSTANT`
 
 ### Use `StringBuilder` in loops
+
 Don't concatenate strings with `+` inside a loop.
 
 **Why it's a best practice:** `String` is immutable, so each `+=` allocates a new string and copies everything
@@ -310,6 +326,7 @@ for (String name : names) csv.append(name).append(',');
 ## 🌊 Streams & functional style
 
 ### No side effects in stream operations
+
 Stream operations (`map`, `filter`, `forEach`...) shouldn't change external state. Build the result with a
 terminal operation (`toList()`, `collect`, `reduce`) instead.
 
@@ -331,6 +348,7 @@ List<String> result = orders.stream().filter(Order::isPaid).map(Order::id).toLis
 ## 🧵 Concurrency
 
 ### Don't manage threads by hand
+
 Use an `ExecutorService` (or virtual threads on Java 21+) instead of `new Thread()`, and concurrent
 collections instead of `synchronized` wrappers.
 
@@ -353,6 +371,7 @@ counts.merge(key, 1, Integer::sum);
 ```
 
 ### Always clean up `ThreadLocal`
+
 Call `remove()` in a `finally` block once the request or task is done.
 
 **Why it's a best practice:** servlet containers and executors reuse pooled threads. A value left in a
@@ -373,6 +392,7 @@ try {
 ```
 
 ### Always shut down executors
+
 An `ExecutorService` you create must be shut down. On Java 19+ open it in a try-with-resources block.
 
 **Why it's a best practice:** the threads of a pool created with `Executors.newFixedThreadPool` aren't daemon
@@ -393,6 +413,7 @@ try (ExecutorService pool = Executors.newVirtualThreadPerTaskExecutor()) {
 ```
 
 ### Give `CompletableFuture` an executor and handle its errors
+
 Pass your own executor to the `*Async` methods, and end the chain with `exceptionally` or `handle`.
 
 **Why it's a best practice:** without an executor, `supplyAsync` runs on the shared `ForkJoinPool.commonPool()`,
@@ -411,6 +432,7 @@ CompletableFuture.supplyAsync(() -> client.fetch(id), ioExecutor)
 ```
 
 ### Use atomics for simple shared state
+
 For a shared counter or flag, use `AtomicInteger`, `AtomicLong`, `LongAdder` or `AtomicBoolean`. Use `volatile`
 only for a single value written by one thread and read by others.
 
@@ -423,6 +445,7 @@ not atomicity. Atomics do the read-modify-write as one CPU instruction (compare-
 ✅ `private final AtomicInteger count = new AtomicInteger(); ... count.incrementAndGet();`
 
 ### Always acquire locks in the same order
+
 When code needs more than one lock, every thread must take them in the same global order.
 
 **Why it's a best practice:** if thread A locks `from` then `to`, and thread B transfers the other way and locks
@@ -441,6 +464,7 @@ synchronized (first) { synchronized (second) { move(from, to, amount); } }
 ```
 
 ### Don't block virtual threads inside `synchronized` (before Java 24)
+
 On Java 21–23, use a `ReentrantLock` instead of `synchronized` around blocking calls run by virtual threads.
 
 **Why it's a best practice:** a virtual thread is cheap because it gets unmounted from its carrier (OS) thread
@@ -461,6 +485,7 @@ try { response = httpClient.send(request, ofString()); } finally { lock.unlock()
 ## 🧬 Generics & collections
 
 ### Never use raw types
+
 Always give a generic type its parameter: `List<String>`, not `List`. Use `List<?>` when the type doesn't matter.
 
 **Why it's a best practice:** a raw type turns off generic type checking. The compiler lets you add an `Integer`
@@ -479,6 +504,7 @@ List<String> names = new ArrayList<>();
 ```
 
 ### Use bounded wildcards in APIs (PECS)
+
 "Producer `extends`, consumer `super`": use `? extends T` for a parameter you read from, `? super T` for one you
 write into.
 
@@ -491,6 +517,7 @@ is the textbook example.
 ✅ `double sum(List<? extends Number> numbers)`
 
 ### Pick the right collection
+
 Use `ArrayList` by default, `ArrayDeque` for stacks and queues, `EnumMap` / `EnumSet` for enum keys, and
 `LinkedHashMap` when iteration order matters.
 
@@ -504,6 +531,7 @@ break randomly.
 ✅ `Deque<Task> stack = new ArrayDeque<>();`, `new ArrayList<>()`
 
 ### Don't modify a collection while iterating over it
+
 Use `removeIf`, an explicit `Iterator.remove()`, or build a new collection.
 
 **Why it's a best practice:** removing from an `ArrayList` inside a for-each loop throws
@@ -520,6 +548,7 @@ orders.removeIf(Order::isCancelled);
 ```
 
 ### Know that `List.of` and friends are immutable and reject `null`
+
 `List.of`, `Set.of`, `Map.of`, `List.copyOf` and `Stream.toList()` return unmodifiable collections. `List.of`
 and `copyOf` also throw on `null` elements.
 
@@ -535,6 +564,7 @@ fixed-size, so `set` works but `add` throws. When a caller needs to modify the r
 ## ✨ Modern Java
 
 ### Use `var` only when the type is obvious
+
 Use `var` when the right-hand side already shows the type (`new`, a factory, a cast). Write the type when it
 doesn't.
 
@@ -547,6 +577,7 @@ code reviews happen without an IDE. It also infers the concrete type: `var list 
 ✅ `var orders = new ArrayList<Order>();`, `Order order = service.process(input);`
 
 ### Prefer switch expressions
+
 Use `switch` as an expression with arrows (`->`), not the old statement with `break`.
 
 **Why it's a best practice:** the old `switch` falls through to the next case when you forget a `break`, which
@@ -572,6 +603,7 @@ String label = switch (status) {
 ```
 
 ### Use pattern matching instead of casts
+
 Use `instanceof` with a binding variable, and record patterns to take a record apart.
 
 **Why it's a best practice:** `if (o instanceof Order) { Order order = (Order) o; ... }` repeats the type, and
@@ -583,6 +615,7 @@ and casts in one step, and the variable is only in scope where the test succeede
 ✅ `if (shape instanceof Circle(double r)) { ... }`
 
 ### Use sealed types for closed hierarchies
+
 When a type has a fixed set of subtypes (payment methods, events, results), declare it `sealed` and list them
 with `permits`.
 
@@ -606,6 +639,7 @@ String describe(Payment p) {
 ```
 
 ### Use text blocks for multi-line strings
+
 Write SQL, JSON and other multi-line strings as `"""` text blocks.
 
 **Why it's a best practice:** concatenated lines with `"\n" +` and escaped quotes are hard to read and easy to
@@ -625,9 +659,55 @@ String json = """
         """.formatted(name);
 ```
 
-## 🧪 Testing & API design
+## 🚀 Native image & startup
+
+### Choose native image for startup and footprint, not for speed
+
+Build a GraalVM native image when the workload is startup- or memory-bound (serverless, CLIs, scale-to-zero, many small
+instances). Keep the JVM for long-running, throughput-bound services.
+
+**Why it's a best practice:** a native image starts in tens of milliseconds and uses a fraction of the memory because
+the JIT, class metadata and profiling are gone and dead code was removed at build time. The price is lower peak
+throughput than a warmed-up C2 JIT, long builds and a closed-world runtime. Try AppCDS, CRaC or SnapStart first: they
+often give most of the startup win with none of the constraints. Always compare both artifacts under your own load.
+
+⛔ Going native "because it's faster" for a busy API that runs for weeks
+✅ Native for a Lambda or CLI with cold-start pain; JVM + AppCDS for the long-running API
+
+### Keep code AOT-friendly: avoid runtime reflection and classpath scanning
+
+Prefer constructor injection and explicit configuration over `Class.forName`, computed reflection and custom classpath
+scanning. When reflection is unavoidable, declare it with `@RegisterReflectionForBinding` or a `RuntimeHintsRegistrar`.
+
+**Why it's a best practice:** the native compiler only keeps what it can prove reachable at build time. Anything found
+by name at runtime is silently removed and fails later with `NoSuchMethodException` or an empty JSON body, often on a
+rarely used path. Explicit hints turn that into a build-time decision you can review and test.
+
+⛔ `Class.forName(config.get("handler")).getDeclaredConstructor().newInstance()`
+✅ `Map<String, Handler> handlers` injected by Spring, plus a hint for any DTO read via reflection
+
+### Run the tests in native mode too
+
+Run `mvn -PnativeTest test` (or `./gradlew nativeTest`) and a smoke test against the built binary in CI, not only the
+JVM test suite.
+
+**Why it's a best practice:** code can pass every JVM test and still break in the image, because missing reflection or
+resource metadata only shows up when running the compiled executable. Native builds are slow, so run them on main and
+release branches and use `-Ob` (quick build) for everything else.
+
+### Use PGO and the right GC when native throughput matters
+
+If a native image must also sustain high throughput, build with profile-guided optimization (`--pgo-instrument`, run a
+representative load, rebuild with `--pgo=default.iprof`) and consider `--gc=G1` on Oracle GraalVM for larger heaps.
+
+**Why it's a best practice:** by default the image is compiled without runtime profiles and uses the Serial GC, which is
+what you give up compared with C2 and G1. PGO restores much of the optimization and a parallel collector avoids long
+stop-the-world pauses; both need a benchmark on your own workload to justify them.
+
+## 🧭 Code & API design
 
 ### Inject dependencies and the clock
+
 Take collaborators, and a `Clock` when time matters, as constructor parameters instead of creating them inside
 the class or calling static methods.
 
@@ -645,6 +725,7 @@ boolean isExpired(Clock clock) { return Instant.now(clock).isAfter(expiresAt); }
 ```
 
 ### Keep visibility as small as possible
+
 Make classes and members `private` or package-private by default, and `public` only when another package needs
 them.
 
@@ -657,6 +738,7 @@ Tests in the same package can still reach package-private code.
 ✅ `class OrderMapper`
 
 ### Use unchecked exceptions for bugs, domain exceptions for business errors
+
 Throw `IllegalArgumentException` / `IllegalStateException` for programming errors. Create specific exceptions
 (`InsufficientFundsException`) for business rules the caller can react to.
 
@@ -670,6 +752,7 @@ carry data (the account, the missing amount), and can be mapped to a precise HTT
 ✅ `throw new InsufficientFundsException(accountId, missing);`
 
 ### Keep methods short and doing one thing
+
 A method should do one thing at one level of abstraction. Extract a named method when a block needs a comment
 to explain it.
 
@@ -696,6 +779,7 @@ void checkout(Cart cart) {
 ```
 
 ### Name things for what they mean
+
 Use names that say what a value is in the domain, not its type. Avoid abbreviations and generic names like
 `data`, `info`, `manager`, `tmp`.
 

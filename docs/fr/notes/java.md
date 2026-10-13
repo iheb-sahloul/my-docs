@@ -1,6 +1,9 @@
 # Java
 
+## JVM & outillage
+
 ### Changer de version de JDK (SDKMAN)
+
 ```bash
 sdk list java
 sdk install java 21.0.4-tem
@@ -9,17 +12,20 @@ sdk default java 21.0.4-tem
 ```
 
 ### Lancer un programme en un seul fichier (sans javac, Java 11+)
+
 ```bash
 java Hello.java
 ```
 
 ### Test rapide avec JShell
+
 ```bash
 jshell
 jshell> List.of(1, 2, 3).stream().map(i -> i * 2).toList()
 ```
 
 ### Thread dump / heap dump d'une JVM en cours d'exécution
+
 ```bash
 jps -l                                   # trouver le PID
 jcmd <pid> Thread.print > threads.txt
@@ -27,6 +33,7 @@ jcmd <pid> GC.heap_dump /tmp/heap.hprof
 ```
 
 ### Inspecter une JVM en cours d'exécution avec jcmd
+
 ```bash
 jcmd <pid> help                          # lister les commandes disponibles
 jcmd <pid> VM.flags                      # flags JVM effectifs
@@ -35,6 +42,7 @@ jcmd <pid> GC.class_histogram | head -20 # plus gros consommateurs de mémoire p
 ```
 
 ### Flags JVM utiles
+
 ```bash
 java -Xms512m -Xmx2g \
      -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp \
@@ -44,12 +52,35 @@ java -Xms512m -Xmx2g \
 java -XX:MaxRAMPercentage=75 -jar app.jar
 ```
 
+### GraalVM native image
+
+```bash
+sdk install java <version-graalvm>         # choisir un JDK GraalVM, puis :
+native-image --version
+
+# Spring Boot 3
+mvn -Pnative native:compile                # exécutable dans target/   (Gradle : ./gradlew nativeCompile)
+mvn -Pnative spring-boot:build-image       # image de conteneur via Buildpacks (Gradle : ./gradlew bootBuildImage)
+mvn -PnativeTest test                      # exécuter les tests en image native (Gradle : ./gradlew nativeTest)
+
+# générer la config réflexion/ressources en exerçant l'application sur la JVM
+java -agentlib:native-image-agent=config-output-dir=src/main/resources/META-INF/native-image -jar app.jar
+
+# comparer avec la JVM
+ps -o rss= -p <pid>                        # mémoire résidente (Ko)
+```
+
+Pourquoi c'est léger : ni JIT, ni métadonnées de classes, ni profileur à l'exécution, code mort supprimé au build, état
+initialisé au build. Compromis : débit maximal inférieur sauf avec la PGO. Détails : [Java Core & JVM](../interviews/java-core-jvm.md) Q39-Q40.
+
 ### Logs du GC
+
 ```bash
 java -Xlog:gc*:file=gc.log:time,uptime,level,tags:filecount=5,filesize=10M -jar app.jar
 ```
 
 ### Java Flight Recorder
+
 ```bash
 # sur une JVM en cours d'exécution
 jcmd <pid> JFR.start duration=60s filename=/tmp/rec.jfr
@@ -62,32 +93,17 @@ jfr print --events jdk.GarbageCollection rec.jfr
 ```
 
 ### Débogage à distance
+
 ```bash
 java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -jar app.jar
 ```
 
-### Maven : lancer un test / ignorer les tests / arbre des dépendances
-```bash
-mvn test -Dtest=OrderServiceTest#shouldRefund
-mvn package -DskipTests
-mvn dependency:tree -Dincludes=com.fasterxml.jackson.core
-```
+Les commandes de build (lancer un test, ignorer les tests, arbre des dépendances, multi-modules) sont dans [Maven & Gradle](maven-gradle.md).
 
-### Maven : multi-modules / dépendances obsolètes
-```bash
-mvn -pl order-service -am package        # construire un module + les modules dont il dépend
-mvn versions:display-dependency-updates
-```
-
-### Gradle : lancer un test / ignorer les tests / arbre des dépendances
-```bash
-./gradlew test --tests 'OrderServiceTest.shouldRefund'
-./gradlew build -x test
-./gradlew dependencies --configuration runtimeClasspath
-./gradlew dependencyInsight --dependency jackson-databind
-```
+## Langage & API
 
 ### Collections immuables
+
 ```java
 List<String> names = List.of("a", "b");                 // immuable, refuse les null
 Map<String, Integer> ages = Map.of("Ann", 30, "Bob", 25); // jusqu'à 10 paires
@@ -99,6 +115,7 @@ stream.collect(Collectors.toList()); // mutabilité non garantie
 ```
 
 ### Aide-mémoire des Collectors
+
 ```java
 import static java.util.stream.Collectors.*;
 
@@ -113,6 +130,7 @@ String csv = names.stream().collect(joining(", ", "[", "]"));
 ```
 
 ### Blocs de texte
+
 ```java
 String json = """
     {
@@ -123,6 +141,7 @@ String json = """
 ```
 
 ### Utilitaires String
+
 ```java
 "  ".isBlank();              // true (isEmpty() vaut false)
 " hi ".strip();         // "hi", gère Unicode contrairement à trim()
@@ -132,6 +151,7 @@ String json = """
 ```
 
 ### java.time
+
 ```java
 Instant now = Instant.now();                                  // un instant (UTC), à stocker
 ZonedDateTime paris = now.atZone(ZoneId.of("Europe/Paris"));  // pour l'affichage
@@ -144,6 +164,7 @@ String iso = DateTimeFormatter.ISO_INSTANT.format(now);
 ```
 
 ### Records + pattern matching (Java 21)
+
 ```java
 record Point(int x, int y) {}
 
@@ -157,6 +178,7 @@ String describe(Object o) {
 ```
 
 ### Interfaces scellées + switch exhaustif (Java 21)
+
 ```java
 sealed interface Shape permits Circle, Square {}
 record Circle(double r) implements Shape {}
@@ -171,6 +193,7 @@ double area(Shape s) {
 ```
 
 ### Collections séquencées (Java 21)
+
 ```java
 List<Integer> list = List.of(1, 2, 3);
 list.getFirst();    // 1
@@ -183,6 +206,7 @@ map.pollLastEntry();
 ```
 
 ### Threads virtuels (Java 21)
+
 ```java
 try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
     IntStream.range(0, 10_000).forEach(i -> executor.submit(() -> fetch(i)));
@@ -190,6 +214,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 ```
 
 ### CompletableFuture : combiner, timeout, repli
+
 ```java
 var user   = CompletableFuture.supplyAsync(() -> userClient.get(id), executor);
 var orders = CompletableFuture.supplyAsync(() -> orderClient.list(id), executor);
@@ -204,6 +229,7 @@ CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
 ```
 
 ### HttpClient : GET simple (Java 11+)
+
 ```java
 HttpClient client = HttpClient.newHttpClient();
 HttpRequest request = HttpRequest.newBuilder(URI.create("https://api.github.com/users/octocat"))

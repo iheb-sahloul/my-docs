@@ -3,6 +3,7 @@
 ## Fichiers et répertoires
 
 ### Naviguer et lister
+
 ```bash
 ls -lah                                        # format long, tout, tailles lisibles
 ls -lt | head                                  # les plus récents d'abord
@@ -11,6 +12,7 @@ pwd; cd -                                      # cd - = répertoire précédent
 ```
 
 ### Trouver des fichiers
+
 ```bash
 find . -name "*.log" -mtime +7                 # plus vieux que 7 jours
 find . -type f -size +100M
@@ -21,6 +23,7 @@ locate nginx.conf                              # utilise un index préconstruit 
 ```
 
 ### Copier, déplacer, lier, supprimer
+
 ```bash
 cp -a src/ dst/                                # archive : conserve droits/dates/liens symboliques
 rsync -avh --progress src/ user@host:/data/    # slash final sur src = contenu uniquement
@@ -31,6 +34,7 @@ rm -rf build/                                  # pas d'annulation, vérifiez bie
 ```
 
 ### Consulter des fichiers
+
 ```bash
 less +F app.log                                # suit comme tail -f, Ctrl-C pour parcourir, q pour quitter
 tail -f app.log
@@ -42,6 +46,7 @@ stat file                                      # taille, droits, horodatages
 ```
 
 ### Archives
+
 ```bash
 tar czf backup.tgz dir/                        # créer en gzip
 tar xzf backup.tgz -C /tmp                     # extraire dans /tmp
@@ -55,9 +60,11 @@ gzip -k file                                   # conserver l'original
 ## Permissions
 
 ### Lire et modifier
+
 ```bash
 ls -l script.sh
 ```
+
 ```text
 -rwxr-xr-- 1 alice dev 1204 Sep 29 10:12 script.sh
 ```
@@ -86,6 +93,7 @@ umask                                          # masque par défaut (022 -> fich
 ```
 
 ### Bits spéciaux et ACL
+
 ```bash
 chmod u+s file                                 # setuid
 chmod g+s dir                                  # les nouveaux fichiers héritent du groupe
@@ -95,6 +103,7 @@ getfacl file
 ```
 
 ### Utilisateurs et groupes
+
 ```bash
 id                                             # uid, gid, groupes
 whoami
@@ -110,6 +119,7 @@ sudo -u postgres psql
 ## Processus
 
 ### Inspecter
+
 ```bash
 ps aux | grep java
 ps -ef --forest                                # vue en arbre
@@ -121,6 +131,7 @@ uptime                                         # charge moyenne : 1/5/15 min
 ```
 
 ### Signaux
+
 ```bash
 kill 1234                                      # SIGTERM : arrêt propre
 kill -9 1234                                   # SIGKILL : dernier recours
@@ -130,6 +141,7 @@ killall nginx
 ```
 
 ### Arrière-plan et contrôle des tâches
+
 ```bash
 long_cmd &                                     # arrière-plan
 Ctrl-Z; bg; fg; jobs                           # suspendre, reprendre en arrière/avant-plan, lister
@@ -140,6 +152,7 @@ tmux attach -t work
 ```
 
 ### Que fait un processus ?
+
 ```bash
 lsof -p 1234                                   # fichiers ouverts
 ls -l /proc/1234/fd | wc -l                    # nombre de FD
@@ -152,6 +165,7 @@ cat /proc/1234/status | grep -E 'VmRSS|Threads'
 ## Réseau
 
 ### Adresses, routes, DNS
+
 ```bash
 ip -br addr                                    # liste concise des interfaces
 ip route
@@ -163,18 +177,21 @@ cat /etc/resolv.conf
 ```
 
 ### Ports en écoute et connexions
+
 ```bash
 ss -tulpn                                      # TCP+UDP en écoute, avec processus
 ss -tn state established '( dport = :443 )'
 ss -s                                          # résumé
 lsof -i :8080                                  # qui possède ce port ?
 ```
+
 ```text
 Netid State  Recv-Q Send-Q Local Address:Port Peer Address:Port Process
 tcp   LISTEN 0      4096   0.0.0.0:8080      0.0.0.0:*         users:(("java",pid=1234,fd=9))
 ```
 
 ### Tester la connectivité
+
 ```bash
 ping -c 4 host
 traceroute host                                # ou : mtr host
@@ -187,6 +204,7 @@ wget -c https://example.com/big.iso            # téléchargement reprenable
 ```
 
 ### Pare-feu (coup d'œil rapide)
+
 ```bash
 sudo ufw status verbose
 sudo ufw allow 8080/tcp
@@ -195,6 +213,7 @@ sudo nft list ruleset
 ```
 
 ### Capturer le trafic
+
 ```bash
 sudo tcpdump -i any port 5432 -nn -c 20
 sudo tcpdump -i eth0 host 10.0.0.5 -w cap.pcap # ouvrir dans Wireshark
@@ -205,6 +224,7 @@ sudo tcpdump -i eth0 host 10.0.0.5 -w cap.pcap # ouvrir dans Wireshark
 ## Disque et mémoire
 
 ### Espace
+
 ```bash
 df -h                                          # par système de fichiers
 df -i                                          # inodes (inodes pleins = « no space » malgré des octets libres)
@@ -215,6 +235,7 @@ lsblk -f                                       # périphériques, systèmes de f
 ```
 
 ### Trouver ce qui remplit le disque
+
 ```bash
 du -xh / --max-depth=2 2>/dev/null | sort -rh | head -15
 sudo lsof +L1                                  # fichiers supprimés encore ouverts par un processus
@@ -223,9 +244,11 @@ sudo journalctl --vacuum-size=500M
 ```
 
 ### Mémoire
+
 ```bash
 free -h
 ```
+
 ```text
                total        used        free      shared  buff/cache   available
 Mem:            15Gi       6.1Gi       1.2Gi       300Mi       8.0Gi       9.0Gi
@@ -239,6 +262,7 @@ sudo dmesg -T | grep -i -E 'oom|killed process'
 ```
 
 ### Montages
+
 ```bash
 mount | grep ext4
 sudo mount /dev/sdb1 /mnt/data
@@ -252,6 +276,7 @@ UUID=1234-abcd  /mnt/data  ext4  defaults,nofail  0  2
 ## systemd
 
 ### Gérer les services
+
 ```bash
 systemctl status nginx
 sudo systemctl start|stop|restart|reload nginx
@@ -264,6 +289,7 @@ sudo systemctl daemon-reload                   # après modification des fichier
 ```
 
 ### Logs (journald)
+
 ```bash
 journalctl -u nginx -f                         # suivre
 journalctl -u nginx --since "1 hour ago"
@@ -274,6 +300,7 @@ journalctl -k                                  # messages du noyau
 ```
 
 ### Une unité de service minimale
+
 ```ini
 # /etc/systemd/system/myapp.service
 [Unit]
@@ -292,12 +319,14 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 ```
+
 ```bash
 sudo systemctl daemon-reload && sudo systemctl enable --now myapp
 sudo systemctl edit nginx                      # surcharge drop-in, plus sûr que de modifier l'unité du paquet
 ```
 
 ### Timers et cron
+
 ```bash
 systemctl list-timers
 crontab -e
@@ -311,6 +340,7 @@ crontab -e
 ## Outils texte
 
 ### grep
+
 ```bash
 grep -rn "TODO" src/                           # récursif avec numéros de ligne
 grep -rniI --include="*.java" "OrderService" .
@@ -321,6 +351,7 @@ grep -c ERROR app.log                          # compter
 ```
 
 ### sed, awk, cut
+
 ```bash
 sed -i 's/foo/bar/g' file                      # sur place (macOS : sed -i '' ...)
 sed -n '10,20p' file                           # affiche les lignes 10 à 20
@@ -332,6 +363,7 @@ cut -d, -f1,3 data.csv
 ```
 
 ### sort, uniq, xargs, tr
+
 ```bash
 sort file | uniq -c | sort -rn | head          # lignes les plus répétées
 awk '{print $1}' access.log | sort | uniq -c | sort -rn | head   # IP clientes les plus fréquentes
@@ -341,6 +373,7 @@ tee out.txt                                    # écrit et laisse passer
 ```
 
 ### JSON
+
 ```bash
 curl -s https://api.example.com/users | jq '.[] | {id, name}'
 jq -r '.items[].metadata.name' pods.json
@@ -348,6 +381,7 @@ jq '.[] | select(.age > 30)' users.json
 ```
 
 ### Redirection
+
 ```bash
 cmd > out.txt                                  # stdout, écrase
 cmd >> out.txt                                 # ajoute
@@ -363,6 +397,7 @@ diff <(sort a.txt) <(sort b.txt)               # substitution de processus
 ## SSH
 
 ### Se connecter et copier
+
 ```bash
 ssh user@host
 ssh -p 2222 -i ~/.ssh/id_ed25519 user@host
@@ -372,6 +407,7 @@ scp -r user@host:/var/log/app ./logs
 ```
 
 ### Clés
+
 ```bash
 ssh-keygen -t ed25519 -C "me@example.com"
 ssh-copy-id user@host                          # installer la clé publique
@@ -380,6 +416,7 @@ chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_ed25519 ~/.ssh/authorized_keys
 ```
 
 ### Tunnels
+
 ```bash
 ssh -L 5433:db.internal:5432 user@bastion      # local : localhost:5433 -> db.internal:5432
 ssh -R 9000:localhost:3000 user@host           # distant : host:9000 -> mon localhost:3000
@@ -388,6 +425,7 @@ ssh -N -f -L 5433:db.internal:5432 user@bastion   # sans shell, en arrière-plan
 ```
 
 ### ~/.ssh/config
+
 ```text
 Host bastion
   HostName bastion.example.com
@@ -402,6 +440,7 @@ Host *
   ServerAliveInterval 30
   AddKeysToAgent yes
 ```
+
 ```bash
 ssh db-prod                                    # passe automatiquement par le bastion
 ssh -J bastion user@10.0.0.7                   # hôte de rebond ponctuel
@@ -412,6 +451,7 @@ ssh -J bastion user@10.0.0.7                   # hôte de rebond ponctuel
 ## Astuces shell
 
 ### Historique et raccourcis
+
 ```bash
 !!                                             # répète la dernière commande
 sudo !!                                        # ...avec sudo
@@ -422,6 +462,7 @@ Ctrl-W / Ctrl-U                                # supprime un mot / jusqu'au déb
 ```
 
 ### Scripts sûrs
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail                              # quitte sur erreur, variable non définie, échec de pipe
@@ -429,6 +470,7 @@ trap 'echo "failed at line $LINENO"' ERR
 ```
 
 ### Environnement
+
 ```bash
 env | sort
 export JAVA_HOME=/usr/lib/jvm/temurin-21
@@ -437,6 +479,7 @@ which -a java                                  # toutes les correspondances dans
 ```
 
 ### Informations système
+
 ```bash
 uname -a
 cat /etc/os-release

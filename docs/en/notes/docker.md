@@ -3,6 +3,7 @@
 ## Images
 
 ### Build an image
+
 ```bash
 docker build -t myapp:1.0 .                       # Dockerfile in current dir
 docker build -f docker/Dockerfile.prod -t myapp:prod .
@@ -12,6 +13,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t me/myapp:1.0 --push .
 ```
 
 ### Multi-stage Dockerfile (small runtime image)
+
 ```dockerfile
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /src
@@ -31,6 +33,7 @@ ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]
 Put rarely-changing steps first: each instruction is a layer and one changed layer invalidates all the layers after it.
 
 ### .dockerignore
+
 ```text
 .git
 target/
@@ -40,6 +43,7 @@ node_modules/
 ```
 
 ### List, tag, push, remove
+
 ```bash
 docker images                                  # local images
 docker image ls --filter dangling=true
@@ -51,6 +55,7 @@ docker rmi myapp:1.0
 ```
 
 ### Inspect image layers and size
+
 ```bash
 docker history myapp:1.0                       # size of each layer
 docker image inspect myapp:1.0 --format '{{.Size}} {{.Config.Env}}'
@@ -61,6 +66,7 @@ docker image inspect myapp:1.0 --format '{{.Size}} {{.Config.Env}}'
 ## Containers
 
 ### Run
+
 ```bash
 docker run --rm -it alpine sh                  # interactive, removed on exit
 docker run -d --name web -p 8080:80 nginx      # detached, host 8080 -> container 80
@@ -88,6 +94,7 @@ docker run --rm -v "$PWD":/work -w /work node:20 npm test   # run a tool without
 | `--read-only` | Read-only root filesystem |
 
 ### Lifecycle
+
 ```bash
 docker ps                                      # running
 docker ps -a                                   # including stopped
@@ -100,9 +107,11 @@ docker rm -f web                               # stop + remove
 ```
 
 ### Custom `ps` output
+
 ```bash
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
+
 ```text
 NAMES   STATUS         PORTS
 web     Up 2 minutes   0.0.0.0:8080->80/tcp
@@ -114,6 +123,7 @@ db      Up 2 minutes   0.0.0.0:5432->5432/tcp
 ## Debugging
 
 ### Logs
+
 ```bash
 docker logs web
 docker logs -f --tail 100 web                  # follow, last 100 lines
@@ -122,6 +132,7 @@ docker logs -t web                             # with timestamps
 ```
 
 ### Shell into a running container
+
 ```bash
 docker exec -it web sh                         # or bash if the image has it
 docker exec web env                            # one-off command
@@ -129,12 +140,14 @@ docker exec -u root -it web sh                 # as root
 ```
 
 ### Copy files in and out
+
 ```bash
 docker cp web:/etc/nginx/nginx.conf ./nginx.conf
 docker cp ./index.html web:/usr/share/nginx/html/
 ```
 
 ### Inspect
+
 ```bash
 docker inspect web                             # full JSON
 docker inspect -f '{{.NetworkSettings.IPAddress}}' web
@@ -146,6 +159,7 @@ docker events --since 10m                      # daemon events
 ```
 
 ### Container exits immediately
+
 ```bash
 docker ps -a                                   # look at STATUS: Exited (137) = killed/OOM, (1) = app error
 docker logs <name>
@@ -161,6 +175,7 @@ docker run --rm -it --entrypoint sh myapp:1.0  # bypass ENTRYPOINT and poke arou
 | 143 | SIGTERM (graceful stop) |
 
 ### Debug an image without a shell (distroless)
+
 ```bash
 docker run --rm -it --pid=container:web --network=container:web nicolaka/netshoot
 ```
@@ -170,6 +185,7 @@ docker run --rm -it --pid=container:web --network=container:web nicolaka/netshoo
 ## Troubleshooting: find the cause, then fix it
 
 Method, always in this order:
+
 ```bash
 docker ps -a                                   # is it running? exit code?
 docker logs --tail 100 <name>                  # what the app said
@@ -196,6 +212,7 @@ docker exec -it <name> sh                      # or --entrypoint sh if it won't 
 | Compose: app starts before the DB | `depends_on` only waits for start | `docker compose logs app` shows connection refused | Add `healthcheck` + `depends_on: { db: { condition: service_healthy } }` |
 
 Applied fix, then verify:
+
 ```bash
 docker compose up -d --build --force-recreate
 docker compose ps
@@ -207,6 +224,7 @@ docker compose logs -f app
 ## Volumes and bind mounts
 
 ### Volumes
+
 ```bash
 docker volume create pgdata
 docker volume ls
@@ -215,6 +233,7 @@ docker volume rm pgdata
 ```
 
 ### Back up and restore a volume
+
 ```bash
 docker run --rm -v pgdata:/data -v "$PWD":/backup alpine \
   tar czf /backup/pgdata.tgz -C /data .
@@ -234,6 +253,7 @@ docker run --rm -v pgdata:/data -v "$PWD":/backup alpine \
 ## Networks
 
 ### User-defined bridge (containers resolve each other by name)
+
 ```bash
 docker network create backend
 docker run -d --name db  --network backend postgres:16
@@ -247,6 +267,7 @@ docker network disconnect backend web
 The default `bridge` network has **no** name resolution. Always create your own network.
 
 ### Reach the host from a container
+
 ```bash
 # Docker Desktop (Mac/Windows): host.docker.internal
 # Linux: add it yourself
@@ -254,6 +275,7 @@ docker run --add-host=host.docker.internal:host-gateway myapp
 ```
 
 ### Test connectivity
+
 ```bash
 docker exec api sh -c 'nc -zv db 5432'
 docker exec api wget -qO- http://web:80
@@ -264,6 +286,7 @@ docker exec api wget -qO- http://web:80
 ## Docker Compose
 
 ### compose.yaml
+
 ```yaml
 services:
   api:
@@ -296,6 +319,7 @@ volumes:
 ```
 
 ### Daily commands
+
 ```bash
 docker compose up -d                           # create + start in background
 docker compose up -d --build                   # rebuild images first
@@ -311,6 +335,7 @@ docker compose config                          # show the merged, resolved file
 ```
 
 ### Override files and profiles
+
 ```bash
 docker compose -f compose.yaml -f compose.dev.yaml up -d   # later file overrides earlier
 docker compose --profile debug up -d                       # services with `profiles: [debug]`
@@ -321,6 +346,7 @@ docker compose --profile debug up -d                       # services with `prof
 ## Cleanup
 
 ### Disk usage and prune
+
 ```bash
 docker system df                               # what is using space
 docker container prune                         # stopped containers
@@ -333,6 +359,7 @@ docker system prune -a --volumes               # everything unused
 ```
 
 ### Targeted removal
+
 ```bash
 docker rm $(docker ps -aq -f status=exited)
 docker rmi $(docker images -q -f dangling=true)
@@ -344,6 +371,7 @@ docker container prune --filter "until=24h"
 ## Useful one-liners
 
 ### Get a container's IP / env / mounts
+
 ```bash
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' web
 docker inspect -f '{{json .Config.Env}}' web | jq
@@ -351,11 +379,13 @@ docker inspect -f '{{json .Mounts}}' web | jq
 ```
 
 ### Stop everything
+
 ```bash
 docker stop $(docker ps -q)
 ```
 
 ### Run as your own user so files aren't root-owned
+
 ```bash
 docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/work -w /work maven:3.9 mvn package
 ```

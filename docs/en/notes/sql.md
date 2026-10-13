@@ -1,5 +1,6 @@
-# SQL
+# SQL Query Tuning
 
+## Reading a plan
 
 ### EXPLAIN vs EXPLAIN ANALYZE
 
@@ -16,6 +17,7 @@ EXPLAIN (ANALYZE, BUFFERS, VERBOSE, SETTINGS, FORMAT JSON) SELECT ...;  -- JSON:
 ```
 
 `EXPLAIN ANALYZE` really executes the statement. For `INSERT/UPDATE/DELETE`, roll back:
+
 ```sql
 BEGIN;
 EXPLAIN (ANALYZE, BUFFERS) DELETE FROM orders WHERE created_at < now() - interval '2 years';
@@ -90,6 +92,7 @@ Other nodes: `Sort` (watch `Sort Method: external merge Disk: ...` = spilled to 
 6. Verify the index is not hurting writes and is actually used (`pg_stat_user_indexes.idx_scan`).
 
 Test setup used in the examples:
+
 ```sql
 CREATE TABLE customers (id bigserial PRIMARY KEY, email text NOT NULL, country text);
 CREATE TABLE orders (
@@ -109,11 +112,14 @@ ANALYZE;
 
 ---
 
-## Example 1: Missing index (Seq Scan)
+## Worked examples
+
+### Example 1: Missing index (Seq Scan)
 
 ```sql
 EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM orders WHERE customer_id = 42;
 ```
+
 ```text
 Gather  (cost=1000.00..15200.00 rows=100 width=60) (actual time=0.5..48.2 rows=98 loops=1)
   Workers Planned: 2
@@ -123,10 +129,13 @@ Gather  (cost=1000.00..15200.00 rows=100 width=60) (actual time=0.5..48.2 rows=9
         Buffers: shared hit=8200
 Execution Time: 48.4 ms
 ```
+
 Reading: 1M rows read to return 98 (`Rows Removed by Filter: 333300` × 3 workers). Fix:
+
 ```sql
 CREATE INDEX idx_orders_customer ON orders (customer_id);
 ```
+
 ```text
 Bitmap Heap Scan on orders  (cost=5.2..380.0 rows=100 width=60) (actual time=0.05..0.19 rows=98 loops=1)
   Recheck Cond: (customer_id = 42)
@@ -134,62 +143,75 @@ Bitmap Heap Scan on orders  (cost=5.2..380.0 rows=100 width=60) (actual time=0.0
         Index Cond: (customer_id = 42)
 Execution Time: 0.25 ms
 ```
+
 48 ms → 0.25 ms. In production use `CREATE INDEX CONCURRENTLY` to avoid blocking writes.
 
-## Example 2: Composite index, column order matters
+### Example 2: Composite index, column order matters
 
 ```sql
 SELECT * FROM orders WHERE status = 'PAID' AND created_at >= now() - interval '7 days' ORDER BY created_at DESC LIMIT 20;
 ```
+
 Rule of thumb: **equality columns first, then the range/sort column**.
+
 ```sql
 CREATE INDEX idx_orders_status_created ON orders (status, created_at DESC);
 ```
+
 ```text
 Limit  (actual time=0.03..0.09 rows=20 loops=1)
   ->  Index Scan using idx_orders_status_created on orders  (actual time=0.03..0.08 rows=20 loops=1)
         Index Cond: ((status = 'PAID') AND (created_at >= ...))
 ```
+
 No `Sort` node: the index already delivers rows in the requested order, and `LIMIT` stops after 20 rows. With the columns reversed `(created_at, status)` the index could not be used this efficiently: `status` would only be a filter inside a range scan.
 A composite index `(a, b)` serves `WHERE a`, `WHERE a AND b`, but **not** `WHERE b` alone (leftmost-prefix rule).
 
-## Example 3: Function on a column kills the index (sargability)
+### Example 3: Function on a column kills the index (sargability)
 
 ```sql
 SELECT * FROM customers WHERE lower(email) = 'user42@mail.com';
 ```
+
 ```text
 Seq Scan on customers  (actual time=0.02..6.1 rows=1 loops=1)
   Filter: (lower(email) = 'user42@mail.com')
   Rows Removed by Filter: 9999
 ```
+
 A plain index on `email` cannot be used because the query does not compare `email`, it compares `lower(email)`. Two fixes:
+
 ```sql
 -- A) rewrite so the column is bare (only if the data is already normalised)
 WHERE email = 'user42@mail.com'
 -- B) index the expression
 CREATE INDEX idx_customers_email_lower ON customers (lower(email));
 ```
+
 Same trap: `WHERE created_at::date = '2026-01-01'` (use `created_at >= '2026-01-01' AND created_at < '2026-01-02'`), `WHERE col + 1 = 10`, `WHERE col LIKE '%abc'` (leading wildcard; use `pg_trgm` GIN index), and implicit casts (`WHERE varchar_col = 123`).
 
-## Example 4: Covering index → Index Only Scan
+### Example 4: Covering index → Index Only Scan
 
 ```sql
 SELECT customer_id, total FROM orders WHERE customer_id = 42;
 ```
+
 With `idx_orders_customer` the plan still visits the table for `total`. Add the column with `INCLUDE`:
+
 ```sql
 CREATE INDEX idx_orders_customer_total ON orders (customer_id) INCLUDE (total);
 ```
+
 ```text
 Index Only Scan using idx_orders_customer_total on orders  (actual time=0.03..0.06 rows=98 loops=1)
   Index Cond: (customer_id = 42)
   Heap Fetches: 0
   Buffers: shared hit=4
 ```
+
 Tradeoff: bigger index, slower writes. Do it for hot read paths only. `SELECT *` defeats this, select only the columns you need.
 
-## Example 5: Wrong join strategy from bad estimates
+### Example 5: Wrong join strategy from bad estimates
 
 ```sql
 SELECT c.email, sum(o.total)
@@ -197,70 +219,86 @@ FROM customers c JOIN orders o ON o.customer_id = c.id
 WHERE c.country = 'TN' AND o.created_at >= now() - interval '30 days'
 GROUP BY c.email;
 ```
+
 Bad plan symptom:
+
 ```text
 Nested Loop  (cost=... rows=5) (actual time=... rows=41000 loops=1)
   ->  Seq Scan on customers c  (rows=5) (actual rows=2500 ...)
   ->  Index Scan using idx_orders_customer on orders o  (actual time=0.02..0.30 rows=16 loops=2500)
 ```
+
 `rows=5` estimated vs `rows=2500` actual = the planner was wrong, so it picked a Nested Loop. What to do, in order:
+
 ```sql
 ANALYZE customers;                                            -- 1. refresh stats
 ALTER TABLE customers ALTER COLUMN country SET STATISTICS 500; -- 2. finer histogram
 CREATE STATISTICS s_cust (dependencies) ON country, id FROM customers; -- 3. correlated columns
 CREATE INDEX idx_orders_created ON orders (created_at, customer_id);   -- 4. help the big side
 ```
+
 Once estimates are correct the planner typically switches to `Hash Join`, which is far better when both sides are large. Do not force join types with `SET enable_nestloop = off` in production, only use it as a diagnostic to see what the alternative costs.
 
-## Example 6: Pagination, OFFSET vs keyset
+### Example 6: Pagination, OFFSET vs keyset
 
 ```sql
 SELECT * FROM orders ORDER BY id LIMIT 20 OFFSET 500000;
 ```
+
 ```text
 Limit  (actual time=95.0..95.1 rows=20 loops=1)
   ->  Index Scan using orders_pkey on orders  (actual time=0.02..80.0 rows=500020 loops=1)
 ```
+
 `OFFSET` reads and discards 500 000 rows. Cost grows with the page number. Keyset (seek) pagination:
+
 ```sql
 SELECT * FROM orders WHERE id > :last_seen_id ORDER BY id LIMIT 20;
 ```
+
 ```text
 Limit  (actual time=0.02..0.05 rows=20 loops=1)
   ->  Index Scan using orders_pkey on orders  (actual time=0.02..0.04 rows=20 loops=1)
         Index Cond: (id > 500000)
 ```
+
 95 ms → 0.05 ms, constant for any page. For non-unique sort columns use a tuple: `WHERE (created_at, id) < (:ts, :id) ORDER BY created_at DESC, id DESC` with an index on `(created_at DESC, id DESC)`.
 
-## Example 7: Partial index (index only what you query)
+### Example 7: Partial index (index only what you query)
 
 ```sql
 -- 95% of rows are SHIPPED/CANCELLED, the app only polls NEW orders
 CREATE INDEX idx_orders_new ON orders (created_at) WHERE status = 'NEW';
 SELECT * FROM orders WHERE status = 'NEW' ORDER BY created_at LIMIT 50;
 ```
+
 Small index, cheap to maintain. The query's `WHERE` must imply the index predicate (same literal `status = 'NEW'`, a bind parameter may prevent it with generic plans).
 
-## Example 8: Sort spilling to disk
+### Example 8: Sort spilling to disk
 
 ```text
 Sort  (actual time=1200..1450 rows=1000000 loops=1)
   Sort Key: created_at
   Sort Method: external merge  Disk: 61240kB
 ```
+
 Options: add an index that provides the order, add a `LIMIT`, reduce columns, or raise `work_mem` **for that session/transaction**:
+
 ```sql
 SET LOCAL work_mem = '128MB';   -- inside a transaction, don't raise it globally (it is per sort/hash node per connection)
 ```
+
 Goal: `Sort Method: quicksort  Memory: 25kB` (or `top-N heapsort` with `LIMIT`).
 
-## Example 9: N+1 seen from the database
+### Example 9: N+1 seen from the database
 
 Symptom in `pg_stat_statements`: the same tiny query with `calls` = 100 000. Each plan is perfect (0.05 ms) but the total is huge (5 s). `EXPLAIN` cannot fix this, fix the caller:
+
 ```sql
 -- instead of: SELECT * FROM orders WHERE customer_id = ?   (× N)
 SELECT * FROM orders WHERE customer_id = ANY(:ids);
 ```
+
 In JPA/Hibernate: `JOIN FETCH`, `@EntityGraph`, or `@BatchSize`.
 
 ---

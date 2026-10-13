@@ -1,10 +1,9 @@
 # Bonnes pratiques d'API REST
 
-
-
 ## 🏷️ Ressources & nommage
 
 ### Nommez les ressources avec des noms au pluriel
+
 Modélisez les URL comme des collections de choses (`/orders`, `/orders/42/items`), pas comme des actions.
 
 **Pourquoi c'est une bonne pratique :** la méthode HTTP dit déjà l'action, donc `/getOrders` et `/createOrder` la
@@ -25,6 +24,7 @@ GET  /orders/42/items
 ```
 
 ### Utilisez les méthodes HTTP selon leur sens
+
 `GET` lit, `POST` crée, `PUT` remplace, `PATCH` met à jour partiellement, `DELETE` supprime.
 
 **Pourquoi c'est une bonne pratique :** les proxys, navigateurs et caches s'appuient sur ces sémantiques. Un `GET`
@@ -43,6 +43,7 @@ ResponseEntity<Void> cancel(@PathVariable long id) { ... }
 ```
 
 ### Modélisez les actions comme des sous-ressources quand le CRUD ne suffit pas
+
 Pour les vraies actions métier, créez un nom pour le résultat (`/orders/42/cancellation`, `/payments`) plutôt que des verbes RPC dans le chemin.
 
 **Pourquoi c'est une bonne pratique :** cela conserve l'interface uniforme, et la nouvelle ressource peut être relue,
@@ -60,6 +61,7 @@ POST /orders/42/cancellations   { "reason": "late" }
 ## 📟 Codes de statut & erreurs
 
 ### Renvoyez des codes de statut exacts
+
 Utilisez 200/201/204 pour le succès, 4xx quand le client se trompe, 5xx quand c'est le serveur. Ne renvoyez jamais 200 avec un corps d'erreur.
 
 **Pourquoi c'est une bonne pratique :** la supervision, les retries, les circuit breakers et les bibliothèques
@@ -83,6 +85,7 @@ void delete(@PathVariable long id) { service.delete(id); }
 ```
 
 ### Connaissez la différence entre 400 / 401 / 403 / 404 / 409 / 422
+
 401 signifie « non authentifié », 403 « authentifié mais non autorisé », 404 « n'existe pas », 409 « en conflit avec l'état actuel », 422 « bien formé mais sémantiquement invalide ».
 
 **Pourquoi c'est une bonne pratique :** les clients agissent différemment pour chacun : 401 déclenche un
@@ -98,6 +101,7 @@ GET  /orders/9 (someone else's order)      -> 404 Not Found
 ```
 
 ### Renvoyez les erreurs au format RFC 9457 Problem Details
+
 Utilisez un seul format d'erreur partout : `application/problem+json` avec `type`, `title`, `status`, `detail`, plus vos propres champs.
 
 **Pourquoi c'est une bonne pratique :** quand chaque endpoint invente son propre JSON d'erreur, chaque client écrit un
@@ -123,6 +127,7 @@ class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 ```
 
 ### Signalez toutes les erreurs de validation en une fois
+
 Renvoyez chaque champ invalide dans une seule réponse, pas seulement le premier trouvé.
 
 **Pourquoi c'est une bonne pratique :** si un formulaire a 5 problèmes et que l'API en signale un par appel,
@@ -145,6 +150,7 @@ l'utilisateur a besoin de 5 allers-retours. Une liste d'erreurs par champ permet
 ## 📄 Collections
 
 ### Paginez toujours les collections
+
 Chaque endpoint de liste prend `page`/`size` ou un curseur, avec une taille par défaut et une taille maximale.
 
 **Pourquoi c'est une bonne pratique :** `GET /orders` fonctionne avec 100 lignes en dev et en renvoie 4 millions en
@@ -164,6 +170,7 @@ Page<OrderResponse> list(@PageableDefault(size = 20) Pageable pageable) {
 ```
 
 ### Préférez la pagination par curseur pour les données volumineuses ou changeantes
+
 Utilisez un curseur (`?after=<dernier id>`) plutôt que `OFFSET` pour les fils d'actualité et les grosses tables.
 
 **Pourquoi c'est une bonne pratique :** `OFFSET 1000000` oblige la base à lire et jeter un million de lignes, donc la
@@ -180,6 +187,7 @@ SELECT * FROM orders WHERE id < :lastId ORDER BY id DESC LIMIT 20;
 ```
 
 ### Supportez le filtrage et le tri avec une liste blanche
+
 Acceptez `?status=PAID&sort=createdAt,desc` uniquement sur des champs connus.
 
 **Pourquoi c'est une bonne pratique :** passer la valeur de `sort` directement à la requête permet de trier sur des
@@ -194,6 +202,7 @@ private static final Set<String> SORTABLE = Set.of("createdAt", "total");
 ## 🧬 Payloads
 
 ### Exposez des DTO, pas des entités
+
 Convertissez les entités en records de requête et de réponse à la frontière de l'API.
 
 **Pourquoi c'est une bonne pratique :** une entité exposée directement lie votre schéma de base de données au
@@ -213,6 +222,7 @@ record OrderResponse(long id, String status, BigDecimal total, Instant createdAt
 ```
 
 ### Utilisez des formats cohérents pour les dates, l'argent et les enums
+
 Envoyez les dates en ISO 8601 UTC (`2026-03-01T10:15:30Z`), l'argent en chaîne décimale ou en unités mineures plus une devise, et les enums en chaînes stables.
 
 **Pourquoi c'est une bonne pratique :** `03/04/2026` est mars ou avril selon le lecteur. Un `double` pour l'argent
@@ -230,6 +240,7 @@ quelqu'un insère une valeur. Utilisez `BigDecimal` côté serveur.
 ## 🔄 Fiabilité & évolution
 
 ### Rendez les opérations non sûres idempotentes avec un `Idempotency-Key`
+
 Laissez les clients envoyer une clé unique avec `POST` et renvoyez le résultat stocké en cas de répétition.
 
 **Pourquoi c'est une bonne pratique :** les réseaux tombent après que le serveur a traité la requête mais avant que le
@@ -250,6 +261,7 @@ ResponseEntity<PaymentResponse> pay(@RequestHeader("Idempotency-Key") String key
 ```
 
 ### Utilisez la concurrence optimiste avec les ETags
+
 Renvoyez un `ETag` (ou une `version`) et exigez `If-Match` sur les mises à jour. Répondez 412 ou 409 en cas de décalage.
 
 **Pourquoi c'est une bonne pratique :** deux utilisateurs modifient le même enregistrement ; le second `PUT` écrase
@@ -267,6 +279,7 @@ ResponseEntity<ProductResponse> update(@PathVariable long id,
 ```
 
 ### Versionnez l'API et évitez les changements cassants
+
 Mettez une version dans l'URL (`/v1/`) ou dans un en-tête, et n'ajoutez que des champs optionnels au sein d'une version.
 
 **Pourquoi c'est une bonne pratique :** dès que des applications mobiles et des partenaires dépendent de votre JSON,
@@ -283,6 +296,7 @@ GET /v2/users/7   -> { "fullName": "Ann B." }
 ```
 
 ### Validez les entrées et documentez le contrat avec OpenAPI
+
 Annotez les types de requête avec Bean Validation et générez une spécification OpenAPI (springdoc), versionnée ou publiée depuis la CI.
 
 **Pourquoi c'est une bonne pratique :** une API non documentée s'apprend par essais et erreurs, et la documentation

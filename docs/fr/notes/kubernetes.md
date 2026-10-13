@@ -3,6 +3,7 @@
 ## Contextes et namespaces
 
 ### Contextes (clusters)
+
 ```bash
 kubectl config get-contexts
 kubectl config current-context
@@ -11,6 +12,7 @@ kubectl config set-context --current --namespace=payments   # namespace par déf
 ```
 
 ### Namespaces
+
 ```bash
 kubectl get ns
 kubectl create ns staging
@@ -19,6 +21,7 @@ kubectl get pods -A                            # tous les namespaces
 ```
 
 ### Alias pratiques
+
 ```bash
 alias k=kubectl
 source <(kubectl completion zsh)
@@ -30,6 +33,7 @@ complete -o default -F __start_kubectl k       # bash
 ## kubectl au quotidien
 
 ### Lister des ressources
+
 ```bash
 kubectl get pods
 kubectl get pods -o wide                       # nœud + IP
@@ -45,6 +49,7 @@ kubectl get pods -o custom-columns=NAME:.metadata.name,NODE:.spec.nodeName,STATU
 ```
 
 ### Sortie typique
+
 ```text
 NAME                   READY   STATUS             RESTARTS      AGE
 api-7d9c8b6f5d-4xk2p   1/1     Running            0             3h
@@ -52,6 +57,7 @@ api-7d9c8b6f5d-9zq7m   0/1     CrashLoopBackOff   6 (45s ago)   10m
 ```
 
 ### Describe, apply, delete
+
 ```bash
 kubectl describe pod api-7d9c8b6f5d-9zq7m      # les événements en bas sont la partie utile
 kubectl apply -f deploy.yaml
@@ -63,6 +69,7 @@ kubectl delete pod api-7d9c --grace-period=0 --force   # pod bloqué (dernier re
 ```
 
 ### Générer du YAML plutôt que l'écrire
+
 ```bash
 kubectl create deploy api --image=myapp:1.0 --replicas=2 --dry-run=client -o yaml > deploy.yaml
 kubectl expose deploy api --port=80 --target-port=8080 --dry-run=client -o yaml
@@ -70,6 +77,7 @@ kubectl explain deployment.spec.strategy       # documentation intégrée des ch
 ```
 
 ### Modifier et patcher des objets en direct
+
 ```bash
 kubectl edit deploy api
 kubectl scale deploy api --replicas=5
@@ -85,6 +93,7 @@ kubectl patch deploy api -p '{"spec":{"replicas":3}}'
 ## Déboguer des pods
 
 ### Logs
+
 ```bash
 kubectl logs api-7d9c
 kubectl logs -f api-7d9c --tail=100
@@ -95,6 +104,7 @@ kubectl logs deploy/api --since=10m
 ```
 
 ### Exec, port-forward, copie
+
 ```bash
 kubectl exec -it api-7d9c -- sh
 kubectl exec api-7d9c -- env
@@ -104,6 +114,7 @@ kubectl cp api-7d9c:/tmp/heap.hprof ./heap.hprof
 ```
 
 ### Conteneur de debug éphémère (l'image n'a pas de shell)
+
 ```bash
 kubectl debug -it api-7d9c --image=nicolaka/netshoot --target=api
 kubectl debug node/worker-1 -it --image=busybox        # accès à l'hôte sur un nœud
@@ -124,9 +135,11 @@ kubectl run tmp --rm -it --image=busybox --restart=Never -- sh
 | `Running` mais `0/1 READY` | Readiness probe en échec | Chemin/port de la probe, événements de `describe` |
 
 ### Pourquoi redémarre-t-il ?
+
 ```bash
 kubectl describe pod api-7d9c | grep -A6 'Last State'
 ```
+
 ```text
     Last State:     Terminated
       Reason:       OOMKilled
@@ -134,6 +147,7 @@ kubectl describe pod api-7d9c | grep -A6 'Last State'
 ```
 
 ### Événements, consommation de ressources
+
 ```bash
 kubectl get events --sort-by=.lastTimestamp
 kubectl get events --field-selector type=Warning
@@ -143,6 +157,7 @@ kubectl top pod --containers
 ```
 
 ### Le service n'a pas d'endpoints ?
+
 ```bash
 kubectl get endpoints api                      # vide = le sélecteur ne correspond à aucun pod prêt
 kubectl get svc api -o jsonpath='{.spec.selector}'
@@ -154,6 +169,7 @@ kubectl get pods -l app=api                    # ces labels correspondent-ils ?
 ## Dépannage : trouver la cause, puis corriger
 
 Méthode, toujours dans cet ordre :
+
 ```bash
 kubectl get pod api-7d9c -o wide               # STATUS, RESTARTS, nœud
 kubectl describe pod api-7d9c                  # lire d'abord les Events en bas
@@ -181,6 +197,7 @@ kubectl exec -it api-7d9c -- sh                # vérifier env, fichiers, DNS de
 | DNS en échec dans un pod | CoreDNS arrêté / mauvais nom | `kubectl exec x -- nslookup api` | Utiliser `svc.namespace.svc.cluster.local`, vérifier `kubectl -n kube-system get pods -l k8s-app=kube-dns` |
 
 Appliquer la correction, puis vérifier :
+
 ```bash
 kubectl apply -f deployment.yaml
 kubectl rollout status deploy/api
@@ -192,6 +209,7 @@ kubectl get pods -l app=api -w
 ## Rollouts
 
 ### Déployer, surveiller, annuler
+
 ```bash
 kubectl set image deploy/api api=myapp:1.2
 kubectl rollout status deploy/api              # bloque jusqu'à la fin ou l'échec
@@ -205,12 +223,14 @@ kubectl rollout resume deploy/api
 ```
 
 ### Autoscaling
+
 ```bash
 kubectl autoscale deploy api --min=2 --max=10 --cpu-percent=70
 kubectl get hpa
 ```
 
 ### Vider un nœud pour maintenance
+
 ```bash
 kubectl cordon worker-1                        # plus de nouveaux pods
 kubectl drain worker-1 --ignore-daemonsets --delete-emptydir-data
@@ -222,12 +242,14 @@ kubectl uncordon worker-1
 ## Configuration et secrets
 
 ### ConfigMap
+
 ```bash
 kubectl create configmap app-config --from-literal=LOG_LEVEL=info --from-file=application.yml
 kubectl get cm app-config -o yaml
 ```
 
 ### Secret
+
 ```bash
 kubectl create secret generic db-creds --from-literal=password='s3cr3t'
 kubectl create secret docker-registry regcred \
@@ -238,6 +260,7 @@ kubectl get secret db-creds -o jsonpath='{.data.password}' | base64 -d
 Les Secrets sont seulement encodés en base64, pas chiffrés. Activez le chiffrement au repos ou utilisez un gestionnaire de secrets externe.
 
 ### Les utiliser dans un pod
+
 ```yaml
 containers:
   - name: api
@@ -261,6 +284,7 @@ volumes:
 ## Manifests
 
 ### Deployment
+
 ```yaml
 apiVersion: apps/v1
 kind: Deployment
@@ -299,6 +323,7 @@ spec:
 Les `requests` guident la planification, les `limits` sont appliquées à l'exécution (mémoire au-delà de la limite = OOMKilled, CPU au-delà de la limite = throttling).
 
 ### Service
+
 ```yaml
 apiVersion: v1
 kind: Service
@@ -320,6 +345,7 @@ spec:
 | `ExternalName` | CNAME DNS vers un hôte externe |
 
 ### Ingress
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -343,6 +369,7 @@ spec:
 ```
 
 ### CronJob
+
 ```yaml
 apiVersion: batch/v1
 kind: CronJob
@@ -362,11 +389,13 @@ spec:
               image: myapp:1.0
               args: ["report", "--daily"]
 ```
+
 ```bash
 kubectl create job --from=cronjob/nightly-report manual-run-1   # déclencher maintenant
 ```
 
 ### PersistentVolumeClaim
+
 ```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -383,6 +412,7 @@ spec:
 ## Accès et RBAC
 
 ### Qui peut faire quoi
+
 ```bash
 kubectl auth can-i create pods -n staging
 kubectl auth can-i --list
@@ -391,6 +421,7 @@ kubectl get rolebindings,clusterrolebindings -A | grep my-user
 ```
 
 ### Donner un accès en lecture à un service account
+
 ```bash
 kubectl create serviceaccount ci -n staging
 kubectl create role pod-reader --verb=get,list,watch --resource=pods -n staging
@@ -402,17 +433,20 @@ kubectl create rolebinding ci-pod-reader --role=pod-reader --serviceaccount=stag
 ## Commandes utiles en une ligne
 
 ### Redémarrer chaque pod bloqué dans un mauvais état
+
 ```bash
 kubectl get pods -A | grep -E 'CrashLoopBackOff|Error|ImagePullBackOff'
 kubectl delete pod --field-selector=status.phase=Failed -A
 ```
 
 ### Images en cours d'exécution dans le cluster
+
 ```bash
 kubectl get pods -A -o jsonpath='{range .items[*]}{.spec.containers[*].image}{"\n"}{end}' | tr ' ' '\n' | sort | uniq -c
 ```
 
 ### Quel nœud exécute quel pod
+
 ```bash
 kubectl get pods -o wide --sort-by=.spec.nodeName
 ```

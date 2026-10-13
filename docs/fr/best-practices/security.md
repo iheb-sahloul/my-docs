@@ -1,10 +1,9 @@
 # Bonnes pratiques de sécurité
 
-
-
 ## 🚪 Entrées & injection
 
 ### Validez toutes les entrées à la frontière
+
 Validez chaque corps de requête, paramètre et en-tête avec Bean Validation, et rejetez les mauvaises entrées avec un 400.
 
 **Pourquoi c'est une bonne pratique :** toute valeur venue de l'extérieur n'est pas fiable. Sans limites, une chaîne
@@ -26,6 +25,7 @@ User create(@Valid @RequestBody CreateUser body) { ... }
 ```
 
 ### Utilisez des requêtes paramétrées, jamais de concaténation de chaînes
+
 Passez les valeurs en paramètres liés dans JDBC, JPQL et les requêtes natives.
 
 **Pourquoi c'est une bonne pratique :** l'injection SQL figure dans l'OWASP Top 10 depuis vingt ans et provoque
@@ -46,6 +46,7 @@ List<User> findByName(@Param("name") String name);
 ```
 
 ### Échappez les sorties et définissez une Content Security Policy
+
 Encodez les données selon le contexte où elles sont rendues (HTML, JS, URL), et envoyez des en-têtes de sécurité.
 
 **Pourquoi c'est une bonne pratique :** une XSS stockée permet au commentaire d'un utilisateur d'exécuter du
@@ -65,6 +66,7 @@ http.headers(h -> h.contentSecurityPolicy(c -> c.policyDirectives("default-src '
 ```
 
 ### Prévenez le path traversal et le SSRF
+
 Ne construisez jamais de chemins de fichiers ou d'URL sortantes directement à partir d'une saisie utilisateur. Normalisez et vérifiez contre une liste d'autorisation.
 
 **Pourquoi c'est une bonne pratique :** `../../etc/passwd` dans un nom de fichier lit n'importe quel fichier
@@ -85,6 +87,7 @@ if (!file.startsWith(base)) throw new ResponseStatusException(HttpStatus.BAD_REQ
 ## 🔑 Authentification & secrets
 
 ### Hachez les mots de passe avec un algorithme lent et adaptatif
+
 Utilisez `BCryptPasswordEncoder`, Argon2 ou `DelegatingPasswordEncoder`. Ne stockez jamais de texte en clair, de MD5 ou de SHA simple.
 
 **Pourquoi c'est une bonne pratique :** un GPU calcule des milliards de hachages SHA-256 par seconde, donc une table
@@ -105,6 +108,7 @@ user.setPassword(passwordEncoder.encode(rawPassword));
 ```
 
 ### Gardez les secrets hors du code et de Git
+
 Chargez les secrets depuis des variables d'environnement ou un gestionnaire de secrets (Vault, AWS Secrets Manager, secrets Kubernetes), et faites-les tourner.
 
 **Pourquoi c'est une bonne pratique :** des bots scannent les commits publics de GitHub en quelques minutes et
@@ -120,6 +124,7 @@ spring.datasource.password: ${DB_PASSWORD}
 ```
 
 ### Validez complètement les JWT et gardez-les de courte durée
+
 Vérifiez la signature, `iss`, `aud` et `exp`. Utilisez des access tokens courts (5 à 15 min) avec des refresh tokens. N'acceptez jamais `alg: none`.
 
 **Pourquoi c'est une bonne pratique :** un JWT ne peut pas être révoqué avant son expiration, donc un token volé de
@@ -137,6 +142,7 @@ http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));
 ```
 
 ### Limitez le débit et verrouillez les endpoints de connexion
+
 Limitez les tentatives d'authentification, et renvoyez le même message pour un mauvais utilisateur et un mauvais mot de passe.
 
 **Pourquoi c'est une bonne pratique :** sans limites, un attaquant essaie 10 millions de mots de passe fuités contre
@@ -155,6 +161,7 @@ return ResponseEntity.status(401).body(problem("Invalid credentials"));
 ## 🛡️ Protections web
 
 ### Configurez CORS avec une liste d'origines explicite
+
 Autorisez des origines, méthodes et en-têtes précis. Ne combinez jamais `*` avec les credentials.
 
 **Pourquoi c'est une bonne pratique :** CORS est une règle du navigateur qui décide quels sites web peuvent lire les
@@ -174,6 +181,7 @@ registry.addMapping("/api/**")
 ```
 
 ### Gardez la protection CSRF activée pour les sessions par cookie
+
 Ne désactivez CSRF que pour les API sans état qui s'authentifient avec un bearer token dans un en-tête.
 
 **Pourquoi c'est une bonne pratique :** les navigateurs joignent les cookies automatiquement, donc un formulaire
@@ -191,6 +199,7 @@ http.csrf(AbstractHttpConfigurer::disable)
 ```
 
 ### Imposez HTTPS et des cookies sécurisés
+
 Redirigez vers HTTPS, envoyez HSTS, et définissez `Secure`, `HttpOnly` et `SameSite` sur les cookies de session.
 
 **Pourquoi c'est une bonne pratique :** sur le Wi-Fi d'un café, le trafic HTTP en clair peut être lu et modifié.
@@ -207,6 +216,7 @@ server.servlet.session.cookie.same-site: lax
 ## 🧑‍⚖️ Autorisation
 
 ### Refusez par défaut et appliquez le moindre privilège
+
 Exigez l'authentification pour chaque route, ouvrez explicitement certaines routes, et donnez à chaque compte ou service uniquement les permissions dont il a besoin.
 
 **Pourquoi c'est une bonne pratique :** « Broken Access Control » est le numéro 1 de l'OWASP Top 10 (2021). Un
@@ -226,6 +236,7 @@ que `SELECT/INSERT/UPDATE` limite le rayon d'action.
 ```
 
 ### Vérifiez la propriété à chaque accès à un objet
+
 Vérifiez que l'appelant a le droit d'accéder à cet enregistrement précis, pas seulement qu'il est connecté.
 
 **Pourquoi c'est une bonne pratique :** l'IDOR (insecure direct object reference) est le bug classique : l'utilisateur
@@ -249,6 +260,7 @@ orders.findByIdAndCustomerId(id, currentUser.id());
 ## 📦 Chaîne d'approvisionnement & exposition des données
 
 ### Scannez les dépendances et mettez-les à jour régulièrement
+
 Lancez OWASP Dependency-Check, Dependabot, Renovate ou Trivy en CI, et échouez sur les CVE de sévérité élevée.
 
 **Pourquoi c'est une bonne pratique :** Log4Shell (CVE-2021-44228) était une exécution de code à distance dans une
@@ -266,6 +278,7 @@ updates:
 ```
 
 ### N'exposez jamais les entités ni les erreurs internes
+
 Renvoyez des DTO et des corps d'erreur génériques. Loguez les détails uniquement côté serveur.
 
 **Pourquoi c'est une bonne pratique :** renvoyer une entité JPA divulgue des colonnes comme `passwordHash` ou
@@ -286,11 +299,10 @@ record UserResponse(long id, String email) {}
 ```
 
 ### Ne loguez jamais de secrets ni de données personnelles
+
 Masquez les tokens, mots de passe, numéros de carte et données personnelles avant de les loguer.
 
-**Pourquoi c'est une bonne pratique :** les logs sont copiés vers des outils tiers, conservés des mois et lisibles par
-bien plus de monde que la base de données. Un en-tête `Authorization` loggé est un identifiant valide tant que le
-token vit. Le RGPD traite aussi les données personnelles dans les logs comme des données personnelles.
+**Pourquoi :** traité dans [Ne loguez jamais de secrets ni de données personnelles](observability.md#ne-loguez-jamais-de-secrets-ni-de-donnees-personnelles).
 
 ```java
 // ⛔
@@ -301,6 +313,7 @@ log.info("Login attempt for user id={}", userId);
 ```
 
 ### Sécurisez l'actuator et les autres endpoints de gestion
+
 N'exposez publiquement que `health` et `info`, et placez le reste derrière une authentification ou un port privé.
 
 **Pourquoi c'est une bonne pratique :** `/actuator/env`, `/heapdump` et `/threaddump` révèlent la configuration, et un

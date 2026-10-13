@@ -1,10 +1,9 @@
 # Bonnes pratiques React & TypeScript
 
-
-
 ## 🔷 TypeScript
 
 ### Activez le mode `strict`
+
 Mettez `"strict": true` dans `tsconfig.json`, et ajoutez `noUncheckedIndexedAccess` si possible.
 
 **Pourquoi c'est une bonne pratique :** sans `strict`, `null` et `undefined` sont acceptés partout et les
@@ -15,6 +14,7 @@ vous utilisez TypeScript (« cannot read properties of undefined »). `noUncheck
 ✅ `{ "compilerOptions": { "strict": true, "noUncheckedIndexedAccess": true } }`
 
 ### Utilisez `unknown`, pas `any`
+
 Typez les valeurs que vous ne connaissez pas encore (réponses d'API, `JSON.parse`, erreurs de `catch`) en
 `unknown`, et affinez leur type avant de les utiliser.
 
@@ -35,6 +35,7 @@ const user = User.parse(await res.json());
 ```
 
 ### Modélisez l'état avec des unions discriminées
+
 Représentez les états mutuellement exclusifs par une union avec un champ `status` (ou `kind`), pas par plusieurs
 booléens optionnels.
 
@@ -54,7 +55,21 @@ type State =
   | { status: 'success'; data: User };
 ```
 
+Affichez-le avec un `switch` ; la vérification `never` fait échouer le compilateur si quelqu'un ajoute un statut et oublie une branche :
+
+```tsx
+function UserView({ state }: { state: State }) {
+  switch (state.status) {
+    case 'loading': return <Spinner />;
+    case 'error':   return <ErrorMessage error={state.error} />;
+    case 'success': return <Profile user={state.data} />;
+    default: { const _exhaustive: never = state; return _exhaustive; }
+  }
+}
+```
+
 ### Utilisez `satisfies` et `as const` plutôt que `as`
+
 Vérifiez une valeur par rapport à un type avec `satisfies`, et figez les valeurs littérales avec `as const`.
 Évitez les casts `as`.
 
@@ -76,6 +91,7 @@ const config = { port: 3000 } satisfies Config;
 ## ⚛️ État & rendu
 
 ### Dérivez les valeurs au lieu de les synchroniser avec `useEffect`
+
 Si une valeur peut être calculée à partir des props ou de l'état, calculez-la pendant le rendu. Ne la stockez pas
 dans un autre état mis à jour dans un effet.
 
@@ -94,6 +110,7 @@ const fullName = `${first} ${last}`;
 ```
 
 ### Ne mutez jamais l'état
+
 Créez toujours un nouvel objet ou un nouveau tableau lors d'une mise à jour de l'état.
 
 **Pourquoi c'est une bonne pratique :** React compare l'état par référence. Si vous faites `push` dans le tableau
@@ -111,6 +128,7 @@ setItems(prev => [...prev, newItem]);
 ```
 
 ### Utilisez des `key` stables et uniques dans les listes
+
 Utilisez un id issu des données comme `key`, pas l'index du tableau.
 
 **Pourquoi c'est une bonne pratique :** React utilise la key pour associer les éléments d'un rendu à l'autre. Avec
@@ -123,6 +141,7 @@ composant attaché à son élément. L'index n'est sûr que pour des listes stat
 ✅ `items.map(item => <Row key={item.id} item={item} />)`
 
 ### Déclarez toutes les dépendances des effets et faites le nettoyage
+
 Listez tout ce que l'effet utilise dans le tableau de dépendances (laissez la règle de lint
 `react-hooks/exhaustive-deps` s'en charger), et renvoyez une fonction de nettoyage pour les abonnements, timers et
 requêtes.
@@ -143,6 +162,7 @@ useEffect(() => {
 ```
 
 ### Utilisez une bibliothèque de data fetching pour l'état serveur
+
 Chargez les données serveur avec TanStack Query (ou SWR, ou les loaders de votre framework) plutôt qu'avec
 `useState` + `useEffect`.
 
@@ -160,7 +180,18 @@ const { data, isPending, error } = useQuery({
 });
 ```
 
+Après une mutation, invalidez la clé plutôt que de patcher le state à la main :
+
+```tsx
+const queryClient = useQueryClient();
+const rename = useMutation({
+  mutationFn: (name: string) => updateUser(id, { name }),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['user', id] }),
+});
+```
+
 ### Ne mémoïsez que quand vous avez mesuré un problème
+
 N'enveloppez pas chaque valeur dans `useMemo` et chaque fonction dans `useCallback` par défaut.
 
 **Pourquoi c'est une bonne pratique :** la mémoïsation n'est pas gratuite : elle coûte de la mémoire, une
@@ -175,6 +206,7 @@ ce qui rend inutiles la plupart des cas manuels.
 ## 🧩 Composants
 
 ### Gardez des composants petits et extrayez des custom hooks
+
 Un composant, une responsabilité. Déplacez la logique avec état (chargement, abonnements, gestion de formulaire)
 dans des custom hooks.
 
@@ -186,7 +218,18 @@ composants de présentation qui ne prennent que des props sont faciles à réuti
 ⛔ une `CheckoutPage` avec 12 `useState` et 4 `useEffect`
 ✅ `const cart = useCart(); const payment = usePayment();` + `<CartSummary cart={cart} />`
 
+```tsx
+// ✅ le hook porte la logique, le composant se contente d'afficher
+function useCart() {
+  const [items, setItems] = useState<Item[]>([]);
+  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);   // dérivé, pas stocké
+  const add = (item: Item) => setItems(prev => [...prev, item]);
+  return { items, total, add };
+}
+```
+
 ### Typez les props explicitement et évitez le prop drilling
+
 Déclarez un type `Props` pour chaque composant. Quand la même prop traverse 3 niveaux ou plus, utilisez la
 composition (`children`) ou un context.
 
@@ -205,6 +248,7 @@ function Button({ variant, onClick, children }: ButtonProps) { /* ... */ }
 ## ♿ Formulaires & accessibilité
 
 ### Utilisez du HTML sémantique
+
 Utilisez `<button>` pour les actions, `<a href>` pour la navigation, `<label>` pour les champs, et des titres dans
 l'ordre.
 
@@ -218,6 +262,7 @@ champ.
 ✅ `<button type="button" onClick={save}>Save</button>`, `<label>Email <input type="email" /></label>`
 
 ### Validez les formulaires avec un schéma
+
 Utilisez une bibliothèque de formulaires (React Hook Form) avec un schéma (zod) au lieu de vérifications ad hoc
 dans des handlers `onChange`.
 
@@ -232,4 +277,83 @@ la contourner.
 const schema = z.object({ email: z.string().email(), age: z.number().int().min(18) });
 type FormValues = z.infer<typeof schema>;
 const form = useForm<FormValues>({ resolver: zodResolver(schema) });
+```
+
+## ⚡ Performance
+
+### Découpez le code par route
+
+Chargez le code de chaque route avec `lazy()` et `<Suspense>`, pour que la première page ne télécharge que ce dont elle
+a besoin.
+
+**Pourquoi c'est une bonne pratique :** un bundle unique grossit à chaque fonctionnalité, et les utilisateurs paient
+les écrans d'administration dès la page de login. Le découpage par route est la coupure au meilleur rapport gain /
+complexité. Vérifiez le résultat avec un analyseur de bundle et un budget de taille en CI, pour qu'une dépendance lourde
+(une bibliothèque complète de dates ou de graphiques) soit repérée en revue, pas en production.
+
+```tsx
+// ✅
+const Reports = lazy(() => import('./pages/Reports'));
+<Suspense fallback={<Spinner />}><Reports /></Suspense>
+```
+
+### Virtualisez les longues listes
+
+N'affichez que les lignes visibles des listes et tableaux de centaines d'éléments (TanStack Virtual, react-window).
+
+**Pourquoi c'est une bonne pratique :** 5 000 lignes, ce sont 5 000 arbres de composants et des dizaines de milliers de
+nœuds DOM ; chaque re-rendu et chaque frappe dans un filtre ralentissent, et l'INP en souffre. La virtualisation garde
+une taille de DOM constante quelle que soit la quantité de données. Paginez d'abord côté serveur quand les
+utilisateurs n'ont pas vraiment besoin de toutes les lignes.
+
+## 🛡️ Erreurs & sécurité
+
+### Placez des error boundaries autour des zones indépendantes
+
+Enveloppez les routes et les widgets indépendants dans des error boundaries avec un fallback utile, et remontez
+l'erreur.
+
+**Pourquoi c'est une bonne pratique :** sans elles, une exception pendant le rendu démonte toute l'application et
+laisse une page blanche. Une boundary par route ou par widget garde le reste de l'écran utilisable et donne un endroit
+où envoyer l'erreur au monitoring. Les error boundaries n'attrapent pas les erreurs des gestionnaires d'événements ni
+du code asynchrone ; traitez-les là où elles se produisent.
+
+```tsx
+// ✅ react-error-boundary
+<ErrorBoundary FallbackComponent={WidgetError} onError={reportError}>
+  <RevenueChart />
+</ErrorBoundary>
+```
+
+### N'affichez jamais de HTML non fiable sans l'assainir
+
+Laissez React échapper le contenu ; si vous devez utiliser `dangerouslySetInnerHTML`, assainissez d'abord avec
+DOMPurify.
+
+**Pourquoi c'est une bonne pratique :** JSX échappe le texte par défaut, ce qui bloque la plupart des XSS.
+`dangerouslySetInnerHTML`, `href={userInput}` (une URL `javascript:`) et l'injection de HTML venant d'un CMS
+contournent cette protection. Une XSS peut lire tout ce que la page peut lire, y compris les tokens gardés dans
+`localStorage` ; voir les [bonnes pratiques de sécurité](security.md) pour le stockage des tokens et la CSP.
+
+⛔ `<div dangerouslySetInnerHTML={{ __html: comment.body }} />`
+✅ `<div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.body) }} />`
+
+## 🧪 Tests
+
+### Testez le comportement via l'UI, et mockez le réseau, pas les composants
+
+Interrogez par rôle et par label avec React Testing Library, et mockez le HTTP avec MSW plutôt que de mocker des hooks
+ou des modules.
+
+**Pourquoi c'est une bonne pratique :** les tests qui vérifient l'état d'un composant ou ses appels internes cassent à
+chaque refactoring et passent quand le comportement visible est cassé. Les requêtes par rôle testent ce que voit
+l'utilisateur et vérifient aussi l'accessibilité. MSW intercepte les requêtes au niveau réseau : les mêmes handlers
+servent en tests unitaires, dans Storybook et en développement local, et le vrai code de chargement s'exécute. Les
+détails sont dans les [bonnes pratiques de tests](testing.md).
+
+```tsx
+// ✅
+server.use(http.get('/api/orders', () => HttpResponse.json([{ id: 1, total: 42 }])));
+render(<OrdersPage />);
+expect(await screen.findByRole('row', { name: /42/ })).toBeInTheDocument();
 ```

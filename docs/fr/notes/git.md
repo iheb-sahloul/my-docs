@@ -3,6 +3,7 @@
 ## Annuler des erreurs
 
 ### Annuler ou retirer de l'index des modifications
+
 ```bash
 git restore file.txt                     # annule les modifications non indexées (irrécupérable)
 git restore --staged file.txt            # retire de l'index, conserve les modifications
@@ -12,6 +13,7 @@ git clean -fd                            # les supprime
 ```
 
 ### Corriger le dernier commit
+
 ```bash
 git commit --amend                       # modifier le message
 git add forgotten.txt && git commit --amend --no-edit   # ajouter un fichier, garder le message
@@ -19,6 +21,7 @@ git commit --amend --author="Name <me@example.com>" --no-edit
 ```
 
 ### Annuler des commits
+
 ```bash
 git reset --soft HEAD~1                  # annule le commit, garde les changements indexés
 git reset HEAD~1                         # annule le commit, garde les changements non indexés (--mixed)
@@ -35,6 +38,7 @@ git revert HEAD~3..HEAD                  # annule les 3 derniers commits
 | `commit --amend` | Oui | Non |
 
 ### Commit sur la mauvaise branche
+
 ```bash
 git switch -c feature/right-branch       # nouvelle branche au commit courant
 git switch main
@@ -42,6 +46,7 @@ git reset --hard origin/main             # ramène main en arrière
 ```
 
 ### Force push en sécurité
+
 ```bash
 git push --force-with-lease              # refuse si quelqu'un d'autre a poussé entre-temps
 ```
@@ -57,10 +62,12 @@ git stash push -p                        # choisir les hunks de façon interacti
 git stash push -- src/Foo.java           # un seul chemin
 git stash list
 ```
+
 ```text
 stash@{0}: On main: wip: login form
 stash@{1}: WIP on main: 3f2a1bc Fix typo
 ```
+
 ```bash
 git stash show -p stash@{0}              # voir le diff
 git stash pop                            # applique le dernier et le supprime
@@ -75,10 +82,12 @@ git stash clear                          # supprime tout (attention)
 ## Rebase interactif
 
 ### Nettoyer les N derniers commits
+
 ```bash
 git rebase -i HEAD~4
 git rebase -i origin/main                # tout depuis la création de la branche
 ```
+
 ```text
 pick   a1b2c3 Add login endpoint
 squash d4e5f6 fix typo
@@ -96,6 +105,7 @@ drop   0d1e2f debug logging
 | `drop` | Supprimer le commit |
 
 ### Workflow autosquash
+
 ```bash
 git commit --fixup a1b2c3                # marque un correctif pour un commit antérieur
 git rebase -i --autosquash origin/main   # les fixups sont réordonnés automatiquement
@@ -103,6 +113,7 @@ git config --global rebase.autosquash true
 ```
 
 ### Rebase onto et conflits
+
 ```bash
 git rebase main                          # rejoue ma branche par-dessus main
 git rebase --onto main old-base feature  # déplace feature de old-base vers main
@@ -158,11 +169,13 @@ Enregistre, en local, où pointaient `HEAD` et les branches pendant ~90 jours. C
 ```bash
 git reflog
 ```
+
 ```text
 3f2a1bc HEAD@{0}: reset: moving to HEAD~3
 9d8c7b6 HEAD@{1}: commit: Add invoice export
 5e4d3c2 HEAD@{2}: rebase (finish): returning to refs/heads/feature
 ```
+
 ```bash
 git reset --hard HEAD@{1}                # revenir à avant le reset
 git branch rescue 9d8c7b6                # ou conserver le commit perdu sur une branche
@@ -228,6 +241,7 @@ git branch -vv                           # informations de suivi
 ## Configuration et alias utiles
 
 ### Configuration
+
 ```bash
 git config --global user.name "Iheb Sahloul"
 git config --global user.email "me@example.com"
@@ -243,6 +257,7 @@ git config --global --list --show-origin
 ```
 
 ### Alias
+
 ```bash
 git config --global alias.st "status -sb"
 git config --global alias.lg "log --oneline --graph --decorate --all"
@@ -254,12 +269,14 @@ git config --global alias.wip "!git add -A && git commit -m wip"
 ```
 
 ### Identité par dossier (~/.gitconfig)
+
 ```text
 [includeIf "gitdir:~/work/"]
     path = ~/.gitconfig-work
 ```
 
 ### Ignorer avec .gitignore des fichiers déjà suivis
+
 ```bash
 git rm --cached secrets.env              # arrête le suivi mais garde le fichier sur disque
 echo "secrets.env" >> .gitignore

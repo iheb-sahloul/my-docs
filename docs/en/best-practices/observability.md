@@ -1,10 +1,9 @@
 # Observability Best Practices
 
-
-
 ## 📜 Logging
 
 ### Use structured (JSON) logs
+
 Emit one JSON object per line with fixed field names, instead of free text.
 
 **Why it's a best practice:** grepping "Order 42 failed for user ann" works on one server; with 30 pods sending
@@ -23,6 +22,7 @@ logging.structured.format.console: ecs     # or logstash, gelf
 ```
 
 ### Use SLF4J with parameterized messages
+
 Log with `log.info("... {}", value)`, never string concatenation or `System.out`.
 
 **Why it's a best practice:** concatenation builds the string even when the level is disabled, which costs
@@ -39,6 +39,7 @@ log.debug("Order saved id={} total={}", order.id(), order.total());
 ```
 
 ### Choose log levels deliberately
+
 `ERROR` = someone must act, `WARN` = unexpected but handled, `INFO` = business events, `DEBUG` = diagnostics, `TRACE` = very detailed.
 
 **Why it's a best practice:** if everything is `ERROR`, alerts fire constantly and get muted; if a real failure
@@ -56,6 +57,7 @@ log.error("Payment provider unreachable orderId={}", orderId, ex);
 ```
 
 ### Log the exception once, with its stack trace
+
 Pass the exception as the last argument, and log it at the place where you handle it, not at every layer.
 
 **Why it's a best practice:** logging and rethrowing at each layer prints the same stack trace 4 times, so one
@@ -76,6 +78,7 @@ ProblemDetail handle(OrderStorageException ex) {
 ```
 
 ### Add context with MDC
+
 Put request-scoped values (`requestId`, `userId`, `tenant`) in the MDC in a filter, so every line carries them.
 
 **Why it's a best practice:** in a busy service, log lines from 200 concurrent requests are interleaved, and
@@ -95,6 +98,7 @@ class RequestContextFilter extends OncePerRequestFilter {
 ```
 
 ### Never log secrets or personal data
+
 Mask passwords, tokens, card numbers and personal data, and avoid logging whole request bodies.
 
 **Why it's a best practice:** logs are shipped to third parties, retained for months, and readable by many
@@ -111,6 +115,7 @@ log.info("Checkout started userId={} items={}", user.id(), cart.size());
 ## 📊 Metrics
 
 ### Expose metrics with Micrometer and Prometheus
+
 Add `spring-boot-starter-actuator` and `micrometer-registry-prometheus`, then scrape `/actuator/prometheus`.
 
 **Why it's a best practice:** logs tell you what happened once; metrics tell you how the system behaves over
@@ -125,6 +130,7 @@ management:
 ```
 
 ### Measure the RED and USE signals
+
 For each service, track Rate, Errors, Duration (requests) and Utilization, Saturation, Errors (resources such as pools and queues).
 
 **Why it's a best practice:** hundreds of metrics are useless without a checklist. RED answers "are users
@@ -140,6 +146,7 @@ Saturation hikaricp_connections_pending
 ```
 
 ### Add business and custom metrics with a bounded set of tags
+
 Count what the business cares about (orders placed, payments failed) and keep tag values low-cardinality.
 
 **Why it's a best practice:** "CPU is fine" while payments fail silently is a common outage. But each unique tag
@@ -157,6 +164,7 @@ Timer.builder("payment.duration").publishPercentileHistogram().register(registry
 ```
 
 ### Prefer percentiles over averages
+
 Track p50, p95 and p99 latency with histograms.
 
 **Why it's a best practice:** an average of 120 ms can hide 1% of requests taking 8 s. Users with the slow
@@ -172,6 +180,7 @@ management.metrics.distribution.slo.http.server.requests: 100ms,500ms,1s
 ## 🧵 Tracing
 
 ### Propagate trace context across services
+
 Use Micrometer Tracing with OpenTelemetry, W3C `traceparent` headers, and add the trace id to your logs.
 
 **Why it's a best practice:** one user request may touch 8 services; without a shared trace id you correlate by
@@ -187,6 +196,7 @@ logging.pattern.correlation: "[${spring.application.name:},%X{traceId:-},%X{span
 ```
 
 ### Sample traces sensibly
+
 Sample a percentage in production (or use tail-based sampling that keeps errors and slow traces).
 
 **Why it's a best practice:** storing 100% of traces at high traffic is expensive and often unnecessary, while
@@ -202,6 +212,7 @@ management.tracing.sampling.probability: 0.05
 ```
 
 ### Add custom spans around important operations
+
 Wrap key business steps or external calls with an `Observation` (or `@Observed`) with a low-cardinality name.
 
 **Why it's a best practice:** automatic instrumentation covers HTTP and JDBC, but not "calculate shipping
@@ -216,12 +227,10 @@ public Quote quote(Cart cart) { ... }
 ## ❤️ Health & alerting
 
 ### Expose separate liveness and readiness probes
+
 Use `/actuator/health/liveness` and `/actuator/health/readiness`, and wire them to Kubernetes.
 
-**Why it's a best practice:** liveness answers "should I restart this?", readiness answers "should I send
-traffic?". If a database outage fails liveness, Kubernetes restarts every pod in a loop and makes it worse.
-The right behavior is to stop routing (readiness) and keep the pods running. Also use readiness to avoid
-receiving traffic before warm-up completes.
+**Why:** covered in [Configure liveness, readiness and startup probes correctly](docker-k8s-devops.md#configure-liveness-readiness-and-startup-probes-correctly).
 
 ```yaml
 # ✅
@@ -235,6 +244,7 @@ readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
 ```
 
 ### Shut down gracefully
+
 Enable graceful shutdown so in-flight requests finish before the pod exits.
 
 **Why it's a best practice:** without it, every deployment cuts running requests, giving users a burst of 502
@@ -247,6 +257,7 @@ spring.lifecycle.timeout-per-shutdown-phase: 30s
 ```
 
 ### Alert on symptoms, not causes
+
 Page on user-visible problems (error rate, latency SLO burn, no traffic), and keep CPU and disk as tickets or dashboards.
 
 **Why it's a best practice:** "CPU at 85%" may be perfectly fine and wakes someone at 3 a.m. for nothing;
@@ -269,6 +280,7 @@ alert fatigue leads people to ignore or mute alerts, and then the real one is mi
 ```
 
 ### Give every alert an owner and a runbook
+
 Each page links to a runbook with what it means, how to check, and how to mitigate. Remove alerts that nobody acts on.
 
 **Why it's a best practice:** at 3 a.m., nobody remembers what `queue_depth_high` means. A runbook cuts time to
@@ -282,6 +294,7 @@ annotations:
 ```
 
 ### Define SLOs and track the error budget
+
 Set a target (say 99.9% availability over 30 days) and measure it from real request metrics.
 
 **Why it's a best practice:** 99.9% allows about 43 minutes of downtime per 30 days, 99.99% only about 4. Without

@@ -1,10 +1,9 @@
 # Bonnes pratiques de test
 
-
-
 ## 🔺 Stratégie
 
 ### Suivez la pyramide des tests
+
 Écrivez beaucoup de tests unitaires rapides, moins de tests d'intégration, et seulement une poignée de tests de bout en bout.
 
 **Pourquoi c'est une bonne pratique :** un test unitaire s'exécute en millisecondes, un test d'intégration avec une
@@ -23,6 +22,7 @@ Unitaires: 1500 (< 30 s)   Intégration: 200 (~ 3 min)   E2E: 15 parcours critiq
 ```
 
 ### Testez le comportement, pas l'implémentation
+
 Faites des assertions sur les résultats et les effets de bord observables, pas sur les méthodes privées ou les appels internes qui ont eu lieu.
 
 **Pourquoi c'est une bonne pratique :** un test couplé à l'implémentation casse à chaque refactoring alors que le
@@ -39,6 +39,7 @@ assertThat(service.total(cart)).isEqualByComparingTo("119.00");
 ```
 
 ### Écrivez un test qui échoue avant de corriger un bug
+
 Reproduisez d'abord le bug dans un test, regardez-le échouer, puis corrigez.
 
 **Pourquoi c'est une bonne pratique :** un correctif sans test est un bug qui attend de revenir, et vous ne pouvez
@@ -56,6 +57,7 @@ void total_isZero_whenCartHasNoItems() {
 ## 🧱 Structure & nommage
 
 ### Utilisez Arrange-Act-Assert
+
 Découpez chaque test en préparation, une seule action, et assertions, séparées par une ligne vide.
 
 **Pourquoi c'est une bonne pratique :** quand un test mélange préparation et vérifications dans une boucle, personne
@@ -85,6 +87,7 @@ void add_increasesSize() {
 ```
 
 ### Nommez les tests d'après le comportement
+
 Nommez un test `method_expectedResult_whenCondition` ou utilisez `@DisplayName` avec une phrase complète.
 
 **Pourquoi c'est une bonne pratique :** quand la CI signale `test1 FAILED`, il faut ouvrir le fichier pour savoir ce
@@ -102,6 +105,7 @@ void withdraw_throws_whenBalanceIsInsufficient() { ... }
 ```
 
 ### Testez un comportement par test
+
 Chaque test ne doit avoir qu'une seule raison d'échouer. Plusieurs assertions sont acceptables si elles décrivent le même résultat.
 
 **Pourquoi c'est une bonne pratique :** avec dix assertions sans rapport dans une méthode, le premier échec cache les
@@ -119,6 +123,7 @@ exactement ce qui est cassé.
 ```
 
 ### Utilisez des tests paramétrés pour les tables d'entrées
+
 Remplacez les tests copiés-collés qui ne diffèrent que par les données par `@ParameterizedTest`.
 
 **Pourquoi c'est une bonne pratique :** cinq tests quasi identiques se désynchronisent, et les cas limites sont
@@ -141,6 +146,7 @@ void isValid_returnsFalse_forMalformedEmails(String email) {
 ## 🎭 Doublures de test
 
 ### Préférez les fakes aux mocks pour les collaborateurs avec état
+
 Utilisez un fake en mémoire pour les repositories et les gateways. Gardez les mocks pour vérifier les interactions qui comptent.
 
 **Pourquoi c'est une bonne pratique :** stubber `when(repo.findById(1)).thenReturn(...)` dans 40 tests, c'est 40
@@ -162,6 +168,7 @@ class InMemoryUserRepository implements UserRepository {
 ```
 
 ### Ne mockez que ce que vous possédez ou ce qui est lent
+
 Mockez la frontière (client HTTP, horloge, broker de messages), pas les objets valeur ni la classe testée.
 
 **Pourquoi c'est une bonne pratique :** mocker une `List` ou un DTO donne un test de Mockito, pas de votre code.
@@ -180,6 +187,7 @@ assertThat(token.isExpired(clock)).isTrue();
 ```
 
 ### Utilisez Mockito en mode strict et vérifiez avec intention
+
 Utilisez `@ExtendWith(MockitoExtension.class)` (stubs stricts) et `ArgumentCaptor` quand vous devez contrôler ce qui a été envoyé.
 
 **Pourquoi c'est une bonne pratique :** les stubs stricts font échouer le test en cas de stubbing inutilisé, donc la
@@ -199,6 +207,7 @@ assertThat(captor.getValue().to()).isEqualTo("ann@example.com");
 ## 🐳 Tests d'intégration
 
 ### Utilisez Testcontainers, pas H2, pour les tests de base de données
+
 Exécutez les tests contre le même moteur de base de données qu'en production, dans un conteneur jetable.
 
 **Pourquoi c'est une bonne pratique :** H2 en « mode PostgreSQL » diffère quand même : pas de `jsonb`, verrouillage
@@ -220,6 +229,7 @@ class OrderRepositoryTest {
 ```
 
 ### Partagez les conteneurs entre les tests
+
 Déclarez le conteneur `static`, ou dans une classe de base ou de configuration partagée, pour qu'il démarre une fois par JVM.
 
 **Pourquoi c'est une bonne pratique :** démarrer un conteneur par classe de test coûte 3 à 10 s chacun ; 50 classes
@@ -239,6 +249,7 @@ class ContainersConfig {
 ```
 
 ### Utilisez des tranches de test plutôt que `@SpringBootTest` partout
+
 Choisissez `@WebMvcTest`, `@DataJpaTest` ou `@JsonTest` pour la couche testée. Réservez `@SpringBootTest` à quelques flux complets.
 
 **Pourquoi c'est une bonne pratique :** `@SpringBootTest` charge toute l'application : 5 à 15 s de démarrage pour un
@@ -266,6 +277,7 @@ class UserControllerTest {
 ```
 
 ### Testez les appels HTTP externes avec WireMock ou MockWebServer
+
 Stubbez le service distant au niveau HTTP, y compris les échecs et les réponses lentes.
 
 **Pourquoi c'est une bonne pratique :** appeler un vrai sandbox rend les tests lents, instables et dépendants de la
@@ -282,6 +294,7 @@ assertThatThrownBy(() -> client.rate("EUR")).isInstanceOf(RateUnavailableExcepti
 ## 🎯 Assertions & fiabilité
 
 ### Utilisez les assertions fluides d'AssertJ
+
 Préférez `assertThat(...)` au `assertEquals` de JUnit pour les collections, les objets et les exceptions.
 
 **Pourquoi c'est une bonne pratique :** `assertEquals(expected, actual)` voit constamment ses arguments inversés, ce
@@ -300,6 +313,7 @@ assertThatThrownBy(() -> service.withdraw(acc, 500))
 ```
 
 ### N'utilisez jamais `Thread.sleep` pour attendre un traitement asynchrone
+
 Utilisez Awaitility avec un timeout, ou rendez le code injectable et synchrone dans les tests.
 
 **Pourquoi c'est une bonne pratique :** un sleep fixe est soit trop court (instable sur une machine de CI chargée),
@@ -319,6 +333,7 @@ await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
 ```
 
 ### Rendez les tests indépendants et déterministes
+
 Pas d'état mutable partagé, pas de dépendance à l'ordre d'exécution, pas de données aléatoires sans seed, pas d'horloge réelle.
 
 **Pourquoi c'est une bonne pratique :** un test qui ne passe qu'après un autre est un test instable en puissance :
@@ -336,6 +351,7 @@ private List<User> users;
 ```
 
 ### Construisez les données de test avec des builders
+
 Utilisez de petites méthodes de fabrique ou des builders avec des valeurs par défaut raisonnables, et ne redéfinissez que ce qui intéresse le test.
 
 **Pourquoi c'est une bonne pratique :** un constructeur à 12 arguments répété dans 80 tests casse les 80 quand un
@@ -350,6 +366,7 @@ var user = aUser().withCountry("FR").build();
 ```
 
 ### Utilisez la couverture comme un signal, pas comme un objectif
+
 Suivez la couverture et échouez sur les baisses dans le code modifié, mais examinez aussi la qualité des tests (mutation testing avec PIT).
 
 **Pourquoi c'est une bonne pratique :** un test sans assertion donne 100 % de couverture de lignes et zéro sécurité.
@@ -370,6 +387,7 @@ void process_marksOrderPaid() {
 ```
 
 ### Exécutez les tests en CI sur chaque pull request
+
 Lancez la suite complète à chaque push et bloquez le merge sur un build rouge.
 
 **Pourquoi c'est une bonne pratique :** des tests qui ne tournent que sur le portable d'un développeur deviennent

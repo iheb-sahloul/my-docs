@@ -1,10 +1,9 @@
 # Testing Best Practices
 
-
-
 ## 🔺 Strategy
 
 ### Follow the test pyramid
+
 Write many fast unit tests, fewer integration tests, and only a handful of end-to-end tests.
 
 **Why it's a best practice:** a unit test runs in milliseconds, an integration test with a database in seconds,
@@ -22,6 +21,7 @@ Unit: 1500 (< 30 s)   Integration: 200 (~ 3 min)   E2E: 15 critical journeys
 ```
 
 ### Test behavior, not implementation
+
 Assert on results and observable side effects, not on which private methods or internal calls happened.
 
 **Why it's a best practice:** a test coupled to the implementation breaks on every refactor even though the
@@ -38,6 +38,7 @@ assertThat(service.total(cart)).isEqualByComparingTo("119.00");
 ```
 
 ### Write a failing test before fixing a bug
+
 Reproduce the bug in a test first, watch it fail, then fix it.
 
 **Why it's a best practice:** a fix without a test is a bug waiting to come back, and you can't prove your test
@@ -55,6 +56,7 @@ void total_isZero_whenCartHasNoItems() {
 ## 🧱 Structure & naming
 
 ### Use Arrange-Act-Assert
+
 Split each test into setup, one action, and assertions, separated by a blank line.
 
 **Why it's a best practice:** when a test mixes setup and checks in a loop, nobody can tell what is being
@@ -84,6 +86,7 @@ void add_increasesSize() {
 ```
 
 ### Name tests after the behavior
+
 Name a test `method_expectedResult_whenCondition` or use `@DisplayName` with a full sentence.
 
 **Why it's a best practice:** when CI reports `test1 FAILED`, you have to open the file to learn what broke.
@@ -101,6 +104,7 @@ void withdraw_throws_whenBalanceIsInsufficient() { ... }
 ```
 
 ### Test one behavior per test
+
 Each test should have one reason to fail. Several assertions are fine if they describe the same outcome.
 
 **Why it's a best practice:** with ten unrelated assertions in one method, the first failure hides the other
@@ -117,6 +121,7 @@ nine, and the name can't describe them. Small tests fail independently and tell 
 ```
 
 ### Use parameterized tests for input tables
+
 Replace copy-pasted tests that differ only by data with `@ParameterizedTest`.
 
 **Why it's a best practice:** five near-identical tests get out of sync, and boundary cases get skipped because
@@ -138,6 +143,7 @@ void isValid_returnsFalse_forMalformedEmails(String email) {
 ## 🎭 Test doubles
 
 ### Prefer fakes over mocks for collaborators with state
+
 Use an in-memory fake for repositories and gateways. Keep mocks for verifying interactions that matter.
 
 **Why it's a best practice:** stubbing `when(repo.findById(1)).thenReturn(...)` in 40 tests means 40 places to
@@ -159,6 +165,7 @@ class InMemoryUserRepository implements UserRepository {
 ```
 
 ### Mock only what you own or what is slow
+
 Mock the boundary (HTTP client, clock, message broker), not value objects or the class under test.
 
 **Why it's a best practice:** mocking a `List` or a DTO gives you a test of Mockito, not your code. Mocking
@@ -177,6 +184,7 @@ assertThat(token.isExpired(clock)).isTrue();
 ```
 
 ### Use Mockito strictly and verify with intent
+
 Use `@ExtendWith(MockitoExtension.class)` (strict stubs) and use `ArgumentCaptor` when you must check what was sent.
 
 **Why it's a best practice:** strict stubs fail the test on unused stubbings, so dead setup gets removed
@@ -196,6 +204,7 @@ assertThat(captor.getValue().to()).isEqualTo("ann@example.com");
 ## 🐳 Integration tests
 
 ### Use Testcontainers, not H2, for database tests
+
 Run tests against the same database engine you use in production, in a throwaway container.
 
 **Why it's a best practice:** H2 in "PostgreSQL mode" still differs: no `jsonb`, different locking, different
@@ -216,6 +225,7 @@ class OrderRepositoryTest {
 ```
 
 ### Share containers across tests
+
 Declare the container `static`, or in a shared base or config class, so it starts once per JVM.
 
 **Why it's a best practice:** starting a container per test class costs 3 to 10 s each; 50 classes add up to
@@ -235,6 +245,7 @@ class ContainersConfig {
 ```
 
 ### Use test slices instead of `@SpringBootTest` everywhere
+
 Pick `@WebMvcTest`, `@DataJpaTest` or `@JsonTest` for the layer you test. Use `@SpringBootTest` only for a few full flows.
 
 **Why it's a best practice:** `@SpringBootTest` loads the whole application: 5 to 15 s startup for a typical
@@ -261,6 +272,7 @@ class UserControllerTest {
 ```
 
 ### Test external HTTP calls with WireMock or MockWebServer
+
 Stub the remote service at the HTTP level, including failures and slow responses.
 
 **Why it's a best practice:** hitting a real sandbox makes tests slow, flaky and dependent on someone else's
@@ -276,6 +288,7 @@ assertThatThrownBy(() -> client.rate("EUR")).isInstanceOf(RateUnavailableExcepti
 ## 🎯 Assertions & reliability
 
 ### Use AssertJ fluent assertions
+
 Prefer `assertThat(...)` over JUnit's `assertEquals` for collections, objects and exceptions.
 
 **Why it's a best practice:** `assertEquals(expected, actual)` gets its arguments swapped constantly, giving
@@ -294,6 +307,7 @@ assertThatThrownBy(() -> service.withdraw(acc, 500))
 ```
 
 ### Never use `Thread.sleep` to wait for async work
+
 Use Awaitility with a timeout, or make the code injectable and synchronous in tests.
 
 **Why it's a best practice:** a fixed sleep is either too short (flaky on a loaded CI machine) or too long
@@ -313,6 +327,7 @@ await().atMost(Duration.ofSeconds(5)).untilAsserted(() ->
 ```
 
 ### Make tests independent and deterministic
+
 No shared mutable state, no dependency on execution order, no random data without a seed, no real clock.
 
 **Why it's a best practice:** a test that passes only after another one is a flaky test in waiting: run one
@@ -330,6 +345,7 @@ private List<User> users;
 ```
 
 ### Build test data with builders
+
 Use small factory methods or builders with sensible defaults and override only what the test cares about.
 
 **Why it's a best practice:** a 12-argument constructor repeated in 80 tests breaks all 80 when a field is
@@ -344,6 +360,7 @@ var user = aUser().withCountry("FR").build();
 ```
 
 ### Enforce coverage as a signal, not a goal
+
 Track coverage and fail on drops in changed code, but review test quality as well (mutation testing with PIT).
 
 **Why it's a best practice:** a test with no assertions gives 100% line coverage and zero safety. Chasing 100%
@@ -364,6 +381,7 @@ void process_marksOrderPaid() {
 ```
 
 ### Run tests in CI on every pull request
+
 Run the full suite on every push and block merging on a red build.
 
 **Why it's a best practice:** tests that only run on a developer laptop go stale, and a broken main branch

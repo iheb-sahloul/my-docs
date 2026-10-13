@@ -5,6 +5,7 @@
 ### Bases de React
 
 #### Q1. Qu'est-ce que JSX, et vers quoi compile-t-il réellement ?
+
 JSX est du sucre syntaxique qui permet d'écrire une syntaxe de type balisage dans JavaScript ;
 `<div className="a">{text}</div>` compile (via Babel ou le compilateur TypeScript) en un simple
 appel de fonction — historiquement `React.createElement('div', {className: 'a'}, text)`, ou avec le
@@ -16,7 +17,24 @@ doit commencer par une majuscule pour que le compilateur le traite comme une ré
 variable/fonction plutôt que comme une chaîne littérale de balise HTML) et pourquoi le rendu
 conditionnel n'est que de simples expressions JavaScript, et non une syntaxe de template spéciale.
 
+**Exemple :**
+
+```jsx
+// ce que vous écrivez
+const el = <Button color="blue">Save</Button>;
+
+// ce que le compilateur émet (nouveau JSX transform, React 17+)
+import { jsx as _jsx } from 'react/jsx-runtime';
+const el = _jsx(Button, { color: 'blue', children: 'Save' });
+
+// le résultat est un objet simple, pas un nœud DOM
+// { type: Button, props: { color: 'blue', children: 'Save' }, key: null, ... }
+<button />  // minuscule = chaîne de balise HTML 'button'
+<Button />  // majuscule = référence à la variable Button
+```
+
 #### Q2. Que sont les hooks, et quel problème ont-ils résolu par rapport aux composants classes ?
+
 Les hooks (`useState`, `useEffect`, etc.) permettent à un composant fonction de détenir un état et
 de déclencher des effets de bord sans être une classe — avant les hooks, la logique avec état
 exigeait des composants classes avec `this.state`/`this.setState` et des méthodes de cycle de vie
@@ -28,7 +46,24 @@ fonction et, surtout, d'extraire la logique avec état dans des custom hooks ré
 les classes ne pouvaient obtenir qu'avec des higher-order components ou des render props, qui
 ajoutaient tous deux des couches d'enrobage dans l'arbre de composants ("wrapper hell").
 
+**Exemple :**
+
+```jsx
+// Classe : une seule préoccupation (l'abonnement) éclatée entre deux méthodes de cycle de vie
+componentDidMount()    { chat.subscribe(this.props.id, this.onMsg); }
+componentWillUnmount() { chat.unsubscribe(this.props.id, this.onMsg); }
+
+// Hooks : la même préoccupation réunie, réutilisable en custom hook
+function useChat(id: string, onMsg: (m: string) => void) {
+  useEffect(() => {
+    chat.subscribe(id, onMsg);
+    return () => chat.unsubscribe(id, onMsg);
+  }, [id, onMsg]);
+}
+```
+
 #### Q3. Quelle est la différence entre props et state, et pourquoi les données circulent-elles uniquement "vers le bas" ?
+
 Les props sont les entrées qu'un composant *reçoit* de son parent ; le state est une donnée qu'un
 composant *possède* et qui peut changer au fil du temps. Un composant doit traiter ses props comme
 étant en lecture seule — il n'assigne jamais `props.x` — alors qu'il met à jour son propre state
@@ -37,13 +72,28 @@ parent vers l'enfant, via les props : quand le state d'un parent change, celui-c
 et passe de nouvelles props vers le bas, et un enfant qui doit influencer le parent le fait en
 appelant une *fonction passée en prop* (`onChange`, `onSelect`). Cela rend le flux de données
 traçable — pour toute valeur à l'écran, on peut remonter l'arbre jusqu'au unique composant qui la
-possède — et c'est la raison pour laquelle "lifting state up" (Q15) est la réponse standard quand
+possède — et c'est la raison pour laquelle "lifting state up" (Q16) est la réponse standard quand
 deux frères ont besoin de la même donnée : déplacer le state vers leur ancêtre commun le plus
 proche et le passer vers le bas. Les erreurs classiques sont de muter en place un objet ou un
 tableau reçu en prop (React voit la même référence, donc les enfants mémoïsés ne se mettent pas à
-jour, Q12) et de dupliquer une prop dans le state (Q16) au lieu d'en dériver.
+jour, Q13) et de dupliquer une prop dans le state (Q17) au lieu d'en dériver.
+
+**Exemple :**
+
+```tsx
+function Parent() {
+  const [count, setCount] = useState(0);          // state : appartient à Parent
+  return <Child count={count} onInc={() => setCount(c => c + 1)} />;
+}
+
+function Child({ count, onInc }: { count: number; onInc: () => void }) {
+  // count++;                                      // ne jamais modifier les props
+  return <button onClick={onInc}>{count}</button>; // données vers le bas, événement vers le haut
+}
+```
 
 #### Q4. `useState` vs `useRef` — quand utiliser l'un ou l'autre ?
+
 `useState` déclenche un re-render quand sa valeur change, et sa valeur est celle avec laquelle
 React fait le rendu au passage suivant — à utiliser pour tout ce qui doit apparaître dans l'UI.
 `useRef` fournit un conteneur mutable (`.current`) qui persiste entre les rendus *sans* déclencher
@@ -54,7 +104,20 @@ qui devrait réellement être dans l'UI (la valeur change mais l'écran ne se me
 aucun re-render n'a été déclenché), ou utiliser `useState` pour quelque chose qui n'en a pas besoin
 (provoquant des re-renders inutiles pour une valeur dont le rendu ne dépend jamais réellement).
 
+**Exemple :**
+
+```tsx
+function Stopwatch() {
+  const [elapsed, setElapsed] = useState(0);      // affiché dans l'UI -> state
+  const timerId = useRef<number | undefined>(undefined);                // jamais affiché -> ref (pas de re-render à l'écriture)
+  const start = () => { timerId.current = window.setInterval(() => setElapsed(e => e + 1), 1000); };
+  const stop = () => clearInterval(timerId.current);
+  return <button onClick={elapsed ? stop : start}>{elapsed}s</button>;
+}
+```
+
 #### Q5. Quelle est la différence entre un input de formulaire contrôlé et non contrôlé ?
+
 La valeur d'un input contrôlé est entièrement pilotée par le state React — `<input value={value}
 onChange={e => setValue(e.target.value)} />` — React est l'unique source de vérité, et chaque
 frappe fait un aller-retour via une mise à jour de state et un re-render. Un input non contrôlé
@@ -65,7 +128,21 @@ maintien de l'UI synchronisée avec le state pendant la saisie ; les inputs non 
 coût de re-render à chaque frappe, ce qui compte parfois pour un formulaire réellement grand/complexe
 (voir S5).
 
+**Exemple :**
+
+```tsx
+// Contrôlé : le state React est la source de vérité, re-render à chaque frappe
+const [email, setEmail] = useState('');
+<input value={email} onChange={e => setEmail(e.target.value.trim())} />
+
+// Non contrôlé : le DOM possède la valeur, lue une fois à la soumission
+<form onSubmit={e => { e.preventDefault(); console.log(new FormData(e.currentTarget).get('email')); }}>
+  <input name="email" defaultValue="" />
+</form>
+```
+
 #### Q6. Quand la logique relève-t-elle d'un gestionnaire d'événement et quand de `useEffect` ?
+
 Demandez-vous *pourquoi* le code s'exécute. S'il s'exécute parce que **l'utilisateur a fait
 quelque chose** — cliqué, tapé, soumis — il relève du gestionnaire d'événement : c'est le moment où
 la cause est connue, il s'exécute exactement une fois par interaction, et il a accès à l'événement.
@@ -79,11 +156,52 @@ Mode exécute les effets deux fois (S9). Règle pratique tirée du "You might no
 la doc React : si la valeur peut être *calculée à partir des props et du state pendant le rendu*,
 calculez-la (pas de state, pas d'effet) ; si c'est une réponse à une action utilisateur, faites-le
 dans le gestionnaire ; seul ce qui doit rester synchronisé avec un système externe après le rendu
-est un effet — et il a alors besoin d'un cleanup (Q10).
+est un effet — et il a alors besoin d'un cleanup (Q11).
+
+**Exemple :**
+
+```tsx
+function Cart({ items }: { items: Item[] }) {
+  const total = items.reduce((s, i) => s + i.price, 0); // dérivé : calculé au rendu, sans state ni effet
+
+  const onSubmit = () => api.post('/orders', items);    // action utilisateur : handler
+
+  useEffect(() => {                                     // synchronisation avec l'extérieur : effet + cleanup
+    const ws = new WebSocket('/stock');
+    return () => ws.close();
+  }, []);
+  return <button onClick={onSubmit}>Pay {total}</button>;
+}
+```
+
+#### Q7. Comment fonctionne le routage côté client dans une SPA React, et qu'est-ce qui doit être dans l'URL ?
+
+**Réponse :** Un routeur (React Router, TanStack Router, ou celui du framework dans Next.js) associe l'URL à un arbre de
+composants via l'History API, sans rechargement complet. Les **routes imbriquées** rendent des layouts avec un
+`<Outlet />` pour les routes enfants, et les **loaders de route** chargent les données en parallèle avant le rendu au
+lieu de cascades de `useEffect`. Mettez dans l'URL tout ce qu'un utilisateur doit pouvoir **mettre en favori, partager
+ou retrouver avec le bouton Retour** : l'identifiant de la ressource courante, les filtres, le tri, la pagination et
+l'onglet sélectionné. Gardez l'état d'UI transitoire (une liste déroulante ouverte) dans le state du composant. Les
+routes protégées redirigent vers le login, mais c'est une fonctionnalité d'UX : l'API doit toujours imposer
+l'autorisation. Le serveur (ou le CDN) doit renvoyer `index.html` pour les chemins inconnus, sinon les liens profonds
+renvoient 404.
+
+**Exemple :**
+
+```tsx
+const router = createBrowserRouter([
+  { path: '/', element: <AppLayout />, children: [
+    { path: 'orders', element: <OrdersPage />, loader: ordersLoader },   // ?status=PAID&page=2
+    { path: 'orders/:id', element: <OrderDetail />, loader: orderLoader },
+  ]},
+]);
+const [params, setParams] = useSearchParams();      // les filtres vivent dans l'URL
+```
 
 ### TypeScript
 
-#### Q7. TypeScript `interface` vs `type` — quelle est la différence pratique, et quand choisir l'un plutôt que l'autre ?
+#### Q8. TypeScript `interface` vs `type` — quelle est la différence pratique, et quand choisir l'un plutôt que l'autre ?
+
 Les deux peuvent décrire la forme d'un objet, et pour ce cas courant ils sont largement
 interchangeables. Les différences concrètes : `interface` supporte le declaration merging (déclarer
 deux fois le même nom d'interface fusionne les membres — parfois utile pour étendre les types de
@@ -95,11 +213,24 @@ publiques d'objets/props de composants destinées à être étendues, `type` pou
 compositions d'utility types et tout ce qui n'est pas une simple forme d'objet — la cohérence au
 sein d'une codebase compte plus que la règle précise choisie.
 
+**Exemple :**
+
+```ts
+interface User { id: string }
+interface Admin extends User { role: 'admin' }   // extends se lit naturellement
+interface Window { appVersion: string }          // fusion de déclarations avec le Window global
+
+type Status = 'idle' | 'loading' | 'error';      // unions : seul type le peut
+type Keys = keyof User;                          // types utilitaires/mappés : type
+type Flags = { [K in Status]: boolean };
+```
+
 ## 🟡 Pièges seniors
 
 ### Hooks & effets
 
-#### Q8. Quelles sont les Rules of Hooks, et pourquoi un hook ne peut-il pas être appelé conditionnellement ?
+#### Q9. Quelles sont les Rules of Hooks, et pourquoi un hook ne peut-il pas être appelé conditionnellement ?
+
 **Réponse :** Les hooks doivent être appelés dans le même ordre à chaque rendu, et uniquement au
 niveau supérieur d'un composant fonction ou d'un custom hook — jamais dans une condition, une boucle
 ou une fonction imbriquée. C'est parce que React ne suit pas les hooks par nom ; il les suit par
@@ -112,6 +243,7 @@ quel appel, et le décalage corrompt l'association du state pour chaque hook sui
 pas seulement pour ce hook.
 
 **Exemple :**
+
 ```jsx
 function Profile({ showBio }) {
   if (showBio) {
@@ -127,7 +259,8 @@ function Profile({ showBio }) {
 exact où la condition change entre les rendus, ce qui explique pourquoi c'est facile à introduire et
 difficile à remarquer jusqu'à ce qu'un parcours d'interaction précis le déclenche en production.
 
-#### Q9. Qu'est-ce qu'une stale closure dans `useEffect`, et en quoi le tableau de dépendances y est-il lié ?
+#### Q10. Qu'est-ce qu'une stale closure dans `useEffect`, et en quoi le tableau de dépendances y est-il lié ?
+
 **Réponse :** Chaque rendu crée une nouvelle closure sur les valeurs de props/state de ce rendu ;
 une fonction d'effet capture les valeurs qui étaient dans la portée *au moment de la création de
 cette instance d'effet*. Si le tableau de dépendances omet une valeur que l'effet lit, l'effet n'est
@@ -140,6 +273,7 @@ et que chaque valeur lue par le corps de l'effet doit généralement y figurer (
 du state `setCount(c => c + 1)` plutôt que de lire `count` directement).
 
 **Exemple :**
+
 ```jsx
 function Counter() {
   const [count, setCount] = useState(0);
@@ -160,7 +294,8 @@ bruyant" est l'instinct qui crée ce bug — la règle de lint signale un vrai d
 capturée, et non un faux positif à supprimer, et la supprimer échange un avertissement visible
 contre un bug invisible dépendant du timing.
 
-#### Q10. Pourquoi `useEffect` a-t-il besoin d'une fonction de cleanup, et que se passe-t-il si on l'omet pour une souscription ?
+#### Q11. Pourquoi `useEffect` a-t-il besoin d'une fonction de cleanup, et que se passe-t-il si on l'omet pour une souscription ?
+
 **Réponse :** Un effet peut s'exécuter de nombreuses fois au cours de la vie d'un composant (une fois
 par changement du tableau de dépendances) et le composant lui-même finira par être démonté — une
 fonction de cleanup (la fonction retournée par un effet) s'exécute avant la ré-exécution de l'effet
@@ -172,6 +307,7 @@ tentant souvent de mettre à jour le state d'un composant qui n'existe plus (un 
 classique, S3) et gaspillant des ressources pendant toute la durée de vie de la page.
 
 **Exemple :**
+
 ```jsx
 useEffect(() => {
   const id = setInterval(() => ping(), 5000);
@@ -186,10 +322,11 @@ timers/souscriptions aussi longtemps que ce qu'ils ont mis en place continue de 
 
 ### Rendu & performance
 
-#### Q11. Pourquoi React refait-il un rendu, et comment les keys affectent-elles la réconciliation d'une liste ?
+#### Q12. Pourquoi React refait-il un rendu, et comment les keys affectent-elles la réconciliation d'une liste ?
+
 **Réponse :** Un composant refait un rendu quand son propre state change, quand ses props changent,
 ou quand son parent refait un rendu (par défaut, un re-render du parent se propage à chaque enfant,
-que les props de cet enfant aient réellement changé ou non, sauf si l'enfant est mémoïsé — Q12). Le
+que les props de cet enfant aient réellement changé ou non, sauf si l'enfant est mémoïsé — Q13). Le
 reconciler de React compare (diff) les arbres d'éléments précédent et nouveau pour calculer
 l'ensemble minimal d'opérations DOM réelles nécessaires. Pour une liste, `key` indique au reconciler
 quel élément de la nouvelle liste correspond à quel élément de l'ancienne d'un rendu à l'autre —
@@ -199,6 +336,7 @@ logique, faisant apparaître le state associé à un item de liste (la valeur sa
 `useState` interne d'un composant) attaché au mauvais item après un réordonnancement (S14).
 
 **Exemple :**
+
 ```jsx
 {items.map((item, index) => (
   <Row key={index} {...item} /> // index comme key — casse si les items sont réordonnés/insérés/supprimés
@@ -214,7 +352,8 @@ une liste statique en ajout seul, ce qui est exactement pourquoi le bug survit �
 n'apparaît que la première fois que la liste est réellement réordonnée ou qu'un item est supprimé
 ailleurs qu'à la fin.
 
-#### Q12. Quand `React.memo` aide-t-il réellement, et pourquoi ne fait-il parfois silencieusement rien ?
+#### Q13. Quand `React.memo` aide-t-il réellement, et pourquoi ne fait-il parfois silencieusement rien ?
+
 **Réponse :** `React.memo` enveloppe un composant pour qu'il saute le re-render si ses props sont
 égales (comparaison shallow) à celles du rendu précédent — il aide pour un composant dont le rendu
 est coûteux (ou dont le sous-arbre l'est) et qui reçoit les mêmes props lors de la plupart des
@@ -224,11 +363,12 @@ tableau ou fonction créé inline à chaque rendu du parent (`<Child data={{ id:
 vérification d'égalité shallow échoue toujours, donc `React.memo` compare deux objets différents
 qui ont par hasard un contenu égal et (à juste titre, selon sa comparaison shallow par défaut)
 décide qu'ils sont différents, refaisant le rendu à chaque fois quoi qu'il arrive. La solution est
-de mémoïser ce qui est passé en prop avec `useMemo`/`useCallback` (Q13) à l'endroit où c'est créé,
+de mémoïser ce qui est passé en prop avec `useMemo`/`useCallback` (Q14) à l'endroit où c'est créé,
 et pas seulement d'envelopper l'enfant récepteur — ne mémoïser qu'un côté de cette relation ne sert
 à rien.
 
 **Exemple :**
+
 ```jsx
 const Row = React.memo(function Row({ onSelect }) { /* ... */ });
 
@@ -246,13 +386,14 @@ le travail de performance", mais ne mémoïser qu'un côté de la relation paren
 si le parent continue de créer de nouvelles références de props — les deux côtés doivent coopérer
 pour que la mémoïsation tienne.
 
-#### Q13. Quel problème `useMemo` et `useCallback` résolvent-ils chacun, et quel est le mauvais usage courant ?
+#### Q14. Quel problème `useMemo` et `useCallback` résolvent-ils chacun, et quel est le mauvais usage courant ?
+
 **Réponse :** `useMemo` mémoïse une *valeur* calculée, ne la recalculant que lorsque ses
 dépendances changent — utile quand un calcul est réellement coûteux (filtrer/trier un grand
 tableau) et se ré-exécuterait sinon à chaque rendu. `useCallback` mémoïse une *référence de
 fonction* elle-même, de sorte que la même identité de fonction est retournée d'un rendu à l'autre
 tant que ses dépendances ne changent pas — utile spécifiquement quand cette référence de fonction
-est passée à un enfant mémoïsé (`React.memo`, Q12) ou utilisée comme dépendance d'un autre hook,
+est passée à un enfant mémoïsé (`React.memo`, Q13) ou utilisée comme dépendance d'un autre hook,
 puisqu'une nouvelle référence de fonction à chaque rendu annulerait sinon cette mémoïsation. Le
 mauvais usage courant : recourir à l'un ou à l'autre par réflexe sur chaque valeur ou callback "pour
 la performance", alors que pour un calcul peu coûteux ou un composant sans enfants mémoïsés, le
@@ -261,6 +402,7 @@ cache) peut coûter plus cher que le travail de rendu qu'elle devait économiser
 d'optimiser, ne l'appliquez pas comme une habitude par défaut.
 
 **Exemple :**
+
 ```jsx
 // Mémoïsation réflexe qui n'aide pas : `items` est petit, le filtrage est peu coûteux.
 const visible = useMemo(() => items.filter(i => i.active), [items]);
@@ -273,7 +415,8 @@ défaut plutôt que comme un correctif ciblé pour un coût *mesuré* — sur-m�
 surcoût (la comparaison plus le cache) sans bénéfice pour des calculs peu coûteux ou des composants
 sans enfants mémoïsés en aval.
 
-#### Q14. Quel problème `startTransition` / le rendu concurrent résolvent-ils ?
+#### Q15. Quel problème `startTransition` / le rendu concurrent résolvent-ils ?
+
 **Réponse :** Sans cela, une mise à jour de state qui déclenche un re-render coûteux (filtrer une
 grande liste pendant que l'utilisateur tape dans une barre de recherche) bloque le main thread du
 navigateur jusqu'à la fin de ce rendu, y compris en bloquant la mise à jour de state pilotée par la
@@ -286,6 +429,7 @@ la coûteuse, gardant l'UI réactive à la saisie même pendant qu'un gros re-re
 en arrière-plan.
 
 **Exemple :**
+
 ```jsx
 function Search() {
   const [query, setQuery] = useState('');
@@ -307,7 +451,8 @@ critique doit être différée.
 
 ### Gestion d'état
 
-#### Q15. Qu'est-ce que le "prop drilling", et comment choisir entre remonter le state (lifting) et le colocaliser ?
+#### Q16. Qu'est-ce que le "prop drilling", et comment choisir entre remonter le state (lifting) et le colocaliser ?
+
 **Réponse :** Le prop drilling consiste à passer une valeur à travers plusieurs couches de composants
 qui ne l'utilisent pas eux-mêmes, uniquement pour qu'un descendant profondément imbriqué la reçoive —
 chaque composant intermédiaire ajoute une prop inutilisée juste pour la retransmettre. La décision de
@@ -322,6 +467,7 @@ faire du drilling manuel, ni pour recourir prématurément à un state global po
 seuls deux composants proches partagent réellement.
 
 **Exemple :**
+
 ```jsx
 function Page({ user }) {                 // n'utilise pas `user` lui-même...
   return <Layout user={user} />;
@@ -339,7 +485,8 @@ quelque chose d'autre en aurait besoin un jour ajoute exactement ce coût de dri
 qui ne se matérialisera peut-être jamais — colocalisez d'abord, et ne remontez que lorsque deux
 frères ont réellement besoin de partager la valeur maintenant.
 
-#### Q16. Pourquoi copier une prop dans un state local via `useEffect` est-il considéré comme un anti-pattern ?
+#### Q17. Pourquoi copier une prop dans un state local via `useEffect` est-il considéré comme un anti-pattern ?
+
 **Réponse :** Cela crée deux sources de vérité pour la même donnée et un vrai bug de synchronisation :
 tout rendu intermédiaire où `props.value` change mais où l'effet n'a pas encore tourné (les effets
 s'exécutent *après* le commit du rendu, pas pendant) affiche le `localValue` périmé ; pire, si
@@ -355,6 +502,7 @@ non contrôlé avec une prop `key` qui remonte le composant quand la valeur sour
 proprement le state local), plutôt qu'une synchronisation via effet.
 
 **Exemple :**
+
 ```jsx
 // anti-pattern
 const [localValue, setLocalValue] = useState(props.value);
@@ -369,7 +517,8 @@ vraie bonne solution (dériver la valeur directement pendant le rendu, ou remont
 `key` liée à la source) n'a besoin d'aucun couple `useState`/`useEffect`, ce qui est l'instinct
 opposé à celui vers lequel ce pattern pousse.
 
-#### Q17. Quand `useReducer` convient-il mieux que `useState` ?
+#### Q18. Quand `useReducer` convient-il mieux que `useState` ?
+
 **Réponse :** `useReducer` justifie sa structure quand les mises à jour du state impliquent plusieurs
 sous-valeurs liées qui changent ensemble (de sorte qu'une seule action dispatchée peut mettre à jour
 plusieurs champs de façon atomique et cohérente, au lieu de plusieurs appels `setState` séparés qui
@@ -383,6 +532,7 @@ indépendants, `useState` reste plus simple et plus direct — recourir à `useR
 un simple toggle booléen est une cérémonie inutile.
 
 **Exemple :**
+
 ```jsx
 // Plusieurs appels setState qui peuvent se désynchroniser si un site d'appel en oublie un :
 setLoading(true); setError(null); setData(null);
@@ -395,7 +545,8 @@ dispatch({ type: 'FETCH_START' });
 cérémonie inutile — le vrai signal est "ces champs changent-ils ensemble comme une seule transition
 logique", et non simplement "y a-t-il plus d'un morceau de state".
 
-#### Q18. Quel est le piège de performance du Context React, et quand devient-il un vrai problème ?
+#### Q19. Quel est le piège de performance du Context React, et quand devient-il un vrai problème ?
+
 **Réponse :** Chaque composant qui consomme un context via `useContext` refait un rendu à chaque fois
 que la valeur de ce context change — sans moyen intégré de ne souscrire qu'à une partie de la valeur,
 contrairement à une bibliothèque de gestion d'état à granularité fine. Pour un context contenant une
@@ -411,6 +562,7 @@ sur des selectors (Redux, Zustand) pour un state à la fois volumineux et fréqu
 elles permettent de souscrire à une tranche plutôt qu'à la valeur entière.
 
 **Exemple :**
+
 ```jsx
 // Nouvelle identité d'objet à chaque rendu, même si user/theme/settings n'ont pas changé :
 <AppContext.Provider value={{ user, theme, settings }}>
@@ -426,7 +578,8 @@ state" passe à côté du fait que le provider crée *lui-même* un tout nouvel 
 rendu s'il n'est pas mémoïsé — Context n'est pas le problème, c'est un objet enveloppe non mémoïsé
 qui lui est passé.
 
-#### Q19. Comment fonctionnent les query keys dans React Query (TanStack Query), et pourquoi sont-elles une source classique de données périmées ou erronées ?
+#### Q20. Comment fonctionnent les query keys dans React Query (TanStack Query), et pourquoi sont-elles une source classique de données périmées ou erronées ?
+
 **Réponse :** La query key est à la fois l'*identité de cache* **et** le tableau de dépendances du
 fetch : deux composants utilisant la même key partagent un seul résultat en cache et une seule requête
 en vol, et quand la key change la bibliothèque la traite comme une requête différente, allant
@@ -444,6 +597,7 @@ keys hiérarchiquement (`["orders", "list",
 { status, page }]`) pour pouvoir invalider large ou étroit avec un seul appel.
 
 **Exemple :**
+
 ```tsx
 // Faux : la key ignore `status` et `page` -> chaque filtre partage une seule entrée de cache.
 useQuery({ queryKey: ["orders"], queryFn: () => api.orders({ status, page }) });
@@ -468,7 +622,8 @@ sur les variables et "a l'air correct" (une règle ESLint, `exhaustive-deps` de
 
 ### UI asynchrone & React 19
 
-#### Q20. Qu'est-ce que `Suspense`, et comment permet-il le code splitting ?
+#### Q21. Qu'est-ce que `Suspense`, et comment permet-il le code splitting ?
+
 **Réponse :** `Suspense` permet à un arbre de composants d'"attendre" quelque chose (le plus souvent un
 module de composant chargé paresseusement, via `React.lazy(() => import('./HeavyComponent'))`) et
 d'afficher une UI de repli en attendant, sans que la logique de chargement soit passée manuellement
@@ -481,6 +636,7 @@ laissant `Suspense` afficher un spinner ou un skeleton pendant la brève fenêtr
 télécharge.
 
 **Exemple :**
+
 ```jsx
 const HeavyEditor = React.lazy(() => import('./HeavyEditor'));
 
@@ -499,7 +655,8 @@ via `React.lazy`/`import()` dynamique n'accomplit rien en soi — `Suspense` ne 
 d'attente ; le gain de taille de bundle vient entièrement de l'import paresseux, pas de la frontière
 elle-même.
 
-#### Q21. Que capturent réellement les error boundaries React, et que ne capturent-elles explicitement pas ?
+#### Q22. Que capturent réellement les error boundaries React, et que ne capturent-elles explicitement pas ?
+
 **Réponse :** Une error boundary (un composant classe implémentant `static getDerivedStateFromError`
 et/ou `componentDidCatch`, car il n'existe pas d'équivalent en hook) capture les erreurs levées
 pendant le rendu, dans les méthodes de cycle de vie et dans les constructeurs de l'arbre de composants
@@ -512,6 +669,7 @@ il s'exécute hors de la phase de rendu que la boundary enveloppe), les erreurs 
 serveur, ni les erreurs levées dans le code de rendu du fallback de l'error boundary elle-même.
 
 **Exemple :**
+
 ```jsx
 class ErrorBoundary extends React.Component {
   static getDerivedStateFromError(error) { return { hasError: true }; }
@@ -529,7 +687,8 @@ filet de sécurité pour *n'importe quelle* erreur non capturée — les gestion
 callbacks asynchrones s'exécutent hors de la phase de rendu que la boundary observe, ils ont donc
 besoin de leur propre `try`/`catch` quelle que soit la hauteur dans l'arbre où se trouve une boundary.
 
-#### Q22. Que changent les Actions, `useActionState`, `useOptimistic` et `use` de React 19 dans le code de formulaires et de data-fetching, et où sont les pièges ?
+#### Q23. Que changent les Actions, `useActionState`, `useOptimistic` et `use` de React 19 dans le code de formulaires et de data-fetching, et où sont les pièges ?
+
 **Réponse :** React 19 fait de la boucle "soumettre, afficher pending, afficher l'erreur, mettre à
 jour l'UI" une primitive intégrée au lieu de flags `useState` écrits à la main. Une **Action** est une
 fonction (sync ou async) passée à `<form action={...}>` ou exécutée dans `startTransition` ; React
@@ -550,6 +709,7 @@ formulaire/transition, donc une action lente retarde les suivantes ; (4) `useFor
 statut que du `<form>` *parent*, il doit donc vivre dans un composant enfant.
 
 **Exemple :**
+
 ```tsx
 function AddTodo({ todos, addTodo }: { todos: Todo[]; addTodo: (title: string) => Promise<Todo> }) {
   const [optimisticTodos, addOptimistic] = useOptimistic(
@@ -588,7 +748,8 @@ la rejeter ou retourner un id différent, il faut donc réconcilier avec la vrai
 
 ### TypeScript
 
-#### Q23. Donnez un cas d'usage pratique des generics TypeScript dans une codebase React.
+#### Q24. Donnez un cas d'usage pratique des generics TypeScript dans une codebase React.
+
 **Réponse :** Un hook de data-fetching typé est l'exemple canonique : `function useApi<T>(url: string):
 { data: T | null; loading: boolean; error: Error | null }` permet à chaque site d'appel d'obtenir une
 inférence de types complète pour sa forme de réponse spécifique (`useApi<User>('/api/user')` donne à
@@ -600,6 +761,7 @@ sorte que les consommateurs obtiennent une autocomplétion et une vérification 
 besoin de connaître à l'avance tous les types qu'il pourrait un jour afficher.
 
 **Exemple :**
+
 ```tsx
 function useApi<T>(url: string) {
   const [data, setData] = useState<T | null>(null);
@@ -618,7 +780,8 @@ const { data } = useApi<User>('/api/user'); // data: User | null, entièrement i
 qui n'existe pas — la version générique attrape ce décalage à la compilation ; `any` n'attrape rien
 du tout.
 
-#### Q24. Pourquoi préférer une discriminated union à plusieurs flags booléens pour modéliser l'état d'une requête ?
+#### Q25. Pourquoi préférer une discriminated union à plusieurs flags booléens pour modéliser l'état d'une requête ?
+
 **Réponse :** Avec des booléens séparés (`isLoading`, `isError`, `data`, `error`), le système de types
 autorise des combinaisons impossibles (`isLoading: true, isError: true` simultanément, ou `data`
 présent alors que `isLoading` est aussi true) — rien n'empêche cet état invalide d'être construit, et
@@ -631,6 +794,7 @@ transitions valides de la machine à états au lieu que le code doive l'imposer 
 l'état est lu.
 
 **Exemple :**
+
 ```ts
 // fragile
 { isLoading: boolean; isError: boolean; data: User | null; error: string | null }
@@ -648,7 +812,8 @@ flags d'être positionnés dans des combinaisons qui devraient être impossibles
 finit par se prémunir défensivement contre des états que le système de types aurait dû exclure
 entièrement.
 
-#### Q25. Pourquoi `unknown` est-il considéré comme plus sûr que `any` en TypeScript ?
+#### Q26. Pourquoi `unknown` est-il considéré comme plus sûr que `any` en TypeScript ?
+
 **Réponse :** `any` exclut totalement une valeur de la vérification de types — on peut appeler
 n'importe quelle méthode, accéder à n'importe quelle propriété, la passer n'importe où, et le
 compilateur autorise tout cela sans erreur, même des opérations absurdes, réintroduisant
@@ -663,6 +828,7 @@ réponse d'API externe, l'erreur d'un bloc `catch`) — il force l'étape de nar
 de la codebase comme si elle était entièrement fiable.
 
 **Exemple :**
+
 ```ts
 function handle(x: any) { x.toUpperCase(); }   // compile — plante à l'exécution si x n'est pas une string
 function handleSafe(x: unknown) {
@@ -674,7 +840,8 @@ function handleSafe(x: unknown) {
 jamais — ce silence est précisément le danger ; `unknown` porte le même manque d'information de type
 initiale mais force l'étape de narrowing avant que toute opération soit autorisée à compiler.
 
-#### Q26. Qu'apportent respectivement `as const`, `satisfies` et une vérification exhaustive avec `never` en TypeScript ?
+#### Q27. Qu'apportent respectivement `as const`, `satisfies` et une vérification exhaustive avec `never` en TypeScript ?
+
 **Réponse :** Ce sont trois outils pour conserver des *types littéraux précis* sans renoncer à la
 vérification. **`as const`** fige un littéral : `["draft", "sent"] as const` a le type
 `readonly ["draft", "sent"]` au lieu de `string[]`, et on peut en dériver une union
@@ -691,6 +858,7 @@ numériques acceptent même n'importe quel nombre), donc pour la plupart du code
 string littérales dérivée d'un tableau `as const` est plus légère et plus sûre.
 
 **Exemple :**
+
 ```ts
 const STATUSES = ["draft", "sent", "paid"] as const;
 type Status = typeof STATUSES[number];               // "draft" | "sent" | "paid"
@@ -722,9 +890,67 @@ manifeste par un badge vide ou `undefined` en production. `as const` est aussi s
 *intention* : il rend l'objet en lecture seule uniquement à la compilation, il n'est pas figé à
 l'exécution (`Object.freeze` est l'outil runtime).
 
+### Formulaires & accessibilité
+
+#### Q28. Comment construire un grand formulaire React sans problèmes de re-rendu ni de validation ?
+
+**Réponse :** Au-delà de quelques champs, utilisez une bibliothèque de formulaires comme **React Hook Form** : elle
+garde les champs majoritairement **non contrôlés** et les enregistre via des refs, donc la saisie ne re-rend pas tout
+le formulaire. Définissez la validation une seule fois sous forme de **schéma** (Zod, Yup) et dérivez-en à la fois le
+contrôle à l'exécution et le type TypeScript ; partagez le schéma avec le backend s'il est aussi en TypeScript, sinon
+reproduisez ses règles avec Bean Validation côté serveur, qui reste la source de vérité. Affichez les erreurs de champ
+au blur ou à la soumission, pas à chaque frappe. Reportez les erreurs de validation serveur (400 avec détail par
+champ) sur les champs. Ne désactivez le bouton d'envoi que pendant la soumission, et rendez la soumission idempotente.
+Avec React 19, les formulaires simples peuvent utiliser les Actions et `useActionState` (voir Q23).
+
+**Exemple :**
+
+```tsx
+const schema = z.object({ email: z.string().email(), age: z.coerce.number().int().min(18) });
+type FormValues = z.infer<typeof schema>;
+
+const { register, handleSubmit, formState: { errors, isSubmitting } } =
+  useForm<FormValues>({ resolver: zodResolver(schema), mode: 'onBlur' });
+```
+
+**Pourquoi c'est un piège :** contrôler chaque champ avec `useState` dans un gros composant marche pour cinq champs et
+devient visiblement lent à cinquante, et une validation uniquement côté client est contournée par quiconque appelle
+l'API directement.
+
+#### Q29. Que signifie concrètement l'accessibilité (a11y) pour une app React ?
+
+**Réponse :** Commencez par un **HTML sémantique** : `<button>` pour les actions et `<a href>` pour la navigation (pas
+une `<div>` cliquable), des titres dans l'ordre, un `<label>` lié à chaque champ, des listes en tant que listes. Cela
+apporte gratuitement le support clavier et la sémantique pour les lecteurs d'écran. Ensuite : tout est **atteignable et
+utilisable au clavier** avec un indicateur de focus visible ; **gérez le focus** lors des changements de route et à
+l'ouverture ou la fermeture des modales (le piéger à l'intérieur, le restituer ensuite) ; donnez aux images un texte
+`alt` pertinent (vide pour la décoration) ; ne vous reposez pas sur la couleur seule ; assurez le contraste (WCAG AA :
+4.5:1 pour le texte courant) ; et annoncez les mises à jour asynchrones avec `aria-live`. **ARIA est un dernier
+recours** : un ARIA erroné est pire que pas d'ARIA. Vérifiez avec `eslint-plugin-jsx-a11y`, axe en test et dans le
+navigateur, les requêtes par rôle de RTL ([Tests Q7](testing.md)), et un passage manuel au clavier et au lecteur
+d'écran sur les parcours clés.
+
+**Exemple :**
+
+```tsx
+// ⛔ non focusable, pas de rôle, pas de support clavier
+<div onClick={save}>Save</div>
+// ✅
+<button type="button" onClick={save}>Save</button>
+
+<label htmlFor="email">Email</label>
+<input id="email" aria-describedby="email-error" aria-invalid={!!error} />
+{error && <p id="email-error" role="alert">{error}</p>}
+```
+
+**Pourquoi c'est un piège :** l'accessibilité est aussi une obligation légale dans de nombreux marchés (l'European
+Accessibility Act s'applique depuis juin 2025), et l'ajouter après coup à un design system coûte bien plus cher que de
+l'intégrer dès le départ.
+
 ### Tests
 
-#### Q27. Que faut-il réellement tester dans un composant React, selon la philosophie de React Testing Library ?
+#### Q30. Que faut-il réellement tester dans un composant React, selon la philosophie de React Testing Library ?
+
 **Réponse :** Tester le comportement tel que l'utilisateur le vivrait — faire le rendu du composant,
 interagir avec lui comme le ferait un utilisateur (cliquer, taper, trouver les éléments par texte
 visible/rôle/label, pas par classe CSS ou implémentation interne), et vérifier ce qui est visible ou
@@ -738,6 +964,7 @@ comportement casse réellement, et rester verte lors d'une restructuration inter
 que l'utilisateur voit ou peut faire.
 
 **Exemple :**
+
 ```jsx
 // Test de détail d'implémentation — casse lors d'un refactor interne valide.
 expect(wrapper.state('isOpen')).toBe(true);
@@ -751,16 +978,19 @@ tests de comportement quand tout va bien, donc la différence est invisible jusq
 refactor valide casse un mur de tests qui n'auraient pas dû s'en soucier — la confiance s'érode, et
 les équipes se mettent à ignorer la CI rouge, ce qui est pire que de ne pas avoir de tests du tout.
 
+Voir aussi : [Tests Q7, Q17, Q23](testing.md) pour MSW et Playwright.
+
 ## 🔴 Expert / Ouvert
 
 ### Performance
 
-#### Q28. Une grande table de données devient nettement saccadée au scroll ou au filtrage. Détaillez le diagnostic et la correction.
+#### Q31. Une grande table de données devient nettement saccadée au scroll ou au filtrage. Détaillez le diagnostic et la correction.
+
 Commencez par le Profiler des React DevTools pour voir ce qui se re-render réellement et combien de
 temps cela prend — ne devinez pas. Constats courants, à peu près par ordre de probabilité : chaque
 ligne refait un rendu à chaque frappe d'un input de filtre parce que les composants de ligne ne sont
 pas mémoïsés (`React.memo`) ou parce qu'ils le sont mais reçoivent une nouvelle fonction/objet inline
-en prop à chaque rendu (piège de Q12), donc la mémoïsation ne sert à rien ; l'ensemble (volumineux)
+en prop à chaque rendu (piège de Q13), donc la mémoïsation ne sert à rien ; l'ensemble (volumineux)
 des données est rendu dans le DOM d'un coup plutôt que seulement les lignes visibles, donc la
 performance de scroll est bornée par le nombre total de lignes, pas par le nombre de lignes visibles
 — la solution ici est la virtualisation de liste (ne rendre que les lignes actuellement dans ou près
@@ -769,12 +999,55 @@ une liste réellement grande, puisqu'elle rend le coût de rendu indépendant du
 et un calcul coûteux (tri, filtrage, agrégation) qui se ré-exécute à chaque rendu au lieu d'être
 mémoïsé avec `useMemo` sur les entrées réelles qui l'affectent. La distinction de niveau senior :
 profiler d'abord, corriger le goulot d'étranglement précis que le profiler montre réellement, plutôt
-que d'envelopper tout par réflexe dans `memo`/`useMemo` — la sur-mémoïsation a son propre coût (Q13)
+que d'envelopper tout par réflexe dans `memo`/`useMemo` — la sur-mémoïsation a son propre coût (Q14)
 et n'aide pas si la virtualisation était la vraie correction nécessaire.
+
+**Exemple :**
+
+```tsx
+import { FixedSizeList } from 'react-window';
+
+const Row = memo(({ index, style, data }: ListChildComponentProps<Item[]>) => (
+  <div style={style}>{data[index].name}</div>   // seulement ~20 lignes sont dans le DOM
+));
+
+function Table({ items, query }: { items: Item[]; query: string }) {
+  const rows = useMemo(                           // recalculé seulement si les entrées changent
+    () => items.filter(i => i.name.includes(query)), [items, query]);
+  return (
+    <FixedSizeList height={600} width="100%" itemCount={rows.length} itemSize={36} itemData={rows}>
+      {Row}
+    </FixedSizeList>
+  );
+}
+```
 
 ### State & couche de données
 
-#### Q29. Comment choisir entre Context + `useReducer` et une bibliothèque de state dédiée (Redux, Zustand, React Query) ?
+#### Q32. Comment mesurer et améliorer la performance frontend en production ?
+
+**Réponse :** Mesurez ce que vivent les utilisateurs avec les **Core Web Vitals** issus d'utilisateurs réels (RUM via
+la bibliothèque `web-vitals` ou votre outil de monitoring), pas seulement Lighthouse sur un portable rapide. **LCP**
+(largest contentful paint, cible < 2,5 s) dépend du chemin critique : réponse serveur, CSS/JS bloquant le rendu, image
+principale (la précharger, servir des formats modernes, à la bonne taille). **INP** (interaction to next paint,
+< 200 ms) dépend du travail sur le thread principal : tâches longues, re-rendus lourds, hydratation volumineuse ;
+découpez le travail, utilisez les transitions (Q15) et virtualisez les grandes listes. **CLS** (décalage de mise en
+page, < 0,1) vient d'images sans dimensions, de polices chargées tardivement et de bannières injectées. Côté bundle,
+l'outil de build (Vite/Rollup, webpack) permet le **code splitting par route** avec `lazy()` ; analysez le bundle
+(`rollup-plugin-visualizer`) pour repérer les dépendances lourdes ; et fixez un **budget de performance** en CI.
+
+**Exemple :**
+
+```text
+RUM, p75 mobile :  LCP 4,1 s   INP 380 ms   CLS 0,02
+Élément LCP : image principale PNG de 1,8 Mo, découverte tardivement par le JS
+→ preload + AVIF + srcset dimensionné : LCP 2,2 s
+INP : le champ de filtre re-rend un tableau de 5 000 lignes à chaque frappe
+→ useDeferredValue + virtualisation : INP 140 ms
+```
+
+#### Q33. Comment choisir entre Context + `useReducer` et une bibliothèque de state dédiée (Redux, Zustand, React Query) ?
+
 Partez du type de state réellement géré, car "quelle bibliothèque" est la mauvaise première question.
 Le **server state** (données récupérées depuis une API, avec cache, revalidation, refetch en arrière-
 plan, et états de chargement/erreur comme préoccupations de premier ordre) est un problème
@@ -784,10 +1057,10 @@ bibliothèque à plus forte valeur pour une application CRUD typique, indépenda
 côté client state. Pour un véritable **client state** (état d'UI, préférences utilisateur, tout ce qui
 ne reflète pas des données serveur) : Context + `useReducer` suffit et n'ajoute aucune dépendance
 quand le state est petit, change peu souvent, et n'a pas le profil de performance qui déclenche le
-problème de re-render de Q18 sur un large arbre de consommateurs. Recourez à une bibliothèque de
+problème de re-render de Q19 sur un large arbre de consommateurs. Recourez à une bibliothèque de
 client state dédiée (Zustand, Redux) spécifiquement quand
 le state est volumineux et fréquemment mis à jour avec de nombreux consommateurs n'ayant besoin que de
-tranches de celui-ci (évitant le problème de re-render de tous les consommateurs de Q18 grâce aux
+tranches de celui-ci (évitant le problème de re-render de tous les consommateurs de Q19 grâce aux
 selectors), quand l'équipe a besoin d'un outillage de développement solide (time-travel debugging,
 patterns de middleware bien établis) pour une machine à états réellement complexe, ou quand le même
 state doit être lu/écrit depuis de nombreuses parties sans rapport d'une grande codebase d'une
@@ -795,26 +1068,63 @@ manière où la composition ad hoc de Context devient difficile à raisonner. La
 entretien nomme la contrainte réelle qui motive le choix, et non une préférence de bibliothèque
 énoncée comme si c'était un défaut universel.
 
-#### Q30. Concevez un client d'API typé / une couche de data-fetching avec les generics TypeScript, avec une gestion d'erreurs appropriée.
+**Exemple :**
+
+```tsx
+// État serveur -> React Query (cache, refetch, loading/error inclus)
+const { data: orders } = useQuery({ queryKey: ['orders'], queryFn: fetchOrders });
+
+// Petit état client -> Context + useReducer, sans dépendance
+const [cart, dispatch] = useReducer(cartReducer, []);
+
+// Gros état client très mis à jour, abonnements par tranche -> sélecteur Zustand
+const count = useCartStore(s => s.items.length); // re-render uniquement si la longueur change
+```
+
+#### Q34. Concevez un client d'API typé / une couche de data-fetching avec les generics TypeScript, avec une gestion d'erreurs appropriée.
+
 Une fonction de requête générique typée selon la forme de réponse attendue (`function apiRequest<T>(url:
 string, schema: ZodSchema<T>): Promise<T>`) qui effectue le fetch, vérifie explicitement le statut
 HTTP (une réponse non-2xx n'est pas automatiquement une exception JavaScript — `fetch` ne rejette
 qu'en cas d'échec réseau, pas sur 404/500), et — de façon cruciale pour une vraie sûreté de typage,
 pas seulement une sûreté de typage déclarée — valide le JSON parsé avec un schéma runtime (Zod, ou
 similaire) avant de le retourner typé `T`, plutôt que d'asserter simplement `as T` sur du JSON non
-vérifié (le point `unknown`-vs-`any` de Q25 s'applique directement ici : une réponse externe est
+vérifié (le point `unknown`-vs-`any` de Q26 s'applique directement ici : une réponse externe est
 `unknown` tant qu'elle n'a pas réellement été vérifiée, et `as T` sur un `unknown` non validé est une
 promesse valable uniquement à la compilation que le runtime n'impose pas, ce qui est exactement
-comment S16 se produit). Les erreurs sont modélisées comme un résultat en discriminated union (Q24)
+comment S16 se produit). Les erreurs sont modélisées comme un résultat en discriminated union (Q25)
 plutôt que par des exceptions levées pour les modes d'échec attendus (une erreur de validation, un
 404, un échec réseau ont chacun leur propre variante typée), de sorte que les appelants sont
 contraints par le compilateur de traiter explicitement chaque cas via le narrowing sur `status`,
 plutôt qu'un `try`/`catch` facile à oublier autour d'une erreur levée. Chaque endpoint spécifique
 devient alors un wrapper fin et entièrement typé : `getUser(id: string) { return apiRequest(`/users/${id}`, userSchema); }`.
 
+**Exemple :**
+
+```ts
+import { z } from 'zod';
+
+type Result<T> =
+  | { status: 'ok'; data: T }
+  | { status: 'http-error'; code: number }
+  | { status: 'invalid'; issues: z.ZodIssue[] }
+  | { status: 'network-error' };
+
+async function apiRequest<T>(url: string, schema: z.ZodType<T>): Promise<Result<T>> {
+  let res: Response;
+  try { res = await fetch(url); } catch { return { status: 'network-error' }; }
+  if (!res.ok) return { status: 'http-error', code: res.status }; // fetch ne rejette pas sur 404/500
+  const parsed = schema.safeParse(await res.json());              // unknown tant que non validé
+  return parsed.success ? { status: 'ok', data: parsed.data } : { status: 'invalid', issues: parsed.error.issues };
+}
+
+const getUser = (id: string) => apiRequest(`/users/${id}`, userSchema);
+```
+
 ### Typage
 
-#### Q31. Comment typer un composant de design system qui supporte une prop `as` (un `Button` polymorphe pouvant rendre `<a>`, `<button>` ou un `Link` de routeur) ?
+#### Q35. Comment typer un composant de design system qui supporte une prop `as` (un `Button` polymorphe pouvant rendre `<a>`, `<button>` ou un `Link` de routeur) ?
+
 L'objectif est que le composant accepte *les props de l'élément qu'il rend* et rejette les props que
 cet élément n'a pas (`href` sur un `<button>`, `type` sur un `<a>`). L'approche naïve —
 `props: any`, ou une union écrite à la main des props de chaque élément — perd soit la vérification,
@@ -835,9 +1145,29 @@ des composants séparés partageant des styles, ce qui échange un peu de duplic
 bien plus simples. Décidez selon le nombre de consommateurs : un design system public justifie le type
 générique ; un bouton interne à une application le justifie rarement.
 
+**Exemple :**
+
+```tsx
+import type { ElementType, ComponentPropsWithoutRef } from 'react';
+
+type ButtonProps<C extends ElementType> = {
+  as?: C;
+  variant?: 'primary' | 'ghost';
+} & Omit<ComponentPropsWithoutRef<C>, 'as' | 'variant'>;
+
+function Button<C extends ElementType = 'button'>({ as, variant = 'primary', ...rest }: ButtonProps<C>) {
+  const Tag: ElementType = as ?? 'button';
+  return <Tag className={`btn btn-${variant}`} {...rest} />;
+}
+
+<Button as="a" href="/home">Home</Button>   // OK : href est valide sur <a>
+<Button href="/home">Home</Button>          // erreur : href n'existe pas sur <button>
+```
+
 ### Architecture
 
-#### Q32. Quand adopteriez-vous les React Server Components (RSC), et que vous coûtent-ils ?
+#### Q36. Quand adopteriez-vous les React Server Components (RSC), et que vous coûtent-ils ?
+
 Les RSC font le rendu sur le serveur (à la requête ou au build) et envoient au client un arbre
 sérialisé au lieu de JavaScript : un Server Component peut faire `await` directement sur une base de
 données ou une API, son code et ses dépendances lourdes (un parseur Markdown, une bibliothèque de
@@ -861,7 +1191,29 @@ toute façon du client state. Dans les deux cas, gardez la frontière délibér�
 vers les feuilles (un bouton, un graphique), passez les données serveur en props, et mesurez la taille
 du bundle et le time-to-interactive avant et après plutôt que de l'adopter par effet de mode.
 
-#### Q33. Quand les micro-frontends sont-ils une bonne idée, et quelles sont les alternatives ?
+**Exemple :**
+
+```tsx
+// app/products/page.tsx -- Server Component (par défaut) : s'exécute uniquement côté serveur
+import { AddToCart } from './AddToCart';
+
+export default async function Page() {
+  const product = await db.product.find(1);   // accès direct à la BD, secrets côté serveur
+  return (
+    <section>
+      <h1>{product.name}</h1>
+      <AddToCart id={product.id} />          {/* props sérialisables uniquement */}
+    </section>
+  );
+}
+
+// AddToCart.tsx
+'use client';                                // feuille client : state + handlers
+export function AddToCart({ id }: { id: number }) { /* useState, onClick... */ }
+```
+
+#### Q37. Quand les micro-frontends sont-ils une bonne idée, et quelles sont les alternatives ?
+
 Les micro-frontends découpent une application web en frontends construits et déployés indépendamment,
 composés dans le navigateur (Module Federation, web components, iframes) ou à l'edge/serveur. Le vrai
 problème qu'ils résolvent est *organisationnel* : de nombreuses équipes qui doivent livrer à leur
@@ -883,18 +1235,51 @@ gros grain selon les domaines métier (jamais une par composant), et décider d�
 routing, le state partagé (URL, événements — pas un store global partagé) et le design system
 fonctionnent entre elles.
 
+**Exemple :**
+
+```js
+// Module Federation (webpack/rspack) : le shell charge un remote à l'exécution
+new ModuleFederationPlugin({
+  name: 'shell',
+  remotes: { checkout: 'checkout@https://cdn.example.com/checkout/remoteEntry.js' },
+  shared: { react: { singleton: true }, 'react-dom': { singleton: true } }, // un seul React
+});
+// const Checkout = lazy(() => import('checkout/App'));   // déployé indépendamment par l'équipe Checkout
+```
+
+#### Q38. SPA, SSR, SSG ou React Server Components — comment choisir une stratégie de rendu ?
+
+**Réponse :** Décidez par route, selon les **besoins SEO, la fraîcheur des données, la personnalisation et
+l'infrastructure**. Une **SPA** (Vite + React, servie depuis un CDN) convient aux applications derrière login, comme
+les back-offices et tableaux de bord : hébergement simple et frontière d'API claire, mais premier chargement plus lent
+et SEO faible. Le **SSG** (pré-rendu au build) convient au contenu qui change rarement, comme les pages marketing et la
+documentation : le plus rapide et le moins cher. Le **SSR** rend le HTML à chaque requête pour le SEO et un premier
+affichage rapide avec des données fraîches ou personnalisées, au prix d'un serveur Node à exploiter et à faire monter
+en charge, et de l'hydratation à gérer. L'**ISR** (régénérer des pages statiques périodiquement ou à la demande) se
+situe entre SSG et SSR. Les **Server Components** (App Router de Next.js) rendent côté serveur et n'envoient aucun JS
+pour les parties non interactives (voir Q36). Pour une équipe au backend Java, un découpage courant est une SPA pour le
+produit, et du SSG/SSR en Next.js uniquement pour les pages publiques.
+
 ## 🎯 Scénarios réels
 
 ### S1. Un composant entre dans une boucle de re-render infinie, figeant l'onglet
+
 - **Symptômes :** L'onglet du navigateur ne répond plus, React DevTools (s'il se charge) montre un
   compteur de rendus qui s'incrémente sans fin, et la console peut afficher une erreur "Maximum update
   depth exceeded".
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Chercher un appel `setState` directement dans le corps du rendu (hors d'un
   gestionnaire d'événement ou d'un effet) — cela déclenche un re-render, qui appelle à nouveau le
   corps du rendu, qui appelle à nouveau `setState` — ou un `useEffect` dont le tableau de dépendances
   inclut une valeur que l'effet met lui-même à jour sans aucune garde, de sorte que la mise à jour de
   chaque exécution déclenche la suivante.
 - **Exemple :**
+
   ```jsx
   function Broken() {
     const [count, setCount] = useState(0);
@@ -903,6 +1288,7 @@ fonctionnent entre elles.
   }
   // Le rendu appelle setCount -> déclenche un re-render -> appelle à nouveau setCount -> ... à l'infini.
   ```
+
 - **Résolution :** Déplacer l'appel `setState` dans un gestionnaire d'événement, ou dans un effet avec
   un tableau de dépendances qui reflète correctement uniquement ce qui doit le déclencher, en ajoutant
   une condition de garde si la mise à jour ne doit se produire qu'une fois ou sous des conditions
@@ -912,21 +1298,32 @@ fonctionnent entre elles.
   gardez cette règle de lint activée plutôt que de la supprimer pour faire taire un avertissement sans
   le comprendre.
 
+</details>
+
 ### S2. Un compteur affiché via `setInterval` dans `useEffect` montre toujours la même valeur, sans jamais s'incrémenter
+
 - **Symptômes :** Un composant met en place `setInterval` dans un `useEffect` pour logger ou afficher
   périodiquement une valeur de state, mais la valeur affichée ne change jamais par rapport à celle du
   tout premier rendu, alors que le state réel ailleurs dans l'application s'est depuis mis à jour.
-- **Diagnostic :** Stale closure classique (Q9) — le tableau de dépendances `[]` (vide) de l'effet
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Stale closure classique (Q10) — le tableau de dépendances `[]` (vide) de l'effet
   signifie que le callback de l'interval a été créé exactement une fois, capturant la valeur de
   `count` du premier rendu, et comme l'effet ne se ré-exécute jamais, cette closure (et son `count`
   capturé) ne se met jamais à jour non plus.
 - **Exemple :**
+
   ```jsx
   useEffect(() => {
     const id = setInterval(() => setCount(count + 1), 1000); // lit `count` depuis cette closure
     return () => clearInterval(id);
   }, []); // count n'apparaît jamais ici, donc cette closure — et son `count` — ne se rafraîchit jamais
   ```
+
 - **Résolution :** Soit ajouter `count` au tableau de dépendances (en acceptant que l'interval soit
   démonté et recréé à chaque changement de `count`, ce qui est souvent acceptable), soit — la
   correction la plus robuste pour ce pattern précis — utiliser une mise à jour fonctionnelle du state
@@ -936,20 +1333,31 @@ fonctionnent entre elles.
   pas comme du bruit à supprimer avec un commentaire eslint-disable — la règle de lint est
   spécifiquement conçue pour attraper ce pattern exact de stale closure avant qu'il soit livré.
 
+</details>
+
 ### S3. La console log en boucle "Can't perform a React state update on an unmounted component"
+
 - **Symptômes :** Cet avertissement apparaît, généralement après avoir quitté rapidement une page, ou
   quand une réponse réseau lente revient après que l'utilisateur est déjà passé à autre chose.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Une opération asynchrone (un fetch, un callback de souscription) a été démarrée
   pendant que le composant était monté, et son `.then()`/callback appelle `setState` après que le
   composant a été démonté — l'opération asynchrone ne sait pas, et ne se soucie pas, que son composant
   a disparu au moment où elle se résout.
 - **Exemple :**
-  ```
+
+  ```text
   Warning: Can't perform a React state update on an unmounted component. This is a no-op,
   but it indicates a memory leak in your application. To fix, cancel all subscriptions and
   asynchronous tasks in a useEffect cleanup function.
       at UserProfile (UserProfile.jsx:14)
   ```
+
 - **Résolution :** Utiliser un `AbortController` pour réellement annuler le fetch en vol au démontage
   (via la fonction de cleanup de l'effet), ou, si l'annulation n'est pas disponible pour la source
   asynchrone concernée, suivre un flag/ref "mounted" et le vérifier avant d'appeler `setState` dans le
@@ -959,19 +1367,30 @@ fonctionnent entre elles.
   faire partie standard de l'écriture de tout effet de data-fetching, et non être ajouté après coup
   une fois l'avertissement apparu.
 
+</details>
+
 ### S4. Une grande table devient visiblement saccadée (frames perdues, scroll laggy) dès qu'elle atteint quelques milliers de lignes
+
 - **Symptômes :** La performance de scroll est fluide avec un petit jeu de données mais se dégrade
   fortement quand le nombre de lignes atteint les milliers, bien avant que les données elles-mêmes
   soient considérées "volumineuses" selon les standards du backend.
-- **Diagnostic :** Confirmé avec le Profiler (Q28) — tout le jeu de données est rendu en nœuds DOM
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Confirmé avec le Profiler (Q31) — tout le jeu de données est rendu en nœuds DOM
   réels d'un coup, donc le rendu initial comme tout travail déclenché par le scroll évoluent avec le
   nombre total de lignes plutôt qu'avec le nombre de lignes visibles.
 - **Exemple :**
-  ```
+
+  ```text
   # Flame graph du Profiler React DevTools : chaque <Row> commit à chaque frappe du filtre,
   # y compris les lignes dont les données n'ont pas changé — 4 000 rendus de Row commités par frappe,
   # alors que seulement ~20 lignes sont visibles à la fois dans le viewport.
   ```
+
 - **Résolution :** Introduire la virtualisation de liste (`react-window` ou `react-virtual`), ne
   rendant que les lignes dans ou près du viewport actuel et recyclant les nœuds DOM pendant le scroll,
   ce qui rend le coût de rendu à peu près constant quelle que soit la taille totale du jeu de données.
@@ -979,15 +1398,25 @@ fonctionnent entre elles.
   duquel tout nouveau composant liste ou table doit être virtualisé dès le départ, plutôt que d'être
   découvert comme un bug de performance quand le vrai volume de données arrive en production.
 
+</details>
+
 ### S5. Taper dans un champ texte est laggy, avec un délai visible entre la frappe et l'apparition du caractère
+
 - **Symptômes :** La réactivité perçue d'un input contrôlé se dégrade nettement, surtout dans un
   formulaire intégré à une page plus grande et complexe.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Vérifier ce qui d'autre re-render comme effet de bord du `onChange` de l'input — le
   `setState` de l'input lui-même est peu coûteux, mais si ce state vit dans (ou déclenche le re-render
   d') un grand composant parent dont le sous-arbre n'est pas mémoïsé, chaque frappe déclenche un
   re-render complet et coûteux de tout ce sous-arbre avant que le caractère n'apparaisse visuellement,
   puisque le comportement de rendu par défaut de React est synchrone.
 - **Exemple :**
+
   ```jsx
   function Page() {
     const [text, setText] = useState('');
@@ -999,30 +1428,42 @@ fonctionnent entre elles.
     );
   }
   ```
-- **Résolution :** Placer le state de l'input le plus localement possible (colocation, Q15) pour que
+
+- **Résolution :** Placer le state de l'input le plus localement possible (colocation, Q16) pour que
   son `setState` ne re-render que l'input lui-même et son environnement immédiat, pas toute la page ;
   mémoïser les sous-arbres frères/parents coûteux pour qu'ils ne se re-render pas simplement parce
   qu'un state local sans rapport a changé ; pour un travail aval réellement coûteux piloté par la
   valeur de l'input (par ex. filtrer une grande liste pendant la saisie), appliquer un debounce à ce
-  travail ou l'envelopper dans `startTransition` (Q14) pour qu'il ne bloque pas le retour visuel
+  travail ou l'envelopper dans `startTransition` (Q15) pour qu'il ne bloque pas le retour visuel
   immédiat de l'input lui-même.
 - **Prévention :** Garder par défaut le state d'un input de formulaire colocalisé avec l'input, et
   traiter tout signalement "taper est laggy" comme une question de placement du state/mémoïsation à
   profiler immédiatement, plutôt que quelque chose à contourner par du throttling seul.
 
+</details>
+
 ### S6. Modifier un petit morceau de state global (par ex. basculer le dark mode) provoque un re-render visible sur toute la page
+
 - **Symptômes :** Le changement d'un seul réglage global (thème, langue, feature flag) provoque un
   flash/re-render visible sur de larges parties de l'UI qui n'ont rien à voir avec ce réglage.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Tout ce state vit dans un unique Context partagé dont les consommateurs couvrent la
   majeure partie de l'arbre de composants, et le comportement de Context où tous les consommateurs se
-  re-render à chaque changement (Q18) signifie qu'un seul changement de valeur du Context re-render
+  re-render à chaque changement (Q19) signifie qu'un seul changement de valeur du Context re-render
   chaque consommateur, que celui-ci se soucie ou non du champ précis qui a changé.
 - **Exemple :**
+
   ```jsx
   <AppContext.Provider value={{ theme, user, flags }}> {/* nouvel objet à chaque rendu */}
     <App /> {/* chaque consommateur dans l'arbre re-render au changement d'un seul champ */}
   </AppContext.Provider>
   ```
+
 - **Résolution :** Découper le grand context unique en plusieurs contexts plus étroits (un
   `ThemeContext` séparé d'un `UserContext`, séparé d'un `FeatureFlagsContext`) pour qu'un changement de
   thème ne re-render que les consommateurs du thème, pas ceux des données utilisateur ; mémoïser
@@ -1033,33 +1474,53 @@ fonctionnent entre elles.
   le départ, plutôt que de consolider par commodité et de découper plus tard quand le coût de
   re-render devient visible.
 
+</details>
+
 ### S7. L'application plante en production avec une erreur de type à l'exécution, alors que le build TypeScript passe proprement
+
 - **Symptômes :** `TypeScript compiled with 0 errors`, pourtant un outil de suivi d'erreurs en
   production montre un `TypeError: cannot read property 'x' of undefined` sur une valeur que le
   système de types prétendait toujours présente.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Chercher dans le code environnant des assertions de type `as` ou des `any` — une
   cause racine courante est une donnée venant d'une frontière externe (une réponse d'API,
   `localStorage`, une bibliothèque tierce sans types) qui est forcée par un cast (`as User`) au lieu
   d'être validée, de sorte que TypeScript a fait confiance à l'assertion à la compilation sans qu'aucune
   vérification runtime ne confirme jamais que la forme réelle correspondait.
 - **Exemple :**
+
   ```ts
   const user = JSON.parse(response) as User; // le compilateur fait confiance sans condition
   user.email.toLowerCase(); // TypeError: Cannot read properties of undefined — l'API a omis `email`
   ```
+
 - **Résolution :** Remplacer l'assertion non vérifiée par une validation runtime à la frontière (une
   bibliothèque de schémas comme Zod, ou au minimum des vérifications de forme explicites) pour qu'une
   réponse non conforme échoue bruyamment et précisément à la frontière, plutôt que de propager une
   valeur mal typée profondément dans l'application jusqu'à un plantage ailleurs sans rapport.
 - **Prévention :** Traiter tout `as SomeType` sur des données provenant de l'extérieur du contrôle de
   la codebase comme un signal de code review nécessitant une justification — `unknown` plus une
-  validation explicite (Q25, Q30) devrait être le pattern par défaut pour toute frontière de données
+  validation explicite (Q26, Q34) devrait être le pattern par défaut pour toute frontière de données
   externe, et non une mesure de durcissement occasionnelle.
 
+</details>
+
 ### S8. Les résultats de recherche affichent parfois ceux d'une requête précédente, déjà abandonnée
+
 - **Symptômes :** Taper rapidement dans un champ de recherche fait parfois revenir (ou clignoter) les
   résultats affichés vers ceux d'une requête antérieure, plus courte, alors que l'input lui-même
   montre le dernier texte saisi.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Une race condition entre des réponses réseau dans le désordre — chaque frappe
   déclenche un nouveau fetch, mais rien ne garantit que les réponses réseau se résolvent dans l'ordre
   d'envoi ; si l'effet fait naïvement `fetch(query).then(setResults)` à chaque frappe sans annulation
@@ -1067,6 +1528,7 @@ fonctionnent entre elles.
   une réponse plus rapide pour la dernière requête, écrasant les résultats corrects et plus récents
   par des résultats périmés.
 - **Exemple :**
+
   ```jsx
   useEffect(() => {
     fetch(`/search?q=${query}`).then(r => r.json()).then(setResults);
@@ -1074,6 +1536,7 @@ fonctionnent entre elles.
     // une réponse plus rapide pour la dernière requête, l'écrasant avec des résultats périmés
   }, [query]);
   ```
+
 - **Résolution :** Utiliser `AbortController` pour annuler la requête précédente quand une nouvelle
   démarre (la fonction de cleanup de l'effet abandonnant le fetch précédent, même mécanisme que S3),
   ou suivre à quelle requête correspond la réponse la plus récente et ignorer/écarter toute réponse
@@ -1084,10 +1547,19 @@ fonctionnent entre elles.
   incluse) la gèrent automatiquement, ce qui est en soi une raison de les préférer aux effets de fetch
   faits à la main pour ce pattern précis.
 
+</details>
+
 ### S9. Un endpoint d'API est appelé deux fois pour ce qui devrait être un seul montage de composant
+
 - **Symptômes :** L'onglet Réseau montre la même requête GET partant deux fois en succession rapide
   quand un composant fait son premier rendu, en développement spécifiquement (et l'équipe se demande si
   cela arrive aussi en production).
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** En développement, le `StrictMode` de React double-invoque délibérément certains
   comportements équivalents au cycle de vie (monter, démonter et remonter un composant, donc
   ré-exécuter les effets) spécifiquement pour aider à faire remonter les effets qui ne sont pas
@@ -1097,11 +1569,13 @@ fonctionnent entre elles.
   tableau de dépendances manquant ou incorrect provoquant une vraie exécution en double de l'effet en
   dehors de la double invocation délibérée du `StrictMode`.
 - **Exemple :**
-  ```
+
+  ```text
   # Onglet Réseau en développement :
   GET /api/user   200   (déclenché au mount)
   GET /api/user   200   (déclenché à nouveau, ~0ms plus tard — double invocation délibérée du StrictMode)
   ```
+
 - **Résolution :** Pour le cas `StrictMode`, cela indique généralement que l'effet de bord de l'effet
   (le fetch) n'a pas d'étape de cleanup et n'en a pas forcément besoin pour être "correct" en soi,
   mais il vaut la peine de confirmer que l'appel en double est réellement inoffensif (idempotent,
@@ -1113,14 +1587,24 @@ fonctionnent entre elles.
   qu'il révèle (un effet sans cleanup approprié) est un vrai problème latent même s'il ne duplique pas
   visiblement un appel en production aujourd'hui.
 
+</details>
+
 ### S10. Un refactor pour passer une nouvelle valeur à travers cinq couches de composants devient un gros diff sujet aux erreurs
+
 - **Symptômes :** Ajouter une nouvelle donnée dont un composant profondément imbriqué a besoin oblige
   à toucher l'interface de props de chaque composant intermédiaire sur le chemin, pour une donnée que
   ces composants intermédiaires n'utilisent pas par ailleurs.
-- **Diagnostic :** C'est du prop drilling (Q15) arrivé au point où il est activement coûteux — la
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** C'est du prop drilling (Q16) arrivé au point où il est activement coûteux — la
   structure de l'arbre de composants ne correspond pas à la portée réelle de pertinence de la donnée,
   et chaque changement futur de cette valeur répète le même diff large et fragile.
 - **Exemple :**
+
   ```jsx
   // Ajouter `locale` oblige à toucher chaque couche du chemin, même celles qui ne l'utilisent jamais :
   <Page locale={locale}>
@@ -1131,32 +1615,44 @@ fonctionnent entre elles.
     </Layout>
   </Page>
   ```
+
 - **Résolution :** Pour des données réellement nécessaires largement et changeant rarement
   (utilisateur courant, thème, locale), introduire un Context à un ancêtre approprié pour que seuls
   les composants qui ont réellement besoin de la valeur la consomment directement, contournant
   entièrement les couches intermédiaires ; pour un state partagé qui change fréquemment ou volumineux,
-  c'est le moment d'évaluer une bibliothèque de state dédiée (Q29) plutôt que de le résoudre avec
+  c'est le moment d'évaluer une bibliothèque de state dédiée (Q33) plutôt que de le résoudre avec
   Context seul.
 - **Prévention :** Traiter "cette valeur doit-elle traverser des composants qui ne l'utilisent pas"
   comme une question de conception dès l'introduction d'une dépendance de données, et pas seulement
   quand le drilling s'est déjà étendu sur cinq couches et que le refactoring devient coûteux.
 
+</details>
+
 ### S11. Une erreur levée dans le gestionnaire `onClick` d'un bouton fait planter toute la page au lieu d'être capturée par l'error boundary de l'application
+
 - **Symptômes :** L'équipe a ajouté une error boundary enveloppant l'application spécifiquement pour
   éviter un plantage de page entière sur des erreurs inattendues, mais un bug dans un gestionnaire
   `onClick` produit toujours un écran blanc (ou une erreur console non gérée) au lieu de l'UI de repli
   attendue.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Les error boundaries ne capturent pas les erreurs des gestionnaires d'événements
-  par conception (Q21) — le gestionnaire s'exécute hors de la phase de rendu de React, après un rendu
+  par conception (Q22) — le gestionnaire s'exécute hors de la phase de rendu de React, après un rendu
   réussi, ce n'est donc simplement pas quelque chose que le mécanisme `componentDidCatch` de la
   boundary observe.
 - **Exemple :**
+
   ```jsx
   <ErrorBoundary>
     <button onClick={() => { throw new Error('boom'); }}>Click</button>
   </ErrorBoundary>
   // La boundary ne voit jamais cela — elle n'enveloppe que le rendu/cycle de vie, pas les gestionnaires d'événements.
   ```
+
 - **Résolution :** Ajouter un `try`/`catch` explicite dans le gestionnaire d'événement lui-même (ou
   la fonction qu'il appelle) pour tout ce qui peut raisonnablement lever une exception, en traitant
   l'erreur localement (affichage d'un message inline, logging) plutôt que d'attendre que la boundary la
@@ -1167,22 +1663,33 @@ fonctionnent entre elles.
   explicite — c'est un malentendu réellement courant qui mérite d'être signalé directement lors de
   l'onboarding ou de la code review la première fois qu'il se présente.
 
+</details>
+
 ### S12. Le temps de chargement initial de la page est lent, et l'onglet Réseau montre un unique très gros bundle JavaScript
+
 - **Symptômes :** Le time-to-interactive est élevé même sur une connexion rapide, et le bundle
   analyzer montre un seul gros `main.js` contenant du code de routes/fonctionnalités que la plupart des
   utilisateurs sur cette page initiale ne visitent jamais.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Aucun code splitting n'est en place — chaque route et fonctionnalité, y compris
   celles rarement utilisées (un panneau d'admin, une page de réglages, la dépendance lourde d'une
   modale rarement ouverte), est incluse dans le chargement initial que la page courante en ait besoin
   ou non.
 - **Exemple :**
-  ```
+
+  ```bash
   $ npx source-map-explorer build/static/js/main.*.js
   # main.js: 3.8 MB — inclut le panneau d'admin, l'éditeur de texte riche et une bibliothèque de
   # graphiques, dont aucun n'est jamais rendu par la landing page (la route la plus visitée).
   ```
+
 - **Résolution :** Introduire au minimum un code splitting au niveau des routes avec `React.lazy` et
-  `Suspense` (Q20), pour que le code de chaque route soit un chunk séparé récupéré seulement lors de la
+  `Suspense` (Q21), pour que le code de chaque route soit un chunk séparé récupéré seulement lors de la
   navigation ; pour les fonctionnalités individuelles particulièrement lourdes au sein d'une route (un
   éditeur de texte riche, une bibliothèque de graphiques), les extraire aussi et les charger
   paresseusement à l'interaction (par ex. seulement quand un onglet précis est ouvert) plutôt que de
@@ -1191,16 +1698,26 @@ fonctionnent entre elles.
   seulement une fois, rétroactivement) pour qu'une grosse nouvelle dépendance ajoutée au bundle
   initial soit attrapée dès la PR qui l'introduit.
 
+</details>
+
 ### S13. Un refactor qui ne change aucun comportement visible par l'utilisateur casse une grande partie de la suite de tests
+
 - **Symptômes :** Renommer une variable de state interne, convertir un composant de `useState` à
   `useReducer` en interne, ou restructurer la façon dont un composant est composé en interne — rien de
   tout cela ne change ce que l'utilisateur voit ou peut faire — fait échouer de nombreux tests.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** La suite de tests vérifie des détails d'implémentation (forme du state interne,
   appels de méthodes internes spécifiques, structure d'arbre de composants en shallow rendering) plutôt
-  que le comportement observable par l'utilisateur — l'anti-pattern décrit en Q27, souvent issu
+  que le comportement observable par l'utilisateur — l'anti-pattern décrit en Q30, souvent issu
   d'utilitaires/patterns de test qui encouragent à fouiller dans les internes d'un composant plutôt que
   d'interagir avec lui comme le ferait un utilisateur.
 - **Exemple :**
+
   ```jsx
   // Casse lors d'un refactor interne valide de useState vers useReducer :
   expect(wrapper.instance().state.isOpen).toBe(true);
@@ -1208,6 +1725,7 @@ fonctionnent entre elles.
   // Survit au même refactor :
   expect(screen.getByRole('dialog')).toBeVisible();
   ```
+
 - **Résolution :** Réécrire les tests fragiles pour qu'ils interagissent avec le rendu comme le
   ferait un utilisateur (trouver par rôle/texte/label, cliquer, taper, vérifier ce qui est visible),
   ce qui devrait alors survivre au refactor interne sans changement puisque le comportement visible par
@@ -1218,11 +1736,20 @@ fonctionnent entre elles.
   encore après un refactor valide qui préserve le comportement" comme le vrai critère d'un bon test, et
   non "passe-t-il maintenant".
 
+</details>
+
 ### S14. Les éléments d'une liste réordonnable affichent parfois un mauvais contenu, ou perdent leur state d'input local, après un réordonnancement
+
 - **Symptômes :** Une liste en drag-to-reorder, ou une liste où des éléments peuvent être
   insérés/supprimés au milieu, montre un décalage après réordonnancement — l'état d'une case à cocher
   d'un élément, ou la valeur saisie dans un input, apparaît attaché à la mauvaise ligne après le
   réordonnancement.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Vérifier la prop `key` utilisée pour la liste — c'est le symptôme classique de
   l'utilisation de l'index du tableau comme `key` pour une liste qui se réordonne : React associe les
   nœuds DOM (et leur state interne) aux positions de la liste par key d'un rendu à l'autre, et si la
@@ -1231,12 +1758,14 @@ fonctionnent entre elles.
   quelles données sont rendues à chaque index existant, laissant tout state local par élément derrière
   à l'ancienne position.
 - **Exemple :**
+
   ```jsx
   {todos.map((todo, i) => (
     <TodoRow key={i} todo={todo} /> // réordonner `todos` ne réordonne pas quel nœud DOM/state
   ))}                                // React associe à quel élément — cela re-render simplement
                                      // le même index de nœud avec des données différentes
   ```
+
 - **Résolution :** Utiliser un identifiant stable et unique issu des données réelles (un ID de base
   de données, un UUID) comme `key`, et non l'index du tableau, pour que React suive correctement quelle
   instance rendue correspond à quel élément logique à travers réordonnancements, insertions et
@@ -1247,22 +1776,33 @@ fonctionnent entre elles.
   ajout seul, jamais réordonnée, et cette exception est assez étroite pour que le réflexe par défaut d'un
   vrai ID soit l'habitude la plus sûre dans tous les cas.
 
+</details>
+
 ### S15. La valeur affichée par un composant dérive silencieusement de la prop qu'il était censé refléter
+
 - **Symptômes :** Un composant qui copie une prop entrante dans un state local (pour permettre une
   édition locale avant sauvegarde) affiche parfois des données périmées après la mise à jour de la prop
   ailleurs, ou perd une modification locale en cours de l'utilisateur quand la prop se met à jour pour
   une raison sans rapport.
-- **Diagnostic :** C'est exactement l'anti-pattern de Q16 — synchroniser une prop dans le state via
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** C'est exactement l'anti-pattern de Q17 — synchroniser une prop dans le state via
   `useEffect` crée deux sources de vérité, et la synchronisation par effet introduit un écart de cycle
   de rendu (et un risque d'écrasement) entre la valeur courante réelle de la prop et le state local qui
   la reflète.
 - **Exemple :**
+
   ```jsx
   const [draft, setDraft] = useState(props.value);
   useEffect(() => { setDraft(props.value); }, [props.value]);
   // Une mise à jour de prop arrivant entre "l'utilisateur commence à éditer" et "l'effet s'exécute" peut
   // écraser silencieusement sa modification en cours, ou afficher brièvement l'ancienne valeur à l'écran.
   ```
+
 - **Résolution :** Si le composant n'a pas réellement besoin de diverger de la prop (il ne fait que
   l'afficher), supprimer entièrement le couple state local/effet et dériver la valeur affichée
   directement de la prop pendant le rendu. Si une divergence locale est réellement nécessaire (un
@@ -1275,23 +1815,34 @@ fonctionnent entre elles.
   solution correcte la plus simple au problème qui l'a motivée, et le pattern `key`-remount ou la
   simple dérivation la remplace presque toujours plus simplement et plus correctement.
 
+</details>
+
 ### S16. Le build TypeScript est propre, mais l'application plante au parsing de la réponse d'une API tierce
+
 - **Symptômes :** Une API externe récemment intégrée retourne parfois un champ à `null` là où
   l'interface TypeScript le déclare comme un `string` obligatoire, et l'application plante en essayant
   d'appeler une méthode de string dessus — le compilateur ne l'a jamais signalé car il n'a aucun moyen
   de vérifier qu'une réponse HTTP externe correspond réellement à une interface écrite à la main.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** L'interface décrivant la réponse de l'API a été écrite à la main (ou générée une
   fois à partir d'un exemple de réponse) et assertée sur le JSON parsé, plutôt que validée — les types
-  TypeScript sont effacés à la compilation (module 1, le point sur l'effacement de Q3 s'applique ici par
+  TypeScript sont effacés à la compilation ([Java Q10](java-core-jvm.md), le point sur l'effacement s'applique ici par
   analogie) et n'offrent aucune garantie à l'exécution ; un décalage entre le type déclaré et la forme
   réelle de la réponse est invisible pour le compilateur et ne se manifeste que lorsque la donnée non
   conforme est réellement utilisée.
 - **Exemple :**
+
   ```ts
   interface ApiUser { id: string; email: string; } // écrit à la main, jamais réellement vérifié
   const user = (await res.json()) as ApiUser;
   user.email.toLowerCase(); // l'API retourne `email: null` pour les comptes non vérifiés — plante ici
   ```
+
 - **Résolution :** Ajouter une validation de schéma runtime (Zod, ou équivalent) au moment où la
   réponse est parsée, pour qu'un décalage de forme soit attrapé immédiatement avec une erreur claire
   identifiant exactement quel champ ne correspondait pas, au lieu de se manifester plus tard par un
@@ -1300,17 +1851,26 @@ fonctionnent entre elles.
   sa vraie nullabilité connue.
 - **Prévention :** Toute donnée traversant une frontière de confiance depuis l'extérieur du contrôle
   de la codebase (une API tierce, en particulier dont l'équipe ne contrôle pas le contrat) devrait être
-  traitée comme `unknown` et validée à la frontière par défaut (Q25, Q30) — une interface écrite à la
+  traitée comme `unknown` et validée à la frontière par défaut (Q26, Q34) — une interface écrite à la
   main sans vérification runtime est une promesse que le compilateur fait au nom de la codebase et qu'il
   n'a aucune capacité réelle de tenir.
 
+</details>
+
 ### S17. La console affiche "Text content does not match server-rendered HTML" et la page clignote ou s'affiche mal après le chargement
+
 - **Symptômes :** Sur une page rendue côté serveur (Next.js/Remix), la console logue `Hydration failed
   because the server rendered HTML didn't match the client` (ou "Text content does not match").
   Les utilisateurs voient un flash de la mauvaise valeur — la mauvaise heure, un header déconnecté pour
   un utilisateur connecté — et parfois React écarte le HTML serveur et re-render tout le sous-arbre
   côté client, perdant le bénéfice de performance du SSR. Cela ne se reproduit jamais dans un build de
   dev purement rendu côté client.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** L'hydratation exige que le *premier rendu client* produise exactement le balisage
   envoyé par le serveur. Tout ce qui diffère entre les deux environnements casse cela : `Date.now()`,
   `new Date()` formaté dans le fuseau horaire du serveur vs celui du navigateur,
@@ -1319,6 +1879,7 @@ fonctionnent entre elles.
   `<div>` dans un `<p>` que le navigateur "répare"). Lire le diff affiché dans l'overlay de dev pour
   trouver l'élément, puis chercher l'une de ces entrées dans son chemin de rendu.
 - **Exemple :**
+
   ```tsx
   function Greeting() {
     const hour = new Date().getHours();                 // serveur : UTC, client : fuseau horaire de l'utilisateur
@@ -1326,6 +1887,7 @@ fonctionnent entre elles.
     return <p className={theme}>{hour < 12 ? "Good morning" : "Good afternoon"}</p>;
   }
   ```
+
 - **Résolution :** Rendre le premier rendu déterministe et déplacer les valeurs spécifiques à
   l'environnement après l'hydratation : lire les données propres au navigateur dans `useEffect` (le
   state démarre avec la valeur par défaut sûre côté serveur et est mis à jour une fois monté), utiliser
@@ -1339,19 +1901,29 @@ fonctionnent entre elles.
   de la console, et traiter "le rendu doit être pur et identique des deux côtés" comme une règle de
   conception de composant (Q6).
 
+</details>
+
 ### S18. Chaque frappe dans un champ de formulaire fait perdre le focus après un caractère
+
 - **Symptômes :** Dans un formulaire de réglages, taper dans un input fonctionne pour un caractère puis
   le curseur disparaît ; l'utilisateur doit cliquer à nouveau pour chaque caractère. Le state local
   dans le champ (une position de scroll, un dropdown ouvert) se réinitialise aussi à chaque frappe. Le
   bug est apparu après qu'un développeur a "rangé" le fichier en extrayant un sous-composant.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** L'input est **démonté puis remonté** à chaque rendu. React identifie un composant
   par son *type* à une position de l'arbre ; si une fonction composant est définie *à l'intérieur* du
   corps d'un autre composant, c'est une toute nouvelle fonction (un nouveau type) à chaque rendu du
   parent, donc React écarte l'ancien sous-arbre — nœud DOM, focus et state inclus — et en construit un
   nouveau. Le parent re-render à chaque frappe car le state y vit. Confirmer dans le Profiler ou en
   loggant dans un effet avec des deps `[]` dans l'enfant : il se déclenche à chaque frappe (la règle
-  key/identité de Q11 s'applique aussi aux types).
+  key/identité de Q12 s'applique aussi aux types).
 - **Exemple :**
+
   ```tsx
   function Settings() {
     const [name, setName] = useState("");
@@ -1363,6 +1935,7 @@ fonctionnent entre elles.
     return <NameField />;                      // démonté et remonté à chaque frappe
   }
   ```
+
 - **Résolution :** Définir le composant au niveau du module et lui passer en props ce dont il a besoin
   (ou l'appeler comme une simple fonction retournant du JSX s'il doit faire une closure sur des valeurs
   locales, ce qui évite de créer un nouveau type de composant). Vérifier en tapant une longue chaîne
@@ -1371,19 +1944,29 @@ fonctionnent entre elles.
   déclaré à l'intérieur d'un autre, et colocaliser les petits sous-composants dans le même *fichier* —
   pas dans la même fonction.
 
+</details>
+
 ### S19. Un bouton "like" avec mise à jour optimiste clignote et affiche finalement un mauvais compteur
+
 - **Symptômes :** Les utilisateurs double-cliquent sur un bouton like. Le compteur monte, redescend,
   remonte, puis se stabilise sur une valeur qui ne correspond pas au serveur après un rafraîchissement.
   Sur des connexions mobiles instables, l'UI affiche "liked" alors que la requête a échoué et que rien
   n'a été sauvegardé.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** La mise à jour optimiste écrit dans le cache/state mais ne gère pas trois choses :
   (1) les **refetches en vol** qui se terminent après l'écriture optimiste et l'écrasent avec l'ancienne
   valeur serveur (le clignotement), (2) le **rollback** quand la requête échoue — sans `onError`
   restaurant la valeur précédente, le mauvais état reste, et (3) les **mutations concurrentes** dont les
   réponses arrivent dans le désordre, chacune appliquant un résultat calculé à partir d'un snapshot
-  périmé (la réserve de Q22 : les valeurs optimistes sont des prédictions). Reproduire avec l'onglet
+  périmé (la réserve de Q23 : les valeurs optimistes sont des prédictions). Reproduire avec l'onglet
   Réseau bridé et des requêtes retardées de façon inégale.
 - **Exemple :**
+
   ```tsx
   useMutation({
     mutationFn: api.like,
@@ -1393,6 +1976,7 @@ fonctionnent entre elles.
     // pas de rollback onError ; pas d'invalidation onSettled
   });
   ```
+
 - **Résolution :** Suivre le pattern optimiste complet : dans `onMutate`, annuler les refetches en
   cours pour cette key (`await qc.cancelQueries`), faire un snapshot de la valeur précédente et le
   retourner comme contexte ; dans `onError`, restaurer le snapshot ; dans `onSettled`, invalider la key
@@ -1404,11 +1988,20 @@ fonctionnent entre elles.
   mutations idempotentes côté serveur, et ajouter un test avec une réponse mock retardée/échouée pour
   chaque interaction optimiste.
 
+</details>
+
 ### S20. Le bundle JavaScript initial a doublé après un refactor "inoffensif" ; le score Lighthouse a chuté
+
 - **Symptômes :** Après l'ajout d'un petit import utilitaire, le bundle principal est passé d'environ
   300 KB à environ 900 KB (gzip), le temps de premier chargement sur mobile a glissé de plusieurs
   secondes, et le contrôle de taille de bundle de la CI (ou Lighthouse) a commencé à alerter. Le code
   modifié n'importe qu'une icône et une fonction utilitaire.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Ouvrir un bundle analyzer (`vite-bundle-visualizer`, `webpack-bundle-analyzer`,
   `source-map-explorer`) et trouver le gros chunk. Coupables typiques : un **barrel file**
   (`components/index.ts` réexportant tout) ou un package dont l'entrée réexporte des milliers de
@@ -1418,41 +2011,54 @@ fonctionnent entre elles.
   statiquement ; ou une frontière Server/Client placée trop haut. Vérifier `sideEffects` dans le
   package.json et la manière dont l'import est écrit.
 - **Exemple :**
+
   ```ts
   import { format } from "lodash";                    // toute la bibliothèque (CommonJS, non tree-shakable)
   import { Icon } from "@/components";                // barrel : tire chaque composant et leurs dépendances
   import { HugeChart } from "./HugeChart";            // import statique : dans le bundle initial
   ```
+
 - **Résolution :** Importer au chemin granulaire (`import format from "lodash/format"`, `lodash-es`, ou
   les points d'entrée par icône de la bibliothèque), importer depuis le fichier du composant plutôt que
   depuis le barrel, définir `"sideEffects": false` là où c'est valide, et charger paresseusement les
   modules lourds, sous la ligne de flottaison ou au niveau des routes avec `React.lazy` + `Suspense`
-  (Q20). Relancer l'analyzer et confirmer que le chunk initial revient à la baseline.
+  (Q21). Relancer l'analyzer et confirmer que le chunk initial revient à la baseline.
 - **Prévention :** Un **budget de taille de bundle en CI** (`size-limit` ou bundlesize) qui fait
   échouer la PR, une règle ESLint restreignant les imports de barrels/grosses bibliothèques, et une
   revue périodique de l'analyzer ; préférer des bibliothèques plus petites ou des API natives (`Intl`,
   `Date`) aux dépendances lourdes pour de petits besoins.
 
+</details>
+
 ### S21. Une application single-page longue durée ralentit et sa mémoire croît régulièrement jusqu'au plantage de l'onglet
+
 - **Symptômes :** Un dashboard laissé ouvert sur un écran mural pendant une journée devient lent et
   finit par planter ("Aw, Snap"). Le Gestionnaire de tâches de Chrome montre la mémoire croissant à
   chaque rafraîchissement de données ou changement de route ; redimensionner ou naviguer fait se
   déclencher les handlers plusieurs fois.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Prendre des **heap snapshots** (DevTools → Memory) avant et après avoir répété une
   action comme naviguer ailleurs puis revenir, et comparer : des nombres croissants de nœuds DOM
   détachés, d'event listeners, de closures ou de tableaux indiquent ce qui est retenu. Les causes
   habituelles sont des effets qui enregistrent un listener, un interval ou une souscription
   (`window.addEventListener("resize", ...)`, un WebSocket, un `subscribe` de store) sans fonction de
-  cleanup (Q10), de sorte que chaque mount en ajoute un autre qui capture aussi les props/state du
+  cleanup (Q11), de sorte que chaque mount en ajoute un autre qui capture aussi les props/state du
   composant dans sa closure ; des caches ou tableaux non bornés qui ne font que s'accroître (un journal
   de messages jamais élagué) ; et des singletons au niveau module retenant des références de composants.
 - **Exemple :**
+
   ```tsx
   useEffect(() => {
     const onTick = (m: Message) => setMessages(prev => [...prev, m]);   // croît indéfiniment
     socket.on("message", onTick);                                       // jamais retiré
   }, []);                                                               // chaque remount ajoute un autre listener
   ```
+
 - **Résolution :** Retourner un cleanup qui retire le listener (`return () => socket.off("message", onTick)`),
   plafonner les collections (garder les N derniers messages, ou virtualiser et paginer), fermer les
   sockets et annuler les fetches dans le cleanup, et supprimer les références des caches au niveau
@@ -1464,23 +2070,34 @@ fonctionnent entre elles.
   durée, et relire tout `addEventListener`/`setInterval`/`subscribe` dans un effet pour vérifier son
   pendant.
 
+</details>
+
 ### S22. Après modification d'un enregistrement, la page de liste affiche encore les anciennes données jusqu'à ce que l'utilisateur recharge
+
 - **Symptômes :** Un utilisateur renomme un client dans un formulaire et revient à la liste des
   clients, qui affiche toujours l'ancien nom. Un rafraîchissement règle le problème. Parfois la page de
   détail est à jour mais la liste, un widget de dashboard et un dropdown ailleurs ne le sont pas.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
 - **Diagnostic :** Avec un cache de server state (React Query/SWR), le cache conserve chaque requête
-  sous sa key et ne sait pas qu'une mutation a modifié les données sous-jacentes (Q19). Ni
+  sous sa key et ne sait pas qu'une mutation a modifié les données sous-jacentes (Q20). Ni
   `invalidateQueries` ni `setQueryData` n'a été appelé pour *toutes* les keys qui affichent
   l'enregistrement, ou l'invalidation a utilisé une key qui ne correspondait pas au préfixe de la liste
   en cache (`["customers"]` vs `["customer-list", { page }]`). Inspecter le cache dans les React Query
   DevTools : la requête de liste est `fresh` pendant la fenêtre `staleTime` et ne se re-fetch jamais au
   remount.
 - **Exemple :**
+
   ```tsx
   const update = useMutation({ mutationFn: api.updateCustomer });          // aucune gestion du cache
   // liste :   useQuery({ queryKey: ["customer-list", { page }], staleTime: 5 * 60_000, ... })
   // détail :  useQuery({ queryKey: ["customer", id], ... })
   ```
+
 - **Résolution :** Dans `onSuccess`, invalider par préfixe hiérarchique — `qc.invalidateQueries({ queryKey: ["customers"] })`
   — après avoir restructuré les keys en `["customers", "list", {...}]` et `["customers", "detail", id]` ;
   pour un retour instantané, écrire l'entité retournée avec `setQueryData` et invalider les listes.
@@ -1491,37 +2108,82 @@ fonctionnent entre elles.
   délibéré plutôt que grand "pour économiser des requêtes" ; et faire de "quelles requêtes affichent
   cette entité ?" un point de checklist pour chaque mutation.
 
+</details>
+
+## 🎤 Quiz oral
+
+Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.
+
+1. Q1. Qu'est-ce que JSX, et vers quoi compile-t-il réellement ?
+2. Q4. `useState` vs `useRef` — quand utiliser l'un ou l'autre ?
+3. Q8. TypeScript `interface` vs `type` — quelle est la différence pratique, et quand choisir l'un plutôt que l'autre ?
+4. Q9. Quelles sont les Rules of Hooks, et pourquoi un hook ne peut-il pas être appelé conditionnellement ?
+5. Q19. Quel est le piège de performance du Context React, et quand devient-il un vrai problème ?
+6. Q30. Que faut-il réellement tester dans un composant React, selon la philosophie de React Testing Library ?
+7. Q31. Une grande table de données devient nettement saccadée au scroll ou au filtrage. Détaillez le diagnostic et la correction.
+8. Q37. Quand les micro-frontends sont-ils une bonne idée, et quelles sont les alternatives ?
+9. S1. Un composant entre dans une boucle de re-render infinie, figeant l'onglet
+10. S22. Après modification d'un enregistrement, la page de liste affiche encore les anciennes données jusqu'à ce que l'utilisateur recharge
+
 ## 📌 Cheat-sheet
 
-- **Hooks** : le même bénéfice de logique avec état regroupée que les classes ne pouvaient pas offrir sans wrapper hell ; doivent être appelés inconditionnellement, dans le même ordre à chaque rendu.
-- **`useState` vs `useRef`** : le state déclenche un re-render et pilote l'UI ; la ref persiste de façon mutable sans en déclencher — à utiliser pour les nœuds DOM, timers, valeurs hors UI.
-- **Stale closures** : les valeurs capturées par un effet sont figées à sa création ; deps `[]` + lecture d'une valeur qui change = bug. Préférer les mises à jour fonctionnelles (`setX(x => ...)`) pour l'éviter.
-- **Cleanup d'effet** : obligatoire pour tout ce qui persiste au-delà d'une exécution — souscriptions, intervals, listeners, fetches en vol (`AbortController`).
-- **`useMemo`/`useCallback`** : mémoïsent les calculs coûteux / une identité de fonction stable pour les enfants mémoïsés — profiler avant d'appliquer, ne pas en faire un défaut partout.
-- **`React.memo`** : comparaison shallow des props ; inutile si le parent passe de nouveaux objets/fonctions inline à chaque rendu — mémoïser à la source, pas seulement chez le récepteur.
-- **`key`** : ID stable par élément, jamais l'index du tableau pour une liste réordonnable/mutable — mauvaise key = state/contenu attaché à la mauvaise ligne.
-- **Context** : tous les consommateurs re-render à tout changement de valeur — découper en contexts étroits et mémoïser l'objet valeur pour un state fréquemment mis à jour et largement consommé.
-- **Ne pas synchroniser props → state via `useEffect`** : dériver pendant le rendu, ou remonter via `key` pour une divergence locale intentionnelle.
-- **Error boundaries** : capturent uniquement les erreurs de rendu/cycle de vie — pas les gestionnaires d'événements, pas le code async. Ceux-ci ont besoin de leur propre `try`/`catch`.
-- **`Suspense` + `React.lazy`** : permet le code splitting au niveau route/fonctionnalité — bundle initial plus petit.
-- **`startTransition`** : marque une mise à jour de state comme basse priorité/interruptible pour que les mises à jour urgentes (retour de la saisie) restent réactives.
-- **Tester le comportement, pas l'implémentation** : requêter par rôle/texte/label, interagir comme un utilisateur — les tests de détails d'implémentation cassent lors de refactors valides.
-- **`interface` vs `type`** : interface pour les formes d'objets extensibles ; type pour les unions/intersections/mapped types.
-- **Discriminated unions > soupe de booléens** : rend les combinaisons d'états invalides non représentables, et pas seulement évitées par convention.
-- **`unknown` vs `any`** : `any` désactive la vérification ; `unknown` force le narrowing/la validation avant usage — toujours préférer `unknown` aux frontières de confiance.
-- **Données externes** : valider à la frontière (Zod ou équivalent) — une assertion `as T` uniquement à la compilation n'impose rien à l'exécution.
-- **Server state ≠ client state** : utiliser React Query/SWR pour les données fetchées (cache, revalidation) ; Context+`useReducer` ou Zustand/Redux pour le vrai client state, choisis selon l'échelle et la fréquence de mise à jour.
-</content>
-- **Props vs state** : les props sont des entrées en lecture seule venant du parent, le state est possédé et mis à jour via son setter ; les données descendent, les événements remontent via des props callback.
-- **Handler vs effet** : action utilisateur → gestionnaire d'événement ; synchro avec un système externe → effet (avec cleanup) ; dérivable des props/state → calculer pendant le rendu. Les chaînes de callbacks d'effets ajoutent des rendus et masquent les causes.
-- **React 19** : Actions (`<form action>`), `useActionState`, `useOptimistic`, `use(promise)` — le state optimiste est transitoire (attendre la mutation dans l'action) ; la promise passée à `use` doit être stable.
-- **`as const` / `satisfies` / `never`** : conservent les littéraux, valident la forme sans élargir, et donnent une erreur de compilation quand un membre d'union n'est pas géré ; préférer les unions littérales à `enum`.
-- **Query keys** = identité de cache + dépendances du fetch : inclure chaque entrée, structurer hiérarchiquement, invalider par préfixe après les mutations ; connaître `staleTime` (fraîcheur) vs `gcTime` (rétention du cache).
-- **RSC** : bundles plus petits et data fetching colocalisé au prix d'un modèle à deux environnements, d'un verrouillage sur un framework et d'un seul `"use client"` égaré en haut qui tire tout.
-- **Composants polymorphes** : generic `C extends ElementType` avec `Omit<ComponentProps<C>, keyof Own>` ; restreindre `as` pour l'accessibilité ou préférer `asChild`/des composants séparés.
-- **Micro-frontends** résolvent le passage à l'échelle organisationnel, pas la performance — essayer d'abord un monorepo modulaire + feature flags ; partager React en singleton.
-- **Hydration mismatch** : le premier rendu client doit égaler le HTML serveur — pas de `Date.now`/`Math.random`/`window` dans le rendu ; utiliser des effets, `useId`, ou des props venant du serveur.
+### React de base
+
+> **Pour commencer :** les props descendent et les événements remontent, le state pilote l'UI, on dérive au lieu de synchroniser, et on appelle les hooks inconditionnellement.
+
+- **Props vs state** — les props sont des entrées en lecture seule venant du parent ; le state est possédé par le composant et mis à jour via son setter. *Les données descendent, les événements remontent via des props callback.*
+- **Hooks** — des fonctions comme `useState`/`useEffect` qui donnent state et effets aux composants fonction. *Même bénéfice de logique avec état regroupée que les classes ne pouvaient pas offrir sans wrapper hell. Ils doivent être appelés inconditionnellement, dans le même ordre à chaque rendu (pas de hook dans un `if`).*
+- **`useState` vs `useRef`** — le state déclenche un re-render et pilote l'UI. Une ref persiste une valeur mutable sans en déclencher. *À utiliser pour les nœuds DOM, timers, valeurs hors UI.*
+- **Handler vs effet** — action utilisateur → gestionnaire d'événement. Synchro avec un système externe → effet (avec cleanup). Dérivable des props/state → calculer pendant le rendu. *Les chaînes de callbacks d'effets ajoutent des rendus et masquent les causes.*
+- **Ne pas synchroniser props → state via `useEffect`** — dériver la valeur pendant le rendu. *Pour une copie locale intentionnelle, remonter via `key`.*
+- **`key`** — un ID stable par élément, ex. `<li key={user.id}>`. *Jamais l'index du tableau pour une liste réordonnable/mutable : mauvaise key = state/contenu attaché à la mauvaise ligne.*
 - **Ne jamais définir un composant dans un composant** — un nouveau type à chaque rendu = remount, focus perdu et state perdu.
-- **Mises à jour optimistes** : annuler les requêtes en vol, snapshot, rollback en cas d'erreur, invalider au settle ; désactiver les doublons et rendre les mutations idempotentes.
-- **Taille de bundle** : les barrel files et packages non tree-shakables neutralisent le tree-shaking — analyser, importer granulairement, charger paresseusement les routes lourdes, imposer un budget de taille en CI.
-- **Fuites mémoire dans les SPA** : listeners/souscriptions non nettoyés et tableaux en ajout seul — diff de heap snapshots, ajouter des cleanups, plafonner les collections.
+
+### Effets et closures
+
+> **Pour commencer :** un effet voit les valeurs du rendu qui l'a créé, et tout ce qu'il démarre doit être arrêté dans le cleanup.
+
+- **Stale closure** — les valeurs capturées par un effet sont figées à sa création. *Deps `[]` + lecture d'une valeur qui change = bug.*
+- **Mises à jour fonctionnelles** — `setCount(c => c + 1)` au lieu de `setCount(count + 1)`. *Évite les stale closures.*
+- **Cleanup d'effet** — la fonction retournée par un effet, exécutée avant la prochaine exécution/le démontage. *Obligatoire pour tout ce qui persiste au-delà d'une exécution : souscriptions, intervals, listeners, fetches en vol (`AbortController`).*
+- **Fuites mémoire dans les SPA** (single-page apps) — causées par des listeners/souscriptions non nettoyés et des tableaux en ajout seul. *Correctif : diff de heap snapshots, ajouter des cleanups, plafonner les collections.*
+- **Error boundaries** — capturent uniquement les erreurs de rendu/cycle de vie. *Pas les gestionnaires d'événements, pas le code async ; ceux-ci ont besoin de leur propre `try`/`catch`.*
+
+### Performance
+
+> **Pour commencer :** mesurez d'abord ; la plupart des apps ont peu besoin de mémoïsation. Corrigez « nouvel objet à chaque rendu » à la source et découpez ce qui est gros.
+
+- **`useMemo`/`useCallback`** — mémoïsent un calcul coûteux / une identité de fonction stable pour les enfants mémoïsés. *Profiler avant d'appliquer ; ne pas en faire un défaut partout.*
+- **`React.memo`** — évite le re-render si les props sont égales en shallow. *Inutile si le parent passe de nouveaux objets/fonctions inline à chaque rendu : mémoïser à la source, pas seulement chez le récepteur.*
+- **Context** — tous les consommateurs re-render à tout changement de valeur. *Pour un state fréquemment mis à jour et largement consommé, découper en contexts étroits et mémoïser l'objet valeur.*
+- **`Suspense` + `React.lazy`** — code splitting au niveau route/fonctionnalité. *Bundle initial plus petit.*
+- **`startTransition`** — marque une mise à jour de state comme basse priorité/interruptible. *Les mises à jour urgentes (retour de la saisie) restent réactives.*
+- **Taille de bundle** — les barrel files (`index.ts` qui ré-exporte tout) et packages non tree-shakables neutralisent le tree-shaking. *Analyser, importer granulairement, charger paresseusement les routes lourdes, imposer un budget de taille en CI.*
+- **Hydration mismatch** (HTML serveur ≠ premier rendu client) — le premier rendu client doit égaler le HTML serveur. *Pas de `Date.now`/`Math.random`/`window` dans le rendu ; utiliser des effets, `useId`, ou des props venant du serveur.* *(avancé)*
+- **RSC** (React Server Components) — bundles plus petits et data fetching colocalisé. *Prix : un modèle à deux environnements, un verrouillage sur un framework, et un seul `"use client"` égaré en haut qui tire tout.* *(avancé)*
+- **Micro-frontends** — résolvent le passage à l'échelle organisationnel, pas la performance. *Essayer d'abord un monorepo modulaire + feature flags ; partager React en singleton.* *(avancé)*
+
+### Données et gestion d'état
+
+> **Pour commencer :** les données serveur vont dans React Query/SWR, pas dans votre propre `useState` ; utilisez une query key qui liste chaque entrée.
+
+- **Server state ≠ client state** — utiliser React Query/SWR pour les données fetchées (cache, revalidation). *Pour le vrai client state : Context+`useReducer` ou Zustand/Redux, choisis selon l'échelle et la fréquence de mise à jour.*
+- **Query keys** — identité de cache + dépendances du fetch, ex. `["user", id]`. *Inclure chaque entrée, structurer hiérarchiquement, invalider par préfixe après les mutations.*
+- **`staleTime` vs `gcTime`** — staleTime = combien de temps la donnée est considérée fraîche ; gcTime = combien de temps une donnée inutilisée reste en cache.
+- **Mises à jour optimistes** — afficher le résultat avant la confirmation du serveur. *Annuler les requêtes en vol, snapshot, rollback en cas d'erreur, invalider au settle ; désactiver les doublons et rendre les mutations idempotentes.*
+- **React 19** — Actions (`<form action>`), `useActionState`, `useOptimistic`, `use(promise)`. *Le state optimiste est transitoire (attendre la mutation dans l'action) ; la promise passée à `use` doit être stable.* *(avancé)*
+
+### TypeScript
+
+> **Pour commencer :** préférez `unknown` à `any`, modélisez les états en unions, et validez les données externes à l'exécution.
+
+- **`interface` vs `type`** — interface pour les formes d'objets extensibles ; type pour les unions/intersections/mapped types.
+- **Discriminated union** — une union avec un champ tag commun, ex. `{status:"loading"} | {status:"ok", data:T}`. *Mieux qu'une « soupe de booléens » (`isLoading`, `isError`…) : les combinaisons d'états invalides deviennent non représentables, et pas seulement évitées par convention.*
+- **`unknown` vs `any`** — `any` désactive la vérification ; `unknown` force le narrowing/la validation avant usage. *Toujours préférer `unknown` aux frontières de confiance.*
+- **Données externes** — valider à la frontière (Zod ou équivalent). *Une assertion `as T` uniquement à la compilation n'impose rien à l'exécution.*
+- **`as const` / `satisfies` / `never`** — `as const` conserve les littéraux, `satisfies` valide la forme sans élargir, `never` donne une erreur de compilation quand un membre d'union n'est pas géré. *Préférer les unions littérales à `enum`.* *(avancé)*
+- **Composants polymorphes** — generic `C extends ElementType` avec `Omit<ComponentProps<C>, keyof Own>`. *Restreindre `as` pour l'accessibilité ou préférer `asChild`/des composants séparés.* *(avancé)*
+
+### Tests
+
+- **Tester le comportement, pas l'implémentation** — requêter par rôle/texte/label et interagir comme un utilisateur. *Les tests de détails d'implémentation cassent lors de refactors valides.*

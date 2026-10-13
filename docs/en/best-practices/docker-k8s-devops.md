@@ -1,10 +1,9 @@
 # Docker, Kubernetes & DevOps Best Practices
 
-
-
 ## 🐳 Docker images
 
 ### Use multi-stage builds
+
 Build in one stage with the full toolchain, and copy only the result into a small runtime image.
 
 **Why it's a best practice:** a single-stage image ships the JDK, Maven, the `~/.m2` cache, the source code and
@@ -24,6 +23,7 @@ ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 ```
 
 ### Pin base image versions
+
 Use a specific version tag, or a digest for full reproducibility. Never `latest`.
 
 **Why it's a best practice:** `latest` points to whatever was pushed last. The same Dockerfile builds a different
@@ -35,6 +35,7 @@ change in your repo. You also can't tell which version is in production. Pin the
 ✅ `FROM node:22.11-alpine` or `FROM node:22.11-alpine@sha256:...`
 
 ### Order layers from least to most frequently changed
+
 Copy dependency files and install dependencies first, then copy the source code.
 
 **Why it's a best practice:** Docker caches each layer and rebuilds everything after the first one that
@@ -51,6 +52,7 @@ RUN npm run build
 ```
 
 ### Add a `.dockerignore`
+
 Exclude `.git`, `node_modules`, `target`, local `.env` files and IDE folders from the build context.
 
 **Why it's a best practice:** without it, `COPY . .` sends the whole directory to the build, including a
@@ -60,6 +62,7 @@ and `.env` files with real secrets that end up inside a layer anyone with the im
 ✅ `.dockerignore`: `.git`, `node_modules`, `target`, `.env*`, `*.log`
 
 ### Don't run as root
+
 Create a non-root user in the image and switch to it with `USER`.
 
 **Why it's a best practice:** by default, the process in the container runs as root. If the app is compromised,
@@ -74,6 +77,7 @@ USER 10001
 ```
 
 ### Never put secrets in the image
+
 Don't `COPY` credentials or set them with `ENV` / `ARG`. Inject them at runtime (Kubernetes Secret, vault). Use
 `RUN --mount=type=secret` if the build itself needs one.
 
@@ -88,6 +92,7 @@ secret, and rotating it means rebuilding every image.
 ## 📦 Containers at runtime
 
 ### Use the exec form and handle `SIGTERM`
+
 Write `ENTRYPOINT` / `CMD` as a JSON array, and make the app finish in-flight work when it receives `SIGTERM`.
 
 **Why it's a best practice:** the shell form (`ENTRYPOINT java -jar app.jar`) starts `/bin/sh` as PID 1, and the
@@ -99,6 +104,7 @@ can shut down cleanly.
 ✅ `ENTRYPOINT ["java", "-jar", "/app/app.jar"]`
 
 ### One process per container, logs to stdout
+
 Run a single main process per container, and write logs to stdout / stderr, not to files.
 
 **Why it's a best practice:** the container's lifecycle follows its main process: if you start several with a
@@ -112,6 +118,7 @@ fill its disk and disappear when it restarts. Log in JSON so the aggregator can 
 ## ☸️ Kubernetes
 
 ### Set resource requests and limits
+
 Give every container CPU and memory `requests`, and a memory `limit`.
 
 **Why it's a best practice:** the scheduler places pods based on `requests`. Without them, it packs too many pods
@@ -128,6 +135,7 @@ resources:
 ```
 
 ### Configure liveness, readiness and startup probes correctly
+
 Readiness decides whether the pod gets traffic. Liveness decides whether it gets restarted. Startup protects slow
 starts.
 
@@ -145,6 +153,7 @@ readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
 ```
 
 ### Keep config in ConfigMaps and Secrets
+
 Store environment-specific configuration in `ConfigMap`s and credentials in `Secret`s (ideally synced from a
 vault), not in the image.
 
@@ -157,6 +166,7 @@ and prefer a tool like External Secrets or Sealed Secrets rather than committing
 ✅ `envFrom: [{ configMapRef: { name: app-config } }, { secretRef: { name: app-secrets } }]`
 
 ### Run several replicas with a `PodDisruptionBudget`
+
 Run at least 2 replicas of anything user-facing, spread across nodes, and protect them with a
 `PodDisruptionBudget`.
 
@@ -175,6 +185,7 @@ spec:
 ```
 
 ### Use rolling updates with `maxUnavailable: 0`
+
 Configure the deployment strategy so new pods are ready before old ones are removed.
 
 **Why it's a best practice:** combined with a readiness probe, `maxUnavailable: 0` and `maxSurge: 1` means
@@ -183,9 +194,52 @@ becomes ready, the rollout stops and the old pods keep serving traffic. Roll bac
 
 ✅ `strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }`
 
+All of the above in one manifest:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: orders }
+spec:
+  replicas: 3
+  strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }
+  selector: { matchLabels: { app: orders } }
+  template:
+    metadata: { labels: { app: orders } }
+    spec:
+      terminationGracePeriodSeconds: 30
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector: { matchLabels: { app: orders } }
+      securityContext: { runAsNonRoot: true }
+      containers:
+        - name: orders
+          image: registry.example.com/orders:3f9c2ab   # immutable tag, never latest
+          ports: [{ containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: app-config }
+            - secretRef: { name: app-secrets }
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { memory: 512Mi }
+          startupProbe:   { httpGet: { path: /actuator/health/liveness,  port: 8080 }, failureThreshold: 30, periodSeconds: 5 }
+          livenessProbe:  { httpGet: { path: /actuator/health/liveness,  port: 8080 } }
+          readinessProbe: { httpGet: { path: /actuator/health/readiness, port: 8080 } }
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: { name: orders }
+spec:
+  minAvailable: 1
+  selector: { matchLabels: { app: orders } }
+```
+
 ## ⎈ Helm
 
 ### One chart, one values file per environment
+
 Keep a single chart with sensible defaults in `values.yaml`, and override only what differs in
 `values-<env>.yaml`.
 
@@ -197,6 +251,7 @@ values files, the difference between environments is small and visible in one di
 ✅ `helm upgrade --install orders ./chart -f values.yaml -f values-prod.yaml`
 
 ### Lint and render charts in CI
+
 Run `helm lint` and `helm template` (plus a schema validator like kubeconform) on every change.
 
 **Why it's a best practice:** a template error or wrong indentation in YAML is only discovered at deploy time,
@@ -208,6 +263,7 @@ rendered output can be diffed in review so you see the real Kubernetes objects t
 ## 🚀 CI/CD
 
 ### Build once, promote the same artifact
+
 Build the image once, tag it with the commit SHA, and deploy that same image to every environment.
 
 **Why it's a best practice:** rebuilding for each environment can produce a different image (a new base image, a
@@ -219,6 +275,7 @@ Mutable tags (`latest`, `prod`) change under you and break both.
 ✅ `myapp:3f9c2ab` built once, promoted dev → staging → prod
 
 ### Scan images and dependencies in the pipeline
+
 Scan images (Trivy, Grype) and dependencies on every build, and fail on critical vulnerabilities.
 
 **Why it's a best practice:** most vulnerabilities come from base images and third-party libraries, not your own
@@ -226,3 +283,33 @@ code, and new ones are published every day for packages you shipped months ago. 
 issues before they reach production, and regular scans of running images tell you when you need to rebuild.
 
 ✅ `trivy image --exit-code 1 --severity CRITICAL myapp:3f9c2ab`
+
+A minimal pipeline that builds once, scans, and promotes the same SHA-tagged image (cluster credentials setup omitted):
+
+```yaml
+# .github/workflows/ci.yml
+name: ci
+on: { push: { branches: [main] } }
+permissions: { contents: read, packages: write }
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./mvnw -B verify                       # fail fast: tests before anything else
+      - uses: docker/login-action@v3
+        with: { registry: ghcr.io, username: "${{ github.actor }}", password: "${{ secrets.GITHUB_TOKEN }}" }
+      - run: |
+          IMAGE=ghcr.io/${{ github.repository }}:${GITHUB_SHA::7}
+          docker build -t "$IMAGE" .
+          docker run --rm aquasec/trivy image --exit-code 1 --severity CRITICAL "$IMAGE"
+          docker push "$IMAGE"                      # build once, push once
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging                            # prod uses its own environment with required reviewers
+    steps:
+      - uses: actions/checkout@v4
+      - run: helm upgrade --install orders ./chart -f values.yaml -f values-staging.yaml --set image.tag=${GITHUB_SHA::7} --atomic
+```

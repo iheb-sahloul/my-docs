@@ -5,10 +5,6 @@ site_author: Iheb Sahloul
 repo_name: iheb-sahloul/my-docs
 repo_url: https://github.com/iheb-sahloul/my-docs
 
-# Shown by `mkdocs serve`, left out of `mkdocs build` / deploy
-draft_docs: |
-  draft/
-
 theme:
   name: material
   features:
@@ -59,17 +55,22 @@ plugins:
           nav_translations:
             Home: Accueil
             Interview: Entretien
+            Leadership & Behavioral (STAR): Leadership & Comportemental (STAR)
             Overview: Vue d'ensemble
             Persistence & SQL: Persistance & SQL
-            Claude Code & AI-assisted Dev: Claude Code & Dev assisté par IA
+            AI Engineering & Claude Code: Ingénierie IA & Claude Code
+            SQL Query Tuning: Optimisation des requêtes SQL
+            Resources: Ressources
             Mock Interview Checklist: Checklist d'entretien blanc
             Best Practices: Bonnes pratiques
             Further Reading: Pour aller plus loin
-            Notes: Notes
             Testing: Tests
             Security: Sécurité
+            Live Coding: Live coding
             Observability: Observabilité
-            Maven & Gradle: Maven & Gradle
+            AI Prompts: Prompts IA
+            Messaging: Messagerie
+            System Design: Conception de systèmes
 
 markdown_extensions:
   - attr_list
@@ -95,19 +96,26 @@ nav:
   - Messaging: interviews/messaging-rabbitmq-kafka.md
   - React & TypeScript: interviews/react-typescript.md
   - Full Stack & DevOps: interviews/fullstack-devops-k8s.md
-  - System Design & Leadership: interviews/system-design-leadership.md
-  - Claude Code & AI-assisted Dev: interviews/claude-code.md
+  - System Design: interviews/system-design.md
+  - Leadership & Behavioral (STAR): interviews/leadership-behavioral.md
+  - AI Engineering & Claude Code: interviews/claude-code.md
+  - Testing: interviews/testing.md
+  - Security: interviews/security.md
+  - Live Coding: interviews/coding.md
+  - Cloud (AWS): interviews/cloud-aws.md
   - Mock Interview Checklist: interviews/mock-interview.md
-  - Further Reading: interviews/further-reading.md
 - Notes:
   - Git: notes/git.md
   - Java: notes/java.md
   - Maven & Gradle: notes/maven-gradle.md
-  - SQL: notes/sql.md
+  - SQL Query Tuning: notes/sql.md
   - Postgres: notes/postgres.md
   - Docker: notes/docker.md
   - Kubernetes: notes/kubernetes.md
+  - Terraform: notes/terraform.md
   - Linux: notes/linux.md
+  - Kafka & RabbitMQ: notes/messaging.md
+  - "HTTP: curl & jq": notes/http-curl-jq.md
   - AI: notes/ai.md
 - Best Practices:
   - Git: best-practices/git.md
@@ -117,6 +125,12 @@ nav:
   - Security: best-practices/security.md
   - Observability: best-practices/observability.md
   - REST API: best-practices/rest-api.md
+  - Messaging: best-practices/messaging.md
+  - Architecture: best-practices/architecture.md
   - React & TypeScript: best-practices/react-typescript.md
   - SQL, JPA & Postgres: best-practices/sql-jpa-postgres.md
   - Docker, K8s & DevOps: best-practices/docker-k8s-devops.md
+  - CI/CD: best-practices/ci-cd.md
+  - AI Prompts: best-practices/ai-prompts.md
+- Resources:
+  - Further Reading: resources/further-reading.md

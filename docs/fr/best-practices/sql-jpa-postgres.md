@@ -1,10 +1,9 @@
 # Bonnes pratiques SQL, JPA & Postgres
 
-
-
 ## 🗺️ Mapping des entités
 
 ### Rendez toutes les associations `LAZY`
+
 Mettez `fetch = FetchType.LAZY` sur `@ManyToOne` et `@OneToOne`. (`@OneToMany` et `@ManyToMany` sont déjà lazy.)
 
 **Pourquoi c'est une bonne pratique :** `@ManyToOne` et `@OneToOne` sont `EAGER` par défaut. Chaque fois que vous
@@ -17,6 +16,7 @@ explicite par cas d'usage.
 ✅ `@ManyToOne(fetch = FetchType.LAZY) private Customer customer;`
 
 ### Préférez `SEQUENCE` à `IDENTITY` pour les ids
+
 Utilisez `@GeneratedValue(strategy = GenerationType.SEQUENCE)` avec un `allocationSize` égal à l'incrément de la
 séquence.
 
@@ -29,7 +29,19 @@ Postgres sont peu coûteuses et faites pour ça.
 ⛔ `@GeneratedValue(strategy = GenerationType.IDENTITY)`
 ✅ `@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")` + `@SequenceGenerator(name = "order_seq", allocationSize = 50)`
 
+Activez le batching JDBC pour que les ids pré-alloués servent vraiment :
+
+```yaml
+spring.jpa.properties.hibernate:
+  jdbc.batch_size: 50
+  order_inserts: true
+  order_updates: true
+```
+
+Côté base, l'incrément doit correspondre, sinon les ids entrent en collision : `CREATE SEQUENCE order_seq INCREMENT BY 50;`
+
 ### Implémentez `equals` / `hashCode` avec soin sur les entités
+
 Basez-les sur une clé métier naturelle, ou sur l'id avec un `hashCode` constant. N'utilisez jamais `@Data` de
 Lombok sur une entité.
 
@@ -48,6 +60,7 @@ bidirectionnelles. Son `toString` a le même problème.
 ```
 
 ### Utilisez le verrouillage optimiste avec `@Version`
+
 Ajoutez une colonne `@Version` aux entités qui peuvent être modifiées en parallèle.
 
 **Pourquoi c'est une bonne pratique :** sans elle, deux utilisateurs chargent la même ligne, la modifient tous les
@@ -58,9 +71,20 @@ Cela coûte une colonne entière et aucun verrou.
 
 ✅ `@Version private long version;`
 
+Interceptez le conflit là où vous pouvez dire quelque chose d'utile à l'utilisateur :
+
+```java
+try {
+    orderService.update(id, command);          // save() flush UPDATE ... WHERE version = ?
+} catch (ObjectOptimisticLockingFailureException e) {
+    throw new ResponseStatusException(HttpStatus.CONFLICT, "Modifié par quelqu'un d'autre, rechargez");
+}
+```
+
 ## ⚡ Requêtes & performance
 
 ### Évitez les requêtes N+1
+
 Quand vous avez besoin d'une association pour une liste d'entités, chargez-la dans la même requête avec un
 `JOIN FETCH` ou un `@EntityGraph`.
 
@@ -80,7 +104,17 @@ orders.forEach(o -> print(o.getCustomer().getName()));
 List<Order> findAllWithCustomer();
 ```
 
+Même résultat sans écrire de JPQL, et cela se combine avec les requêtes dérivées :
+
+```java
+@EntityGraph(attributePaths = "customer")
+List<Order> findByStatus(Status status);
+```
+
+Ne faites pas de join-fetch sur deux collections à la fois (`MultipleBagFetchException`, ou produit cartésien) : récupérez-en une, et utilisez `@BatchSize` pour l'autre.
+
 ### Lisez avec des projections, pas des entités
+
 Pour les écrans et API en lecture seule, ne sélectionnez que les colonnes nécessaires dans un DTO ou une projection
 par interface.
 
@@ -93,6 +127,7 @@ liste qui n'affiche que 3 champs, c'est de la mémoire et du CPU gaspillés. Une
 ✅ `@Query("select new com.acme.OrderSummary(o.id, o.total, o.createdAt) from Order o where o.status = :s")`
 
 ### Utilisez la pagination par clé (keyset) pour les grandes tables
+
 Pour une pagination profonde ou un scroll infini, paginez avec `WHERE id > :lastId ORDER BY id LIMIT n` plutôt
 qu'avec un grand `OFFSET`.
 
@@ -111,6 +146,7 @@ SELECT * FROM orders WHERE id > :last_seen_id ORDER BY id LIMIT 20;
 ```
 
 ### Indexez les clés étrangères et les colonnes filtrées, et vérifiez avec `EXPLAIN`
+
 Créez des index pour les colonnes utilisées dans `WHERE`, `JOIN` et `ORDER BY`, clés étrangères comprises.
 Vérifiez le plan avec `EXPLAIN (ANALYZE, BUFFERS)`.
 
@@ -123,7 +159,21 @@ index ralentit les écritures.
 ⛔ `order_line.order_id` sans index
 ✅ `CREATE INDEX idx_order_line_order_id ON order_line (order_id);`
 
+Lire le plan :
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM order_line WHERE order_id = 42;
+
+⛔ Seq Scan on order_line  (cost=0.00..18334.00 rows=5 ...) (actual time=0.02..95.4 rows=5 loops=1)
+     Filter: (order_id = 42)   Rows Removed by Filter: 1000000
+
+✅ Index Scan using idx_order_line_order_id  (cost=0.42..8.44 rows=5 ...) (actual time=0.03..0.05 rows=5 loops=1)
+```
+
+Signaux d'alerte : `Seq Scan` sur une grosse table, `Rows Removed by Filter` très supérieur aux lignes retournées, et `rows` estimé très éloigné de `actual rows` (statistiques périmées : lancez `ANALYZE`).
+
 ### Utilisez toujours des paramètres liés
+
 Passez les valeurs en paramètres (`?`, `:name`), jamais en les concaténant dans la chaîne SQL.
 
 **Pourquoi c'est une bonne pratique :** la concaténation, c'est l'injection SQL : `name = "x' OR '1'='1"` renvoie
@@ -136,6 +186,7 @@ natives.
 ✅ `em.createQuery("from User where name = :name").setParameter("name", name)`
 
 ### Gardez les transactions courtes
+
 Ouvrez une transaction, faites le travail en base, commitez. Pas de saisie utilisateur, d'appels distants ou de
 longs calculs entre les deux.
 
@@ -150,6 +201,7 @@ ouvert indéfiniment. Configurez `idle_in_transaction_session_timeout` comme fil
 ## 🐘 Types & schéma Postgres
 
 ### Utilisez `timestamptz`, `numeric` et `text`
+
 Stockez les instants en `timestamptz`, l'argent en `numeric(p, s)`, et les chaînes en `text` (ou `varchar(n)`
 seulement quand la limite est une vraie règle).
 
@@ -164,6 +216,7 @@ est exact et se mappe sur `BigDecimal`. Dans Postgres, `text` et `varchar` ont l
 ✅ `created_at timestamptz`, `amount numeric(19, 4)`
 
 ### Mettez les règles d'intégrité dans la base
+
 Déclarez les contraintes `NOT NULL`, `UNIQUE`, `FOREIGN KEY` et `CHECK` dans le schéma, pas seulement dans le code
 applicatif.
 
@@ -178,6 +231,7 @@ service). Les contraintes documentent aussi le modèle pour quiconque lit le sch
 ## 🚚 Migrations
 
 ### Versionnez le schéma avec Flyway ou Liquibase
+
 Chaque modification du schéma est un fichier de migration dans le dépôt. N'utilisez jamais `ddl-auto=update` (ou
 `create`) en dehors du développement local.
 
@@ -191,6 +245,7 @@ relues, reproductibles, exécutées dans l'ordre, et enregistrées dans une tabl
 ✅ `db/migration/V12__add_order_status.sql` + `ddl-auto: validate`
 
 ### Écrivez des migrations qui ne bloquent pas la production
+
 Créez les index avec `CREATE INDEX CONCURRENTLY`, ajoutez les colonnes nullable (ou avec une valeur par défaut
 constante), et découpez les changements cassants en étapes expand / contract.
 
@@ -203,3 +258,20 @@ supprimez l'ancienne.
 
 ⛔ `CREATE INDEX idx_orders_status ON orders (status);`
 ✅ `CREATE INDEX CONCURRENTLY idx_orders_status ON orders (status);`
+
+Exemple complet expand / contract : renommer `orders.state` en `orders.status` sans interruption, une release par étape.
+
+```sql
+-- V20 (release 1, expand) : ajouter la nouvelle colonne ; l'ancien code continue de marcher
+ALTER TABLE orders ADD COLUMN status text;
+
+-- le code de la release 1 écrit les deux colonnes ; V21 remplit par petits lots
+UPDATE orders SET status = state WHERE status IS NULL AND id BETWEEN 1 AND 50000;
+
+-- V22 (release 2) : les lectures passent sur status ; contrainte sans verrou long
+ALTER TABLE orders ADD CONSTRAINT orders_status_nn CHECK (status IS NOT NULL) NOT VALID;
+ALTER TABLE orders VALIDATE CONSTRAINT orders_status_nn;
+
+-- V23 (release 3, contract) : plus personne ne lit `state`
+ALTER TABLE orders DROP COLUMN state;
+```

@@ -4,26 +4,34 @@
 
 | # | Module                                                         | Focus                                                                 |
 |---|----------------------------------------------------------------|-----------------------------------------------------------------------|
-| 1 | [`Java Core & JVM`](java-core-jvm.md)                       | records, sealed, virtual threads, concurrence, GC                     |
-| 2 | [`Spring & Architecture`](spring-architecture.md)           | `@Transactional`, sécurité, hexagonal                                 |
-| 3 | [`Persistance & SQL`](persistence-sql-postgres.md)          | MyBatis, SQL avancé, PostgreSQL, index                                |
-| 4 | [`Messaging`](messaging-rabbitmq-kafka.md)                  | RabbitMQ vs Kafka, idempotence, sagas                                 |
+| 1 | [`Design Patterns`](design-patterns.md)                     | Catalogue GoF, quand (ne pas) utiliser un pattern, patterns tactiques DDD |
+| 2 | [`Java Core & JVM`](java-core-jvm.md)                       | records, sealed, virtual threads, concurrence, GC                     |
+| 3 | [`Spring & Architecture`](spring-architecture.md)           | `@Transactional`, sécurité, hexagonal                                 |
+| 4 | [`Persistance & SQL`](persistence-sql-postgres.md)          | MyBatis, SQL avancé, PostgreSQL, index                                |
 | 5 | [`React & TypeScript`](react-typescript.md)                 | Hooks, état, performance, TS                                          |
-| 6 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | Conception d'API, Docker, K8s, observabilité                          |
-| 7 | [`System Design & Leadership`](system-design-leadership.md) | Scalabilité, CAP, OWASP, mentorat                                     |
-| 8 | [`Claude Code & Dev assisté par IA`](claude-code.md)        | Agentic coding, prompts/contexte, MCP, sécurité de l'IA, gouvernance  |
-| 9 | [`Design Patterns`](design-patterns.md)                     | Catalogue GoF, quand (ne pas) utiliser un pattern, patterns tactiques DDD |
+| 6 | [`Messaging`](messaging-rabbitmq-kafka.md)                  | RabbitMQ vs Kafka, idempotence, sagas                                 |
+| 7 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | Conception d'API, Docker, K8s, observabilité                          |
+| 8 | [`System Design`](system-design.md)                       | Méthode d'entretien, ordres de grandeur, conceptions complètes avec diagrammes |
+| 9 | [`Leadership & Comportemental (STAR)`](leadership-behavioral.md) | Feedback, conflits, parties prenantes, estimation, santé d'équipe     |
+| 10 | [`Ingénierie IA & Claude Code`](claude-code.md)        | Agentic coding, prompts/contexte, MCP, sécurité de l'IA, gouvernance  |
+| 11 | [`Tests`](testing.md) | Pyramide, doublures de test, Testcontainers, tests instables, tests de contrat, RTL/Playwright |
+| 12 | [`Sécurité`](security.md) | OAuth2/OIDC, JWT, Spring Security, injection/XSS/CSRF/IDOR/SSRF, supply chain |
+| 13 | [`Live coding`](coding.md) | Méthode, Big-O, patterns clés (hachage, fenêtres, BFS/DFS, tas, DP), pièges Java, take-homes |
+| 14 | [`Cloud (AWS)`](cloud-aws.md) | IAM, VPC, ECS/EKS/Lambda, données & messaging managés, hébergement SPA, HA, coûts |
+| ✓ | [`Entretien blanc`](mock-interview.md)                      | Checklist de préparation pour la veille                               |
+
+Les liens sélectionnés par sujet se trouvent dans **Ressources › [Pour aller plus loin](../resources/further-reading.md)**.
 
 ## Planning de révision suggéré (J-7)
 
 | Jour | Matin                          | Après-midi                    |
 |------|--------------------------------|-------------------------------|
-| J-7  | Module 1 (Java Core)           | Module 2 (Spring)             |
-| J-6  | Module 3 (SQL/Persistance)     | Révision Modules 1–2          |
-| J-5  | Module 4 (Messaging)           | Module 5 (React)              |
-| J-4  | Module 6 (DevOps/K8s)          | Révision Modules 3–4          |
-| J-3  | Module 7 (System Design)       | Module 8 (Claude Code / IA)   |
-| J-2  | Cheat-sheets de tous les modules | Mock interview (à voix haute) |
+| J-7  | Module 2 (Java Core)           | Module 3 (Spring)             |
+| J-6  | Module 4 (SQL/Persistance)     | Module 11 (Tests) + révision Modules 2–3 |
+| J-5  | Module 6 (Messaging)           | Module 5 (React)              |
+| J-4  | Modules 7 + 14 (DevOps/K8s, Cloud) | Module 12 (Sécurité) + révision Modules 4–6 |
+| J-3  | Modules 8–9 (System Design, Leadership & Comportemental) | Module 10 (Ingénierie IA) |
+| J-2  | Module 1 (Design Patterns) + cheat-sheets | Module 13 (Live coding, 2 problèmes chronométrés) + mock interview (à voix haute) |
 | J-1  | Points faibles identifiés      | Repos + relecture légère      |
 
 ## Légende de difficulté
@@ -40,7 +48,11 @@
 | 🟡 Pièges seniors        | ce qui distingue un senior                     |
 | 🔴 Expert / Ouvert       | architecture et questions ouvertes             |
 | 🎯 Scénarios réels       | cas détaillés issus de la production           |
+| 🗣️ Questions posées      | questions d'entretiens réels avec courtes réponses types (`R1`, `R2`…) : Java, Spring, SQL, Messaging, System Design, Cloud, Sécurité, DevOps |
+| 🎤 Quiz oral             | dix questions à traiter à voix haute, auto-notées |
 | 📌 Cheat-sheet           | Révision rapide la veille                      |
+
+**Leadership & Comportemental** suit la même structure. Sa partie **Comportemental** reprend les mêmes niveaux mais sans scénarios : chaque question indique pourquoi le recruteur la pose, un exemple de réponse ⭐ STAR, et le piège à éviter. Une dernière section **📞 Entretien avec le recruteur** couvre les questions du premier appel (raison du départ, salaire, projet à cinq ans, approfondissement de projet, questions à poser).
 
 ## Format des scénarios
 
@@ -62,7 +74,7 @@ Dérouler ce plan à voix haute montre une méthode d'ingénieur plutôt qu'une 
 - **Donnez des exemples concrets tirés de votre expérience.**
 - **Admettez ce que vous ne savez pas**, puis raisonnez.
 - **En system design**, clarifiez les exigences (charge, latence, cohérence) avant de dessiner.
-- **En coding**, discutez de la complexité, des cas limites et des tests.
+- **En coding** ([module 14](coding.md)), discutez de la complexité, des cas limites et des tests.
 
 ## Checklist finale
 

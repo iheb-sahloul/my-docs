@@ -3,6 +3,7 @@
 ## Images
 
 ### Construire une image
+
 ```bash
 docker build -t myapp:1.0 .                       # Dockerfile dans le dossier courant
 docker build -f docker/Dockerfile.prod -t myapp:prod .
@@ -12,6 +13,7 @@ docker buildx build --platform linux/amd64,linux/arm64 -t me/myapp:1.0 --push .
 ```
 
 ### Dockerfile multi-stage (image d'exécution légère)
+
 ```dockerfile
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /src
@@ -31,6 +33,7 @@ ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75", "-jar", "app.jar"]
 Placez d'abord les étapes qui changent rarement : chaque instruction est une couche, et une couche modifiée invalide toutes les suivantes.
 
 ### .dockerignore
+
 ```text
 .git
 target/
@@ -40,6 +43,7 @@ node_modules/
 ```
 
 ### Lister, taguer, pousser, supprimer
+
 ```bash
 docker images                                  # images locales
 docker image ls --filter dangling=true
@@ -51,6 +55,7 @@ docker rmi myapp:1.0
 ```
 
 ### Inspecter les couches et la taille d'une image
+
 ```bash
 docker history myapp:1.0                       # taille de chaque couche
 docker image inspect myapp:1.0 --format '{{.Size}} {{.Config.Env}}'
@@ -61,6 +66,7 @@ docker image inspect myapp:1.0 --format '{{.Size}} {{.Config.Env}}'
 ## Conteneurs
 
 ### Exécuter
+
 ```bash
 docker run --rm -it alpine sh                  # interactif, supprimé à la sortie
 docker run -d --name web -p 8080:80 nginx      # en arrière-plan, hôte 8080 -> conteneur 80
@@ -88,6 +94,7 @@ docker run --rm -v "$PWD":/work -w /work node:20 npm test   # exécuter un outil
 | `--read-only` | Système de fichiers racine en lecture seule |
 
 ### Cycle de vie
+
 ```bash
 docker ps                                      # en cours d'exécution
 docker ps -a                                   # y compris arrêtés
@@ -100,9 +107,11 @@ docker rm -f web                               # arrêt + suppression
 ```
 
 ### Sortie personnalisée de `ps`
+
 ```bash
 docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
 ```
+
 ```text
 NAMES   STATUS         PORTS
 web     Up 2 minutes   0.0.0.0:8080->80/tcp
@@ -114,6 +123,7 @@ db      Up 2 minutes   0.0.0.0:5432->5432/tcp
 ## Débogage
 
 ### Logs
+
 ```bash
 docker logs web
 docker logs -f --tail 100 web                  # suivre, 100 dernières lignes
@@ -122,6 +132,7 @@ docker logs -t web                             # avec horodatage
 ```
 
 ### Ouvrir un shell dans un conteneur en cours d'exécution
+
 ```bash
 docker exec -it web sh                         # ou bash si l'image l'a
 docker exec web env                            # commande ponctuelle
@@ -129,12 +140,14 @@ docker exec -u root -it web sh                 # en root
 ```
 
 ### Copier des fichiers vers et depuis un conteneur
+
 ```bash
 docker cp web:/etc/nginx/nginx.conf ./nginx.conf
 docker cp ./index.html web:/usr/share/nginx/html/
 ```
 
 ### Inspecter
+
 ```bash
 docker inspect web                             # JSON complet
 docker inspect -f '{{.NetworkSettings.IPAddress}}' web
@@ -146,6 +159,7 @@ docker events --since 10m                      # événements du daemon
 ```
 
 ### Le conteneur s'arrête immédiatement
+
 ```bash
 docker ps -a                                   # regarder STATUS : Exited (137) = tué/OOM, (1) = erreur applicative
 docker logs <name>
@@ -161,6 +175,7 @@ docker run --rm -it --entrypoint sh myapp:1.0  # contourner ENTRYPOINT et fouill
 | 143 | SIGTERM (arrêt propre) |
 
 ### Déboguer une image sans shell (distroless)
+
 ```bash
 docker run --rm -it --pid=container:web --network=container:web nicolaka/netshoot
 ```
@@ -170,6 +185,7 @@ docker run --rm -it --pid=container:web --network=container:web nicolaka/netshoo
 ## Dépannage : trouver la cause, puis corriger
 
 Méthode, toujours dans cet ordre :
+
 ```bash
 docker ps -a                                   # tourne-t-il ? code de sortie ?
 docker logs --tail 100 <name>                  # ce que l'appli a dit
@@ -196,6 +212,7 @@ docker exec -it <name> sh                      # ou --entrypoint sh s'il ne rest
 | Compose : l'appli démarre avant la base | `depends_on` n'attend que le démarrage | `docker compose logs app` montre connection refused | Ajouter un `healthcheck` + `depends_on: { db: { condition: service_healthy } }` |
 
 Appliquer la correction, puis vérifier :
+
 ```bash
 docker compose up -d --build --force-recreate
 docker compose ps
@@ -207,6 +224,7 @@ docker compose logs -f app
 ## Volumes et bind mounts
 
 ### Volumes
+
 ```bash
 docker volume create pgdata
 docker volume ls
@@ -215,6 +233,7 @@ docker volume rm pgdata
 ```
 
 ### Sauvegarder et restaurer un volume
+
 ```bash
 docker run --rm -v pgdata:/data -v "$PWD":/backup alpine \
   tar czf /backup/pgdata.tgz -C /data .
@@ -234,6 +253,7 @@ docker run --rm -v pgdata:/data -v "$PWD":/backup alpine \
 ## Réseaux
 
 ### Bridge défini par l'utilisateur (les conteneurs se résolvent par leur nom)
+
 ```bash
 docker network create backend
 docker run -d --name db  --network backend postgres:16
@@ -247,6 +267,7 @@ docker network disconnect backend web
 Le réseau `bridge` par défaut n'a **pas** de résolution de noms. Créez toujours votre propre réseau.
 
 ### Joindre l'hôte depuis un conteneur
+
 ```bash
 # Docker Desktop (Mac/Windows) : host.docker.internal
 # Linux : à ajouter soi-même
@@ -254,6 +275,7 @@ docker run --add-host=host.docker.internal:host-gateway myapp
 ```
 
 ### Tester la connectivité
+
 ```bash
 docker exec api sh -c 'nc -zv db 5432'
 docker exec api wget -qO- http://web:80
@@ -264,6 +286,7 @@ docker exec api wget -qO- http://web:80
 ## Docker Compose
 
 ### compose.yaml
+
 ```yaml
 services:
   api:
@@ -296,6 +319,7 @@ volumes:
 ```
 
 ### Commandes quotidiennes
+
 ```bash
 docker compose up -d                           # crée + démarre en arrière-plan
 docker compose up -d --build                   # reconstruit d'abord les images
@@ -311,6 +335,7 @@ docker compose config                          # affiche le fichier fusionné et
 ```
 
 ### Fichiers de surcharge et profils
+
 ```bash
 docker compose -f compose.yaml -f compose.dev.yaml up -d   # le dernier fichier surcharge les précédents
 docker compose --profile debug up -d                       # services avec `profiles: [debug]`
@@ -321,6 +346,7 @@ docker compose --profile debug up -d                       # services avec `prof
 ## Nettoyage
 
 ### Espace disque et prune
+
 ```bash
 docker system df                               # ce qui occupe de l'espace
 docker container prune                         # conteneurs arrêtés
@@ -333,6 +359,7 @@ docker system prune -a --volumes               # tout ce qui est inutilisé
 ```
 
 ### Suppression ciblée
+
 ```bash
 docker rm $(docker ps -aq -f status=exited)
 docker rmi $(docker images -q -f dangling=true)
@@ -344,6 +371,7 @@ docker container prune --filter "until=24h"
 ## Commandes utiles en une ligne
 
 ### Obtenir l'IP / l'environnement / les montages d'un conteneur
+
 ```bash
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' web
 docker inspect -f '{{json .Config.Env}}' web | jq
@@ -351,11 +379,13 @@ docker inspect -f '{{json .Mounts}}' web | jq
 ```
 
 ### Tout arrêter
+
 ```bash
 docker stop $(docker ps -q)
 ```
 
 ### Exécuter avec son propre utilisateur pour éviter les fichiers appartenant à root
+
 ```bash
 docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/work -w /work maven:3.9 mvn package
 ```

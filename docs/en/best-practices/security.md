@@ -1,10 +1,9 @@
 # Security Best Practices
 
-
-
 ## 🚪 Input & injection
 
 ### Validate all input at the boundary
+
 Validate every request body, parameter and header with Bean Validation, and reject bad input with a 400.
 
 **Why it's a best practice:** every value from outside is untrusted. Without limits, a 500 MB string, a
@@ -26,6 +25,7 @@ User create(@Valid @RequestBody CreateUser body) { ... }
 ```
 
 ### Use parameterized queries, never string concatenation
+
 Pass values as bind parameters in JDBC, JPQL, and native queries.
 
 **Why it's a best practice:** SQL injection has been in the OWASP Top 10 for two decades and still causes
@@ -45,6 +45,7 @@ List<User> findByName(@Param("name") String name);
 ```
 
 ### Escape output and set a Content Security Policy
+
 Encode data for the context it's rendered in (HTML, JS, URL), and send security headers.
 
 **Why it's a best practice:** stored XSS lets one user's comment run JavaScript in every viewer's browser and
@@ -64,6 +65,7 @@ http.headers(h -> h.contentSecurityPolicy(c -> c.policyDirectives("default-src '
 ```
 
 ### Prevent path traversal and SSRF
+
 Never build file paths or outgoing URLs directly from user input. Normalize and check against an allow-list.
 
 **Why it's a best practice:** `../../etc/passwd` in a filename reads any file the process can access. An
@@ -83,6 +85,7 @@ if (!file.startsWith(base)) throw new ResponseStatusException(HttpStatus.BAD_REQ
 ## 🔑 Authentication & secrets
 
 ### Hash passwords with a slow adaptive algorithm
+
 Use `BCryptPasswordEncoder`, Argon2 or `DelegatingPasswordEncoder`. Never store plain text, MD5 or plain SHA.
 
 **Why it's a best practice:** a GPU computes billions of SHA-256 hashes per second, so a leaked unsalted table is
@@ -102,6 +105,7 @@ user.setPassword(passwordEncoder.encode(rawPassword));
 ```
 
 ### Keep secrets out of code and Git
+
 Load secrets from environment variables, a secret manager (Vault, AWS Secrets Manager, Kubernetes secrets),
 and rotate them.
 
@@ -117,6 +121,7 @@ spring.datasource.password: ${DB_PASSWORD}
 ```
 
 ### Validate JWTs completely and keep them short-lived
+
 Verify signature, `iss`, `aud` and `exp`. Use short access tokens (5 to 15 min) with refresh tokens. Never accept `alg: none`.
 
 **Why it's a best practice:** a JWT can't be revoked before it expires, so a stolen 30-day token is a 30-day
@@ -134,6 +139,7 @@ http.oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()));
 ```
 
 ### Rate-limit and lock down login endpoints
+
 Throttle authentication attempts, and return the same message for a wrong user and a wrong password.
 
 **Why it's a best practice:** without limits, an attacker tries 10 million leaked passwords against your
@@ -152,6 +158,7 @@ return ResponseEntity.status(401).body(problem("Invalid credentials"));
 ## 🛡️ Web protections
 
 ### Configure CORS with an explicit origin list
+
 Allow specific origins, methods and headers. Never combine `*` with credentials.
 
 **Why it's a best practice:** CORS is a browser rule that decides which websites can read your API responses
@@ -171,6 +178,7 @@ registry.addMapping("/api/**")
 ```
 
 ### Keep CSRF protection on for cookie-based sessions
+
 Disable CSRF only for stateless APIs that authenticate with a bearer token in a header.
 
 **Why it's a best practice:** browsers attach cookies automatically, so a hidden form on `evil.com` can submit
@@ -187,6 +195,7 @@ http.csrf(AbstractHttpConfigurer::disable)
 ```
 
 ### Enforce HTTPS and secure cookies
+
 Redirect to HTTPS, send HSTS, and set `Secure`, `HttpOnly` and `SameSite` on session cookies.
 
 **Why it's a best practice:** on café Wi-Fi, plain HTTP traffic can be read and modified. `HttpOnly` stops
@@ -202,6 +211,7 @@ server.servlet.session.cookie.same-site: lax
 ## 🧑‍⚖️ Authorization
 
 ### Deny by default and apply least privilege
+
 Require authentication for every route, open specific ones explicitly, and give each account or service only the permissions it needs.
 
 **Why it's a best practice:** "Broken Access Control" is number 1 in the OWASP Top 10 (2021). A forgotten new
@@ -220,6 +230,7 @@ injection into total loss; an app user that can only `SELECT/INSERT/UPDATE` limi
 ```
 
 ### Check ownership on every object access
+
 Verify that the caller may access this particular record, not just that they are logged in.
 
 **Why it's a best practice:** IDOR (insecure direct object reference) is the classic bug: user 5 calls
@@ -242,6 +253,7 @@ orders.findByIdAndCustomerId(id, currentUser.id());
 ## 📦 Supply chain & data exposure
 
 ### Scan dependencies and update them regularly
+
 Run OWASP Dependency-Check, Dependabot, Renovate or Trivy in CI, and fail on high-severity CVEs.
 
 **Why it's a best practice:** Log4Shell (CVE-2021-44228) was a remote code execution in a library many teams
@@ -258,6 +270,7 @@ updates:
 ```
 
 ### Never expose entities or internal errors
+
 Return DTOs and generic error bodies. Log the details on the server only.
 
 **Why it's a best practice:** returning a JPA entity leaks columns like `passwordHash` or `isAdmin`, and lets
@@ -278,11 +291,10 @@ record UserResponse(long id, String email) {}
 ```
 
 ### Never log secrets or personal data
+
 Mask tokens, passwords, card numbers and personal data before logging.
 
-**Why it's a best practice:** logs are copied to third-party tools, kept for months and readable by many more
-people than the database. A logged `Authorization` header is a valid credential for as long as the token lives.
-GDPR also treats personal data in logs as personal data.
+**Why:** covered in [Never log secrets or personal data](observability.md#never-log-secrets-or-personal-data).
 
 ```java
 // ⛔
@@ -293,6 +305,7 @@ log.info("Login attempt for user id={}", userId);
 ```
 
 ### Secure the actuator and other management endpoints
+
 Expose only `health` and `info` publicly, and put the rest behind authentication or a private port.
 
 **Why it's a best practice:** `/actuator/env`, `/heapdump` and `/threaddump` reveal configuration, and a heap dump

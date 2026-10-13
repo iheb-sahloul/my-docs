@@ -1,10 +1,9 @@
 # Spring Boot Best Practices
 
-
-
 ## 💉 Dependency injection & configuration
 
 ### Use constructor injection
+
 Inject dependencies through the constructor, into `final` fields. Don't use `@Autowired` on fields.
 
 **Why it's a best practice:** with field injection, the class can't be created without Spring: a unit test has
@@ -29,6 +28,7 @@ class OrderService {
 ```
 
 ### Group settings with `@ConfigurationProperties`
+
 Bind related settings to a typed, validated class (a record works) instead of scattering `@Value` annotations.
 
 **Why it's a best practice:** `@Value("${payment.timeout}")` is a string key repeated wherever it's needed: a
@@ -48,13 +48,11 @@ record PaymentProperties(@NotNull URI url, Duration timeout) {}
 ```
 
 ### Never commit secrets in `application.yml`
+
 Keep passwords, API keys and tokens out of the repository. Read them from environment variables, a mounted
 secret, or a vault.
 
-**Why it's a best practice:** anything pushed to Git stays in its history forever, even after you delete it,
-and is copied to every clone and CI runner. Leaked credentials are one of the most common causes of breaches.
-Spring Boot resolves `${DB_PASSWORD}` from the environment out of the box, so the file only holds the reference.
-Use profiles (`application-dev.yml`) for non-secret differences between environments.
+**Why:** covered in [Keep secrets out of code and Git](security.md#keep-secrets-out-of-code-and-git).
 
 ⛔ `spring.datasource.password: s3cr3t`
 ✅ `spring.datasource.password: ${DB_PASSWORD}`
@@ -62,6 +60,7 @@ Use profiles (`application-dev.yml`) for non-secret differences between environm
 ## 🔁 Transactions
 
 ### Put `@Transactional` on public service methods
+
 Declare transactions in the service layer, on public methods called from another bean.
 
 **Why it's a best practice:** Spring applies `@Transactional` through a proxy around the bean. A call from
@@ -82,6 +81,7 @@ public void importAll(List<Order> orders) { ... }
 ```
 
 ### Keep transactions short, and mark reads `readOnly`
+
 Don't call remote services, send emails or wait on anything slow inside a transaction. Use
 `@Transactional(readOnly = true)` for queries.
 
@@ -95,6 +95,7 @@ lets Hibernate skip dirty checking and lets the driver route to a replica.
 ✅ save in the transaction, charge after commit via `@TransactionalEventListener(phase = AFTER_COMMIT)`
 
 ### Know what rolls back
+
 By default, only unchecked exceptions (`RuntimeException`, `Error`) roll back. Use `rollbackFor` if you throw
 checked ones.
 
@@ -106,6 +107,7 @@ exception inside the method and not rethrowing also commits. Be explicit when th
 ✅ `@Transactional(rollbackFor = TransferException.class)`
 
 ### Turn off Open Session in View
+
 Set `spring.jpa.open-in-view: false`.
 
 **Why it's a best practice:** it's on by default, and it keeps the Hibernate session (and a DB connection) open
@@ -119,18 +121,16 @@ is rendered. With it off, a `LazyInitializationException` tells you to fetch wha
 ## 🌐 REST API
 
 ### Return DTOs, not entities
+
 Map entities to request/response DTOs (records) at the controller boundary.
 
-**Why it's a best practice:** serializing a JPA entity exposes every field, including ones you didn't mean to
-publish (password hashes, internal flags), triggers lazy loading during serialization, and can loop forever on
-bidirectional relations. Accepting an entity as input lets clients set fields they shouldn't (`id`, `role`):
-that's mass assignment. A DTO makes the API contract explicit, so you can refactor the database without breaking
-clients.
+**Why:** covered in [Expose DTOs, not entities](rest-api.md#expose-dtos-not-entities).
 
 ⛔ `@GetMapping("/{id}") User get(@PathVariable Long id)`
 ✅ `@GetMapping("/{id}") UserResponse get(@PathVariable Long id)`
 
 ### Validate input with `@Valid`
+
 Put Bean Validation constraints on request DTOs and add `@Valid` on the controller parameter.
 
 **Why it's a best practice:** the controller is a trust boundary: any client can send anything. With
@@ -147,6 +147,7 @@ UserResponse create(@Valid @RequestBody CreateUserRequest request) { ... }
 ```
 
 ### Handle errors in one place with `ProblemDetail`
+
 Map exceptions to HTTP responses in a `@RestControllerAdvice`, and return RFC 9457 `ProblemDetail` bodies.
 
 **Why it's a best practice:** try/catch in each controller duplicates the mapping and drifts: one endpoint
@@ -165,19 +166,37 @@ class ApiExceptionHandler {
 }
 ```
 
+Do the same for validation failures so clients get the field errors, not a generic 400:
+
+```java
+@ExceptionHandler(MethodArgumentNotValidException.class)
+ProblemDetail handle(MethodArgumentNotValidException e) {
+    var problem = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
+    problem.setProperty("errors", e.getFieldErrors().stream()
+        .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage, (a, b) -> a)));
+    return problem;
+}
+```
+
 ### Paginate collection endpoints
+
 Never return an unbounded list. Accept a `Pageable` (or a cursor) and cap the page size.
 
-**Why it's a best practice:** `findAll()` works in dev with 50 rows and takes the service down in production
-with 5 million: all rows are loaded into memory and serialized in one response. Set a maximum with
-`spring.data.web.pageable.max-page-size` so a client can't ask for `size=1000000`.
+**Why:** covered in [Always paginate collections](rest-api.md#always-paginate-collections).
 
 ⛔ `List<OrderResponse> list()` → `repository.findAll()`
 ✅ `Page<OrderResponse> list(Pageable pageable)` → `repository.findAll(pageable)`
 
+```yaml
+spring.data.web.pageable:
+  default-page-size: 20
+  max-page-size: 100     # size=1000000 is silently capped
+```
+
 ## 📈 Operations
 
 ### Expose health, readiness and liveness with Actuator
+
 Add `spring-boot-starter-actuator`, expose only the endpoints you need, and use the liveness / readiness groups
 for Kubernetes probes.
 
@@ -194,6 +213,7 @@ management:
 ```
 
 ### Shut down gracefully
+
 Set `server.shutdown: graceful` and a `spring.lifecycle.timeout-per-shutdown-phase`.
 
 **Why it's a best practice:** on a deploy, the old pod receives `SIGTERM`. Without graceful shutdown, requests in
@@ -205,24 +225,35 @@ waits for in-flight ones to finish, up to the timeout. (Graceful is the default 
 ## 🧪 Testing
 
 ### Use slice tests, not `@SpringBootTest` everywhere
+
 Use `@WebMvcTest` for controllers, `@DataJpaTest` for repositories, and plain unit tests for services. Keep
 `@SpringBootTest` for a few end-to-end tests.
 
-**Why it's a best practice:** `@SpringBootTest` starts the whole application for each different context
-configuration: it's slow, and a `@MockitoBean` in one test class creates a new context. Slow tests get run less
-often. A slice only loads the beans for one layer and starts in a fraction of the time. Services with
-constructor injection don't need Spring at all: `new OrderService(fakeRepository)`.
+**Why:** covered in [Use test slices instead of @SpringBootTest everywhere](testing.md#use-test-slices-instead-of-springboottest-everywhere).
 
 ⛔ `@SpringBootTest` to test a JSON mapping in a controller
 ✅ `@WebMvcTest(OrderController.class)` + `MockMvc`
 
+```java
+@WebMvcTest(OrderController.class)
+class OrderControllerTest {
+    @Autowired MockMvc mvc;
+    @MockitoBean OrderService service;        // only the web layer is loaded
+
+    @Test void returns404WhenUnknown() throws Exception {
+        when(service.get(42L)).thenThrow(new OrderNotFoundException(42L));
+        mvc.perform(get("/orders/42"))
+           .andExpect(status().isNotFound())
+           .andExpect(jsonPath("$.detail").value("Order 42 not found"));
+    }
+}
+```
+
 ### Test against a real database with Testcontainers
+
 Run repository and integration tests against the same database engine as production, not H2.
 
-**Why it's a best practice:** H2 accepts SQL that Postgres rejects and the other way around: different types
-(`jsonb`, `timestamptz`), functions, locking and constraint behaviour. Tests pass on H2 and the query fails in
-production. Testcontainers starts a real Postgres in Docker, and with `@ServiceConnection` (Boot 3.1+) Spring
-configures the datasource automatically.
+**Why:** covered in [Use Testcontainers, not H2, for database tests](testing.md#use-testcontainers-not-h2-for-database-tests).
 
 ```java
 // ✅

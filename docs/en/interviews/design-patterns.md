@@ -5,6 +5,7 @@
 ### Creational patterns
 
 #### Q1. What problem does Singleton actually solve, and how do you implement it thread-safely in Java?
+
 **Answer:** Singleton guarantees a class has exactly one instance and gives a single global access
 point to it — appropriate for something that is genuinely unique in the process: a logging
 facade, a configuration registry, a connection pool wrapper. A naive `if (instance == null)
@@ -17,6 +18,7 @@ access), or (3) a single-element **enum** (Joshua Bloch's recommendation — the
 enum instances are created exactly once and it's serialization-safe for free).
 
 **Example:**
+
 ```java
 // Bill Pugh idiom: lazy, thread-safe, no synchronized block on every call.
 public class ConfigRegistry {
@@ -39,7 +41,10 @@ answer that "looks" correct — without `volatile`, another thread can observe a
 constructed object due to instruction reordering. If double-checked locking is used at all, the
 field must be `private static volatile Foo instance;`.
 
+*See also:* [Java Q28](java-core-jvm.md) for the JVM mechanics: class loading, and why `enum` also survives reflection and deserialization.
+
 #### Q2. What's the actual difference between Factory Method and Abstract Factory?
+
 **Answer:** **Factory Method** is a single method — often overridden in a subclass — that creates
 one kind of object, letting subclasses decide which concrete type to instantiate while the caller
 depends only on the return type's interface. **Abstract Factory** is a step up: an interface
@@ -49,6 +54,7 @@ families. The distinguishing question in an interview isn't "which one creates o
 but "does the caller need one product, or a consistent family of several products together."
 
 **Example:**
+
 ```java
 // Factory Method: one product, decided by the subclass.
 abstract class DocumentExporter {
@@ -76,6 +82,7 @@ exists — the actual bug it prevents is a caller ending up with a `DarkButton` 
 `LightCheckbox` because two independent Factory Methods were called with mismatched themes.
 
 #### Q3. When does a Builder beat a telescoping constructor or plain JavaBean setters?
+
 **Answer:** A telescoping constructor (`new Pizza(size)`, `new Pizza(size, cheese)`, `new
 Pizza(size, cheese, pepperoni)`, ...) becomes unreadable and error-prone past 3-4 parameters,
 especially when several share a type (which `boolean` is which?). Plain setters fix readability
@@ -87,6 +94,7 @@ supplies named, chainable setter-like methods that accumulate state and only con
 multiple fields can be validated together.
 
 **Example:**
+
 ```java
 Pizza pizza = new Pizza.Builder()
     .size(Size.LARGE)
@@ -116,6 +124,7 @@ optional parameters, some cross-field validation, and a desire for the final obj
 immutable.
 
 #### Q4. When does the Prototype pattern (cloning) beat calling `new`?
+
 **Answer:** Prototype creates new objects by copying an existing, fully-configured instance rather
 than building one from scratch, which is worth it when construction is expensive (a costly
 database read, network call, or heavy computation to arrive at the initial state) or when the
@@ -126,6 +135,7 @@ practice, a copy constructor or a static factory method that explicitly deep-cop
 is usually the safer choice over implementing `Cloneable`.
 
 **Example:**
+
 ```java
 class Report implements Cloneable {
     private List<String> sections = new ArrayList<>();
@@ -149,6 +159,7 @@ list, and a mutation through one silently corrupts the other's supposedly indepe
 ### Structural patterns
 
 #### Q5. How does Adapter reconcile two incompatible interfaces, and what's the object-vs-class adapter distinction?
+
 **Answer:** Adapter wraps an existing class behind the interface a client actually expects,
 translating calls without changing either side — the classic use case is integrating a
 third-party library whose API doesn't match the interface the rest of the codebase depends on. An
@@ -159,6 +170,7 @@ Java for two concrete classes (single inheritance), so Java code is effectively 
 adapter form.
 
 **Example:**
+
 ```java
 interface MediaPlayer { void play(String file); }
 
@@ -178,6 +190,7 @@ extra layer of indirection instead of fixing the interface that shouldn't have d
 first place.
 
 #### Q6. How does Decorator differ from just subclassing to add behavior?
+
 **Answer:** Subclassing adds behavior at compile time, statically, and multiplies combinatorially —
 `CoffeeWithMilk`, `CoffeeWithSugar`, `CoffeeWithMilkAndSugar`, one subclass per combination.
 Decorator wraps an object of the same interface at *runtime*, adding behavior before/after
@@ -186,6 +199,7 @@ of declaring a new class per combination — the number of classes stays linear 
 behaviors, not exponential in their combinations.
 
 **Example:**
+
 ```java
 interface Coffee { double cost(); }
 class SimpleCoffee implements Coffee { public double cost() { return 2.0; } }
@@ -212,6 +226,7 @@ signal for Strategy or plain composition instead, not a decorator with an interf
 honor.
 
 #### Q7. What specific problem does Facade solve for a complex subsystem?
+
 **Answer:** A subsystem with many interacting classes (a video conversion library with codecs,
 buffers, bitrate management, etc.) forces every caller to learn and correctly sequence that
 internal complexity. Facade introduces one simplified, higher-level interface exposing the common
@@ -220,6 +235,7 @@ still need fine-grained control. It's a usability/coupling improvement, not a se
 the subsystem classes remain directly reachable.
 
 **Example:**
+
 ```java
 class VideoConversionFacade {
     public File convertToMp4(File video) {
@@ -236,6 +252,7 @@ expose every subsystem knob "just in case" defeats the purpose — a facade that
 for every underlying option has become the subsystem's full API again, just renamed.
 
 #### Q8. What are Proxy's variants, and how does it differ from Decorator?
+
 **Answer:** Proxy controls **access** to an object by standing in for it behind the same interface:
 a **virtual proxy** defers expensive construction until first real use (lazy loading), a
 **protection proxy** adds authorization checks before delegating, a **remote proxy** hides the
@@ -246,6 +263,7 @@ new *responsibilities/behavior* the client explicitly wants layered on; Proxy co
 an object the client believes it's talking to directly, often transparently.
 
 **Example:**
+
 ```java
 interface Image { void display(); }
 class RealImage implements Image {
@@ -272,6 +290,7 @@ proxy interacts with self-invocation.
 ### Behavioral patterns
 
 #### Q9. What does Strategy buy you over a large `if`/`switch` on behavior?
+
 **Answer:** Strategy extracts an algorithm (or one of several interchangeable variants) behind a
 common interface, so the algorithm can be selected and swapped at runtime — often via
 dependency injection — without the class using it knowing which concrete implementation it holds.
@@ -279,6 +298,7 @@ It directly follows the Open/Closed Principle: adding a new strategy means addin
 editing every branch of an existing conditional.
 
 **Example:**
+
 ```java
 interface DiscountStrategy { double apply(double price); }
 class NoDiscount implements DiscountStrategy { public double apply(double p) { return p; } }
@@ -296,19 +316,21 @@ class Checkout {
 ```
 
 **Why it's a trap:** naming the pattern without naming the actual payoff (Open/Closed compliance,
-independent testability of each strategy) is the shallow half of the answer — see Q15 for when
+independent testability of each strategy) is the shallow half of the answer — see Q17 for when
 this indirection isn't worth it.
 
 #### Q10. How does Observer decouple publishers from subscribers, and what's the classic pitfall to flag up front?
+
 **Answer:** A subject maintains a list of observers and notifies all of them on a state change,
 without knowing anything about what each observer does with that notification — publishers and
 subscribers depend only on a thin `Observer`/`Listener` interface, not on each other's concrete
 types, which is what enables adding new subscribers with zero changes to the publisher. The
-pitfall to flag immediately (detailed with a concrete failure scenario in Q16/S2): if a subscriber
+pitfall to flag immediately (detailed with a concrete failure scenario in Q18/S2): if a subscriber
 is never explicitly unregistered, the subject's list keeps a live reference to it forever, which
 is a textbook memory leak in a long-running process.
 
 **Example:**
+
 ```java
 interface OrderListener { void onOrderPlaced(Order o); }
 
@@ -321,9 +343,10 @@ class OrderService {
 ```
 
 **Why it's a trap:** describing Observer purely as "pub/sub" without mentioning the unregistration
-responsibility is incomplete — see Q16 for the memory-leak trap this creates in practice.
+responsibility is incomplete — see Q18 for the memory-leak trap this creates in practice.
 
 #### Q11. What does Template Method fix, and how does it differ from just calling helper methods in order?
+
 **Answer:** Template Method defines the *fixed skeleton* of an algorithm in a base class method
 (often `final`, so subclasses can't reorder or skip steps), while deferring specific steps to
 abstract or overridable "hook" methods that subclasses implement. Unlike a caller manually calling
@@ -332,6 +355,7 @@ sequencing itself lives in one place and can never be gotten wrong by a subclass
 only fill in the customizable steps, not the order they run in.
 
 **Example:**
+
 ```java
 abstract class DataImporter {
     final void run(File f) {           // the algorithm's fixed skeleton — final, can't be reordered
@@ -354,6 +378,7 @@ whole sequence, silently reintroducing exactly the "steps run in the wrong order
 exists to prevent.
 
 #### Q12. What does Command buy you beyond "just call the method directly," and what are its main use cases?
+
 **Answer:** Command turns a request (a method call plus its arguments) into a standalone object
 implementing a common interface (typically one `execute()` method), which decouples the object
 that *invokes* an action from the object that *knows how to perform* it, and lets that request be
@@ -362,6 +387,7 @@ serialized, or trivially undone — a `Command` object can be all of those, beca
 itself is now data, not just a stack frame in flight.
 
 **Example:**
+
 ```java
 interface Command { void execute(); void undo(); }
 
@@ -384,9 +410,63 @@ need to be queued, logged, retried, or undone is pure ceremony — the pattern e
 specifically when one of those cross-cutting needs (undo, a job queue, an audit log of executed
 actions) is actually present.
 
+#### Q13. How does State differ from Strategy, given that their class diagrams are almost identical?
+
+Both delegate behavior to an interchangeable object behind an interface; the difference is *who chooses and why*. With **Strategy** the client picks an algorithm from outside and it rarely changes during the object's life (a pricing rule, a sort order).
+
+With **State** the object's own behavior changes as its internal state changes, and the state objects themselves usually trigger the transitions (`Order` goes `NEW -> PAID -> SHIPPED`; `ship()` is legal in one state and an error in another).
+
+State replaces a growing `switch (status)` repeated in every method with one class per state, so illegal transitions become impossible by construction instead of being guarded by scattered `if`s.
+
+The cost is more classes: for two or three states with trivial rules, an enum with a `switch` is simpler (the same over-engineering test as Q22).
+
+Flag shared mutable state objects as the usual pitfall: stateless state objects can be singletons, but ones holding per-order data cannot.
+
+**Example:**
+
+```java
+interface OrderState {
+    OrderState pay(Order o);
+    OrderState ship(Order o);
+}
+class New implements OrderState {
+    public OrderState pay(Order o)  { o.charge(); return new Paid(); }
+    public OrderState ship(Order o) { throw new IllegalStateException("pay first"); }
+}
+class Paid implements OrderState {
+    public OrderState pay(Order o)  { throw new IllegalStateException("already paid"); }
+    public OrderState ship(Order o) { o.dispatch(); return new Shipped(); }
+}
+// Order: this.state = state.pay(this);   <- the state decides the next state
+```
+
+#### Q14. When is Chain of Responsibility the right fit, and where do you already use it without naming it?
+
+Chain of Responsibility passes a request along a sequence of handlers, each of which either handles it, modifies it, or forwards it to the next one; the sender doesn't know which handler will act.
+
+It fits pipelines where steps are independent, ordered, and added or removed by configuration: servlet filters and Spring Security's filter chain, HTTP middleware, validation or approval rules ("under 1k: team lead; under 10k: director"), logging levels.
+
+The benefits are decoupled steps that can be reordered or tested alone; the traps mirror stacked Decorators (Q16): order is a hidden contract, a handler that forgets to call `next` silently swallows the request, and with no handler matching you need an explicit default (fail or reject) rather than a silent no-op.
+
+Compared to Decorator, a handler may *stop* the chain; a decorator always delegates.
+
+**Example:**
+
+```java
+interface Handler { void handle(Request r, Runnable next); }
+
+Handler auth  = (r, next) -> { if (!r.hasToken()) throw new UnauthorizedException(); next.run(); };
+Handler rate  = (r, next) -> { if (limiter.tooMany(r.ip())) throw new TooManyRequests(); next.run(); };
+Handler audit = (r, next) -> { log.info("{} {}", r.method(), r.path()); next.run(); };
+// order matters: authenticate before rate-limiting by user, audit last. Forgetting next.run() swallows the request.
+```
+
 ## 🟡 Senior traps
 
-#### Q13. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?
+### Questions
+
+#### Q15. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?
+
 **Answer:** The implementation being easy to get right (Q1) isn't the problem — the *design*
 consequence is. A Singleton is global mutable state with a static access point, which means any
 class using it has a hidden dependency invisible in its constructor signature, making the
@@ -400,6 +480,7 @@ same "one instance" guarantee, but the dependency is explicit in the constructor
 replaceable with a mock in a test.
 
 **Example:**
+
 ```java
 // Hand-rolled Singleton: hidden dependency, hard to substitute in a test.
 class ReportGenerator {
@@ -419,7 +500,8 @@ class ReportGenerator {
 question — thread-safety was never the objection; testability and hidden coupling are, and a
 correct implementation doesn't fix either.
 
-#### Q14. When does stacking Decorators become worse than the inheritance explosion it was meant to avoid?
+#### Q16. When does stacking Decorators become worse than the inheritance explosion it was meant to avoid?
+
 **Answer:** Decorator trades an exponential *class* explosion for a potentially deep, order-
 sensitive *runtime* chain — five or six nested decorators, each silently depending on running
 before or after another (a logging decorator that must wrap a caching decorator, not the reverse,
@@ -429,6 +511,7 @@ hierarchy. The chain also makes stepping through a debugger noticeably harder �
 now traverses N proxy-like layers.
 
 **Example:**
+
 ```java
 // Order matters and is easy to get backwards with no compiler help either way:
 Coffee a = new LoggingDecorator(new CachingDecorator(new MilkDecorator(new SimpleCoffee())));
@@ -441,7 +524,8 @@ selling point without acknowledging ordering constraints — past a handful of l
 sequencing dependencies, a builder or an explicit small pipeline class documenting the required
 order is often more debuggable than the theoretically-infinite decorator composition.
 
-#### Q15. When does introducing Strategy add more complexity than a plain `if`/`switch` would?
+#### Q17. When does introducing Strategy add more complexity than a plain `if`/`switch` would?
+
 **Answer:** Strategy pays off when the number of variants is genuinely open-ended (plugins,
 runtime configuration, per-tenant behavior) or when each variant has enough internal logic and
 its own test surface to deserve its own class. It's the wrong call for 2-3 stable, simple
@@ -450,6 +534,7 @@ indirection to trace, and doesn't force a reader to jump across files to see wha
 actually does.
 
 **Example:**
+
 ```java
 // Plain switch: three stable options, trivial bodies — perfectly readable as-is.
 double shipping(String method) {
@@ -467,7 +552,8 @@ double shipping(String method) {
 because new variants are actually expected to arrive over time, is pattern-for-its-own-sake — the
 Open/Closed benefit from Q9 only matters if the closed set of cases is realistically going to open.
 
-#### Q16. What happens when Observer subscribers are never unregistered, concretely?
+#### Q18. What happens when Observer subscribers are never unregistered, concretely?
+
 **Answer:** The subject's listener list holds a strong reference to every subscriber it was ever
 given — if a subscriber is, say, a UI component or a request-scoped object that should have been
 garbage collected once its owning screen/request ended, that reference alone keeps it (and
@@ -477,6 +563,7 @@ becomes an OutOfMemoryError days or weeks into uptime — hard to attribute to O
 without a heap dump, because nothing has crashed or errored along the way.
 
 **Example:**
+
 ```java
 class ScreenController implements OrderListener {
     ScreenController(OrderService svc) { svc.subscribe(this); }
@@ -490,7 +577,8 @@ discovered as a slow memory-growth curve in production monitoring, at which poin
 to a specific forgotten `unsubscribe()` call requires a heap dump and dominator-tree analysis, not
 a stack trace.
 
-#### Q17. What's the "anemic domain model" trap, and how does uncritical pattern application feed it?
+#### Q19. What's the "anemic domain model" trap, and how does uncritical pattern application feed it?
+
 **Answer:** An anemic domain model is a set of classes that are pure data holders (fields plus
 getters/setters) with all actual behavior pulled out into separate "service" or "manager"
 classes — it looks organized (clean separation of data and logic) but actually violates
@@ -502,6 +590,7 @@ reflexively, instead of asking "should this object just enforce this rule itself
 codebase drifts there.
 
 **Example:**
+
 ```java
 // Anemic: nothing stops OrderService from setting an impossible state.
 class Order { List<Item> items; String status; } // pure data, no behavior, no protection
@@ -525,7 +614,8 @@ having stripped an entity of every invariant it should itself be responsible for
 presence doesn't tell you which one happened; the question is always "who can put this object into
 an invalid state," not "is the logic in a separate class."
 
-#### Q18. What's the concurrency trap with a shared, mutable Builder instance?
+#### Q20. What's the concurrency trap with a shared, mutable Builder instance?
+
 **Answer:** A Builder accumulates mutable state across chained calls before a final `build()` —
 that's fine for the common case of one builder used by one thread to construct one object. It
 breaks the moment the *same builder instance* is shared or reused across threads (e.g. cached and
@@ -534,6 +624,7 @@ reused "for efficiency," or passed to a shared configuration step): concurrent c
 half-updated combination of fields that no single caller ever intended, with no exception thrown.
 
 **Example:**
+
 ```java
 // Unsafe if `builder` is shared across threads/requests:
 RequestBuilder builder = new RequestBuilder(); // NOT thread-safe by design
@@ -552,7 +643,10 @@ downstream.
 
 ## 🔴 Expert / Open
 
-#### Q19. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.
+### Questions
+
+#### Q21. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.
+
 A plugin system needs three things: a common contract every plugin implements (**Strategy** — so
 the host code depends only on the interface, never a concrete plugin class), a way to obtain the
 right plugin instance for a given name/type without the caller hardcoding a class name
@@ -566,6 +660,7 @@ vs. a documented no-op default), and whether plugins can depend on each other's 
 which a flat registry doesn't express.
 
 **Example:**
+
 ```java
 interface PaymentPlugin { PaymentResult process(Payment p); }
 
@@ -580,7 +675,8 @@ class PaymentPluginRegistry {
 }
 ```
 
-#### Q20. When is a design pattern over-engineering versus the right call, and how do you decide that in a code review?
+#### Q22. When is a design pattern over-engineering versus the right call, and how do you decide that in a code review?
+
 The pattern itself is never the risk — the mismatch between the pattern's promise (flexibility for
 future change) and the actual, evidenced likelihood of that change is. The practical review
 heuristic: is there a second, real, near-term case this abstraction needs to serve, or is it
@@ -593,7 +689,18 @@ matches an already-repeating shape (three near-identical `if` branches doing str
 thing with different data) just delays the same refactor to when it's more entangled with new
 code.
 
-#### Q21. How do GoF creational/structural patterns relate to DDD tactical patterns like Repository, Factory, and Aggregate?
+**Example:**
+
+```java
+// Over-engineered: speculative abstraction
+interface PaymentProvider { Receipt charge(Money m); }   // 1 implementation
+class PaymentProviderFactory { ... }                    // creates that 1 implementation
+// Right-sized: the plain class, until a second case exists
+class StripeClient { Receipt charge(Money m) { ... } }  // extract the interface when provider #2 is real
+```
+
+#### Q23. How do GoF creational/structural patterns relate to DDD tactical patterns like Repository, Factory, and Aggregate?
+
 DDD's tactical patterns are largely GoF patterns re-scoped to a specific job in a domain model
 rather than a new set of ideas. A DDD **Factory** is exactly the GoF Factory (Method or Abstract)
 constrained to producing a valid Aggregate — it exists specifically to keep an Aggregate's
@@ -607,7 +714,19 @@ aggregate, e.g. a pricing strategy). Recognizing this mapping matters practicall
 can only recite GoF names by rote, disconnected from where they actually show up in an
 architecture the codebase already uses, hasn't internalized *why* each pattern exists.
 
-#### Q22. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?
+**Example:**
+
+```java
+class Order {                                   // Aggregate root: enforces its own invariants
+    private final List<OrderLine> lines = new ArrayList<>();
+    void addLine(Product p, int qty) { if (qty <= 0) throw new IllegalArgumentException(); lines.add(new OrderLine(p, qty)); }
+}
+interface OrderRepository { Optional<Order> findById(OrderId id); void save(Order o); }   // Repository: collection-like facade over persistence
+class OrderFactory { Order create(Customer c, Cart cart) { ... } }                     // Factory: builds a valid Aggregate
+```
+
+#### Q24. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?
+
 Composite lets leaf and composite nodes share a uniform interface, so client code can treat a
 single item and a group of items identically (`node.total()` works whether `node` is a line item
 or a folder of line items). Adding a *new operation* over that whole tree (serialize to XML,
@@ -615,43 +734,92 @@ compute tax, render for print) can be done two ways: add a new method to every n
 (simple, but every node class must be touched and recompiled for each new operation — violates
 Open/Closed for operations), or implement **Visitor**, where each node accepts a visitor object
 and the operation's logic lives entirely in the visitor, added without touching any node class at
-all. The trade-off is symmetric with Strategy's Q15/Q9 tension but flipped along a different axis:
+all. The trade-off is symmetric with Strategy's Q17/Q9 tension but flipped along a different axis:
 Visitor makes adding a new *operation* free but adding a new *node type* expensive (every existing
 visitor must gain a new `visit(NewNodeType)` overload) — exactly the reverse of the
 methods-on-nodes approach. The right call depends on which axis of the tree changes more often in
 practice: stable node types with frequently added operations favor Visitor; frequently added node
 types with a stable, small set of operations favor keeping the logic on the nodes themselves.
 
+**Example:**
+
+```mermaid
+classDiagram
+  class Node {
+    <<interface>>
+    accept(Visitor)
+  }
+  class LineItem
+  class Group
+  class Visitor {
+    <<interface>>
+    visit(LineItem)
+    visit(Group)
+  }
+  Node <|.. LineItem
+  Node <|.. Group
+  Group o-- Node
+  Visitor <|.. TaxVisitor
+  Visitor <|.. PrintVisitor
+```
+
+```java
+class TaxVisitor implements Visitor {                         // the operation lives in the visitor; Node classes are untouched
+    public void visit(LineItem i) { total += i.price() * 0.2; }
+    public void visit(Group g)    { g.children().forEach(n -> n.accept(this)); }
+}
+```
+
 ## 🎯 Real-world scenarios
 
 ### S1. Integration tests pass in isolation but fail intermittently when the full suite runs
+
 - **Symptoms:** A test that asserts on some computed value fails only when run alongside other
   tests, and only sometimes — rerunning just that test in isolation always passes.
-- **Diagnosis:** Grep for a hand-rolled Singleton (Q1/Q13) touched by more than one test — a
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Grep for a hand-rolled Singleton (Q1/Q15) touched by more than one test — a
   static field retaining state (a cache, a counter, a "current tenant" holder) set by an earlier
   test and never reset before the next one runs in the same JVM.
 - **Example:**
+
   ```java
   public enum TenantContext { INSTANCE; private String tenantId; /* set by test A, read by test B */ }
   ```
+
 - **Resolution:** Add an explicit reset/teardown for the Singleton's mutable state between tests,
   or — the more durable fix — replace the Singleton with an injected, per-test-constructible
   instance so each test naturally gets a fresh one with no shared static state at all.
 - **Prevention:** Treat any hand-rolled Singleton holding *mutable* state (not just a stateless
   service) as a code-review flag; prefer DI-managed instances that tests can trivially construct
-  fresh (Q13).
+  fresh (Q15).
+
+</details>
 
 ### S2. Heap usage climbs steadily over days of uptime with no obvious spike
+
 - **Symptoms:** Memory grows roughly linearly with uptime (not with traffic volume specifically),
   eventually ending in an `OutOfMemoryError`, with nothing in the logs pointing at a specific
   request or feature.
-- **Diagnosis:** A heap dump's dominator tree shows one Observer/listener list (Q10/Q16) holding
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** A heap dump's dominator tree shows one Observer/listener list (Q10/Q18) holding
   thousands of references to objects that should have been short-lived — each one kept alive
   purely by never having called `unsubscribe()`.
 - **Example:**
-  ```
+
+  ```text
   Dominator tree: OrderService.listeners -> List<OrderListener> (48,203 entries, 1.2 GB retained)
   ```
+
 - **Resolution:** Add the missing `unsubscribe()` call at the subscriber's actual end-of-life
   (request completion, component teardown), or switch to weak references for listeners whose
   lifecycle genuinely can't be tracked precisely by the subject.
@@ -659,18 +827,29 @@ types with a stable, small set of operations favor keeping the logic on the node
   review, and add a periodic metric on listener-list size in production so unbounded growth is
   caught long before it reaches an OOM.
 
+</details>
+
 ### S3. A one-line behavior change requires touching a five-layer decorator chain, and nobody is confident about the order
+
 - **Symptoms:** A request to "log this before caching, not after" turns into a change nobody wants
   to review, because the actual runtime order only exists implicitly, at each construction call
   site, spread across the codebase.
-- **Diagnosis:** The decorator chain (Q14) has grown past the point where its composition order
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** The decorator chain (Q16) has grown past the point where its composition order
   is self-evident from reading any single file — the order is a convention nobody wrote down.
 - **Example:**
+
   ```java
   return new AuthDecorator(new RetryDecorator(new CachingDecorator(new LoggingDecorator(
       new MetricsDecorator(realService)))));
   // which of these five actually needs to run first, and why? not documented anywhere.
   ```
+
 - **Resolution:** Extract the chain's construction into one named factory method with an inline
   comment stating the required order and why, or replace the ad hoc nesting with an explicit,
   ordered pipeline class that makes the sequence a visible list rather than nested constructor
@@ -679,54 +858,99 @@ types with a stable, small set of operations favor keeping the logic on the node
   centralize the composition in one place instead of letting each call site assemble its own
   ordering.
 
+</details>
+
 ### S4. A "flexible" plugin abstraction has exactly one implementation a year after it shipped
+
 - **Symptoms:** Code review flags an interface, a Factory, and a Strategy scaffold for "future
   payment providers" — a year later, only the original provider was ever added.
-- **Diagnosis:** The abstraction (Q20) was built for a speculative second case that never
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** The abstraction (Q22) was built for a speculative second case that never
   materialized; every reader since has had to understand the indirection to make a change that,
   in practice, only ever affects the one existing implementation.
 - **Resolution:** Collapse the interface and Factory back into the single concrete
   implementation, keeping the code that's actually used simple; reintroduce the abstraction if
   and when a second real case actually shows up, informed by what that second case actually
   needs (which is often not what the original speculative interface guessed).
+- **Example:**
+
+  ```diff
+  // Collapsing the speculative layer (before -, after +)
+  - interface PaymentProvider { Receipt charge(Money m); }
+  - class PaymentProviderFactory { static PaymentProvider forName(String n) { return new StripeProvider(); } }
+  + class StripeProvider { Receipt charge(Money m) { ... } }
+  - PaymentProvider p = PaymentProviderFactory.forName("stripe");
+  + StripeProvider p = new StripeProvider();
+  ```
+
 - **Prevention:** Require a concrete, named second use case — not a hypothetical one — before
-  approving an interface with a single implementation in review (Q20).
+  approving an interface with a single implementation in review (Q22).
+
+</details>
+
+## 🎤 Oral quiz
+
+Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.
+
+1. Q1. What problem does Singleton actually solve, and how do you implement it thread-safely in Java?
+2. Q7. What specific problem does Facade solve for a complex subsystem?
+3. Q12. What does Command buy you beyond "just call the method directly," and what are its main use cases?
+4. Q15. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?
+5. Q17. When does introducing Strategy add more complexity than a plain `if`/`switch` would?
+6. Q20. What's the concurrency trap with a shared, mutable Builder instance?
+7. Q21. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.
+8. Q24. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?
+9. S1. Integration tests pass in isolation but fail intermittently when the full suite runs
+10. S4. A "flexible" plugin abstraction has exactly one implementation a year after it shipped
 
 ## 📌 Cheat-sheet
 
-- **Singleton**: one instance, global access — Bill Pugh holder or enum for thread-safety; treat
-  as an anti-pattern for anything with real dependencies or mutable state (testability, hidden
-  coupling) — prefer DI-managed scope instead.
-- **Factory Method vs Abstract Factory**: one product via a subclass-decided method, vs. a whole
-  *family* of related products guaranteed compatible with each other.
-- **Builder**: named, chainable construction with cross-field validation at `build()` — earns its
-  keep past ~3-4 optional parameters; the builder itself is mutable and not thread-safe to share.
-- **Prototype**: clone an expensive-to-build instance instead of calling `new`; prefer an explicit
-  copy constructor over `Cloneable`'s shallow-copy default.
-- **Adapter**: reconcile an incompatible interface at a real boundary (usually third-party); Java
-  is always the object-adapter (composition) form.
-- **Decorator**: same interface, stack runtime behavior — linear classes instead of an exponential
-  subclass explosion, but ordering is a real, undocumented-by-default constraint past a few layers.
-- **Facade**: one simplified entry point over a complex subsystem, without removing direct access
-  to the subsystem for callers who need it.
-- **Proxy**: same shape as Decorator, different intent — controls *access* (virtual/protection/
-  remote/logging), see `spring-architecture.md` Q11/Q13 for `@Transactional`'s proxy in practice.
-- **Strategy**: interchangeable algorithms behind one interface, swappable at runtime — pays off
-  for an open-ended or independently-testable set of variants, not 2-3 stable branches.
-- **Observer**: decoupled pub/sub — the load-bearing trap is a subscriber never calling
-  `unsubscribe()`, which is a slow, hard-to-attribute memory leak, not an exception.
-- **Template Method**: fixed algorithm skeleton (`final`) with overridable steps — subclasses can
-  customize behavior but never reorder or skip the sequence.
-- **Command**: a request as an object — earns its cost when something needs to be queued, logged,
-  retried, or undone; ceremony for a simple one-shot call otherwise.
-- **Anemic domain model**: behavior stripped out into services while entities enforce no
-  invariants themselves — ask "who can put this object into an invalid state," not "is the logic
-  decoupled."
-- **Plugin architectures**: Strategy (contract) + Factory/registry (lookup by key) — decide
-  unknown-key behavior (fail fast vs. default) explicitly up front.
-- **DDD tactical patterns**: Repository ≈ Facade/Proxy over persistence; Factory ≈ GoF Factory
-  scoped to keeping an Aggregate's invariants valid at construction.
-- **Composite + Visitor**: Visitor makes adding operations free but adding node types expensive —
-  the reverse of methods-on-nodes; pick based on which axis actually changes more often.
-- **Over-engineering test**: require a concrete second use case before approving an interface,
-  Factory, or Strategy with a single implementation — not a hypothetical future one.
+### Creational patterns (how objects get created)
+
+**Start here:** Singleton is usually a trap; Builder fixes long constructors; Factory hides which class you create; Prototype copies instead of building.
+
+- **Singleton** — one instance of a class with global access. *Use the Bill Pugh holder (a static inner class that creates it lazily) or an `enum` for thread-safety.*
+- **Singleton is an anti-pattern for real dependencies or mutable state** — it hides coupling and is hard to test. *Prefer a DI-managed scope instead (e.g. a Spring singleton bean).*
+- **Factory Method** — one product, created by a method that a subclass decides. *E.g. `createParser()` returns a `JsonParser` or `XmlParser` depending on the subclass.*
+- **Abstract Factory** — creates a whole *family* of related products guaranteed to be compatible with each other. *E.g. a "dark theme" factory gives you a matching dark Button + dark Checkbox.*
+- **Builder** — named, chainable construction with cross-field validation at `build()`, e.g. `new Pizza.Builder().size(12).cheese(true).build()`. *Earns its keep past ~3-4 optional parameters.*
+- **Builder is mutable** — the builder object itself changes as you chain calls. *Don't share one between threads (not thread-safe).*
+- **Prototype** — clone an expensive-to-build instance instead of calling `new`. *Prefer an explicit copy constructor over `Cloneable`, whose default is a shallow copy (the copy shares nested objects with the original).*
+
+### Structural patterns (how objects are wired together)
+
+**Start here:** Adapter converts, Facade simplifies, Decorator adds behavior, Proxy controls access — the last two look identical in code, the intent differs.
+
+- **Adapter** — reconcile an incompatible interface (a "plug converter"). *Use it at a real boundary, usually a third-party library.*
+- **Object adapter** — the adapter holds the other object (composition) rather than extending it. *Java is always this form, since it has no multiple inheritance of classes.*
+- **Decorator** — same interface as the wrapped object, stacking extra behavior at runtime, e.g. `new BufferedInputStream(new FileInputStream(f))`. *Gives linear classes instead of an exponential subclass explosion.*
+- **Decorator ordering** — the order of wrapping changes the result (compress-then-encrypt differs from encrypt-then-compress). *It's a real constraint that is undocumented by default once you have more than a few layers.*
+- **Facade** — one simplified entry point over a complex subsystem. *Don't remove direct access to the subsystem for callers who need it.*
+- **Proxy** — same shape as Decorator, different intent: it controls *access* (virtual = lazy loading, protection = permission checks, remote = stands in for a distant object, logging). *See `spring-architecture.md` Q11/Q13 for `@Transactional`'s proxy in practice.*
+
+### Behavioral patterns (how objects collaborate)
+
+**Start here:** Strategy swaps an algorithm, Observer broadcasts events, Template Method fixes a skeleton, Command turns a request into an object.
+
+- **Strategy** — interchangeable algorithms behind one interface, swappable at runtime (e.g. several `PaymentMethod` implementations). *Pays off for an open-ended or independently-testable set of variants, not 2-3 stable branches.*
+- **Observer** — decoupled publish/subscribe: subscribers get notified when something happens. *The trap: a subscriber that never calls `unsubscribe()` causes a slow, hard-to-attribute memory leak, not an exception.*
+- **Template Method** — a fixed algorithm skeleton (marked `final`) with overridable steps. *Subclasses customize behavior but can never reorder or skip the sequence.*
+- **Command** — a request wrapped as an object. *Earns its cost when something must be queued, logged, retried or undone; ceremony for a simple one-shot call otherwise.*
+- **State vs Strategy** — same shape, different driver: Strategy is chosen from outside by the client; State changes with the object's own lifecycle and its states trigger the transitions. *An `enum` + `switch` is enough for 2-3 trivial states.*
+- **Chain of Responsibility** — ordered handlers that may stop the chain (filters, middleware, approval rules). *Order is a hidden contract, and a forgotten `next` call swallows the request.*
+
+### Design judgment and architecture
+
+**Start here:** a pattern must earn its place; ask for a concrete second use case before adding an abstraction.
+
+- **Over-engineering test** — require a concrete second use case before approving an interface, Factory or Strategy with a single implementation. *A hypothetical future one doesn't count.*
+- **Anemic domain model** — behavior is stripped out into services while entities (e.g. `Order`) enforce no rules themselves. *Ask "who can put this object into an invalid state?", not "is the logic decoupled?"*
+- **Plugin architectures** — Strategy (the contract) + Factory/registry (lookup by key). *Decide unknown-key behavior (fail fast vs default) explicitly up front.*
+- **DDD tactical patterns** *(advanced)* — DDD (Domain-Driven Design) has its own building blocks that map onto GoF patterns. Repository ≈ Facade/Proxy over persistence. *Factory ≈ GoF Factory, scoped to keeping an Aggregate's invariants (its consistent cluster of objects) valid at construction.*
+- **Composite** *(advanced)* — treat a tree of objects (folder → files) uniformly through one interface.
+- **Visitor** *(advanced)* — moves an operation out of the node classes into a separate "visitor" object. *Adding operations becomes free but adding node types becomes expensive — the reverse of methods-on-nodes. Pick based on which axis actually changes more often.*

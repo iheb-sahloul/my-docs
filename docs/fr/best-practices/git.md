@@ -1,10 +1,9 @@
 # Bonnes pratiques Git
 
-
-
 ## 📝 Commits
 
 ### Faites des commits petits et atomiques
+
 Un commit est un changement logique qui compile et passe les tests par lui-même.
 
 **Pourquoi c'est une bonne pratique :** un commit nommé « stuff » avec 40 fichiers ne peut être ni relu, ni annulé,
@@ -22,6 +21,7 @@ git commit -m "fix(orders): reject negative quantities"
 ```
 
 ### Suivez Conventional Commits
+
 Formatez les messages en `type(scope): résumé`, avec des types comme `feat`, `fix`, `docs`, `refactor`, `test`, `chore`.
 
 **Pourquoi c'est une bonne pratique :** un format cohérent rend `git log --oneline` lisible, et des outils peuvent
@@ -41,6 +41,7 @@ feat(api)!: remove deprecated /v1/users endpoint
 ```
 
 ### Rédigez le sujet à l'impératif, et expliquez le pourquoi dans le corps
+
 Gardez le sujet sous environ 50 caractères (« Add », pas « Added »), et utilisez le corps pour la raison, pas pour le diff.
 
 **Pourquoi c'est une bonne pratique :** le diff montre déjà ce qui a changé ; seul le message peut dire pourquoi. Six
@@ -61,6 +62,7 @@ Closes #482
 ```
 
 ### Ne réécrivez jamais un historique que d'autres ont récupéré
+
 Faites amend, rebase ou force-push uniquement sur vos propres branches non partagées. Utilisez `--force-with-lease` si vous devez.
 
 **Pourquoi c'est une bonne pratique :** réécrire des commits partagés donne aux autres des historiques divergents,
@@ -78,6 +80,7 @@ git push --force-with-lease origin feature/login
 ## 🌿 Branches
 
 ### Utilisez des branches de courte durée issues de main
+
 Une branche par tâche, un merge en quelques jours, et suppression de la branche après le merge. Préférez le trunk-based development ou GitHub Flow.
 
 **Pourquoi c'est une bonne pratique :** plus une branche vit longtemps, plus elle diverge et plus le merge est
@@ -95,6 +98,7 @@ git branch -d feat/order-export
 ```
 
 ### Nommez les branches avec un type et un ticket
+
 Utilisez les préfixes `feat/`, `fix/`, `chore/` et, si vous avez un outil de suivi, l'id du ticket.
 
 **Pourquoi c'est une bonne pratique :** `my-branch2` ne dit rien dans une liste de 40 branches distantes. Les
@@ -110,6 +114,7 @@ fix/PAY-201-null-currency
 ```
 
 ### Protégez la branche main
+
 Exigez des pull requests, au moins une approbation, et une CI qui passe. Interdisez le force-push et les commits directs.
 
 **Pourquoi c'est une bonne pratique :** sans protection, un mauvais push ou un correctif urgent du vendredi soir casse
@@ -127,6 +132,7 @@ Require linear history (optional)
 ## 🔍 Pull requests & relectures
 
 ### Gardez les pull requests petites et ciblées
+
 Visez moins d'environ 400 lignes modifiées et un seul objectif. Séparez les refactorings des changements de comportement.
 
 **Pourquoi c'est une bonne pratique :** la qualité de la relecture chute fortement avec la taille : les études sur la
@@ -145,6 +151,7 @@ PR 3: feat: CSV export of orders
 ```
 
 ### Rédigez une description de pull request qui aide le relecteur
+
 Dites quoi et pourquoi, comment vous l'avez testé, et tout ce qui est risqué. Liez le ticket et ajoutez des captures d'écran pour les changements d'UI.
 
 **Pourquoi c'est une bonne pratique :** le relecteur n'a pas votre contexte. Une description claire transforme un
@@ -162,6 +169,7 @@ New endpoint only; no schema changes.
 ```
 
 ### Relisez le code, automatisez le style
+
 Laissez les formateurs et linters (Spotless, Checkstyle) faire échouer le build, pour que les relectures se concentrent sur la conception, la justesse et les tests.
 
 **Pourquoi c'est une bonne pratique :** les discussions sur les accolades font perdre du temps de relecture et
@@ -179,6 +187,7 @@ null manquante ou la race condition.
 ## 🔀 Intégrer les changements
 
 ### Rebasez votre branche locale, mergez (ou squashez) dans main
+
 Rebasez une branche de fonctionnalité privée sur le dernier main pour la mettre à jour. Intégrez dans main par squash ou commit de merge via la PR.
 
 **Pourquoi c'est une bonne pratique :** rebaser votre propre branche garde l'historique linéaire et sans le bruit
@@ -196,6 +205,7 @@ git rebase -i origin/main
 ```
 
 ### Résolvez les conflits délibérément, et activez rerere
+
 Lisez les deux côtés, lancez les tests après la résolution, et activez `git rerere` pour mémoriser les résolutions.
 
 **Pourquoi c'est une bonne pratique :** choisir « ours » ou « theirs » pour un fichier entier supprime
@@ -212,6 +222,7 @@ git config --global merge.conflictstyle zdiff3
 ## 🔐 Sécurité & automatisation
 
 ### Ne commitez jamais de secrets, et scannez-les
+
 Gardez les clés et mots de passe hors de Git, utilisez `.gitignore`, et lancez un scanner (gitleaks) dans un hook de pre-commit et en CI.
 
 **Pourquoi c'est une bonne pratique :** supprimer un fichier dans un commit ultérieur ne le retire pas de l'historique,
@@ -228,6 +239,7 @@ gitleaks protect --staged      # dans un hook de pre-commit
 ```
 
 ### Automatisez les vérifications avec les hooks Git
+
 Utilisez des hooks de pre-commit (Husky, lefthook, pre-commit) pour le formatage et les secrets, et commit-msg pour les règles de message. Répétez-les en CI.
 
 **Pourquoi c'est une bonne pratique :** attraper une erreur de formatage ou une clé fuitée en 2 secondes en local vaut
@@ -246,6 +258,7 @@ commit-msg:
 ```
 
 ### Taguez les releases avec des tags annotés en versionnage sémantique
+
 Créez des tags annotés `vMAJOR.MINOR.PATCH` sur le commit livré et poussez-les.
 
 **Pourquoi c'est une bonne pratique :** un tag est la réponse permanente à « quel code tourne en production ? ». Les
@@ -263,6 +276,7 @@ git push origin v1.4.0
 ```
 
 ### Gardez les fichiers générés et les gros binaires hors de Git
+
 Ignorez les sorties de build (`target/`, `node_modules/`) et stockez les gros binaires dans Git LFS ou un registre d'artefacts.
 
 **Pourquoi c'est une bonne pratique :** chaque version d'un binaire reste dans l'historique pour toujours : dix jars de
@@ -278,6 +292,7 @@ build/
 ```
 
 ### Récupérez avec le reflog plutôt que de paniquer
+
 Utilisez `git reflog` pour retrouver des commits perdus, et préférez `git revert` pour les erreurs publiées.
 
 **Pourquoi c'est une bonne pratique :** Git détruit rarement le travail commité : pendant environ 90 jours, le reflog
