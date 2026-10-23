@@ -1,0 +1,4119 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/best-practices/java/">
+      
+      
+        <link rel="prev" href="../git/">
+      
+      
+        <link rel="next" href="../spring-boot/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/best-practices/java/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Java - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#java-best-practices" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Java
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/best-practices/java/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#null-safety-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Null safety &amp; Optional
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Null safety &amp; Optional">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dont-use-optional-as-a-field-or-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't use Optional as a field or parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-call-optionalget-blindly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't call Optional.get() blindly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return-empty-collections-never-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Return empty collections, never null
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-fast-on-null-at-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail fast on null at boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exceptions-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚨 Exceptions &amp; logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚨 Exceptions &amp; logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#never-swallow-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never swallow exceptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catch-specific-exceptions-not-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catch specific exceptions, not Exception
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-with-placeholders-and-pass-the-exception-last" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log with placeholders and pass the exception last
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔌 Resource management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔌 Resource management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#close-resources-with-try-with-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Close resources with try-with-resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-design-immutability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Object design &amp; immutability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Object design &amp; immutability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prefer-records-for-value-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer records for value objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-immutability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer immutability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-equals-and-hashcode-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override equals and hashCode together
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-static-factories-or-builders-over-telescoping-constructors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer static factories or builders over telescoping constructors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-composition-over-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer composition over inheritance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declare-with-interfaces-not-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declare with interfaces, not implementations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-enums-instead-of-int-string-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use enums instead of int / String constants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-library-the-right-type-for-the-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧰 Standard library: the right type for the job
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧰 Standard library: the right type for the job">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-bigdecimal-for-money" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use BigDecimal for money
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-javatime-not-date-calendar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use java.time, not Date / Calendar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-stringbuilder-in-loops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use StringBuilder in loops
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#streams-functional-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌊 Streams &amp; functional style
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌊 Streams &amp; functional style">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-side-effects-in-stream-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No side effects in stream operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧵 Concurrency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧵 Concurrency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dont-manage-threads-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't manage threads by hand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-clean-up-threadlocal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always clean up ThreadLocal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-shut-down-executors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always shut down executors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#give-completablefuture-an-executor-and-handle-its-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give CompletableFuture an executor and handle its errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-atomics-for-simple-shared-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use atomics for simple shared state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-acquire-locks-in-the-same-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always acquire locks in the same order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-block-virtual-threads-inside-synchronized-before-java-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't block virtual threads inside synchronized (before Java 24)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generics-collections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧬 Generics &amp; collections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧬 Generics &amp; collections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#never-use-raw-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never use raw types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-bounded-wildcards-in-apis-pecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use bounded wildcards in APIs (PECS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pick-the-right-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pick the right collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-modify-a-collection-while-iterating-over-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't modify a collection while iterating over it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#know-that-listof-and-friends-are-immutable-and-reject-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Know that List.of and friends are immutable and reject null
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modern-java" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Modern Java
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✨ Modern Java">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-var-only-when-the-type-is-obvious" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use var only when the type is obvious
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-switch-expressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer switch expressions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-pattern-matching-instead-of-casts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use pattern matching instead of casts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-sealed-types-for-closed-hierarchies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use sealed types for closed hierarchies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-text-blocks-for-multi-line-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use text blocks for multi-line strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#native-image-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Native image &amp; startup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Native image &amp; startup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-native-image-for-startup-and-footprint-not-for-speed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose native image for startup and footprint, not for speed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-code-aot-friendly-avoid-runtime-reflection-and-classpath-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep code AOT-friendly: avoid runtime reflection and classpath scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-the-tests-in-native-mode-too" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run the tests in native mode too
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-pgo-and-the-right-gc-when-native-throughput-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use PGO and the right GC when native throughput matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-api-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧭 Code &amp; API design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧭 Code &amp; API design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inject-dependencies-and-the-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inject dependencies and the clock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-visibility-as-small-as-possible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep visibility as small as possible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-unchecked-exceptions-for-bugs-domain-exceptions-for-business-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use unchecked exceptions for bugs, domain exceptions for business errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-methods-short-and-doing-one-thing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep methods short and doing one thing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#name-things-for-what-they-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Name things for what they mean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#null-safety-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Null safety &amp; Optional
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Null safety &amp; Optional">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dont-use-optional-as-a-field-or-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't use Optional as a field or parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-call-optionalget-blindly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't call Optional.get() blindly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return-empty-collections-never-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Return empty collections, never null
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fail-fast-on-null-at-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fail fast on null at boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exceptions-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚨 Exceptions &amp; logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚨 Exceptions &amp; logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#never-swallow-exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never swallow exceptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catch-specific-exceptions-not-exception" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catch specific exceptions, not Exception
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-with-placeholders-and-pass-the-exception-last" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log with placeholders and pass the exception last
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔌 Resource management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔌 Resource management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#close-resources-with-try-with-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Close resources with try-with-resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-design-immutability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Object design &amp; immutability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Object design &amp; immutability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prefer-records-for-value-objects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer records for value objects
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-immutability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer immutability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-equals-and-hashcode-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override equals and hashCode together
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-static-factories-or-builders-over-telescoping-constructors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer static factories or builders over telescoping constructors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-composition-over-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer composition over inheritance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declare-with-interfaces-not-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declare with interfaces, not implementations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-enums-instead-of-int-string-constants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use enums instead of int / String constants
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standard-library-the-right-type-for-the-job" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧰 Standard library: the right type for the job
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧰 Standard library: the right type for the job">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-bigdecimal-for-money" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use BigDecimal for money
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-javatime-not-date-calendar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use java.time, not Date / Calendar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-stringbuilder-in-loops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use StringBuilder in loops
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#streams-functional-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌊 Streams &amp; functional style
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌊 Streams &amp; functional style">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#no-side-effects-in-stream-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No side effects in stream operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧵 Concurrency
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧵 Concurrency">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dont-manage-threads-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't manage threads by hand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-clean-up-threadlocal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always clean up ThreadLocal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-shut-down-executors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always shut down executors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#give-completablefuture-an-executor-and-handle-its-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give CompletableFuture an executor and handle its errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-atomics-for-simple-shared-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use atomics for simple shared state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-acquire-locks-in-the-same-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always acquire locks in the same order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-block-virtual-threads-inside-synchronized-before-java-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't block virtual threads inside synchronized (before Java 24)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#generics-collections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧬 Generics &amp; collections
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧬 Generics &amp; collections">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#never-use-raw-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never use raw types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-bounded-wildcards-in-apis-pecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use bounded wildcards in APIs (PECS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pick-the-right-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pick the right collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dont-modify-a-collection-while-iterating-over-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Don't modify a collection while iterating over it
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#know-that-listof-and-friends-are-immutable-and-reject-null" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Know that List.of and friends are immutable and reject null
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modern-java" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Modern Java
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✨ Modern Java">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-var-only-when-the-type-is-obvious" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use var only when the type is obvious
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-switch-expressions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer switch expressions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-pattern-matching-instead-of-casts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use pattern matching instead of casts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-sealed-types-for-closed-hierarchies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use sealed types for closed hierarchies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-text-blocks-for-multi-line-strings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use text blocks for multi-line strings
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#native-image-startup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Native image &amp; startup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Native image &amp; startup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#choose-native-image-for-startup-and-footprint-not-for-speed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose native image for startup and footprint, not for speed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-code-aot-friendly-avoid-runtime-reflection-and-classpath-scanning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep code AOT-friendly: avoid runtime reflection and classpath scanning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-the-tests-in-native-mode-too" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run the tests in native mode too
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-pgo-and-the-right-gc-when-native-throughput-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use PGO and the right GC when native throughput matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-api-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧭 Code &amp; API design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧭 Code &amp; API design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inject-dependencies-and-the-clock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inject dependencies and the clock
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-visibility-as-small-as-possible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep visibility as small as possible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-unchecked-exceptions-for-bugs-domain-exceptions-for-business-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use unchecked exceptions for bugs, domain exceptions for business errors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-methods-short-and-doing-one-thing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep methods short and doing one thing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#name-things-for-what-they-mean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Name things for what they mean
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="java-best-practices">Java Best Practices</h1>
+<h2 id="null-safety-optional">🛡️ Null safety &amp; Optional</h2>
+<h3 id="dont-use-optional-as-a-field-or-parameter">Don't use <code>Optional</code> as a field or parameter</h3>
+<p><code>Optional</code> is meant for return types only. It tells the caller "this method may have no result, handle it".</p>
+<p><strong>Why it's a best practice:</strong> <code>Optional</code> was designed as a return-type signal, not a general-purpose container.
+As a parameter it doesn't help: the caller can still pass <code>null</code> instead of <code>Optional.empty()</code>, so you now have
+three states to handle (value, empty, <code>null</code>), and every call site gets noisier with <code>Optional.of(...)</code>.
+As a field, it's an extra object per instance, it isn't <code>Serializable</code> (so it breaks JPA entities, caches and
+session replication), and most frameworks don't expect it. Keep the field nullable and wrap it only in the getter.</p>
+<p>⛔ <code>void send(Optional&lt;String&gt; cc)</code>
+✅ <code>void send(String cc)</code> + an overload, or <code>@Nullable String cc</code></p>
+<p>⛔ <code>private Optional&lt;Address&gt; address;</code>
+✅ <code>public Optional&lt;Address&gt; getAddress() { return Optional.ofNullable(address); }</code></p>
+<h3 id="dont-call-optionalget-blindly">Don't call <code>Optional.get()</code> blindly</h3>
+<p>Use <code>orElseThrow</code>, <code>orElse</code>, <code>orElseGet</code>, <code>map</code> or <code>ifPresent</code> instead of <code>get()</code>.</p>
+<p><strong>Why it's a best practice:</strong> <code>get()</code> on an empty <code>Optional</code> throws <code>NoSuchElementException</code>, which is just a
+<code>NullPointerException</code> with a different name: you've brought back the exact bug <code>Optional</code> was supposed to
+prevent. <code>orElseThrow(() -&gt; new UserNotFoundException(id))</code> makes the "absent" case explicit and turns it into a
+domain error that carries context and can be mapped to a proper response (e.g. a 404).</p>
+<p>⛔ <code>userRepository.findById(id).get()</code>
+✅ <code>userRepository.findById(id).orElseThrow(() -&gt; new UserNotFoundException(id))</code></p>
+<h3 id="return-empty-collections-never-null">Return empty collections, never <code>null</code></h3>
+<p>A method that returns a collection should return an empty one when there's nothing to return.</p>
+<p><strong>Why it's a best practice:</strong> callers can then iterate, stream or call <code>size()</code> directly. Returning <code>null</code>
+forces every caller to add a null check, and the one that forgets fails with an NPE, often far from the source
+and only on the "no data" path, which is the least tested one. There's no performance excuse: <code>List.of()</code>,
+<code>Set.of()</code> and <code>Map.of()</code> return shared immutable instances, so nothing gets allocated.</p>
+<p>⛔ <code>return orders.isEmpty() ? null : orders;</code>
+✅ <code>return List.of();</code></p>
+<h3 id="fail-fast-on-null-at-boundaries">Fail fast on <code>null</code> at boundaries</h3>
+<p>Validate required arguments where they enter your object (constructors, public methods) instead of letting
+<code>null</code> travel through the system.</p>
+<p><strong>Why it's a best practice:</strong> if a <code>null</code> is stored silently, the NPE shows up later, in another method or
+thread, with a stack trace that points at the symptom and not the cause. <code>Objects.requireNonNull(x, "x")</code>
+fails right away, at the line that received the bad value, with the parameter name in the message. It also
+documents the contract: a reader can see the argument is mandatory.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kd">public</span><span class="w"> </span><span class="nf">OrderService</span><span class="p">(</span><span class="n">OrderRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">this</span><span class="p">.</span><span class="na">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Objects</span><span class="p">.</span><span class="na">requireNonNull</span><span class="p">(</span><span class="n">repository</span><span class="p">,</span><span class="w"> </span><span class="s">"repository"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="exceptions-logging">🚨 Exceptions &amp; logging</h2>
+<h3 id="never-swallow-exceptions">Never swallow exceptions</h3>
+<p>Every <code>catch</code> block must either handle the error, or rethrow it (wrapped if needed) with the original cause.</p>
+<p><strong>Why it's a best practice:</strong> an empty <code>catch</code> turns a failure into silent data loss: the order wasn't saved,
+but the caller thinks it was, and there's no log to find out why. When you wrap, pass the original exception as
+the <code>cause</code> so the root stack trace is kept in the "Caused by:" chain. Wrapping also lets you translate a
+low-level exception (<code>SQLException</code>) into one that makes sense at your layer and add useful context (the id).</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">save</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ handle it, or wrap and rethrow with the cause</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">save</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">SQLException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OrderPersistenceException</span><span class="p">(</span><span class="s">"Failed to save order "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">id</span><span class="p">(),</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="catch-specific-exceptions-not-exception">Catch specific exceptions, not <code>Exception</code></h3>
+<p>Catch only the exceptions you expect and know how to handle. Don't use exceptions for control flow either.</p>
+<p><strong>Why it's a best practice:</strong> <code>catch (Exception e)</code> also catches the ones you didn't plan for:
+<code>NullPointerException</code>, <code>IllegalStateException</code>, <code>ClassCastException</code>. Real bugs then get hidden behind the
+fallback value, here a <code>0</code>. Catching the specific type documents which failure you're handling and lets every
+other one propagate. Using exceptions for normal flow (e.g. to exit a loop) is slow, since creating an
+exception captures the stack trace, and it hides intent: readers expect a <code>catch</code> to mean "something went wrong".</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">parseInt</span><span class="p">(</span><span class="n">input</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">parseInt</span><span class="p">(</span><span class="n">input</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">NumberFormatException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="log-with-placeholders-and-pass-the-exception-last">Log with placeholders and pass the exception last</h3>
+<p>Use <code>{}</code> placeholders instead of string concatenation, and pass the exception itself as the last argument.</p>
+<p><strong>Why it's a best practice:</strong> with placeholders, the message is only built if the log level is enabled, so
+<code>debug</code> calls in hot paths cost almost nothing in production. More importantly, SLF4J prints the stack trace
+when the last argument is a <code>Throwable</code>. <code>e.getMessage()</code> only logs one line: you lose the stack trace, the
+exception type and the whole "Caused by:" chain, which is usually where the real cause is. The message can even
+be <code>null</code>.</p>
+<p>⛔ <code>log.error("Failed to process order " + orderId + ": " + e.getMessage());</code>
+✅ <code>log.error("Failed to process order {}", orderId, e);</code></p>
+<h2 id="resource-management">🔌 Resource management</h2>
+<h3 id="close-resources-with-try-with-resources">Close resources with try-with-resources</h3>
+<p>Anything that implements <code>AutoCloseable</code> (streams, JDBC connections, statements, result sets, HTTP clients)
+should be opened in a <code>try (...)</code> block.</p>
+<p><strong>Why it's a best practice:</strong> a manual <code>close()</code> is skipped as soon as an exception is thrown before it. Each
+leak holds a file handle or a pooled DB connection, until the pool is exhausted and the app hangs. A <code>finally</code>
+block fixes that but is verbose and easy to get wrong (null checks, a <code>close()</code> that throws itself and hides the
+original error). Try-with-resources closes on every path, in reverse order of opening, and keeps the exceptions
+thrown by <code>close()</code> as <em>suppressed</em> exceptions attached to the original one, so nothing is lost.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ leaks the stream if read() throws</span>
+<span class="n">InputStream</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Files</span><span class="p">.</span><span class="na">newInputStream</span><span class="p">(</span><span class="n">path</span><span class="p">);</span>
+<span class="n">in</span><span class="p">.</span><span class="na">read</span><span class="p">();</span>
+<span class="n">in</span><span class="p">.</span><span class="na">close</span><span class="p">();</span>
+
+<span class="c1">// ✅</span>
+<span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">InputStream</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Files</span><span class="p">.</span><span class="na">newInputStream</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">in</span><span class="p">.</span><span class="na">read</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="object-design-immutability">🧱 Object design &amp; immutability</h2>
+<h3 id="prefer-records-for-value-objects">Prefer records for value objects</h3>
+<p>Use a <code>record</code> for classes that only carry data and are defined by their values (money, coordinates, DTOs,
+ids).</p>
+<p><strong>Why it's a best practice:</strong> records give you <code>equals</code>, <code>hashCode</code> and <code>toString</code> for free, generated from the
+components, so they can never drift apart when someone adds a field and forgets to update one of them. They are
+also shallowly immutable (<code>final</code> fields, no setters), which removes a whole class of bugs. Validation still
+fits in a compact constructor. The result: one line instead of ~50 lines of boilerplate that also has to be
+maintained.</p>
+<p>⛔ a class with a hand-written <code>equals</code> and no <code>hashCode</code>
+✅ <code>record Money(BigDecimal amount, Currency currency) {}</code></p>
+<h3 id="prefer-immutability">Prefer immutability</h3>
+<p>Make fields <code>final</code>, don't expose setters, and make defensive copies of mutable inputs and outputs.</p>
+<p><strong>Why it's a best practice:</strong> an immutable object can be shared between threads without locks, since there's
+nothing to race on. It's safe to use as a <code>HashMap</code> key or in a <code>HashSet</code>, and it can be cached and reused.
+It's also easier to reason about: once it's built and valid, it stays valid, so you don't have to know who else
+holds a reference. Without a defensive copy, the caller keeps a reference to the list and can change your object
+from the outside, bypassing any validation. <code>List.copyOf</code> makes an unmodifiable copy (and doesn't copy again if
+the list is already unmodifiable), so returning it directly is safe.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ caller can mutate the internal list</span>
+<span class="kd">public</span><span class="w"> </span><span class="nf">Order</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lines</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lines</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">lines</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">lines</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">public</span><span class="w"> </span><span class="nf">Order</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lines</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">List</span><span class="p">.</span><span class="na">copyOf</span><span class="p">(</span><span class="n">lines</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Line</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">lines</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">lines</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="override-equals-and-hashcode-together">Override <code>equals</code> and <code>hashCode</code> together</h3>
+<p>If two objects are <code>equals</code>, they must have the same <code>hashCode</code>.</p>
+<p><strong>Why it's a best practice:</strong> hash-based collections first use <code>hashCode</code> to find the bucket, then <code>equals</code>
+inside it. If you override only <code>equals</code>, two "equal" objects land in different buckets: <code>set.contains(x)</code>
+returns <code>false</code>, and <code>HashSet</code> stores duplicates. Nothing throws, it's just silently wrong. Never use mutable
+fields in either: if a key changes after being inserted, its hash changes, the map looks in the wrong bucket,
+and the entry is lost (still in memory, but unreachable). Simplest fix: use a record.</p>
+<h3 id="prefer-static-factories-or-builders-over-telescoping-constructors">Prefer static factories or builders over telescoping constructors</h3>
+<p>When a constructor has more than 3–4 parameters, or several of the same type, use a builder or named static
+factory methods (<code>Money.of(...)</code>, <code>Duration.ofSeconds(...)</code>).</p>
+<p><strong>Why it's a best practice:</strong> <code>new Pizza("L", true, false, true, null)</code> can't be read without opening the class,
+and swapping two <code>boolean</code>s compiles fine but is a bug. A builder names every argument, makes optional ones
+really optional, and can validate the whole object in <code>build()</code>. Static factories have a name that explains
+intent, can return cached instances or a subtype, and avoid having ten constructor overloads.</p>
+<p>⛔ <code>new Pizza("L", true, false, true, null)</code>
+✅ <code>Pizza.builder().size("L").cheese(true).ham(true).build()</code></p>
+<h3 id="prefer-composition-over-inheritance">Prefer composition over inheritance</h3>
+<p>Reuse behaviour by holding an instance of another class and delegating to it, instead of extending it.</p>
+<p><strong>Why it's a best practice:</strong> inheritance couples you to the parent's implementation details, not just its
+API (the "fragile base class" problem). In the example, <code>HashSet.addAll()</code> calls <code>add()</code> internally, so
+overriding both counts every element twice, and it would break again if a future JDK changed that internal
+behaviour. The subclass also inherits every public method, including ones that bypass your logic. With
+composition you expose only what you want, you control every call, and you can swap the delegate (e.g. for a
+<code>TreeSet</code>).</p>
+<p>Inheritance is still fine for a real "is-a" relationship, inside the same package or module, or when the parent
+class is designed and documented for extension (abstract classes, template methods).</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ inherits every HashSet method, and addAll() calls add() internally, counting twice</span>
+<span class="kd">class</span> <span class="nc">CountingSet</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ wrap and delegate</span>
+<span class="kd">class</span> <span class="nc">CountingSet</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">E</span><span class="o">&gt;</span><span class="w"> </span><span class="n">delegate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashSet</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">added</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">E</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">added</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">delegate</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="declare-with-interfaces-not-implementations">Declare with interfaces, not implementations</h3>
+<p>Use the interface (<code>List</code>, <code>Map</code>, <code>Set</code>) as the type of variables, fields, parameters and return types. Use the
+concrete class only after <code>new</code>.</p>
+<p><strong>Why it's a best practice:</strong> code then depends on <em>what</em> the object does, not <em>how</em>. You can switch from
+<code>ArrayList</code> to <code>LinkedList</code>, or from <code>HashMap</code> to <code>LinkedHashMap</code>, by changing one line. Callers can also pass
+any implementation (<code>List.of(...)</code>, <code>Arrays.asList(...)</code>, a Hibernate collection) instead of being forced to
+convert. Returning <code>ArrayList</code> from a public method makes the implementation part of your API, and you can't
+change it later without breaking callers.</p>
+<p>⛔ <code>ArrayList&lt;Order&gt; orders = new ArrayList&lt;&gt;();</code>
+✅ <code>List&lt;Order&gt; orders = new ArrayList&lt;&gt;();</code></p>
+<h3 id="use-enums-instead-of-int-string-constants">Use enums instead of int / String constants</h3>
+<p>Represent a fixed set of values with an <code>enum</code>.</p>
+<p><strong>Why it's a best practice:</strong> with <code>int</code> or <code>String</code> constants, the compiler accepts any value: <code>update(42)</code>
+compiles, and so does a typo like <code>"PIAD"</code>. An enum restricts the parameter to valid values at compile time.
+You also get readable <code>toString()</code> in logs, <code>switch</code> expressions that the compiler can check for missing cases,
+and <code>EnumMap</code> / <code>EnumSet</code>, which are faster and more compact than their hash-based versions. Enums can hold
+fields and behaviour too (<code>Status.PAID.isFinal()</code>), which keeps related logic in one place.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">STATUS_PAID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w">       </span><span class="c1">// accepts 42</span>
+
+<span class="c1">// ✅ type-safe, switchable, works with EnumMap / EnumSet</span>
+<span class="kd">enum</span><span class="w"> </span><span class="n">Status</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">PENDING</span><span class="p">,</span><span class="w"> </span><span class="n">PAID</span><span class="p">,</span><span class="w"> </span><span class="n">REFUNDED</span><span class="w"> </span><span class="p">}</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">Status</span><span class="w"> </span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="standard-library-the-right-type-for-the-job">🧰 Standard library: the right type for the job</h2>
+<h3 id="use-bigdecimal-for-money">Use <code>BigDecimal</code> for money</h3>
+<p>Never use <code>double</code> or <code>float</code> for amounts that must be exact.</p>
+<p><strong>Why it's a best practice:</strong> <code>double</code> is binary floating point, and most decimal fractions (0.1, 0.2) have no
+exact binary representation. Tiny errors appear and add up over thousands of operations, and a total that's off
+by a cent is a real accounting bug. <code>BigDecimal</code> stores the exact decimal value. It has its own traps, though:</p>
+<ul>
+<li><code>new BigDecimal(0.1)</code> takes the already-wrong <code>double</code>, so build it from a <code>String</code> or with
+  <code>BigDecimal.valueOf(double)</code> (which goes through <code>Double.toString</code>).</li>
+<li>Always set the scale and the <code>RoundingMode</code> explicitly. <code>HALF_EVEN</code> ("banker's rounding") avoids a
+  systematic bias when rounding many values.</li>
+<li><code>equals</code> compares the scale too, so <code>0.10</code> and <code>0.1</code> aren't equal. Use <code>compareTo</code> to compare values.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="kt">double</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.2</span><span class="p">;</span><span class="w">                   </span><span class="c1">// 0.30000000000000004</span>
+<span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="mf">0.1</span><span class="p">);</span><span class="w">                        </span><span class="c1">// 0.1000000000000000055511151231257827...</span>
+
+<span class="c1">// ✅</span>
+<span class="n">BigDecimal</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="s">"0.10"</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="n">BigDecimal</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="mf">0.2</span><span class="p">));</span>
+<span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">total</span><span class="p">.</span><span class="na">setScale</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">RoundingMode</span><span class="p">.</span><span class="na">HALF_EVEN</span><span class="p">);</span>
+
+<span class="c1">// ⛔ equals compares the scale: 0.10 != 0.1</span>
+<span class="n">a</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="c1">// ✅</span>
+<span class="n">a</span><span class="p">.</span><span class="na">compareTo</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span>
+</code></pre></div>
+<h3 id="use-javatime-not-date-calendar">Use <code>java.time</code>, not <code>Date</code> / <code>Calendar</code></h3>
+<p>Use the <code>java.time</code> API (Java 8+). Store <code>Instant</code> (UTC), convert to a <code>ZonedDateTime</code> only for display.</p>
+<p><strong>Why it's a best practice:</strong> <code>Date</code> and <code>Calendar</code> are mutable (anyone holding a reference can change the
+value), have confusing APIs (0-based months, years offset from 1900), and <code>SimpleDateFormat</code> isn't thread-safe:
+sharing it as a <code>static</code> field gives corrupted dates under load. <code>java.time</code> types are immutable and thread-safe,
+and each type says what it means: <code>Instant</code> is a point in time, <code>LocalDate</code> is a date without a time zone,
+<code>ZonedDateTime</code> is a date and time in a region, <code>Duration</code> is an amount of time. Storing UTC avoids
+daylight-saving bugs and confusion between servers in different zones. The user's time zone is a display
+concern.</p>
+<p>⛔ <code>new Date()</code>, <code>Calendar.getInstance()</code>, <code>SimpleDateFormat</code> (not thread-safe)
+✅ <code>Instant.now()</code>, <code>DateTimeFormatter.ISO_INSTANT</code></p>
+<h3 id="use-stringbuilder-in-loops">Use <code>StringBuilder</code> in loops</h3>
+<p>Don't concatenate strings with <code>+</code> inside a loop.</p>
+<p><strong>Why it's a best practice:</strong> <code>String</code> is immutable, so each <code>+=</code> allocates a new string and copies everything
+built so far. For n items that's O(n²) copying and a lot of garbage. The compiler optimizes <code>+</code> within a single
+expression, but not across loop iterations. <code>StringBuilder</code> appends into one growing buffer, which is O(n).
+For the simple "join with a separator" case, <code>String.join</code> or <code>Collectors.joining</code> is clearer and also avoids
+the trailing-comma bug.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ creates a new String on each iteration</span>
+<span class="n">String</span><span class="w"> </span><span class="n">csv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">""</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">names</span><span class="p">)</span><span class="w"> </span><span class="n">csv</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">","</span><span class="p">;</span>
+
+<span class="c1">// ✅ or just String.join(",", names)</span>
+<span class="n">StringBuilder</span><span class="w"> </span><span class="n">csv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StringBuilder</span><span class="p">();</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">names</span><span class="p">)</span><span class="w"> </span><span class="n">csv</span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="n">name</span><span class="p">).</span><span class="na">append</span><span class="p">(</span><span class="sc">','</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="streams-functional-style">🌊 Streams &amp; functional style</h2>
+<h3 id="no-side-effects-in-stream-operations">No side effects in stream operations</h3>
+<p>Stream operations (<code>map</code>, <code>filter</code>, <code>forEach</code>...) shouldn't change external state. Build the result with a
+terminal operation (<code>toList()</code>, <code>collect</code>, <code>reduce</code>) instead.</p>
+<p><strong>Why it's a best practice:</strong> a stream describes <em>what</em> result you want, and the pipeline decides how to
+compute it. Adding to an external <code>ArrayList</code> from <code>forEach</code> works by chance: switch to <code>.parallel()</code> and it
+becomes a data race (lost elements, <code>ArrayIndexOutOfBoundsException</code>), because <code>ArrayList</code> isn't thread-safe.
+It's also harder to read: the reader has to find the mutable list to understand what the stream produces.
+<code>.toList()</code> (Java 16+) returns an unmodifiable list, which is safe by default.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="n">orders</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">Order</span><span class="p">::</span><span class="n">isPaid</span><span class="p">).</span><span class="na">forEach</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="na">id</span><span class="p">()));</span>
+
+<span class="c1">// ✅</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orders</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">filter</span><span class="p">(</span><span class="n">Order</span><span class="p">::</span><span class="n">isPaid</span><span class="p">).</span><span class="na">map</span><span class="p">(</span><span class="n">Order</span><span class="p">::</span><span class="n">id</span><span class="p">).</span><span class="na">toList</span><span class="p">();</span>
+</code></pre></div>
+<h2 id="concurrency">🧵 Concurrency</h2>
+<h3 id="dont-manage-threads-by-hand">Don't manage threads by hand</h3>
+<p>Use an <code>ExecutorService</code> (or virtual threads on Java 21+) instead of <code>new Thread()</code>, and concurrent
+collections instead of <code>synchronized</code> wrappers.</p>
+<p><strong>Why it's a best practice:</strong> each <code>new Thread()</code> is an expensive OS thread, with no limit, no reuse, no
+lifecycle management and no way to get a result or an exception back. Under load that means memory exhaustion
+or thousands of competing threads. An executor limits concurrency, reuses threads, returns <code>Future</code>s, and can be
+shut down cleanly. Virtual threads (<code>Executors.newVirtualThreadPerTaskExecutor()</code>) make "one thread per task"
+cheap for blocking I/O.</p>
+<p><code>Collections.synchronizedMap</code> locks the whole map for every call, and compound actions such as
+"<code>get</code>, then <code>put</code>" still race because two threads can read the same old value. <code>ConcurrentHashMap</code> uses
+fine-grained locking and offers atomic compound operations like <code>merge</code>, <code>compute</code> and <code>putIfAbsent</code>.</p>
+<p>⛔ <code>new Thread(task).start();</code>, <code>Collections.synchronizedMap(new HashMap&lt;&gt;())</code>
+✅ <code>ExecutorService</code> / virtual threads, <code>ConcurrentHashMap</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ atomic check-then-act</span>
+<span class="n">counts</span><span class="p">.</span><span class="na">merge</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="p">::</span><span class="n">sum</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="always-clean-up-threadlocal">Always clean up <code>ThreadLocal</code></h3>
+<p>Call <code>remove()</code> in a <code>finally</code> block once the request or task is done.</p>
+<p><strong>Why it's a best practice:</strong> servlet containers and executors reuse pooled threads. A value left in a
+<code>ThreadLocal</code> stays on the thread and is visible to the <em>next</em> request it handles. With a tenant id or a
+security context, that means one user's request can run with another user's data or permissions. It also leaks
+memory: the value (and in app servers, the whole application's classloader) can't be garbage-collected while
+the thread is alive, which causes <code>OutOfMemoryError</code>s after redeploys. <code>finally</code> makes sure the cleanup runs
+even when the handler throws.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="n">CURRENT_TENANT</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">tenant</span><span class="p">);</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">handle</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+<span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CURRENT_TENANT</span><span class="p">.</span><span class="na">remove</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="always-shut-down-executors">Always shut down executors</h3>
+<p>An <code>ExecutorService</code> you create must be shut down. On Java 19+ open it in a try-with-resources block.</p>
+<p><strong>Why it's a best practice:</strong> the threads of a pool created with <code>Executors.newFixedThreadPool</code> aren't daemon
+threads. If nobody calls <code>shutdown()</code>, they keep the JVM alive after <code>main</code> returns, and in a long-running app
+every forgotten executor is a set of idle threads that never goes away. Since Java 19, <code>ExecutorService</code> is
+<code>AutoCloseable</code>: <code>close()</code> stops accepting new tasks and waits for the submitted ones to finish, so the block
+ends only when the work is done.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ threads leak, the JVM may never exit</span>
+<span class="n">ExecutorService</span><span class="w"> </span><span class="n">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="na">newFixedThreadPool</span><span class="p">(</span><span class="mi">4</span><span class="p">);</span>
+<span class="n">pool</span><span class="p">.</span><span class="na">submit</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+
+<span class="c1">// ✅ waits for the tasks, then shuts the pool down</span>
+<span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">ExecutorService</span><span class="w"> </span><span class="n">pool</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Executors</span><span class="p">.</span><span class="na">newVirtualThreadPerTaskExecutor</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">pool</span><span class="p">.</span><span class="na">submit</span><span class="p">(</span><span class="n">task</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="give-completablefuture-an-executor-and-handle-its-errors">Give <code>CompletableFuture</code> an executor and handle its errors</h3>
+<p>Pass your own executor to the <code>*Async</code> methods, and end the chain with <code>exceptionally</code> or <code>handle</code>.</p>
+<p><strong>Why it's a best practice:</strong> without an executor, <code>supplyAsync</code> runs on the shared <code>ForkJoinPool.commonPool()</code>,
+which is sized for CPU work (number of cores minus one). Blocking I/O there starves every other user of the pool,
+including parallel streams. And an exception inside an async stage doesn't show up anywhere unless someone calls
+<code>join()</code> or adds a handler: the failure is stored in the future and silently dropped.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ blocks the common pool, errors vanish</span>
+<span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">fetch</span><span class="p">(</span><span class="n">id</span><span class="p">)).</span><span class="na">thenAccept</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">save</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">CompletableFuture</span><span class="p">.</span><span class="na">supplyAsync</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">fetch</span><span class="p">(</span><span class="n">id</span><span class="p">),</span><span class="w"> </span><span class="n">ioExecutor</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">thenAccept</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">save</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">exceptionally</span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">"Fetch failed for {}"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"> </span><span class="p">});</span>
+</code></pre></div>
+<h3 id="use-atomics-for-simple-shared-state">Use atomics for simple shared state</h3>
+<p>For a shared counter or flag, use <code>AtomicInteger</code>, <code>AtomicLong</code>, <code>LongAdder</code> or <code>AtomicBoolean</code>. Use <code>volatile</code>
+only for a single value written by one thread and read by others.</p>
+<p><strong>Why it's a best practice:</strong> <code>count++</code> is three operations (read, add, write). Two threads can read the same
+value and both write <code>n + 1</code>, losing an increment. <code>volatile</code> doesn't fix that: it only guarantees visibility,
+not atomicity. Atomics do the read-modify-write as one CPU instruction (compare-and-swap), with no lock.
+<code>LongAdder</code> is even faster when many threads update the same counter, like request metrics.</p>
+<p>⛔ <code>private volatile int count; ... count++;</code>
+✅ <code>private final AtomicInteger count = new AtomicInteger(); ... count.incrementAndGet();</code></p>
+<h3 id="always-acquire-locks-in-the-same-order">Always acquire locks in the same order</h3>
+<p>When code needs more than one lock, every thread must take them in the same global order.</p>
+<p><strong>Why it's a best practice:</strong> if thread A locks <code>from</code> then <code>to</code>, and thread B transfers the other way and locks
+<code>to</code> then <code>from</code>, each ends up holding the lock the other one waits for. That's a deadlock: both threads block
+forever, with no exception and no log. Ordering the locks by a stable key (an id) makes the cycle impossible.
+<code>tryLock</code> with a timeout is the fallback when no natural order exists.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ transfer(a, b) and transfer(b, a) at the same time can deadlock</span>
+<span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">from</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="kd">to</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">move</span><span class="p">(</span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="kd">to</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ always lock the smallest id first</span>
+<span class="n">Account</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">from</span><span class="p">.</span><span class="na">id</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="kd">to</span><span class="p">.</span><span class="na">id</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kd">to</span><span class="p">;</span>
+<span class="n">Account</span><span class="w"> </span><span class="n">second</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="kd">to</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">from</span><span class="p">;</span>
+<span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">first</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">second</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">move</span><span class="p">(</span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="kd">to</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="dont-block-virtual-threads-inside-synchronized-before-java-24">Don't block virtual threads inside <code>synchronized</code> (before Java 24)</h3>
+<p>On Java 21–23, use a <code>ReentrantLock</code> instead of <code>synchronized</code> around blocking calls run by virtual threads.</p>
+<p><strong>Why it's a best practice:</strong> a virtual thread is cheap because it gets unmounted from its carrier (OS) thread
+when it blocks. Before Java 24 (JEP 491), a virtual thread that blocks while holding a monitor is <em>pinned</em>: the
+carrier can't be reused. There are only as many carriers as CPU cores, so a few pinned threads doing slow I/O
+freeze the whole application. <code>ReentrantLock</code> doesn't pin. Run with <code>-Djdk.tracePinnedThreads=full</code> to find
+pinning.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ pins the carrier thread during the HTTP call (Java 21–23)</span>
+<span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">httpClient</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">ofString</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="n">lock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span>
+<span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">httpClient</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span><span class="w"> </span><span class="n">ofString</span><span class="p">());</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">lock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="generics-collections">🧬 Generics &amp; collections</h2>
+<h3 id="never-use-raw-types">Never use raw types</h3>
+<p>Always give a generic type its parameter: <code>List&lt;String&gt;</code>, not <code>List</code>. Use <code>List&lt;?&gt;</code> when the type doesn't matter.</p>
+<p><strong>Why it's a best practice:</strong> a raw type turns off generic type checking. The compiler lets you add an <code>Integer</code>
+to what is really a list of <code>String</code>s, with only a warning. The error shows up later as a <code>ClassCastException</code>
+in the code that reads the list, far from the line that caused it. Raw types only exist for compatibility with
+pre-Java 5 code.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ compiles, then throws ClassCastException at read time</span>
+<span class="n">List</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="n">names</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="n">String</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">names</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="use-bounded-wildcards-in-apis-pecs">Use bounded wildcards in APIs (PECS)</h3>
+<p>"Producer <code>extends</code>, consumer <code>super</code>": use <code>? extends T</code> for a parameter you read from, <code>? super T</code> for one you
+write into.</p>
+<p><strong>Why it's a best practice:</strong> generics are invariant: a <code>List&lt;Integer&gt;</code> is <em>not</em> a <code>List&lt;Number&gt;</code>. A method
+that takes <code>List&lt;Number&gt;</code> rejects a <code>List&lt;Integer&gt;</code> even though it only reads numbers from it. Wildcards make the
+API accept every type that works, without casts. <code>Collections.copy(List&lt;? super T&gt; dest, List&lt;? extends T&gt; src)</code>
+is the textbook example.</p>
+<p>⛔ <code>double sum(List&lt;Number&gt; numbers)</code> — rejects <code>List&lt;Integer&gt;</code>
+✅ <code>double sum(List&lt;? extends Number&gt; numbers)</code></p>
+<h3 id="pick-the-right-collection">Pick the right collection</h3>
+<p>Use <code>ArrayList</code> by default, <code>ArrayDeque</code> for stacks and queues, <code>EnumMap</code> / <code>EnumSet</code> for enum keys, and
+<code>LinkedHashMap</code> when iteration order matters.</p>
+<p><strong>Why it's a best practice:</strong> <code>Stack</code> and <code>Vector</code> are legacy classes that synchronize every call for nothing.
+<code>LinkedList</code> looks good for inserts on paper, but each node is a separate object: it uses much more memory,
+misses the CPU cache on every step, and <code>get(i)</code> is O(n). <code>ArrayDeque</code> is faster for both stack and queue use.
+<code>HashMap</code> iteration order is unspecified and can change between JDK versions, so tests that depend on it
+break randomly.</p>
+<p>⛔ <code>Stack&lt;Task&gt; stack = new Stack&lt;&gt;();</code>, <code>new LinkedList&lt;&gt;()</code> as a default list
+✅ <code>Deque&lt;Task&gt; stack = new ArrayDeque&lt;&gt;();</code>, <code>new ArrayList&lt;&gt;()</code></p>
+<h3 id="dont-modify-a-collection-while-iterating-over-it">Don't modify a collection while iterating over it</h3>
+<p>Use <code>removeIf</code>, an explicit <code>Iterator.remove()</code>, or build a new collection.</p>
+<p><strong>Why it's a best practice:</strong> removing from an <code>ArrayList</code> inside a for-each loop throws
+<code>ConcurrentModificationException</code>, or worse, when the removed element is the second to last, silently skips the
+last one: the loop ends early and no error is thrown. <code>removeIf</code> does it in one pass, correctly, and states the
+intent.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ ConcurrentModificationException, or a skipped element</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">orders</span><span class="p">)</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="na">isCancelled</span><span class="p">())</span><span class="w"> </span><span class="n">orders</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">o</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">orders</span><span class="p">.</span><span class="na">removeIf</span><span class="p">(</span><span class="n">Order</span><span class="p">::</span><span class="n">isCancelled</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="know-that-listof-and-friends-are-immutable-and-reject-null">Know that <code>List.of</code> and friends are immutable and reject <code>null</code></h3>
+<p><code>List.of</code>, <code>Set.of</code>, <code>Map.of</code>, <code>List.copyOf</code> and <code>Stream.toList()</code> return unmodifiable collections. <code>List.of</code>
+and <code>copyOf</code> also throw on <code>null</code> elements.</p>
+<p><strong>Why it's a best practice:</strong> calling <code>add</code> on them throws <code>UnsupportedOperationException</code> at runtime, not at
+compile time, because they implement the normal <code>List</code> interface. That's usually what you want, but a method
+that receives one and tries to mutate it will fail in production. <code>Arrays.asList</code> is a different trap: it is
+fixed-size, so <code>set</code> works but <code>add</code> throws. When a caller needs to modify the result, return
+<code>new ArrayList&lt;&gt;(...)</code> and say so.</p>
+<p>⛔ <code>List&lt;String&gt; tags = List.of("a"); tags.add("b");</code> — <code>UnsupportedOperationException</code>
+✅ <code>List&lt;String&gt; tags = new ArrayList&lt;&gt;(List.of("a")); tags.add("b");</code></p>
+<h2 id="modern-java">✨ Modern Java</h2>
+<h3 id="use-var-only-when-the-type-is-obvious">Use <code>var</code> only when the type is obvious</h3>
+<p>Use <code>var</code> when the right-hand side already shows the type (<code>new</code>, a factory, a cast). Write the type when it
+doesn't.</p>
+<p><strong>Why it's a best practice:</strong> <code>var</code> removes noise like <code>Map&lt;String, List&lt;Order&gt;&gt; map = new HashMap&lt;&gt;()</code>. But
+with <code>var result = service.process(input);</code> the reader has to open another file to know what <code>result</code> is, and
+code reviews happen without an IDE. It also infers the concrete type: <code>var list = new ArrayList&lt;String&gt;()</code> is an
+<code>ArrayList</code>, not a <code>List</code>.</p>
+<p>⛔ <code>var result = service.process(input);</code>
+✅ <code>var orders = new ArrayList&lt;Order&gt;();</code>, <code>Order order = service.process(input);</code></p>
+<h3 id="prefer-switch-expressions">Prefer switch expressions</h3>
+<p>Use <code>switch</code> as an expression with arrows (<code>-&gt;</code>), not the old statement with <code>break</code>.</p>
+<p><strong>Why it's a best practice:</strong> the old <code>switch</code> falls through to the next case when you forget a <code>break</code>, which
+is a classic bug. The arrow form never falls through. As an expression, it must produce a value for every
+input: with an enum or a sealed type, the compiler checks that all cases are covered, so adding a new enum
+constant breaks the build instead of silently hitting a <code>default</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ forgetting a break falls through</span>
+<span class="n">String</span><span class="w"> </span><span class="n">label</span><span class="p">;</span>
+<span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">PAID</span><span class="p">:</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Paid"</span><span class="p">;</span><span class="w"> </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">PENDING</span><span class="p">:</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Pending"</span><span class="p">;</span>
+<span class="w">    </span><span class="k">default</span><span class="p">:</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Unknown"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅ exhaustive, no default needed for an enum</span>
+<span class="n">String</span><span class="w"> </span><span class="n">label</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">PENDING</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"Pending"</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">PAID</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"Paid"</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="n">REFUNDED</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"Refunded"</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+<h3 id="use-pattern-matching-instead-of-casts">Use pattern matching instead of casts</h3>
+<p>Use <code>instanceof</code> with a binding variable, and record patterns to take a record apart.</p>
+<p><strong>Why it's a best practice:</strong> <code>if (o instanceof Order) { Order order = (Order) o; ... }</code> repeats the type, and
+a copy-paste mistake between the check and the cast compiles fine and fails at runtime. Pattern matching tests
+and casts in one step, and the variable is only in scope where the test succeeded.</p>
+<p>⛔ <code>if (shape instanceof Circle) { double r = ((Circle) shape).radius(); }</code>
+✅ <code>if (shape instanceof Circle c) { double r = c.radius(); }</code>
+✅ <code>if (shape instanceof Circle(double r)) { ... }</code></p>
+<h3 id="use-sealed-types-for-closed-hierarchies">Use sealed types for closed hierarchies</h3>
+<p>When a type has a fixed set of subtypes (payment methods, events, results), declare it <code>sealed</code> and list them
+with <code>permits</code>.</p>
+<p><strong>Why it's a best practice:</strong> a sealed interface tells the compiler (and the reader) that no other
+implementation exists. Combined with records and pattern matching in <code>switch</code>, you get exhaustiveness checks:
+add a new subtype and every <code>switch</code> that doesn't handle it stops compiling. With an open interface you'd need a
+<code>default</code> branch that throws, and you'd only find the missing case in production.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Payment</span><span class="w"> </span><span class="kd">permits</span><span class="w"> </span><span class="n">Card</span><span class="p">,</span><span class="w"> </span><span class="n">Transfer</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">record</span> <span class="nc">Card</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">number</span><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Payment</span><span class="w"> </span><span class="p">{}</span>
+<span class="kd">record</span> <span class="nc">Transfer</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">iban</span><span class="p">)</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Payment</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="n">String</span><span class="w"> </span><span class="nf">describe</span><span class="p">(</span><span class="n">Payment</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">Card</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"Card "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">number</span><span class="p">();</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="n">Transfer</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">"Transfer "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">t</span><span class="p">.</span><span class="na">iban</span><span class="p">();</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="use-text-blocks-for-multi-line-strings">Use text blocks for multi-line strings</h3>
+<p>Write SQL, JSON and other multi-line strings as <code>"""</code> text blocks.</p>
+<p><strong>Why it's a best practice:</strong> concatenated lines with <code>"\n" +</code> and escaped quotes are hard to read and easy to
+break: a missing space between two lines of SQL gives <code>FROM ordersWHERE</code>. A text block keeps the text as it
+looks, handles indentation, and needs no escaping for <code>"</code>. Use <code>formatted(...)</code> for values, but never for SQL
+parameters: those go in bind parameters.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">String</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"{\n"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"  \"name\": \""</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"\"\n"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"}"</span><span class="p">;</span>
+
+<span class="c1">// ✅</span>
+<span class="n">String</span><span class="w"> </span><span class="n">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"""</span>
+<span class="s">        {</span>
+<span class="s">          "name": "%s"</span>
+<span class="s">        }</span>
+<span class="s">        """</span><span class="p">.</span><span class="na">formatted</span><span class="p">(</span><span class="n">name</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="native-image-startup">🚀 Native image &amp; startup</h2>
+<h3 id="choose-native-image-for-startup-and-footprint-not-for-speed">Choose native image for startup and footprint, not for speed</h3>
+<p>Build a GraalVM native image when the workload is startup- or memory-bound (serverless, CLIs, scale-to-zero, many small
+instances). Keep the JVM for long-running, throughput-bound services.</p>
+<p><strong>Why it's a best practice:</strong> a native image starts in tens of milliseconds and uses a fraction of the memory because
+the JIT, class metadata and profiling are gone and dead code was removed at build time. The price is lower peak
+throughput than a warmed-up C2 JIT, long builds and a closed-world runtime. Try AppCDS, CRaC or SnapStart first: they
+often give most of the startup win with none of the constraints. Always compare both artifacts under your own load.</p>
+<p>⛔ Going native "because it's faster" for a busy API that runs for weeks
+✅ Native for a Lambda or CLI with cold-start pain; JVM + AppCDS for the long-running API</p>
+<h3 id="keep-code-aot-friendly-avoid-runtime-reflection-and-classpath-scanning">Keep code AOT-friendly: avoid runtime reflection and classpath scanning</h3>
+<p>Prefer constructor injection and explicit configuration over <code>Class.forName</code>, computed reflection and custom classpath
+scanning. When reflection is unavoidable, declare it with <code>@RegisterReflectionForBinding</code> or a <code>RuntimeHintsRegistrar</code>.</p>
+<p><strong>Why it's a best practice:</strong> the native compiler only keeps what it can prove reachable at build time. Anything found
+by name at runtime is silently removed and fails later with <code>NoSuchMethodException</code> or an empty JSON body, often on a
+rarely used path. Explicit hints turn that into a build-time decision you can review and test.</p>
+<p>⛔ <code>Class.forName(config.get("handler")).getDeclaredConstructor().newInstance()</code>
+✅ <code>Map&lt;String, Handler&gt; handlers</code> injected by Spring, plus a hint for any DTO read via reflection</p>
+<h3 id="run-the-tests-in-native-mode-too">Run the tests in native mode too</h3>
+<p>Run <code>mvn -PnativeTest test</code> (or <code>./gradlew nativeTest</code>) and a smoke test against the built binary in CI, not only the
+JVM test suite.</p>
+<p><strong>Why it's a best practice:</strong> code can pass every JVM test and still break in the image, because missing reflection or
+resource metadata only shows up when running the compiled executable. Native builds are slow, so run them on main and
+release branches and use <code>-Ob</code> (quick build) for everything else.</p>
+<h3 id="use-pgo-and-the-right-gc-when-native-throughput-matters">Use PGO and the right GC when native throughput matters</h3>
+<p>If a native image must also sustain high throughput, build with profile-guided optimization (<code>--pgo-instrument</code>, run a
+representative load, rebuild with <code>--pgo=default.iprof</code>) and consider <code>--gc=G1</code> on Oracle GraalVM for larger heaps.</p>
+<p><strong>Why it's a best practice:</strong> by default the image is compiled without runtime profiles and uses the Serial GC, which is
+what you give up compared with C2 and G1. PGO restores much of the optimization and a parallel collector avoids long
+stop-the-world pauses; both need a benchmark on your own workload to justify them.</p>
+<h2 id="code-api-design">🧭 Code &amp; API design</h2>
+<h3 id="inject-dependencies-and-the-clock">Inject dependencies and the clock</h3>
+<p>Take collaborators, and a <code>Clock</code> when time matters, as constructor parameters instead of creating them inside
+the class or calling static methods.</p>
+<p><strong>Why it's a best practice:</strong> a class that calls <code>new EmailClient()</code> or <code>Instant.now()</code> can't be tested without
+sending real emails or waiting for the right time. With the dependency injected, a test passes a fake, and with a
+<code>Clock</code>, it passes <code>Clock.fixed(...)</code> and checks "expires in 30 days" deterministically. It also makes the
+dependencies visible in the constructor: a constructor with 8 parameters is a sign the class does too much.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ untestable: depends on the real time</span>
+<span class="kt">boolean</span><span class="w"> </span><span class="nf">isExpired</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">().</span><span class="na">isAfter</span><span class="p">(</span><span class="n">expiresAt</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="kt">boolean</span><span class="w"> </span><span class="nf">isExpired</span><span class="p">(</span><span class="n">Clock</span><span class="w"> </span><span class="n">clock</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">(</span><span class="n">clock</span><span class="p">).</span><span class="na">isAfter</span><span class="p">(</span><span class="n">expiresAt</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="keep-visibility-as-small-as-possible">Keep visibility as small as possible</h3>
+<p>Make classes and members <code>private</code> or package-private by default, and <code>public</code> only when another package needs
+them.</p>
+<p><strong>Why it's a best practice:</strong> everything <code>public</code> is part of your API: someone will call it, and you can't
+change it without breaking them. Package-private classes can be refactored freely. It also keeps each package
+honest: if only the service is public, nobody can call the repository directly and skip your validation.
+Tests in the same package can still reach package-private code.</p>
+<p>⛔ <code>public class OrderMapper</code> used only by <code>OrderService</code> in the same package
+✅ <code>class OrderMapper</code></p>
+<h3 id="use-unchecked-exceptions-for-bugs-domain-exceptions-for-business-errors">Use unchecked exceptions for bugs, domain exceptions for business errors</h3>
+<p>Throw <code>IllegalArgumentException</code> / <code>IllegalStateException</code> for programming errors. Create specific exceptions
+(<code>InsufficientFundsException</code>) for business rules the caller can react to.</p>
+<p><strong>Why it's a best practice:</strong> checked exceptions force every caller up the stack to declare or catch them, and
+in lambdas they don't compose at all, so people end up wrapping or swallowing them. Most errors can't be
+handled locally anyway and should go to a global handler. A named domain exception says what went wrong, can
+carry data (the account, the missing amount), and can be mapped to a precise HTTP status. A generic
+<code>RuntimeException("error")</code> can't.</p>
+<p>⛔ <code>throw new RuntimeException("Not enough money");</code>
+✅ <code>throw new InsufficientFundsException(accountId, missing);</code></p>
+<h3 id="keep-methods-short-and-doing-one-thing">Keep methods short and doing one thing</h3>
+<p>A method should do one thing at one level of abstraction. Extract a named method when a block needs a comment
+to explain it.</p>
+<p><strong>Why it's a best practice:</strong> a 200-line method mixes validation, business rules, persistence and formatting,
+so you can't test one without the others, and every change risks breaking an unrelated part. Small methods with
+good names read like the steps of the algorithm. The name replaces the comment, and unlike a comment it can't
+get out of date without someone noticing.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">checkout</span><span class="p">(</span><span class="n">Cart</span><span class="w"> </span><span class="n">cart</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// validate</span>
+<span class="w">    </span><span class="p">...</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// compute total</span>
+<span class="w">    </span><span class="p">...</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="p">...</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">checkout</span><span class="p">(</span><span class="n">Cart</span><span class="w"> </span><span class="n">cart</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">validate</span><span class="p">(</span><span class="n">cart</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Money</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">computeTotal</span><span class="p">(</span><span class="n">cart</span><span class="p">);</span>
+<span class="w">    </span><span class="n">charge</span><span class="p">(</span><span class="n">cart</span><span class="p">.</span><span class="na">customer</span><span class="p">(),</span><span class="w"> </span><span class="n">total</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="name-things-for-what-they-mean">Name things for what they mean</h3>
+<p>Use names that say what a value is in the domain, not its type. Avoid abbreviations and generic names like
+<code>data</code>, <code>info</code>, <code>manager</code>, <code>tmp</code>.</p>
+<p><strong>Why it's a best practice:</strong> code is read far more often than it's written. <code>List&lt;Order&gt; list</code> tells you
+nothing the type doesn't already say; <code>unpaidOrders</code> tells you what's in it and why it exists. Booleans read
+best as questions (<code>isActive</code>, <code>hasDiscount</code>). Units belong in the name or the type: <code>timeout</code> is ambiguous,
+<code>timeoutMs</code> or a <code>Duration</code> isn't.</p>
+<p>⛔ <code>int d; // elapsed time in days</code>, <code>List&lt;Order&gt; list</code>, <code>long timeout</code>
+✅ <code>int elapsedDays</code>, <code>List&lt;Order&gt; unpaidOrders</code>, <code>Duration timeout</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

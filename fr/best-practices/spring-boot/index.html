@@ -1,0 +1,2875 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/best-practices/spring-boot/">
+      
+      
+        <link rel="prev" href="../java/">
+      
+      
+        <link rel="next" href="../testing/">
+      
+      
+        
+          <link rel="alternate" href="../../../best-practices/spring-boot/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Spring Boot - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bonnes-pratiques-spring-boot" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Spring Boot
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../best-practices/spring-boot/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#injection-de-dependances-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💉 Injection de dépendances &amp; configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💉 Injection de dépendances &amp; configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-linjection-par-constructeur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez l'injection par constructeur
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regroupez-les-parametres-avec-configurationproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regroupez les paramètres avec @ConfigurationProperties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-commitez-jamais-de-secrets-dans-applicationyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne commitez jamais de secrets dans application.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Transactions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔁 Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#placez-transactional-sur-les-methodes-publiques-des-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Placez @Transactional sur les méthodes publiques des services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gardez-les-transactions-courtes-et-marquez-les-lectures-readonly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez les transactions courtes, et marquez les lectures readOnly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sachez-ce-qui-declenche-un-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sachez ce qui déclenche un rollback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#desactivez-open-session-in-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Désactivez Open Session in View
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌐 API REST
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌐 API REST">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#renvoyez-des-dto-pas-des-entites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renvoyez des DTO, pas des entités
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validez-les-entrees-avec-valid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validez les entrées avec @Valid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gerez-les-erreurs-a-un-seul-endroit-avec-problemdetail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gérez les erreurs à un seul endroit avec ProblemDetail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paginez-les-endpoints-de-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paginez les endpoints de collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Exploitation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Exploitation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exposez-health-readiness-et-liveness-avec-actuator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exposez health, readiness et liveness avec Actuator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arretez-lapplication-proprement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arrêtez l'application proprement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-tests-de-slice-pas-springboottest-partout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des tests de slice, pas @SpringBootTest partout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testez-contre-une-vraie-base-avec-testcontainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testez contre une vraie base avec Testcontainers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#injection-de-dependances-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💉 Injection de dépendances &amp; configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💉 Injection de dépendances &amp; configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-linjection-par-constructeur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez l'injection par constructeur
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regroupez-les-parametres-avec-configurationproperties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regroupez les paramètres avec @ConfigurationProperties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-commitez-jamais-de-secrets-dans-applicationyml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne commitez jamais de secrets dans application.yml
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔁 Transactions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔁 Transactions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#placez-transactional-sur-les-methodes-publiques-des-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Placez @Transactional sur les méthodes publiques des services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gardez-les-transactions-courtes-et-marquez-les-lectures-readonly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez les transactions courtes, et marquez les lectures readOnly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sachez-ce-qui-declenche-un-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sachez ce qui déclenche un rollback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#desactivez-open-session-in-view" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Désactivez Open Session in View
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-rest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌐 API REST
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌐 API REST">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#renvoyez-des-dto-pas-des-entites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Renvoyez des DTO, pas des entités
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validez-les-entrees-avec-valid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validez les entrées avec @Valid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gerez-les-erreurs-a-un-seul-endroit-avec-problemdetail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gérez les erreurs à un seul endroit avec ProblemDetail
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paginez-les-endpoints-de-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Paginez les endpoints de collection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exploitation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Exploitation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Exploitation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exposez-health-readiness-et-liveness-avec-actuator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exposez health, readiness et liveness avec Actuator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#arretez-lapplication-proprement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Arrêtez l'application proprement
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-tests-de-slice-pas-springboottest-partout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des tests de slice, pas @SpringBootTest partout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testez-contre-une-vraie-base-avec-testcontainers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testez contre une vraie base avec Testcontainers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="bonnes-pratiques-spring-boot">Bonnes pratiques Spring Boot</h1>
+<h2 id="injection-de-dependances-configuration">💉 Injection de dépendances &amp; configuration</h2>
+<h3 id="utilisez-linjection-par-constructeur">Utilisez l'injection par constructeur</h3>
+<p>Injectez les dépendances par le constructeur, dans des champs <code>final</code>. N'utilisez pas <code>@Autowired</code> sur les champs.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> avec l'injection par champ, la classe ne peut pas être créée sans Spring :
+un test unitaire doit passer par la réflexion ou démarrer un contexte pour remplir les champs. Les champs ne
+peuvent pas être <code>final</code>, donc l'objet peut exister à moitié initialisé. Le constructeur rend les dépendances
+explicites et obligatoires, et une classe qui en a trop se voit au premier coup d'œil. Depuis Spring 4.3, un
+constructeur unique n'a même pas besoin de <code>@Autowired</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="nd">@Service</span>
+<span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="n">OrderRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Service</span>
+<span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">OrderRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">OrderService</span><span class="p">(</span><span class="n">OrderRepository</span><span class="w"> </span><span class="n">repository</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">repository</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">repository</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="regroupez-les-parametres-avec-configurationproperties">Regroupez les paramètres avec <code>@ConfigurationProperties</code></h3>
+<p>Liez les paramètres associés à une classe typée et validée (un record convient) au lieu de disperser des
+annotations <code>@Value</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> <code>@Value("${payment.timeout}")</code> est une clé sous forme de chaîne répétée
+partout où elle sert : une faute de frappe n'échoue qu'au démarrage, ou utilise silencieusement la valeur par
+défaut. <code>@ConfigurationProperties</code> lie tout un préfixe dans un objet, convertit les types (<code>Duration</code>, <code>DataSize</code>,
+listes), supporte <code>@Validated</code> pour qu'une valeur manquante échoue immédiatement, et fournit l'autocomplétion dans
+l'IDE grâce au metadata processor.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="nd">@Value</span><span class="p">(</span><span class="s">"${payment.url}"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">url</span><span class="p">;</span>
+<span class="nd">@Value</span><span class="p">(</span><span class="s">"${payment.timeout:5000}"</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">timeout</span><span class="p">;</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Validated</span>
+<span class="nd">@ConfigurationProperties</span><span class="p">(</span><span class="s">"payment"</span><span class="p">)</span>
+<span class="kd">record</span> <span class="nc">PaymentProperties</span><span class="p">(</span><span class="nd">@NotNull</span><span class="w"> </span><span class="n">URI</span><span class="w"> </span><span class="n">url</span><span class="p">,</span><span class="w"> </span><span class="n">Duration</span><span class="w"> </span><span class="n">timeout</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div>
+<h3 id="ne-commitez-jamais-de-secrets-dans-applicationyml">Ne commitez jamais de secrets dans <code>application.yml</code></h3>
+<p>Gardez les mots de passe, clés d'API et tokens hors du dépôt. Lisez-les depuis des variables d'environnement, un
+secret monté, ou un vault.</p>
+<p><strong>Pourquoi :</strong> traité dans <a href="../security/#keep-secrets-out-of-code-and-git">Gardez les secrets hors du code et de Git</a>.</p>
+<p>⛔ <code>spring.datasource.password: s3cr3t</code>
+✅ <code>spring.datasource.password: ${DB_PASSWORD}</code></p>
+<h2 id="transactions">🔁 Transactions</h2>
+<h3 id="placez-transactional-sur-les-methodes-publiques-des-services">Placez <code>@Transactional</code> sur les méthodes publiques des services</h3>
+<p>Déclarez les transactions dans la couche service, sur des méthodes publiques appelées depuis un autre bean.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> Spring applique <code>@Transactional</code> via un proxy autour du bean. Un appel
+depuis une autre méthode de la <em>même</em> classe (<code>this.save()</code>) ne passe pas par le proxy, donc aucune transaction
+n'est démarrée, et sur une méthode <code>private</code> l'annotation est ignorée. Rien ne vous prévient : le code s'exécute
+simplement sans transaction. La couche service est aussi la bonne frontière : un cas d'usage, une transaction.
+Les contrôleurs n'ont pas à connaître les transactions, et les repositories sont trop fins.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ auto-invocation : saveAll() s'exécute sans transaction</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">importAll</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">saveAll</span><span class="p">(</span><span class="n">orders</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="nd">@Transactional</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">saveAll</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ l'appelant (un autre bean) appelle la méthode transactionnelle</span>
+<span class="nd">@Transactional</span>
+<span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">importAll</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="gardez-les-transactions-courtes-et-marquez-les-lectures-readonly">Gardez les transactions courtes, et marquez les lectures <code>readOnly</code></h3>
+<p>N'appelez pas de services distants, n'envoyez pas d'emails et n'attendez rien de lent dans une transaction.
+Utilisez <code>@Transactional(readOnly = true)</code> pour les requêtes de lecture.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une transaction garde une connexion à la base, et souvent des verrous de
+lignes, jusqu'à sa fin. Un appel HTTP de 10 secondes à l'intérieur occupe la connexion pendant 10 secondes, et
+avec un pool de 10 connexions, quelques appels lents bloquent toute l'application. Si la transaction est annulée
+après l'envoi de l'email, vous ne pouvez pas le « désenvoyer » : publiez un événement et agissez après le commit
+(<code>@TransactionalEventListener</code>). <code>readOnly = true</code> permet à Hibernate de sauter le dirty checking et au driver
+d'orienter vers un réplica.</p>
+<p>⛔ <code>@Transactional void placeOrder() { repository.save(order); paymentClient.charge(order); }</code>
+✅ enregistrer dans la transaction, débiter après le commit via <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code></p>
+<h3 id="sachez-ce-qui-declenche-un-rollback">Sachez ce qui déclenche un rollback</h3>
+<p>Par défaut, seules les exceptions unchecked (<code>RuntimeException</code>, <code>Error</code>) déclenchent un rollback. Utilisez
+<code>rollbackFor</code> si vous levez des exceptions checked.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une exception checked levée depuis une méthode <code>@Transactional</code> <em>commite</em>
+la transaction par défaut. La moitié du travail est enregistrée alors que l'appelant pense que l'opération a
+échoué. Attraper une exception dans la méthode sans la relancer commite aussi. Soyez explicite quand le
+comportement par défaut ne convient pas.</p>
+<p>⛔ <code>@Transactional void transfer() throws TransferException</code> — commite sur <code>TransferException</code>
+✅ <code>@Transactional(rollbackFor = TransferException.class)</code></p>
+<h3 id="desactivez-open-session-in-view">Désactivez Open Session in View</h3>
+<p>Mettez <code>spring.jpa.open-in-view: false</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> l'option est activée par défaut, et garde la session Hibernate (et une
+connexion à la base) ouverte jusqu'à l'écriture de la réponse HTTP. Le lazy loading « fonctionne » alors dans les
+contrôleurs et pendant la sérialisation JSON, ce qui masque les requêtes N+1 et exécute du SQL hors de toute
+transaction. Sous charge, les connexions restent occupées pendant le rendu de la réponse. Une fois désactivée, une
+<code>LazyInitializationException</code> vous indique de charger ce dont vous avez besoin dans le service.</p>
+<p>⛔ <code>open-in-view: true</code> par défaut (Spring logge un warning au démarrage)
+✅ <code>spring.jpa.open-in-view: false</code></p>
+<h2 id="api-rest">🌐 API REST</h2>
+<h3 id="renvoyez-des-dto-pas-des-entites">Renvoyez des DTO, pas des entités</h3>
+<p>Convertissez les entités en DTO de requête / réponse (records) à la frontière du contrôleur.</p>
+<p><strong>Pourquoi :</strong> traité dans <a href="../rest-api/#expose-dtos-not-entities">Exposez des DTO, pas des entités</a>.</p>
+<p>⛔ <code>@GetMapping("/{id}") User get(@PathVariable Long id)</code>
+✅ <code>@GetMapping("/{id}") UserResponse get(@PathVariable Long id)</code></p>
+<h3 id="validez-les-entrees-avec-valid">Validez les entrées avec <code>@Valid</code></h3>
+<p>Placez des contraintes Bean Validation sur les DTO de requête et ajoutez <code>@Valid</code> sur le paramètre du contrôleur.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> le contrôleur est une frontière de confiance : n'importe quel client peut
+envoyer n'importe quoi. Avec des contraintes sur le DTO (<code>@NotBlank</code>, <code>@Email</code>, <code>@Positive</code>), Spring rejette les
+entrées invalides avec un 400 avant que votre code ne s'exécute, et toutes les règles sont déclarées au même
+endroit. Sans <code>@Valid</code> sur le paramètre, les annotations sont ignorées silencieusement.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kd">record</span> <span class="nc">CreateUserRequest</span><span class="p">(</span><span class="nd">@NotBlank</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="nd">@Email</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="nd">@PostMapping</span>
+<span class="n">UserResponse</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CreateUserRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="gerez-les-erreurs-a-un-seul-endroit-avec-problemdetail">Gérez les erreurs à un seul endroit avec <code>ProblemDetail</code></h3>
+<p>Convertissez les exceptions en réponses HTTP dans un <code>@RestControllerAdvice</code>, et renvoyez des corps <code>ProblemDetail</code>
+(RFC 9457).</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> des try/catch dans chaque contrôleur dupliquent la conversion et
+divergent : un endpoint renvoie 404, un autre 500 pour la même erreur. Un handler global garde la cohérence, et
+les services peuvent lever des exceptions métier sans rien savoir de HTTP. <code>ProblemDetail</code> (Spring 6+) est un
+format standard que les clients savent lire. Ne renvoyez jamais de stack traces ni de messages d'exception de la
+base au client.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="nd">@RestControllerAdvice</span>
+<span class="kd">class</span> <span class="nc">ApiExceptionHandler</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">UserNotFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="n">ProblemDetail</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">UserNotFoundException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ProblemDetail</span><span class="p">.</span><span class="na">forStatusAndDetail</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">NOT_FOUND</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Faites de même pour les erreurs de validation, afin que les clients reçoivent les erreurs par champ et non un 400 générique :</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="n">ProblemDetail</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">MethodArgumentNotValidException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">problem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProblemDetail</span><span class="p">.</span><span class="na">forStatusAndDetail</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">,</span><span class="w"> </span><span class="s">"Validation failed"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">problem</span><span class="p">.</span><span class="na">setProperty</span><span class="p">(</span><span class="s">"errors"</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getFieldErrors</span><span class="p">().</span><span class="na">stream</span><span class="p">()</span>
+<span class="w">        </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toMap</span><span class="p">(</span><span class="n">FieldError</span><span class="p">::</span><span class="n">getField</span><span class="p">,</span><span class="w"> </span><span class="n">FieldError</span><span class="p">::</span><span class="n">getDefaultMessage</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">)));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">problem</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="paginez-les-endpoints-de-collection">Paginez les endpoints de collection</h3>
+<p>Ne renvoyez jamais une liste non bornée. Acceptez un <code>Pageable</code> (ou un curseur) et plafonnez la taille de page.</p>
+<p><strong>Pourquoi :</strong> traité dans <a href="../rest-api/#always-paginate-collections">Paginez toujours les collections</a>.</p>
+<p>⛔ <code>List&lt;OrderResponse&gt; list()</code> → <code>repository.findAll()</code>
+✅ <code>Page&lt;OrderResponse&gt; list(Pageable pageable)</code> → <code>repository.findAll(pageable)</code></p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring.data.web.pageable</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">default-page-size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">  </span><span class="nt">max-page-size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w">     </span><span class="c1"># size=1000000 est plafonné silencieusement</span>
+</code></pre></div>
+<h2 id="exploitation">📈 Exploitation</h2>
+<h3 id="exposez-health-readiness-et-liveness-avec-actuator">Exposez health, readiness et liveness avec Actuator</h3>
+<p>Ajoutez <code>spring-boot-starter-actuator</code>, n'exposez que les endpoints nécessaires, et utilisez les groupes liveness /
+readiness pour les probes Kubernetes.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> l'orchestrateur doit savoir s'il faut redémarrer l'application (liveness)
+ou arrêter de lui envoyer du trafic (readiness). La readiness doit échouer tant que l'application démarre ou ne
+peut pas joindre une dépendance indispensable ; la liveness ne doit vérifier que l'application elle-même, sinon
+une panne de la base redémarre tous les pods en boucle. N'exposez pas <code>env</code>, <code>heapdump</code> ou <code>beans</code> publiquement :
+ils divulguent la configuration et le contenu de la mémoire.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints.web.exposure.include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,prometheus</span>
+<span class="w">  </span><span class="nt">endpoint.health.probes.enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">   </span><span class="c1"># /actuator/health/liveness et /readiness</span>
+</code></pre></div>
+<h3 id="arretez-lapplication-proprement">Arrêtez l'application proprement</h3>
+<p>Mettez <code>server.shutdown: graceful</code> et un <code>spring.lifecycle.timeout-per-shutdown-phase</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> lors d'un déploiement, l'ancien pod reçoit <code>SIGTERM</code>. Sans arrêt propre,
+les requêtes en cours sont coupées et les clients reçoivent des erreurs à chaque mise en production. Avec, le
+serveur refuse les nouvelles requêtes et attend la fin de celles en cours, jusqu'au timeout. (C'est le
+comportement par défaut depuis Spring Boot 3.4.)</p>
+<p>✅ <code>server.shutdown: graceful</code>, <code>spring.lifecycle.timeout-per-shutdown-phase: 20s</code></p>
+<h2 id="tests">🧪 Tests</h2>
+<h3 id="utilisez-des-tests-de-slice-pas-springboottest-partout">Utilisez des tests de slice, pas <code>@SpringBootTest</code> partout</h3>
+<p>Utilisez <code>@WebMvcTest</code> pour les contrôleurs, <code>@DataJpaTest</code> pour les repositories, et de simples tests unitaires
+pour les services. Gardez <code>@SpringBootTest</code> pour quelques tests de bout en bout.</p>
+<p><strong>Pourquoi :</strong> traité dans <a href="../testing/#use-test-slices-instead-of-springboottest-everywhere">Utilisez des tranches de test plutôt que @SpringBootTest partout</a>.</p>
+<p>⛔ <code>@SpringBootTest</code> pour tester un mapping JSON dans un contrôleur
+✅ <code>@WebMvcTest(OrderController.class)</code> + <code>MockMvc</code></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">OrderController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">OrderControllerTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="n">MockMvc</span><span class="w"> </span><span class="n">mvc</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@MockitoBean</span><span class="w"> </span><span class="n">OrderService</span><span class="w"> </span><span class="n">service</span><span class="p">;</span><span class="w">        </span><span class="c1">// seule la couche web est chargée</span>
+
+<span class="w">    </span><span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">returns404WhenUnknown</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">when</span><span class="p">(</span><span class="n">service</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="mi">42L</span><span class="p">)).</span><span class="na">thenThrow</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">OrderNotFoundException</span><span class="p">(</span><span class="mi">42L</span><span class="p">));</span>
+<span class="w">        </span><span class="n">mvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/orders/42"</span><span class="p">))</span>
+<span class="w">           </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isNotFound</span><span class="p">())</span>
+<span class="w">           </span><span class="p">.</span><span class="na">andExpect</span><span class="p">(</span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$.detail"</span><span class="p">).</span><span class="na">value</span><span class="p">(</span><span class="s">"Order 42 not found"</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="testez-contre-une-vraie-base-avec-testcontainers">Testez contre une vraie base avec Testcontainers</h3>
+<p>Lancez les tests de repository et d'intégration sur le même moteur de base de données qu'en production, pas H2.</p>
+<p><strong>Pourquoi :</strong> traité dans <a href="../testing/#use-testcontainers-not-h2-for-database-tests">Utilisez Testcontainers, pas H2, pour les tests de base de données</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="nd">@DataJpaTest</span>
+<span class="nd">@AutoConfigureTestDatabase</span><span class="p">(</span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Replace</span><span class="p">.</span><span class="na">NONE</span><span class="p">)</span>
+<span class="nd">@Testcontainers</span>
+<span class="kd">class</span> <span class="nc">OrderRepositoryTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Container</span><span class="w"> </span><span class="nd">@ServiceConnection</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">postgres</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">"postgres:16"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

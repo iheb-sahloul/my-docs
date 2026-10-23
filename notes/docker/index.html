@@ -1,0 +1,3535 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/notes/docker/">
+      
+      
+        <link rel="prev" href="../postgres/">
+      
+      
+        <link rel="next" href="../kubernetes/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/notes/docker/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Docker - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#docker" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Docker
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/notes/docker/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Images
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-an-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-stage-dockerfile-small-runtime-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-stage Dockerfile (small runtime image)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dockerignore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .dockerignore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-tag-push-remove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List, tag, push, remove
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect-image-layers-and-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect image layers and size
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Containers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Containers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-run-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common run flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-ps-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom ps output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell-into-a-running-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell into a running container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-files-in-and-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy files in and out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-exits-immediately" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container exits immediately
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-an-image-without-a-shell-distroless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug an image without a shell (distroless)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-find-the-cause-then-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting: find the cause, then fix it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#volumes-and-bind-mounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volumes and bind mounts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Volumes and bind mounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#volumes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volumes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#back-up-and-restore-a-volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Back up and restore a volume
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Networks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Networks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-defined-bridge-containers-resolve-each-other-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User-defined bridge (containers resolve each other by name)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reach-the-host-from-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reach the host from a container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test connectivity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Compose
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker Compose">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composeyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compose.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daily-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daily commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-files-and-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override files and profiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleanup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disk-usage-and-prune" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk usage and prune
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targeted-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Targeted removal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-one-liners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Useful one-liners
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Useful one-liners">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-a-containers-ip-env-mounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get a container's IP / env / mounts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stop everything
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-as-your-own-user-so-files-arent-root-owned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run as your own user so files aren't root-owned
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Images
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-an-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an image
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-stage-dockerfile-small-runtime-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-stage Dockerfile (small runtime image)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dockerignore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .dockerignore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list-tag-push-remove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        List, tag, push, remove
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect-image-layers-and-size" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect image layers and size
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#containers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Containers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Containers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-run-flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common run flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-ps-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom ps output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debugging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell-into-a-running-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell into a running container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-files-in-and-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy files in and out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#container-exits-immediately" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Container exits immediately
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-an-image-without-a-shell-distroless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Debug an image without a shell (distroless)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting-find-the-cause-then-fix-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting: find the cause, then fix it
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#volumes-and-bind-mounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volumes and bind mounts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Volumes and bind mounts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#volumes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volumes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#back-up-and-restore-a-volume" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Back up and restore a volume
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#networks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Networks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Networks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-defined-bridge-containers-resolve-each-other-by-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User-defined bridge (containers resolve each other by name)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reach-the-host-from-a-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reach the host from a container
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-connectivity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test connectivity
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Compose
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker Compose">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#composeyaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        compose.yaml
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#daily-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Daily commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#override-files-and-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Override files and profiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cleanup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disk-usage-and-prune" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk usage and prune
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#targeted-removal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Targeted removal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-one-liners" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Useful one-liners
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Useful one-liners">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-a-containers-ip-env-mounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Get a container's IP / env / mounts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stop-everything" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stop everything
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-as-your-own-user-so-files-arent-root-owned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run as your own user so files aren't root-owned
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="docker">Docker</h1>
+<h2 id="images">Images</h2>
+<h3 id="build-an-image">Build an image</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>myapp:1.0<span class="w"> </span>.<span class="w">                       </span><span class="c1"># Dockerfile in current dir</span>
+docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>docker/Dockerfile.prod<span class="w"> </span>-t<span class="w"> </span>myapp:prod<span class="w"> </span>.
+docker<span class="w"> </span>build<span class="w"> </span>--build-arg<span class="w"> </span><span class="nv">JAR</span><span class="o">=</span>app.jar<span class="w"> </span>-t<span class="w"> </span>myapp<span class="w"> </span>.<span class="w">   </span><span class="c1"># ARG in Dockerfile</span>
+docker<span class="w"> </span>build<span class="w"> </span>--no-cache<span class="w"> </span>-t<span class="w"> </span>myapp<span class="w"> </span>.<span class="w">                </span><span class="c1"># ignore layer cache</span>
+docker<span class="w"> </span>buildx<span class="w"> </span>build<span class="w"> </span>--platform<span class="w"> </span>linux/amd64,linux/arm64<span class="w"> </span>-t<span class="w"> </span>me/myapp:1.0<span class="w"> </span>--push<span class="w"> </span>.
+</code></pre></div>
+<h3 id="multi-stage-dockerfile-small-runtime-image">Multi-stage Dockerfile (small runtime image)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">maven:3.9-eclipse-temurin-21</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/src</span>
+<span class="k">COPY</span><span class="w"> </span>pom.xml<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>mvn<span class="w"> </span>-q<span class="w"> </span>dependency:go-offline<span class="w">          </span>#<span class="w"> </span>cached<span class="w"> </span><span class="k">until</span><span class="w"> </span>pom.xml<span class="w"> </span>changes
+<span class="k">COPY</span><span class="w"> </span>src<span class="w"> </span>./src
+<span class="k">RUN</span><span class="w"> </span>mvn<span class="w"> </span>-q<span class="w"> </span>package<span class="w"> </span>-DskipTests
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jre</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>build<span class="w"> </span>/src/target/app.jar<span class="w"> </span>app.jar
+<span class="k">USER</span><span class="w"> </span><span class="s">1000</span>
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">8080</span>
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">"java"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-XX:MaxRAMPercentage=75"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-jar"</span><span class="p">,</span><span class="w"> </span><span class="s2">"app.jar"</span><span class="p">]</span>
+</code></pre></div>
+<p>Put rarely-changing steps first: each instruction is a layer and one changed layer invalidates all the layers after it.</p>
+<h3 id="dockerignore">.dockerignore</h3>
+<div class="highlight"><pre><span></span><code>.git
+target/
+node_modules/
+*.log
+.env
+</code></pre></div>
+<h3 id="list-tag-push-remove">List, tag, push, remove</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>images<span class="w">                                  </span><span class="c1"># local images</span>
+docker<span class="w"> </span>image<span class="w"> </span>ls<span class="w"> </span>--filter<span class="w"> </span><span class="nv">dangling</span><span class="o">=</span><span class="nb">true</span>
+docker<span class="w"> </span>tag<span class="w"> </span>myapp:1.0<span class="w"> </span>registry.example.com/team/myapp:1.0
+docker<span class="w"> </span>login<span class="w"> </span>registry.example.com
+docker<span class="w"> </span>push<span class="w"> </span>registry.example.com/team/myapp:1.0
+docker<span class="w"> </span>pull<span class="w"> </span>postgres:16
+docker<span class="w"> </span>rmi<span class="w"> </span>myapp:1.0
+</code></pre></div>
+<h3 id="inspect-image-layers-and-size">Inspect image layers and size</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">history</span><span class="w"> </span>myapp:1.0<span class="w">                       </span><span class="c1"># size of each layer</span>
+docker<span class="w"> </span>image<span class="w"> </span>inspect<span class="w"> </span>myapp:1.0<span class="w"> </span>--format<span class="w"> </span><span class="s1">'{{.Size}} {{.Config.Env}}'</span>
+</code></pre></div>
+<hr />
+<h2 id="containers">Containers</h2>
+<h3 id="run">Run</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>alpine<span class="w"> </span>sh<span class="w">                  </span><span class="c1"># interactive, removed on exit</span>
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>web<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:80<span class="w"> </span>nginx<span class="w">      </span><span class="c1"># detached, host 8080 -&gt; container 80</span>
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>db<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">POSTGRES_PASSWORD</span><span class="o">=</span>secret<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>pgdata:/var/lib/postgresql/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">5432</span>:5432<span class="w"> </span>postgres:16
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">"</span>:/work<span class="w"> </span>-w<span class="w"> </span>/work<span class="w"> </span>node:20<span class="w"> </span>npm<span class="w"> </span><span class="nb">test</span><span class="w">   </span><span class="c1"># run a tool without installing it</span>
+</code></pre></div>
+<h3 id="common-run-flags">Common <code>run</code> flags</h3>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-d</code></td>
+<td>Detached (background)</td>
+</tr>
+<tr>
+<td><code>-it</code></td>
+<td>Interactive + TTY (for shells)</td>
+</tr>
+<tr>
+<td><code>--rm</code></td>
+<td>Delete the container when it exits</td>
+</tr>
+<tr>
+<td><code>-p host:container</code></td>
+<td>Publish a port</td>
+</tr>
+<tr>
+<td><code>-e KEY=val</code> / <code>--env-file .env</code></td>
+<td>Environment variables</td>
+</tr>
+<tr>
+<td><code>-v name:/path</code> / <code>-v ./dir:/path</code></td>
+<td>Named volume / bind mount</td>
+</tr>
+<tr>
+<td><code>--network mynet</code></td>
+<td>Attach to a user-defined network</td>
+</tr>
+<tr>
+<td><code>--restart unless-stopped</code></td>
+<td>Restart policy</td>
+</tr>
+<tr>
+<td><code>--memory 512m --cpus 1.5</code></td>
+<td>Resource limits</td>
+</tr>
+<tr>
+<td><code>--user 1000:1000</code></td>
+<td>Run as non-root</td>
+</tr>
+<tr>
+<td><code>--read-only</code></td>
+<td>Read-only root filesystem</td>
+</tr>
+</tbody>
+</table>
+<h3 id="lifecycle">Lifecycle</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>ps<span class="w">                                      </span><span class="c1"># running</span>
+docker<span class="w"> </span>ps<span class="w"> </span>-a<span class="w">                                   </span><span class="c1"># including stopped</span>
+docker<span class="w"> </span>stop<span class="w"> </span>web<span class="w">                                </span><span class="c1"># SIGTERM, then SIGKILL after 10s</span>
+docker<span class="w"> </span>start<span class="w"> </span>web
+docker<span class="w"> </span>restart<span class="w"> </span>web
+docker<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>web<span class="w">                                </span><span class="c1"># SIGKILL now</span>
+docker<span class="w"> </span>rm<span class="w"> </span>web<span class="w">                                  </span><span class="c1"># remove stopped container</span>
+docker<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>web<span class="w">                               </span><span class="c1"># stop + remove</span>
+</code></pre></div>
+<h3 id="custom-ps-output">Custom <code>ps</code> output</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>ps<span class="w"> </span>--format<span class="w"> </span><span class="s1">'table {{.Names}}\t{{.Status}}\t{{.Ports}}'</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>NAMES   STATUS         PORTS
+web     Up 2 minutes   0.0.0.0:8080-&gt;80/tcp
+db      Up 2 minutes   0.0.0.0:5432-&gt;5432/tcp
+</code></pre></div>
+<hr />
+<h2 id="debugging">Debugging</h2>
+<h3 id="logs">Logs</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>web
+docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>--tail<span class="w"> </span><span class="m">100</span><span class="w"> </span>web<span class="w">                  </span><span class="c1"># follow, last 100 lines</span>
+docker<span class="w"> </span>logs<span class="w"> </span>--since<span class="w"> </span>10m<span class="w"> </span>web
+docker<span class="w"> </span>logs<span class="w"> </span>-t<span class="w"> </span>web<span class="w">                             </span><span class="c1"># with timestamps</span>
+</code></pre></div>
+<h3 id="shell-into-a-running-container">Shell into a running container</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>web<span class="w"> </span>sh<span class="w">                         </span><span class="c1"># or bash if the image has it</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>web<span class="w"> </span>env<span class="w">                            </span><span class="c1"># one-off command</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-u<span class="w"> </span>root<span class="w"> </span>-it<span class="w"> </span>web<span class="w"> </span>sh<span class="w">                 </span><span class="c1"># as root</span>
+</code></pre></div>
+<h3 id="copy-files-in-and-out">Copy files in and out</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>cp<span class="w"> </span>web:/etc/nginx/nginx.conf<span class="w"> </span>./nginx.conf
+docker<span class="w"> </span>cp<span class="w"> </span>./index.html<span class="w"> </span>web:/usr/share/nginx/html/
+</code></pre></div>
+<h3 id="inspect">Inspect</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>inspect<span class="w"> </span>web<span class="w">                             </span><span class="c1"># full JSON</span>
+docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="s1">'{{.NetworkSettings.IPAddress}}'</span><span class="w"> </span>web
+docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="s1">'{{.State.ExitCode}} {{.State.OOMKilled}}'</span><span class="w"> </span>web<span class="w">   </span><span class="c1"># why did it die?</span>
+docker<span class="w"> </span>port<span class="w"> </span>web<span class="w">                                </span><span class="c1"># published ports</span>
+docker<span class="w"> </span>top<span class="w"> </span>web<span class="w">                                 </span><span class="c1"># processes inside</span>
+docker<span class="w"> </span>stats<span class="w">                                   </span><span class="c1"># live CPU/mem per container</span>
+docker<span class="w"> </span>events<span class="w"> </span>--since<span class="w"> </span>10m<span class="w">                      </span><span class="c1"># daemon events</span>
+</code></pre></div>
+<h3 id="container-exits-immediately">Container exits immediately</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>ps<span class="w"> </span>-a<span class="w">                                   </span><span class="c1"># look at STATUS: Exited (137) = killed/OOM, (1) = app error</span>
+docker<span class="w"> </span>logs<span class="w"> </span>&lt;name&gt;
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--entrypoint<span class="w"> </span>sh<span class="w"> </span>myapp:1.0<span class="w">  </span><span class="c1"># bypass ENTRYPOINT and poke around</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Exit code</th>
+<th>Usual cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Main process finished normally</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Application error</td>
+</tr>
+<tr>
+<td>125-127</td>
+<td>Docker error / command not executable / not found</td>
+</tr>
+<tr>
+<td>137</td>
+<td>SIGKILL (often out of memory)</td>
+</tr>
+<tr>
+<td>143</td>
+<td>SIGTERM (graceful stop)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="debug-an-image-without-a-shell-distroless">Debug an image without a shell (distroless)</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>--pid<span class="o">=</span>container:web<span class="w"> </span>--network<span class="o">=</span>container:web<span class="w"> </span>nicolaka/netshoot
+</code></pre></div>
+<hr />
+<h2 id="troubleshooting-find-the-cause-then-fix-it">Troubleshooting: find the cause, then fix it</h2>
+<p>Method, always in this order:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>ps<span class="w"> </span>-a<span class="w">                                   </span><span class="c1"># is it running? exit code?</span>
+docker<span class="w"> </span>logs<span class="w"> </span>--tail<span class="w"> </span><span class="m">100</span><span class="w"> </span>&lt;name&gt;<span class="w">                  </span><span class="c1"># what the app said</span>
+docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="s1">'{{.State.ExitCode}} {{.State.OOMKilled}} {{.State.Error}}'</span><span class="w"> </span>&lt;name&gt;
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;name&gt;<span class="w"> </span>sh<span class="w">                      </span><span class="c1"># or --entrypoint sh if it won't stay up</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+<th>Confirm</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Exits immediately (code 1)</td>
+<td>App error / missing env</td>
+<td><code>docker logs</code></td>
+<td>Pass env (<code>-e</code>, <code>--env-file</code>), fix config</td>
+</tr>
+<tr>
+<td>Exits with 137</td>
+<td>OOM or <code>docker kill</code></td>
+<td><code>.State.OOMKilled</code> is <code>true</code></td>
+<td>Raise <code>--memory</code> / Docker Desktop memory, fix leak</td>
+</tr>
+<tr>
+<td>Exits with 126 / 127</td>
+<td>Entrypoint not executable / not found</td>
+<td><code>docker logs</code>: <code>exec: not found</code></td>
+<td><code>chmod +x</code> in the image, fix path, check shebang / CRLF line endings</td>
+</tr>
+<tr>
+<td><code>exec format error</code></td>
+<td>Image built for another CPU (arm64 vs amd64)</td>
+<td><code>docker image inspect -f '{{.Architecture}}' img</code></td>
+<td>Build/pull with <code>--platform linux/amd64</code></td>
+</tr>
+<tr>
+<td>Port published but unreachable</td>
+<td>App listens on <code>127.0.0.1</code> inside</td>
+<td><code>docker exec x ss -tln</code></td>
+<td>Bind the app to <code>0.0.0.0</code></td>
+</tr>
+<tr>
+<td><code>port is already allocated</code></td>
+<td>Host port in use</td>
+<td><code>lsof -i :8080</code></td>
+<td>Change the host side of <code>-p 8081:8080</code> or stop the other process</td>
+</tr>
+<tr>
+<td><code>name is already in use</code></td>
+<td>Stopped container keeps the name</td>
+<td><code>docker ps -a</code></td>
+<td><code>docker rm &lt;name&gt;</code> or use <code>--rm</code></td>
+</tr>
+<tr>
+<td>Container can't reach another by name</td>
+<td>On the default bridge</td>
+<td><code>docker network inspect bridge</code></td>
+<td>Use a user-defined network / Compose</td>
+</tr>
+<tr>
+<td>Can't reach a service on the host</td>
+<td><code>localhost</code> is the container itself</td>
+<td></td>
+<td><code>host.docker.internal</code> (Linux: <code>--add-host=host.docker.internal:host-gateway</code>)</td>
+</tr>
+<tr>
+<td><code>permission denied</code> on a mount</td>
+<td>UID mismatch between host and container</td>
+<td><code>docker exec x id</code>, <code>ls -ln</code> on host</td>
+<td><code>--user "$(id -u):$(id -g)"</code>, <code>chown</code>, or a named volume</td>
+</tr>
+<tr>
+<td>Bind mount is empty</td>
+<td>Wrong absolute path / not shared with Docker Desktop</td>
+<td><code>docker inspect -f '{{json .Mounts}}' x</code></td>
+<td>Use an absolute path, allow the folder in Docker Desktop</td>
+</tr>
+<tr>
+<td><code>no space left on device</code></td>
+<td>Images, layers, volumes piled up</td>
+<td><code>docker system df</code></td>
+<td><code>docker system prune</code>, <code>docker volume prune</code> (check first!)</td>
+</tr>
+<tr>
+<td><code>pull access denied</code> / <code>unauthorized</code></td>
+<td>Not logged in or wrong image name</td>
+<td></td>
+<td><code>docker login &lt;registry&gt;</code>, fix the name/tag</td>
+</tr>
+<tr>
+<td>Build ignores my change</td>
+<td>Stale layer cache</td>
+<td></td>
+<td><code>docker build --no-cache</code>, or reorder <code>COPY</code> so deps are cached separately</td>
+</tr>
+<tr>
+<td>Compose: app starts before the DB</td>
+<td><code>depends_on</code> only waits for start</td>
+<td><code>docker compose logs app</code> shows connection refused</td>
+<td>Add <code>healthcheck</code> + <code>depends_on: { db: { condition: service_healthy } }</code></td>
+</tr>
+</tbody>
+</table>
+<p>Applied fix, then verify:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>--force-recreate
+docker<span class="w"> </span>compose<span class="w"> </span>ps
+docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>app
+</code></pre></div>
+<hr />
+<h2 id="volumes-and-bind-mounts">Volumes and bind mounts</h2>
+<h3 id="volumes">Volumes</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>volume<span class="w"> </span>create<span class="w"> </span>pgdata
+docker<span class="w"> </span>volume<span class="w"> </span>ls
+docker<span class="w"> </span>volume<span class="w"> </span>inspect<span class="w"> </span>pgdata<span class="w">                   </span><span class="c1"># Mountpoint, driver</span>
+docker<span class="w"> </span>volume<span class="w"> </span>rm<span class="w"> </span>pgdata
+</code></pre></div>
+<h3 id="back-up-and-restore-a-volume">Back up and restore a volume</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>pgdata:/data<span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">"</span>:/backup<span class="w"> </span>alpine<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tar<span class="w"> </span>czf<span class="w"> </span>/backup/pgdata.tgz<span class="w"> </span>-C<span class="w"> </span>/data<span class="w"> </span>.
+
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>pgdata:/data<span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">"</span>:/backup<span class="w"> </span>alpine<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>tar<span class="w"> </span>xzf<span class="w"> </span>/backup/pgdata.tgz<span class="w"> </span>-C<span class="w"> </span>/data
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Syntax</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Named volume</td>
+<td><code>-v pgdata:/var/lib/...</code></td>
+<td>Persistent data managed by Docker</td>
+</tr>
+<tr>
+<td>Bind mount</td>
+<td><code>-v "$PWD"/src:/app/src</code></td>
+<td>Live-editing source code</td>
+</tr>
+<tr>
+<td>tmpfs</td>
+<td><code>--tmpfs /tmp</code></td>
+<td>Scratch data, never on disk</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="networks">Networks</h2>
+<h3 id="user-defined-bridge-containers-resolve-each-other-by-name">User-defined bridge (containers resolve each other by name)</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>network<span class="w"> </span>create<span class="w"> </span>backend
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>db<span class="w">  </span>--network<span class="w"> </span>backend<span class="w"> </span>postgres:16
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>api<span class="w"> </span>--network<span class="w"> </span>backend<span class="w"> </span>-e<span class="w"> </span><span class="nv">DB_HOST</span><span class="o">=</span>db<span class="w"> </span>myapp<span class="w">   </span><span class="c1"># host "db" works</span>
+docker<span class="w"> </span>network<span class="w"> </span>ls
+docker<span class="w"> </span>network<span class="w"> </span>inspect<span class="w"> </span>backend<span class="w">                 </span><span class="c1"># connected containers + IPs</span>
+docker<span class="w"> </span>network<span class="w"> </span>connect<span class="w"> </span>backend<span class="w"> </span>web<span class="w">             </span><span class="c1"># attach a running container</span>
+docker<span class="w"> </span>network<span class="w"> </span>disconnect<span class="w"> </span>backend<span class="w"> </span>web
+</code></pre></div>
+<p>The default <code>bridge</code> network has <strong>no</strong> name resolution. Always create your own network.</p>
+<h3 id="reach-the-host-from-a-container">Reach the host from a container</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Docker Desktop (Mac/Windows): host.docker.internal</span>
+<span class="c1"># Linux: add it yourself</span>
+docker<span class="w"> </span>run<span class="w"> </span>--add-host<span class="o">=</span>host.docker.internal:host-gateway<span class="w"> </span>myapp
+</code></pre></div>
+<h3 id="test-connectivity">Test connectivity</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>api<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">'nc -zv db 5432'</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>api<span class="w"> </span>wget<span class="w"> </span>-qO-<span class="w"> </span>http://web:80
+</code></pre></div>
+<hr />
+<h2 id="docker-compose">Docker Compose</h2>
+<h3 id="composeyaml">compose.yaml</h3>
+<div class="highlight"><pre><span></span><code><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">api</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">"8080:8080"</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">SPRING_DATASOURCE_URL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">jdbc:postgresql://db:5432/app</span>
+<span class="w">    </span><span class="nt">env_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.env</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">service_healthy</span>
+<span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">unless-stopped</span>
+
+<span class="w">  </span><span class="nt">db</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:16</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">secret</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">app</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pgdata:/var/lib/postgresql/data</span>
+<span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">"CMD-SHELL"</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">"pg_isready</span><span class="nv"> </span><span class="s">-U</span><span class="nv"> </span><span class="s">postgres"</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5s</span>
+<span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3s</span>
+<span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pgdata</span><span class="p">:</span>
+</code></pre></div>
+<h3 id="daily-commands">Daily commands</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w">                           </span><span class="c1"># create + start in background</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w">                   </span><span class="c1"># rebuild images first</span>
+docker<span class="w"> </span>compose<span class="w"> </span>ps
+docker<span class="w"> </span>compose<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>api
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>db<span class="w"> </span>psql<span class="w"> </span>-U<span class="w"> </span>postgres<span class="w"> </span>app
+docker<span class="w"> </span>compose<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>api<span class="w"> </span>./mvnw<span class="w"> </span><span class="nb">test</span><span class="w">        </span><span class="c1"># one-off container</span>
+docker<span class="w"> </span>compose<span class="w"> </span>restart<span class="w"> </span>api
+docker<span class="w"> </span>compose<span class="w"> </span>stop<span class="w">                            </span><span class="c1"># keep containers</span>
+docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w">                            </span><span class="c1"># remove containers + network</span>
+docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>-v<span class="w">                         </span><span class="c1"># ...and volumes (deletes data!)</span>
+docker<span class="w"> </span>compose<span class="w"> </span>config<span class="w">                          </span><span class="c1"># show the merged, resolved file</span>
+</code></pre></div>
+<h3 id="override-files-and-profiles">Override files and profiles</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>-f<span class="w"> </span>compose.yaml<span class="w"> </span>-f<span class="w"> </span>compose.dev.yaml<span class="w"> </span>up<span class="w"> </span>-d<span class="w">   </span><span class="c1"># later file overrides earlier</span>
+docker<span class="w"> </span>compose<span class="w"> </span>--profile<span class="w"> </span>debug<span class="w"> </span>up<span class="w"> </span>-d<span class="w">                       </span><span class="c1"># services with `profiles: [debug]`</span>
+</code></pre></div>
+<hr />
+<h2 id="cleanup">Cleanup</h2>
+<h3 id="disk-usage-and-prune">Disk usage and prune</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>system<span class="w"> </span>df<span class="w">                               </span><span class="c1"># what is using space</span>
+docker<span class="w"> </span>container<span class="w"> </span>prune<span class="w">                         </span><span class="c1"># stopped containers</span>
+docker<span class="w"> </span>image<span class="w"> </span>prune<span class="w">                             </span><span class="c1"># dangling images</span>
+docker<span class="w"> </span>image<span class="w"> </span>prune<span class="w"> </span>-a<span class="w">                          </span><span class="c1"># every image not used by a container</span>
+docker<span class="w"> </span>volume<span class="w"> </span>prune<span class="w">                            </span><span class="c1"># unused volumes (data loss!)</span>
+docker<span class="w"> </span>network<span class="w"> </span>prune
+docker<span class="w"> </span>builder<span class="w"> </span>prune<span class="w">                           </span><span class="c1"># build cache</span>
+docker<span class="w"> </span>system<span class="w"> </span>prune<span class="w"> </span>-a<span class="w"> </span>--volumes<span class="w">               </span><span class="c1"># everything unused</span>
+</code></pre></div>
+<h3 id="targeted-removal">Targeted removal</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>rm<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>ps<span class="w"> </span>-aq<span class="w"> </span>-f<span class="w"> </span><span class="nv">status</span><span class="o">=</span>exited<span class="k">)</span>
+docker<span class="w"> </span>rmi<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>images<span class="w"> </span>-q<span class="w"> </span>-f<span class="w"> </span><span class="nv">dangling</span><span class="o">=</span><span class="nb">true</span><span class="k">)</span>
+docker<span class="w"> </span>container<span class="w"> </span>prune<span class="w"> </span>--filter<span class="w"> </span><span class="s2">"until=24h"</span>
+</code></pre></div>
+<hr />
+<h2 id="useful-one-liners">Useful one-liners</h2>
+<h3 id="get-a-containers-ip-env-mounts">Get a container's IP / env / mounts</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="s1">'{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}'</span><span class="w"> </span>web
+docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="s1">'{{json .Config.Env}}'</span><span class="w"> </span>web<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+docker<span class="w"> </span>inspect<span class="w"> </span>-f<span class="w"> </span><span class="s1">'{{json .Mounts}}'</span><span class="w"> </span>web<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+</code></pre></div>
+<h3 id="stop-everything">Stop everything</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>stop<span class="w"> </span><span class="k">$(</span>docker<span class="w"> </span>ps<span class="w"> </span>-q<span class="k">)</span>
+</code></pre></div>
+<h3 id="run-as-your-own-user-so-files-arent-root-owned">Run as your own user so files aren't root-owned</h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-u<span class="w"> </span><span class="s2">"</span><span class="k">$(</span>id<span class="w"> </span>-u<span class="k">)</span><span class="s2">:</span><span class="k">$(</span>id<span class="w"> </span>-g<span class="k">)</span><span class="s2">"</span><span class="w"> </span>-v<span class="w"> </span><span class="s2">"</span><span class="nv">$PWD</span><span class="s2">"</span>:/work<span class="w"> </span>-w<span class="w"> </span>/work<span class="w"> </span>maven:3.9<span class="w"> </span>mvn<span class="w"> </span>package
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

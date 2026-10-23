@@ -1,0 +1,2747 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/rest-api/">
+      
+      
+        <link rel="prev" href="../cloud-aws/">
+      
+      
+        <link rel="next" href="../performance-load-testing/">
+      
+      
+        
+          <link rel="alternate" href="../../../interviews/rest-api/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Conception d'API REST - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#conception-dapi-rest" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Conception d'API REST
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../interviews/rest-api/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fondamentaux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fondamentaux
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fondamentaux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-resources-http-methods-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Comment modélisez-vous les ressources et choisissez-vous méthodes HTTP et codes de statut ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-patch-handle-concurrent-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Quelle différence entre PUT et PATCH, et comment gérer les mises à jour concurrentes ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pieges-seniors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Pièges seniors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Pièges seniors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#offset-keyset-cursor-pagination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Pagination offset ou keyset (curseur) : comment choisir ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-format-return-never-leak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Quel format d'erreur renvoyez-vous, et que ne faut-il jamais divulguer ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-caching-rate-limiting-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Comment utilisez-vous le cache HTTP et le rate limiting sur une API ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-ouvert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Ouvert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Ouvert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evolve-api-breaking-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. Comment faire évoluer une API sans casser les clients ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenarios-reels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Scénarios réels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Scénarios réels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-endpoint-gets-slower-every" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Un endpoint de liste ralentit chaque mois et renvoie parfois des doublons
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#renamed-field-breaks-mobile-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Un renommage de champ part en prod le vendredi et l'app mobile plante pour tous ceux restés sur la version du mois dernier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retried-post-double-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Un client mobile sur un réseau instable est débité deux fois pour un seul paiement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrent-edits-silently-overwrite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. Deux utilisateurs du back-office modifient le même client et l'un perd ses changements sans le savoir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partner-retry-storm-429" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. La synchro nocturne d'un partenaire devient une tempête de retries qui dégrade l'API pour tout le monde
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quiz-oral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Quiz oral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fondamentaux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fondamentaux
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fondamentaux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-resources-http-methods-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Comment modélisez-vous les ressources et choisissez-vous méthodes HTTP et codes de statut ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-patch-handle-concurrent-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Quelle différence entre PUT et PATCH, et comment gérer les mises à jour concurrentes ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pieges-seniors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Pièges seniors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Pièges seniors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#offset-keyset-cursor-pagination" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Pagination offset ou keyset (curseur) : comment choisir ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-format-return-never-leak" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Quel format d'erreur renvoyez-vous, et que ne faut-il jamais divulguer ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-caching-rate-limiting-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Comment utilisez-vous le cache HTTP et le rate limiting sur une API ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-ouvert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Ouvert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Ouvert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evolve-api-breaking-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. Comment faire évoluer une API sans casser les clients ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenarios-reels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Scénarios réels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Scénarios réels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#list-endpoint-gets-slower-every" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Un endpoint de liste ralentit chaque mois et renvoie parfois des doublons
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#renamed-field-breaks-mobile-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Un renommage de champ part en prod le vendredi et l'app mobile plante pour tous ceux restés sur la version du mois dernier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retried-post-double-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Un client mobile sur un réseau instable est débité deux fois pour un seul paiement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrent-edits-silently-overwrite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. Deux utilisateurs du back-office modifient le même client et l'un perd ses changements sans le savoir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partner-retry-storm-429" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. La synchro nocturne d'un partenaire devient une tempête de retries qui dégrade l'API pour tout le monde
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quiz-oral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Quiz oral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="conception-dapi-rest">Conception d'API REST</h1>
+<p>Questions de conception REST plus poussées : pagination, PUT vs PATCH, erreurs, cache et rate limiting. Les bases (principes, versionnement, clés d'idempotence, OpenAPI) sont dans <a href="../fullstack-devops-k8s/#core-principles-good-rest-api">Full Stack &amp; DevOps</a> ; les règles dans <a href="../../best-practices/rest-api/">Bonnes pratiques › API REST</a>.</p>
+<h2 id="fondamentaux">🟢 Fondamentaux</h2>
+<h4 id="model-resources-http-methods-status">Q1. Comment modélisez-vous les ressources et choisissez-vous méthodes HTTP et codes de statut ?</h4>
+<p><strong>Réponse :</strong> Modélisez des <strong>noms</strong>, pas des actions : <code>/appointments/42</code>, avec <code>GET</code> (lecture, sûr), <code>POST</code> (création, non idempotent), <code>PUT</code> (remplacement, idempotent), <code>PATCH</code> (mise à jour partielle), <code>DELETE</code> (idempotent). Utilisez des codes précis : <code>201</code> + <code>Location</code> à la création, <code>204</code> sans corps, <code>400</code> requête mal formée, <code>401</code> non authentifié, <code>403</code> interdit, <code>404</code> absent, <code>409</code> conflit, <code>422</code> syntaxe valide mais validation échouée. Une action hors CRUD devient une sous-ressource (<code>POST /appointments/42/cancellation</code>).</p>
+<h4 id="put-patch-handle-concurrent-updates">Q2. Quelle différence entre <code>PUT</code> et <code>PATCH</code>, et comment gérer les mises à jour concurrentes ?</h4>
+<p><strong>Réponse :</strong> <code>PUT</code> remplace toute la ressource (les champs absents sont réinitialisés) ; <code>PATCH</code> ne modifie que les champs envoyés (JSON Merge Patch, ou JSON Patch pour des opérations). Les deux risquent la mise à jour perdue : renvoyez un <code>ETag</code> au <code>GET</code>, exigez <code>If-Match</code> à l'écriture et répondez <code>412 Precondition Failed</code> (ou <code>409</code>) en cas de décalage. C'est du verrouillage optimiste exposé en HTTP.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="err">PUT /appointments/42</span>
+<span class="err">If-Match: "v7"</span>
+
+<span class="err">→ 412 Precondition Failed   (quelqu'un a enregistré v8)</span>
+</code></pre></div>
+<h2 id="pieges-seniors">🟡 Pièges seniors</h2>
+<h4 id="offset-keyset-cursor-pagination">Q3. Pagination offset ou keyset (curseur) : comment choisir ?</h4>
+<p><strong>Réponse :</strong> <code>LIMIT/OFFSET</code> est simple et permet de sauter à la page N, mais le coût croît avec l'offset (la base lit et jette les lignes sautées) et les lignes se décalent aux insertions, causant doublons ou trous. La pagination <strong>keyset</strong> (<code>WHERE (created_at, id) &lt; (:last_at, :last_id) ORDER BY created_at DESC, id DESC LIMIT 50</code>) reste rapide sur un index et stable, mais ne saute pas à une page arbitraire. Renvoyez un <code>nextCursor</code> opaque, ajoutez toujours une colonne unique de départage et plafonnez <code>limit</code>.</p>
+<h4 id="error-format-return-never-leak">Q4. Quel format d'erreur renvoyez-vous, et que ne faut-il jamais divulguer ?</h4>
+<p><strong>Réponse :</strong> Utilisez un format unique, idéalement <strong>RFC 9457 Problem Details</strong> (<code>application/problem+json</code>) : <code>type</code>, <code>title</code>, <code>status</code>, <code>detail</code>, plus des champs comme <code>errors[]</code> pour la validation. Avec Spring Boot 3, activez <code>ProblemDetail</code> via un <code>@RestControllerAdvice</code>. Ne divulguez jamais stack traces, SQL, noms de classes ni l'existence d'un utilisateur ; journalisez-les côté serveur avec un identifiant de corrélation renvoyé dans la réponse pour que le support retrouve la cause.</p>
+<h4 id="http-caching-rate-limiting-api">Q5. Comment utilisez-vous le cache HTTP et le rate limiting sur une API ?</h4>
+<p><strong>Réponse :</strong> Cache : <code>Cache-Control</code> (<code>max-age</code>, <code>private</code> vs <code>public</code>), validateurs <code>ETag</code>/<code>Last-Modified</code> et <code>GET</code> conditionnel renvoyant <code>304</code>, et <code>Vary</code> pour la négociation de contenu. Ne mettez jamais de données par utilisateur dans un cache partagé. Rate limiting : appliquez-le par clé client (token bucket à la passerelle), répondez <code>429 Too Many Requests</code> avec <code>Retry-After</code> et exposez les limites en en-têtes ; protégez plus strictement les endpoints coûteux.</p>
+<h2 id="expert-ouvert">🔴 Expert / Ouvert</h2>
+<h4 id="evolve-api-breaking-clients">Q6. Comment faire évoluer une API sans casser les clients ?</h4>
+<p><strong>Réponse :</strong> Privilégiez le changement <strong>additif</strong> : nouveaux champs optionnels, nouveaux endpoints, lecteurs tolérants qui ignorent les champs inconnus. Ne renommez, ne supprimez ni ne changez jamais le sens d'un champ sur place. Quand une rupture est inévitable, versionnez (chemin ou en-tête), faites tourner les deux versions, annoncez la dépréciation avec les en-têtes <code>Deprecation</code>/<code>Sunset</code> et suivez l'usage par client avant suppression. Les tests de contrat pilotés par le consommateur détectent les ruptures accidentelles en CI.</p>
+<h2 id="scenarios-reels">🎯 Scénarios réels</h2>
+<h3 id="list-endpoint-gets-slower-every">S1. Un endpoint de liste ralentit chaque mois et renvoie parfois des doublons</h3>
+<ul>
+<li><strong>Symptômes :</strong> La page 1 est rapide, les pages profondes prennent plusieurs secondes et les clients voient parfois le même élément sur deux pages.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Pagination offset sur une table croissante, triée par une colonne non unique. Vérifiez dans <code>EXPLAIN</code> un gros tri/saut et les colonnes de l'<code>ORDER BY</code>.</li>
+<li><strong>Résolution :</strong> Passez à la pagination keyset sur un index <code>(created_at, id)</code>, renvoyez <code>nextCursor</code>, plafonnez la taille de page et ne gardez l'offset que pour de petites listes d'admin.</li>
+<li><strong>Prévention :</strong> Règle de revue : tout endpoint de liste exige un ordre total stable, un <code>limit</code> maximal et un test de charge avec des pages profondes.</li>
+</ul>
+</details>
+<h3 id="renamed-field-breaks-mobile-app">S2. Un renommage de champ part en prod le vendredi et l'app mobile plante pour tous ceux restés sur la version du mois dernier</h3>
+<ul>
+<li><strong>Symptômes :</strong> Le web fonctionne (déployé en même temps), mais les crash reports Android/iOS explosent : <code>NullPointerException</code> en parsant <code>customerName</code>, devenu <code>fullName</code>.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Comparez la spec OpenAPI entre les deux releases (<code>oasdiff breaking old.yaml new.yaml</code>). On ne force pas la mise à jour d'un client mobile : tout champ supprimé/renommé, nouveau champ requis en entrée ou enum restreint est un breaking change pendant des semaines.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>error  response-property-removed  GET /customers/{id}  200  'customerName'
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> Corrigez en avant en réintroduisant <code>customerName</code> (les deux champs servis), puis dépréciez-le via les en-têtes <code>Deprecation</code>/<code>Sunset</code> et ne le retirez que lorsque les analytics montrent les anciennes versions sous un seuil convenu.</li>
+<li><strong>Prévention :</strong> Contrôle des breaking changes sur la spec en CI (build en échec), tests de contrat pilotés par le consommateur avec l'équipe mobile, règle expand → migrate → contract pour tout changement de champ.</li>
+</ul>
+</details>
+<h3 id="retried-post-double-payment">S3. Un client mobile sur un réseau instable est débité deux fois pour un seul paiement</h3>
+<ul>
+<li><strong>Symptômes :</strong> Deux lignes <code>payment</code> à quelques secondes d'écart, même montant et même panier ; l'access log montre deux <code>POST /payments</code> du même appareil, le premier terminé par un timeout côté client.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> La première requête a réussi côté serveur mais la réponse a été perdue ; le client (ou un proxy/SDK) a rejoué. <code>POST</code> n'est pas idempotent et le serveur ne peut pas savoir qu'il s'agit de la même intention.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="err">POST /payments</span>
+<span class="err">Idempotency-Key: 4f1c2b9e-...</span>
+
+<span class="err"># serveur : INSERT INTO idempotency(key, request_hash, response) ... ON CONFLICT (key) DO NOTHING</span>
+<span class="err"># rejeu avec la même clé    -&gt; renvoie la réponse stockée, pas de nouveau débit</span>
+<span class="err"># même clé, autre corps     -&gt; 422</span>
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> Remboursez le doublon ; exigez un en-tête <code>Idempotency-Key</code> sur les <code>POST</code> qui déplacent de l'argent, stockez clé + hash de requête + réponse dans la même transaction que le paiement (contrainte unique), rejouez la réponse stockée, expirez les clés après 24–48 h.</li>
+<li><strong>Prévention :</strong> Clés d'idempotence obligatoires dans les guidelines API pour les <code>POST</code> à effet de bord, un test de chaos qui perd les réponses et rejoue, et transmettez la clé au PSP (il la supporte aussi).</li>
+</ul>
+</details>
+<h3 id="concurrent-edits-silently-overwrite">S4. Deux utilisateurs du back-office modifient le même client et l'un perd ses changements sans le savoir</h3>
+<ul>
+<li><strong>Symptômes :</strong> Un agent du support met à jour l'adresse, un collègue met à jour le téléphone une minute plus tard depuis un onglet ouvert avant ; l'adresse est revenue à l'ancienne valeur. Aucune erreur nulle part.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Lost update classique : l'UI envoie l'objet complet en <code>PUT</code> (ou un <code>PATCH</code> construit depuis un état périmé), le dernier qui écrit gagne. Rien dans la requête n'indique quelle version le client a éditée.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="err">GET /customers/42        -&gt; 200, ETag: "v7"</span>
+<span class="err">PATCH /customers/42</span>
+<span class="err">If-Match: "v7"           -&gt; 412 Precondition Failed si quelqu'un a sauvé v8 entre-temps</span>
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> Renvoyez un <code>ETag</code> (version de l'entité, ex. <code>@Version</code> JPA) sur le <code>GET</code>, exigez <code>If-Match</code> sur <code>PUT</code>/<code>PATCH</code>, répondez <code>412</code> en cas d'écart (<code>428</code> s'il manque) et laissez l'UI proposer recharger/fusionner. N'envoyez que les champs modifiés en <code>PATCH</code>.</li>
+<li><strong>Prévention :</strong> Verrouillage optimiste par défaut pour les ressources éditables, un test d'intégration avec deux mises à jour concurrentes, et des guidelines API qui rendent <code>If-Match</code> obligatoire en écriture.</li>
+</ul>
+</details>
+<h3 id="partner-retry-storm-429">S5. La synchro nocturne d'un partenaire devient une tempête de retries qui dégrade l'API pour tout le monde</h3>
+<ul>
+<li><strong>Symptômes :</strong> À 02:00 le trafic est multiplié par 20, presque entièrement depuis une seule clé d'API ; la plupart des réponses sont des <code>429</code>, pourtant le débit continue d'augmenter et le p99 des autres clients triple.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Le rate limiting fonctionne, mais le client du partenaire rejoue chaque <code>429</code> immédiatement et en parallèle. Le limiteur (et l'auth, les logs, le TLS) coûte du CPU à chaque appel rejeté : rejeter ne suffit pas à protéger le service.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">429</span> <span class="ne">Too Many Requests</span>
+<span class="na">Retry-After</span><span class="o">:</span> <span class="l">30</span>
+<span class="na">RateLimit-Policy</span><span class="o">:</span> <span class="l">100;w=60</span>
+<span class="na">RateLimit</span><span class="o">:</span> <span class="l">remaining=0, reset=30</span>
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> À court terme : baissez le quota de cette clé et bloquez au niveau gateway/WAF (la couche la moins chère). Ensuite, renvoyez les en-têtes <code>Retry-After</code> et <code>RateLimit</code>, et convenez avec le partenaire d'un backoff exponentiel avec jitter, d'un plafond de concurrence et d'un endpoint d'export en masse plutôt que des milliers de petits appels.</li>
+<li><strong>Prévention :</strong> Quotas par client appliqués en bordure, un contrat de retry documenté dans le guide API, une alerte sur le taux de <code>429</code> par clé, et un SDK qui implémente correctement le backoff.</li>
+</ul>
+</details>
+<h2 id="quiz-oral">🎤 Quiz oral</h2>
+<p>Répondez à chaque question <strong>à voix haute en 2–3 minutes</strong>, sans regarder : contexte → options → décision → compromis. Relisez ensuite la question liée et notez-vous : <strong>0</strong> vide · <strong>1</strong> définition seule · <strong>2</strong> plus un exemple · <strong>3</strong> plus compromis et piège.</p>
+<ol>
+<li>Q1. Comment modélisez-vous les ressources et choisissez-vous méthodes HTTP et codes de statut ?</li>
+<li>Q2. Quelle différence entre <code>PUT</code> et <code>PATCH</code>, et comment gérer les mises à jour concurrentes ?</li>
+<li>Q3. Pagination offset ou keyset (curseur) : comment choisir ?</li>
+<li>Q4. Quel format d'erreur renvoyez-vous, et que ne faut-il jamais divulguer ?</li>
+<li>Q5. Comment utilisez-vous le cache HTTP et le rate limiting sur une API ?</li>
+<li>Q6. Comment faire évoluer une API sans casser les clients ?</li>
+<li>S1. Un endpoint de liste ralentit chaque mois et renvoie parfois des doublons</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<ul>
+<li><strong>Méthodes</strong> — <code>GET</code> sûr, <code>PUT</code>/<code>DELETE</code> idempotents, <code>POST</code> ni l'un ni l'autre. <em>Utilisez <code>201</code>+<code>Location</code>, <code>409</code> conflit, <code>422</code> validation.</em></li>
+<li><strong>Concurrence</strong> — <code>ETag</code> + <code>If-Match</code> → <code>412</code>. <em>Verrouillage optimiste en HTTP.</em></li>
+<li><strong>Pagination</strong> — keyset bat offset sur les grosses tables. <em>Exige un départage unique et un curseur opaque.</em></li>
+<li><strong>Erreurs</strong> — RFC 9457 <code>problem+json</code> et un identifiant de corrélation. <em>Ne divulguez jamais de stack trace.</em></li>
+<li><strong>Évolution</strong> — changements additifs, lecteurs tolérants, en-tête <code>Sunset</code>. <em>Ne versionnez que si la rupture est inévitable.</em></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2919 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/best-practices/observability/">
+      
+      
+        <link rel="prev" href="../security/">
+      
+      
+        <link rel="next" href="../rest-api/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/best-practices/observability/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Observability - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#observability-best-practices" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Observability
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/best-practices/observability/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📜 Logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📜 Logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-structured-json-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use structured (JSON) logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-slf4j-with-parameterized-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use SLF4J with parameterized messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choose-log-levels-deliberately" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose log levels deliberately
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-the-exception-once-with-its-stack-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log the exception once, with its stack trace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-context-with-mdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add context with MDC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-log-secrets-or-personal-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never log secrets or personal data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Metrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expose-metrics-with-micrometer-and-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expose metrics with Micrometer and Prometheus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measure-the-red-and-use-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measure the RED and USE signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-business-and-custom-metrics-with-a-bounded-set-of-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add business and custom metrics with a bounded set of tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-percentiles-over-averages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer percentiles over averages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧵 Tracing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧵 Tracing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#propagate-trace-context-across-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propagate trace context across services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-traces-sensibly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sample traces sensibly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-custom-spans-around-important-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add custom spans around important operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#health-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❤️ Health &amp; alerting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❤️ Health &amp; alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expose-separate-liveness-and-readiness-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expose separate liveness and readiness probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shut-down-gracefully" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shut down gracefully
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-on-symptoms-not-causes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alert on symptoms, not causes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#give-every-alert-an-owner-and-a-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give every alert an owner and a runbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#define-slos-and-track-the-error-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define SLOs and track the error budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📜 Logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📜 Logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-structured-json-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use structured (JSON) logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-slf4j-with-parameterized-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use SLF4J with parameterized messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choose-log-levels-deliberately" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choose log levels deliberately
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#log-the-exception-once-with-its-stack-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Log the exception once, with its stack trace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-context-with-mdc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add context with MDC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-log-secrets-or-personal-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never log secrets or personal data
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Metrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expose-metrics-with-micrometer-and-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expose metrics with Micrometer and Prometheus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#measure-the-red-and-use-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Measure the RED and USE signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-business-and-custom-metrics-with-a-bounded-set-of-tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add business and custom metrics with a bounded set of tags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-percentiles-over-averages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer percentiles over averages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧵 Tracing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧵 Tracing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#propagate-trace-context-across-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propagate trace context across services
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sample-traces-sensibly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sample traces sensibly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#add-custom-spans-around-important-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Add custom spans around important operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#health-alerting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ❤️ Health &amp; alerting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="❤️ Health &amp; alerting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expose-separate-liveness-and-readiness-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expose separate liveness and readiness probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shut-down-gracefully" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shut down gracefully
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-on-symptoms-not-causes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alert on symptoms, not causes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#give-every-alert-an-owner-and-a-runbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Give every alert an owner and a runbook
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#define-slos-and-track-the-error-budget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Define SLOs and track the error budget
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="observability-best-practices">Observability Best Practices</h1>
+<h2 id="logging">📜 Logging</h2>
+<h3 id="use-structured-json-logs">Use structured (JSON) logs</h3>
+<p>Emit one JSON object per line with fixed field names, instead of free text.</p>
+<p><strong>Why it's a best practice:</strong> grepping "Order 42 failed for user ann" works on one server; with 30 pods sending
+logs to Elasticsearch or Loki, you need to filter by <code>orderId</code> and <code>level</code>. Free text needs fragile regexes
+that break when someone rewords a message. Spring Boot 3.4+ supports structured logging natively.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ⛔ plain pattern, parsed with regexes downstream</span>
+
+<span class="c1"># ✅ Spring Boot 3.4+</span>
+<span class="nt">logging.structured.format.console</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ecs</span><span class="w">     </span><span class="c1"># or logstash, gelf</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">"@timestamp"</span><span class="p">:</span><span class="s2">"2026-03-01T10:15:30Z"</span><span class="p">,</span><span class="nt">"log.level"</span><span class="p">:</span><span class="s2">"ERROR"</span><span class="p">,</span><span class="nt">"message"</span><span class="p">:</span><span class="s2">"Payment failed"</span><span class="p">,</span><span class="nt">"orderId"</span><span class="p">:</span><span class="mi">42</span><span class="p">,</span><span class="nt">"traceId"</span><span class="p">:</span><span class="s2">"4bf92f35"</span><span class="p">}</span>
+</code></pre></div>
+<h3 id="use-slf4j-with-parameterized-messages">Use SLF4J with parameterized messages</h3>
+<p>Log with <code>log.info("... {}", value)</code>, never string concatenation or <code>System.out</code>.</p>
+<p><strong>Why it's a best practice:</strong> concatenation builds the string even when the level is disabled, which costs
+CPU and allocations on hot paths. <code>System.out</code> has no level, timestamp, or routing. Placeholders are
+evaluated only if the level is enabled, and a template stays constant so log tools can group similar messages.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Order "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" saved"</span><span class="p">);</span>
+<span class="n">log</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">"Order "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">toJson</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" saved"</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">log</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="s">"Order saved id={} total={}"</span><span class="p">,</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">id</span><span class="p">(),</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">total</span><span class="p">());</span>
+</code></pre></div>
+<h3 id="choose-log-levels-deliberately">Choose log levels deliberately</h3>
+<p><code>ERROR</code> = someone must act, <code>WARN</code> = unexpected but handled, <code>INFO</code> = business events, <code>DEBUG</code> = diagnostics, <code>TRACE</code> = very detailed.</p>
+<p><strong>Why it's a best practice:</strong> if everything is <code>ERROR</code>, alerts fire constantly and get muted; if a real failure
+is <code>INFO</code>, nobody sees it. A user typing a wrong password is not an ERROR. Running production at <code>INFO</code> keeps
+cost sane: a service logging 1 KB at 500 req/s produces about 40 GB per day at DEBUG level.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">"User not found: {}"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">           </span><span class="c1">// normal 404, not an error</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"NullPointerException"</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"User lookup missed id={}"</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+<span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">"Payment provider unreachable orderId={}"</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="log-the-exception-once-with-its-stack-trace">Log the exception once, with its stack trace</h3>
+<p>Pass the exception as the last argument, and log it at the place where you handle it, not at every layer.</p>
+<p><strong>Why it's a best practice:</strong> logging and rethrowing at each layer prints the same stack trace 4 times, so one
+failure looks like 4 incidents. <code>log.error(ex.getMessage())</code> loses the stack trace, and the root cause with it.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ wrap and throw; log once in the exception handler</span>
+<span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">SQLException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OrderStorageException</span><span class="p">(</span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="nd">@ExceptionHandler</span><span class="p">(</span><span class="n">OrderStorageException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="n">ProblemDetail</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">OrderStorageException</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">"Order storage failed orderId={}"</span><span class="p">,</span><span class="w"> </span><span class="n">ex</span><span class="p">.</span><span class="na">orderId</span><span class="p">(),</span><span class="w"> </span><span class="n">ex</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">ProblemDetail</span><span class="p">.</span><span class="na">forStatus</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="add-context-with-mdc">Add context with MDC</h3>
+<p>Put request-scoped values (<code>requestId</code>, <code>userId</code>, <code>tenant</code>) in the MDC in a filter, so every line carries them.</p>
+<p><strong>Why it's a best practice:</strong> in a busy service, log lines from 200 concurrent requests are interleaved, and
+"Insufficient funds" alone is useless. With a correlation id, one search shows the full story of one request.
+Clear the MDC at the end, because threads are pooled and stale values leak into the next request.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="nd">@Component</span>
+<span class="kd">class</span> <span class="nc">RequestContextFilter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">OncePerRequestFilter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doFilterInternal</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="n">FilterChain</span><span class="w"> </span><span class="n">chain</span><span class="p">)</span>
+<span class="w">            </span><span class="kd">throws</span><span class="w"> </span><span class="n">ServletException</span><span class="p">,</span><span class="w"> </span><span class="n">IOException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">"requestId"</span><span class="p">,</span><span class="w"> </span><span class="n">Optional</span><span class="p">.</span><span class="na">ofNullable</span><span class="p">(</span><span class="n">req</span><span class="p">.</span><span class="na">getHeader</span><span class="p">(</span><span class="s">"X-Request-Id"</span><span class="p">)).</span><span class="na">orElse</span><span class="p">(</span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">()));</span>
+<span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">chain</span><span class="p">.</span><span class="na">doFilter</span><span class="p">(</span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">res</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">MDC</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="never-log-secrets-or-personal-data">Never log secrets or personal data</h3>
+<p>Mask passwords, tokens, card numbers and personal data, and avoid logging whole request bodies.</p>
+<p><strong>Why it's a best practice:</strong> logs are shipped to third parties, retained for months, and readable by many
+engineers. A leaked bearer token in logs is a valid credential; personal data in logs raises GDPR obligations.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"Request: {}"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">);</span><span class="w">        </span><span class="c1">// contains password, card number</span>
+
+<span class="c1">// ✅</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"Checkout started userId={} items={}"</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="na">id</span><span class="p">(),</span><span class="w"> </span><span class="n">cart</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+</code></pre></div>
+<h2 id="metrics">📊 Metrics</h2>
+<h3 id="expose-metrics-with-micrometer-and-prometheus">Expose metrics with Micrometer and Prometheus</h3>
+<p>Add <code>spring-boot-starter-actuator</code> and <code>micrometer-registry-prometheus</code>, then scrape <code>/actuator/prometheus</code>.</p>
+<p><strong>Why it's a best practice:</strong> logs tell you what happened once; metrics tell you how the system behaves over
+time, cheaply. JVM memory, GC, thread pool, HTTP latency and DB pool usage are provided automatically and are
+the first thing you check during an incident.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">endpoints.web.exposure.include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,prometheus</span>
+<span class="w">  </span><span class="nt">metrics.tags.application</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${spring.application.name}</span>
+</code></pre></div>
+<h3 id="measure-the-red-and-use-signals">Measure the RED and USE signals</h3>
+<p>For each service, track Rate, Errors, Duration (requests) and Utilization, Saturation, Errors (resources such as pools and queues).</p>
+<p><strong>Why it's a best practice:</strong> hundreds of metrics are useless without a checklist. RED answers "are users
+suffering?", USE answers "which resource is the bottleneck?". A saturated connection pool (waiting threads
+above 0) explains latency long before CPU does.</p>
+<div class="highlight"><pre><span></span><code># ✅ dashboards
+Rate      http_server_requests_seconds_count
+Errors    same, filtered on status=~"5.."
+Duration  histogram_quantile(0.99, ...)
+Saturation hikaricp_connections_pending
+</code></pre></div>
+<h3 id="add-business-and-custom-metrics-with-a-bounded-set-of-tags">Add business and custom metrics with a bounded set of tags</h3>
+<p>Count what the business cares about (orders placed, payments failed) and keep tag values low-cardinality.</p>
+<p><strong>Why it's a best practice:</strong> "CPU is fine" while payments fail silently is a common outage. But each unique tag
+combination is a separate time series: <code>userId</code> as a tag creates a million series and can crash or bankrupt
+your metrics backend.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ unbounded cardinality</span>
+<span class="n">registry</span><span class="p">.</span><span class="na">counter</span><span class="p">(</span><span class="s">"orders"</span><span class="p">,</span><span class="w"> </span><span class="s">"userId"</span><span class="p">,</span><span class="w"> </span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="s">"orderId"</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">).</span><span class="na">increment</span><span class="p">();</span>
+
+<span class="c1">// ✅</span>
+<span class="n">registry</span><span class="p">.</span><span class="na">counter</span><span class="p">(</span><span class="s">"orders.placed"</span><span class="p">,</span><span class="w"> </span><span class="s">"channel"</span><span class="p">,</span><span class="w"> </span><span class="s">"web"</span><span class="p">,</span><span class="w"> </span><span class="s">"country"</span><span class="p">,</span><span class="w"> </span><span class="s">"FR"</span><span class="p">).</span><span class="na">increment</span><span class="p">();</span>
+<span class="n">Timer</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">"payment.duration"</span><span class="p">).</span><span class="na">publishPercentileHistogram</span><span class="p">().</span><span class="na">register</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span>
+<span class="w">     </span><span class="p">.</span><span class="na">record</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">gateway</span><span class="p">.</span><span class="na">charge</span><span class="p">(</span><span class="n">order</span><span class="p">));</span>
+</code></pre></div>
+<h3 id="prefer-percentiles-over-averages">Prefer percentiles over averages</h3>
+<p>Track p50, p95 and p99 latency with histograms.</p>
+<p><strong>Why it's a best practice:</strong> an average of 120 ms can hide 1% of requests taking 8 s. Users with the slow
+requests are real, and at 100 requests per page the majority of users hit at least one slow one. Averages of
+percentiles are meaningless, so publish histogram buckets and compute percentiles server-side.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">management.metrics.distribution.percentiles-histogram.http.server.requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">management.metrics.distribution.slo.http.server.requests</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100ms,500ms,1s</span>
+</code></pre></div>
+<h2 id="tracing">🧵 Tracing</h2>
+<h3 id="propagate-trace-context-across-services">Propagate trace context across services</h3>
+<p>Use Micrometer Tracing with OpenTelemetry, W3C <code>traceparent</code> headers, and add the trace id to your logs.</p>
+<p><strong>Why it's a best practice:</strong> one user request may touch 8 services; without a shared trace id you correlate by
+timestamps and guesses. A trace shows which call took 2.3 s of a 2.5 s request. With Spring Boot 3, <code>RestClient</code>,
+<code>WebClient</code> and Kafka clients built from the auto-configured builders propagate context automatically.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">management</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">tracing.sampling.probability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span><span class="w">      </span><span class="c1"># 1.0 in dev</span>
+<span class="w">  </span><span class="nt">otlp.tracing.endpoint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://otel-collector:4318/v1/traces</span>
+<span class="nt">logging.pattern.correlation</span><span class="p">:</span><span class="w"> </span><span class="s">"[${spring.application.name:},%X{traceId:-},%X{spanId:-}]</span><span class="nv"> </span><span class="s">"</span>
+</code></pre></div>
+<h3 id="sample-traces-sensibly">Sample traces sensibly</h3>
+<p>Sample a percentage in production (or use tail-based sampling that keeps errors and slow traces).</p>
+<p><strong>Why it's a best practice:</strong> storing 100% of traces at high traffic is expensive and often unnecessary, while
+a fixed 1% may miss the rare failure you need. Tail sampling in the collector keeps every error and slow trace,
+and a sample of the rest.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ⛔ 1.0 in production at 5,000 req/s</span>
+<span class="nt">management.tracing.sampling.probability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+
+<span class="c1"># ✅</span>
+<span class="nt">management.tracing.sampling.probability</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+</code></pre></div>
+<h3 id="add-custom-spans-around-important-operations">Add custom spans around important operations</h3>
+<p>Wrap key business steps or external calls with an <code>Observation</code> (or <code>@Observed</code>) with a low-cardinality name.</p>
+<p><strong>Why it's a best practice:</strong> automatic instrumentation covers HTTP and JDBC, but not "calculate shipping
+price", which may be the slow step. One <code>Observation</code> gives you a metric, a span, and a log context at once.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="nd">@Observed</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"shipping.quote"</span><span class="p">,</span><span class="w"> </span><span class="n">contextualName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"quote-shipping"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">Quote</span><span class="w"> </span><span class="nf">quote</span><span class="p">(</span><span class="n">Cart</span><span class="w"> </span><span class="n">cart</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="health-alerting">❤️ Health &amp; alerting</h2>
+<h3 id="expose-separate-liveness-and-readiness-probes">Expose separate liveness and readiness probes</h3>
+<p>Use <code>/actuator/health/liveness</code> and <code>/actuator/health/readiness</code>, and wire them to Kubernetes.</p>
+<p><strong>Why:</strong> covered in <a href="../docker-k8s-devops/#configure-liveness-readiness-and-startup-probes-correctly">Configure liveness, readiness and startup probes correctly</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">management.endpoint.health.probes.enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">management.endpoint.health.group.readiness.include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">readinessState,db</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="nt">livenessProbe</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/liveness</span><span class="p p-Indicator">,</span><span class="nt">  port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">readinessProbe</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/readiness</span><span class="p p-Indicator">,</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="shut-down-gracefully">Shut down gracefully</h3>
+<p>Enable graceful shutdown so in-flight requests finish before the pod exits.</p>
+<p><strong>Why it's a best practice:</strong> without it, every deployment cuts running requests, giving users a burst of 502
+errors on each rollout. Spring waits for active requests up to the timeout.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">server.shutdown</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">graceful</span>
+<span class="nt">spring.lifecycle.timeout-per-shutdown-phase</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30s</span>
+</code></pre></div>
+<h3 id="alert-on-symptoms-not-causes">Alert on symptoms, not causes</h3>
+<p>Page on user-visible problems (error rate, latency SLO burn, no traffic), and keep CPU and disk as tickets or dashboards.</p>
+<p><strong>Why it's a best practice:</strong> "CPU at 85%" may be perfectly fine and wakes someone at 3 a.m. for nothing;
+alert fatigue leads people to ignore or mute alerts, and then the real one is missed. Alerting on an SLO
+(for example, 99.9% of requests under 500 ms) ties pages to customer impact.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ⛔</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HighCpu</span>
+<span class="w">  </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cpu_usage &gt; 0.8</span>
+
+<span class="c1"># ✅</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">HighErrorRate</span>
+<span class="w">  </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m]))</span>
+<span class="w">      </span><span class="no">/ sum(rate(http_server_requests_seconds_count[5m])) &gt; 0.02</span>
+<span class="w">  </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5m</span>
+<span class="w">  </span><span class="nt">labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> severity</span><span class="p">:</span><span class="w"> </span><span class="nv">page</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">annotations</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> runbook</span><span class="p">:</span><span class="w"> </span><span class="nv">https</span><span class="p p-Indicator">:</span><span class="nv">//wiki.example.com/runbooks/high-error-rate</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="give-every-alert-an-owner-and-a-runbook">Give every alert an owner and a runbook</h3>
+<p>Each page links to a runbook with what it means, how to check, and how to mitigate. Remove alerts that nobody acts on.</p>
+<p><strong>Why it's a best practice:</strong> at 3 a.m., nobody remembers what <code>queue_depth_high</code> means. A runbook cuts time to
+mitigate, and an alert that was ignored three times in a row is noise that should be fixed or deleted.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">annotations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s">"Order</span><span class="nv"> </span><span class="s">queue</span><span class="nv"> </span><span class="s">backlog</span><span class="nv"> </span><span class="s">above</span><span class="nv"> </span><span class="s">10k</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">10</span><span class="nv"> </span><span class="s">min"</span>
+<span class="w">  </span><span class="nt">runbook</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://wiki.example.com/runbooks/order-queue</span>
+</code></pre></div>
+<h3 id="define-slos-and-track-the-error-budget">Define SLOs and track the error budget</h3>
+<p>Set a target (say 99.9% availability over 30 days) and measure it from real request metrics.</p>
+<p><strong>Why it's a best practice:</strong> 99.9% allows about 43 minutes of downtime per 30 days, 99.99% only about 4. Without
+a number, "reliable" is an argument. The remaining error budget tells you when to ship features and when to
+stop and fix reliability.</p>
+<div class="highlight"><pre><span></span><code># ✅
+SLI: successful requests / total requests (status &lt; 500)
+SLO: 99.9% over 30 days -&gt; budget = 0.1% = ~43 min
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

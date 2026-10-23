@@ -1,0 +1,3179 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/notes/ai/">
+      
+      
+        <link rel="prev" href="../http-curl-jq/">
+      
+      
+        <link rel="next" href="../../best-practices/git/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/notes/ai/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>AI - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ai-augmented-development" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AI
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/notes/ai/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-llm-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. LLM fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. LLM fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-families-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model families in practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimal-api-call-python-anthropic-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimal API call (Python, Anthropic SDK)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structured-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structured output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-prompting-essentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Prompting essentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-rag-retrieval-augmented-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. RAG (Retrieval-Augmented Generation)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. RAG (Retrieval-Augmented Generation)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-pieces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key pieces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pgvector-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pgvector example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluate-rag-separately-retrieval-then-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluate RAG (separately, retrieval then generation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common failure modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rag-vs-fine-tuning-vs-long-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG vs fine-tuning vs long context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tools-function-calling-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tools, function calling, MCP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-is-an-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What is an agent?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-build-steps-claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Build steps, Claude Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Build steps, Claude Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-skill-reusable-instructions-optional-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Skill (reusable instructions + optional scripts)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-subagent-specialised-worker-with-its-own-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Subagent (specialised worker with its own context)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-plugin-package-and-distribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Plugin (package and distribute)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-hooks-deterministic-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Hooks (deterministic guardrails)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-your-own-agent-agent-sdk-or-raw-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Your own agent (Agent SDK or raw API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-which-one-do-i-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Which one do I need?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-working-habits-and-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Working habits and safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Glossary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-llm-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. LLM fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. LLM fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#model-families-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model families in practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimal-api-call-python-anthropic-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimal API call (Python, Anthropic SDK)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structured-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structured output
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-prompting-essentials" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Prompting essentials
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-rag-retrieval-augmented-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. RAG (Retrieval-Augmented Generation)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. RAG (Retrieval-Augmented Generation)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-pieces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key pieces
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pgvector-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pgvector example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluate-rag-separately-retrieval-then-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluate RAG (separately, retrieval then generation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common failure modes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rag-vs-fine-tuning-vs-long-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG vs fine-tuning vs long context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tools-function-calling-mcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tools, function calling, MCP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-what-is-an-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. What is an agent?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-build-steps-claude-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Build steps, Claude Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Build steps, Claude Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-skill-reusable-instructions-optional-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Skill (reusable instructions + optional scripts)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-subagent-specialised-worker-with-its-own-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Subagent (specialised worker with its own context)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-plugin-package-and-distribute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Plugin (package and distribute)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-hooks-deterministic-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Hooks (deterministic guardrails)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-your-own-agent-agent-sdk-or-raw-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Your own agent (Agent SDK or raw API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-which-one-do-i-need" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Which one do I need?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-working-habits-and-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Working habits and safety
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-glossary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Glossary
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="ai-augmented-development">AI-augmented development</h1>
+<p>Notes for a software developer. Concrete file formats are Claude Code's; the concepts apply to any stack.</p>
+<p>To practise these topics as interview questions, see <a href="../../interviews/claude-code/">AI Engineering &amp; Claude Code</a>.</p>
+<h2 id="1-llm-fundamentals">1. LLM fundamentals</h2>
+<p>An LLM is a next-token predictor trained on a huge corpus, then tuned to follow instructions. It does not "look things up" or "know" facts reliably; it generates the most plausible continuation of its input.</p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What to know</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Token</strong></td>
+<td>Unit of text (~4 chars / ¾ word in English). You pay and are limited per token, input and output. Code and non-English text cost more tokens</td>
+</tr>
+<tr>
+<td><strong>Context window</strong></td>
+<td>Max tokens the model sees per call (prompt + history + tool results + output). Quality degrades on long, noisy contexts even before the limit</td>
+</tr>
+<tr>
+<td><strong>Stateless</strong></td>
+<td>The API remembers nothing. You resend the whole conversation each turn. "Memory" = what you put back in the prompt</td>
+</tr>
+<tr>
+<td><strong>Roles</strong></td>
+<td><code>system</code> (durable rules, persona), <code>user</code>, <code>assistant</code>, <code>tool</code> results</td>
+</tr>
+<tr>
+<td><strong>Temperature / top_p</strong></td>
+<td>Randomness. Low (0-0.3) for extraction, code, classification. Higher for brainstorming</td>
+</tr>
+<tr>
+<td><strong>Max output tokens</strong></td>
+<td>Hard cap on the answer; a truncated JSON is a common bug (check <code>stop_reason</code>)</td>
+</tr>
+<tr>
+<td><strong>Hallucination</strong></td>
+<td>Confident but wrong output. Mitigate with grounding (RAG, tools), asking for citations, and verification (tests, schema validation)</td>
+</tr>
+<tr>
+<td><strong>Non-determinism</strong></td>
+<td>Same prompt, different answer. Never build logic that assumes identical output; validate instead</td>
+</tr>
+<tr>
+<td><strong>Prompt caching</strong></td>
+<td>Reuse a long static prefix (system prompt, docs) at a fraction of the cost/latency. Put stable content first, variable content last</td>
+</tr>
+<tr>
+<td><strong>Latency / cost</strong></td>
+<td>Grows with input + output tokens. Small/fast model for simple steps, large model for hard reasoning. Streaming improves perceived latency</td>
+</tr>
+<tr>
+<td><strong>Knowledge cutoff</strong></td>
+<td>The model does not know recent events or your private data; inject them at call time</td>
+</tr>
+</tbody>
+</table>
+<h3 id="model-families-in-practice">Model families in practice</h3>
+<p>Pick per task, not per brand: small/fast (classification, routing, extraction), mid (most coding and chat), large/reasoning (planning, hard debugging, agents). Start with the cheapest that passes your evals.</p>
+<h3 id="minimal-api-call-python-anthropic-sdk">Minimal API call (Python, Anthropic SDK)</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">anthropic</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">anthropic</span><span class="o">.</span><span class="n">Anthropic</span><span class="p">()</span>          <span class="c1"># reads ANTHROPIC_API_KEY from env, never hard-code keys</span>
+
+<span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="s2">"claude-sonnet-5-5"</span><span class="p">,</span>
+    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+    <span class="n">system</span><span class="o">=</span><span class="s2">"You are a code reviewer. Answer in JSON."</span><span class="p">,</span>
+    <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="s2">"Review: def add(a,b): return a-b"</span><span class="p">}],</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">stop_reason</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">usage</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="structured-output">Structured output</h3>
+<p>Never regex free text. Ask for JSON matching a schema (or force it through a tool/<code>response_format</code>), <strong>validate it</strong> (Pydantic, Zod, Jackson), and on failure retry once feeding the validation error back.</p>
+<h2 id="2-prompting-essentials">2. Prompting essentials</h2>
+<ul>
+<li><strong>Be specific about the task, audience, format, constraints.</strong> Vague in, vague out.</li>
+<li><strong>Give context the model cannot guess</strong>: file paths, versions, conventions, what you already tried.</li>
+<li><strong>Show, don't tell</strong>: 2-3 few-shot examples fix format and edge cases better than paragraphs of rules.</li>
+<li><strong>Separate instructions from data</strong> with delimiters/XML tags: <code>&lt;document&gt;...&lt;/document&gt;</code>. Required for security (see section 8).</li>
+<li><strong>Let it think for hard problems</strong> (extended thinking / "reason step by step, then answer"), but ask for a short final answer.</li>
+<li><strong>Say what to do, not only what to avoid.</strong> Give an exit: "If unsure, say 'unknown'."</li>
+<li><strong>Iterate like code</strong>: version prompts in git, keep a small test set, change one thing at a time.</li>
+<li>System prompt = durable behaviour. User turn = the task.</li>
+<li>More copy-paste examples: <a href="../../best-practices/ai-prompts/">AI Prompts for Senior Engineers</a>.</li>
+</ul>
+<p>Template:</p>
+<div class="highlight"><pre><span></span><code>Role: senior Java reviewer.
+Task: review the diff below for bugs and security issues only.
+Constraints: max 5 findings, ordered by severity, cite file:line.
+Output: JSON [{"file","line","severity","issue","fix"}]
+&lt;diff&gt;...&lt;/diff&gt;
+</code></pre></div>
+<h2 id="3-rag-retrieval-augmented-generation">3. RAG (Retrieval-Augmented Generation)</h2>
+<p><strong>Problem</strong>: the model does not know your private/recent data and hallucinates. <strong>Idea</strong>: at question time, retrieve relevant passages from your data and put them in the prompt so the model answers from them.</p>
+<pre class="mermaid"><code>flowchart LR
+  subgraph Ingest [Offline: indexing]
+    D[Documents] --&gt; C[Chunk] --&gt; E1[Embed] --&gt; V[(Vector store + metadata)]
+  end
+  subgraph Query [Online: per question]
+    Q[User question] --&gt; E2[Embed query] --&gt; S[Search top-k]
+    V --&gt; S --&gt; R[Rerank] --&gt; P[Build prompt: instructions + chunks + question] --&gt; L[LLM] --&gt; A[Answer + citations]
+  end</code></pre>
+<h3 id="key-pieces">Key pieces</h3>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Embedding</strong></td>
+<td>A model turns text into a vector (e.g. 768-3072 floats). Similar meaning → close vectors (cosine similarity). Use the <strong>same model</strong> for documents and queries</td>
+</tr>
+<tr>
+<td><strong>Chunking</strong></td>
+<td>Split docs into 200-800 token pieces, ~10-15% overlap, split on structure (headings, paragraphs, code functions) not blindly. Keep metadata (source, title, section, date, ACLs)</td>
+</tr>
+<tr>
+<td><strong>Vector store</strong></td>
+<td>pgvector (already have Postgres? start here), Qdrant, Weaviate, Pinecone, OpenSearch. Index type HNSW/IVFFlat = approximate nearest neighbour</td>
+</tr>
+<tr>
+<td><strong>Hybrid search</strong></td>
+<td>Combine vector (semantic) + keyword BM25 (exact terms, IDs, error codes), merge with reciprocal rank fusion. Better than either alone</td>
+</tr>
+<tr>
+<td><strong>Reranker</strong></td>
+<td>Cross-encoder re-scores the top 20-50 → keep best 3-8. Big quality win for small cost</td>
+</tr>
+<tr>
+<td><strong>Prompt assembly</strong></td>
+<td>"Answer only from the context. If missing, say you don't know. Cite [source]." Put chunks in tags</td>
+</tr>
+<tr>
+<td><strong>Query rewriting</strong></td>
+<td>Rewrite chat follow-ups into standalone queries; optionally split multi-part questions</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pgvector-example">pgvector example</h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="n">vector</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">chunks</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="n">bigserial</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w"> </span><span class="k">source</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">  </span><span class="n">embedding</span><span class="w"> </span><span class="n">vector</span><span class="p">(</span><span class="mi">1024</span><span class="p">));</span><span class="w">                      </span><span class="c1">-- dimension = your embedding model</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">chunks</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">hnsw</span><span class="w"> </span><span class="p">(</span><span class="n">embedding</span><span class="w"> </span><span class="n">vector_cosine_ops</span><span class="p">);</span>
+
+<span class="c1">-- top 5 nearest chunks to a query embedding</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">source</span><span class="p">,</span><span class="w"> </span><span class="n">content</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">chunks</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">embedding</span><span class="w"> </span><span class="o">&lt;=&gt;</span><span class="w"> </span><span class="p">:</span><span class="n">query_embedding</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">answer</span><span class="p">(</span><span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">q_vec</span> <span class="o">=</span> <span class="n">embed</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>                                  <span class="c1"># embedding API</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">TOP_K_SQL</span><span class="p">,</span> <span class="n">q_vec</span><span class="p">)</span>                        <span class="c1"># retrieve</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">"[</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">source</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">llm</span><span class="p">(</span><span class="n">system</span><span class="o">=</span><span class="s2">"Answer only from &lt;context&gt;. Cite sources. Say 'I don't know' if absent."</span><span class="p">,</span>
+               <span class="n">user</span><span class="o">=</span><span class="sa">f</span><span class="s2">"&lt;context&gt;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">&lt;/context&gt;</span><span class="se">\n\n</span><span class="s2">Question: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="evaluate-rag-separately-retrieval-then-generation">Evaluate RAG (separately, retrieval then generation)</h3>
+<ul>
+<li><strong>Retrieval</strong>: recall@k / hit rate: does the top-k contain the passage that answers the question? Build 30-100 real Q → expected-source pairs.</li>
+<li><strong>Generation</strong>: faithfulness (answer supported by context?), relevance, correct refusal when context lacks the answer. LLM-as-judge plus human spot checks.</li>
+<li>Change one knob at a time (chunk size, k, reranker) and re-run the set.</li>
+</ul>
+<h3 id="common-failure-modes">Common failure modes</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause / fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Right doc exists but not retrieved</td>
+<td>Bad chunking, embedding mismatch, need hybrid search / rewrite the query</td>
+</tr>
+<tr>
+<td>Retrieved but answer ignores it</td>
+<td>Too many/noisy chunks ("lost in the middle"), reduce k, rerank, clearer instruction</td>
+</tr>
+<tr>
+<td>Confident wrong answer</td>
+<td>No "say I don't know" rule, no citations required, stale index</td>
+</tr>
+<tr>
+<td>Leaks other users' data</td>
+<td>No metadata filter / ACL at retrieval time (<strong>filter before ranking</strong>)</td>
+</tr>
+<tr>
+<td>Stale answers</td>
+<td>No re-index pipeline on document change</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rag-vs-fine-tuning-vs-long-context">RAG vs fine-tuning vs long context</h3>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fresh/private/changing knowledge, citations, access control</td>
+<td><strong>RAG</strong></td>
+</tr>
+<tr>
+<td>Fixed style, format or behaviour on a narrow task</td>
+<td>Fine-tuning (last resort; try prompting + examples first)</td>
+</tr>
+<tr>
+<td>Small corpus that fits in the window</td>
+<td>Just put it in the prompt (+ prompt caching)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-tools-function-calling-mcp">4. Tools, function calling, MCP</h2>
+<p>The model cannot act; it <strong>asks you to run a tool</strong> and you feed the result back.</p>
+<div class="highlight"><pre><span></span><code>user → LLM → "call get_weather(city='Tunis')"   (stop_reason = tool_use)
+your code runs the function → sends the result back → LLM → final answer
+</code></pre></div>
+<ul>
+<li>A tool = name + <strong>description</strong> + JSON schema of inputs. The description is a prompt: the model picks tools by reading it, so make similar tools clearly different.</li>
+<li>Your code executes tools, so <strong>you</strong> enforce permissions, validation and limits.</li>
+<li><strong>MCP (Model Context Protocol)</strong>: open standard so one tool server (GitHub, Postgres, Jira, filesystem...) works with any compatible client. Use MCP for capabilities reused across apps, a plain in-app tool for one app.</li>
+</ul>
+<h2 id="5-what-is-an-agent">5. What is an agent?</h2>
+<p>An agent = an LLM in a <strong>loop</strong> that decides the next step, calls tools, observes results, and stops when done.</p>
+<div class="highlight"><pre><span></span><code>while not done and steps &lt; MAX:
+    response = llm(messages, tools)
+    if response wants tools: run them, append results to messages
+    else: done, return response
+</code></pre></div>
+<ul>
+<li><strong>Workflow vs agent</strong>: if the steps are known in advance, write a fixed workflow (prompt chaining, routing, parallel calls). Use an autonomous agent only when the path is unknown. The simplest structure that works wins (cheaper, testable, predictable).</li>
+<li>Agent = model + tools + system prompt + loop + guardrails + context management.</li>
+</ul>
+<h2 id="6-build-steps-claude-code">6. Build steps, Claude Code</h2>
+<h3 id="61-skill-reusable-instructions-optional-scripts">6.1 Skill (reusable instructions + optional scripts)</h3>
+<p>A skill is a folder the model loads <strong>on demand</strong> when its <code>description</code> matches the task. Only the name/description sit in context; the body loads when triggered (cheap context).</p>
+<ol>
+<li>Pick a repeatable task (release notes, PR review checklist, DB migration conventions).</li>
+<li>Create the folder: project <code>.claude/skills/&lt;name&gt;/</code> or personal <code>~/.claude/skills/&lt;name&gt;/</code>.</li>
+<li>Write <code>SKILL.md</code>:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>---
+name: db-migration
+<span class="gu">description: Use when writing or reviewing a Flyway/Liquibase migration. Covers naming, backward-compatible changes, and lock-safe DDL.</span>
+<span class="gu">---</span>
+
+<span class="gh"># DB migration rules</span>
+<span class="k">1.</span> File name <span class="sb">`V&lt;yyyyMMddHHmm&gt;__&lt;what&gt;.sql`</span>.
+<span class="k">2.</span> Never rename/drop a column in the same release as the code change (expand → migrate → contract).
+<span class="k">3.</span> Create indexes with <span class="sb">`CREATE INDEX CONCURRENTLY`</span>.
+See [<span class="nt">checklist</span>](<span class="na">checklist.md</span>). Run <span class="sb">`scripts/lint.sh &lt;file&gt;`</span> before finishing.
+</code></pre></div>
+<ol>
+<li>Optionally add <code>checklist.md</code>, <code>templates/</code>, <code>scripts/</code> next to it (referenced from <code>SKILL.md</code>, loaded only when needed).</li>
+<li>Test: ask for a task that should trigger it (<code>/db-migration</code> or plain language). If it does not trigger, <strong>rewrite the <code>description</code></strong> (it is the trigger). If it triggers wrongly, make it narrower.</li>
+<li>Commit it to git so the team shares it.</li>
+</ol>
+<p>Tips: description says <em>what</em> and <em>when</em>; keep <code>SKILL.md</code> short, push detail into linked files; deterministic work → a script, not prose.</p>
+<h3 id="62-subagent-specialised-worker-with-its-own-context">6.2 Subagent (specialised worker with its own context)</h3>
+<p>Runs in a <strong>separate context window</strong> with its own system prompt and restricted tools, then returns only a summary. Use it to isolate noisy work (big searches, log analysis), to run tasks in parallel, or to enforce a role with limited permissions.</p>
+<ol>
+<li>Create <code>.claude/agents/&lt;name&gt;.md</code> (project) or <code>~/.claude/agents/&lt;name&gt;.md</code> (personal), or use <code>/agents</code>.</li>
+<li>Write frontmatter + system prompt:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>---
+name: security-reviewer
+description: Use proactively after code changes to review for injection, authz, and secret-handling issues. Read-only.
+tools: Read, Grep, Glob        # allow-list; omit to inherit all tools
+<span class="gu">model: sonnet                  # or haiku for cheap/fast, opus for hard</span>
+<span class="gu">---</span>
+
+You are a security reviewer. Review only the changed files (<span class="sb">`git diff`</span>).
+Report findings as: severity, file:line, issue, fix. Do not modify files.
+If nothing found, say so explicitly.
+</code></pre></div>
+<ol>
+<li>Invoke: automatically (Claude matches the <code>description</code>), by name ("use the security-reviewer agent on this diff"), or from another agent.</li>
+<li>Design rules: one clear job per subagent; least-privilege tools; a precise <code>description</code> (drives delegation); specify the <strong>output format</strong> since the parent only sees the final message; subagents don't see the parent conversation, so pass the needed context in the task.</li>
+</ol>
+<h3 id="63-plugin-package-and-distribute">6.3 Plugin (package and distribute)</h3>
+<p>A plugin bundles skills, subagents, slash commands, hooks and MCP servers so a team installs them in one command.</p>
+<ol>
+<li>Layout:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>my-plugin/
+├── .claude-plugin/
+│   └── plugin.json          # manifest (only this file goes in .claude-plugin/)
+├── skills/db-migration/SKILL.md
+├── agents/security-reviewer.md
+├── commands/review.md       # /my-plugin:review
+├── hooks/hooks.json         # deterministic automation
+└── .mcp.json                # MCP servers
+</code></pre></div>
+<ol>
+<li>Manifest:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-plugin"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Team conventions: migrations + security review"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"author"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Your Team"</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>Test locally: <code>claude --plugin-dir ./my-plugin</code>, then try each component.</li>
+<li>Distribute with a <strong>marketplace</strong> (a git repo with <code>.claude-plugin/marketplace.json</code> listing plugins):</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"team-marketplace"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"owner"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Your Team"</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">"plugins"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"my-plugin"</span><span class="p">,</span><span class="w"> </span><span class="nt">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"./my-plugin"</span><span class="p">,</span><span class="w"> </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Team conventions"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<ol>
+<li>Users install: <code>/plugin marketplace add &lt;org&gt;/&lt;repo&gt;</code> then <code>/plugin install my-plugin@team-marketplace</code>.</li>
+<li>Bump <code>version</code> on each release. Review third-party plugins before installing (they run code and hooks).</li>
+</ol>
+<h3 id="64-hooks-deterministic-guardrails">6.4 Hooks (deterministic guardrails)</h3>
+<p>Shell commands run by the harness on events (<code>PreToolUse</code>, <code>PostToolUse</code>, <code>SessionStart</code>, <code>Stop</code>...), configured in <code>settings.json</code> or a plugin's <code>hooks.json</code>. Use them for what must <strong>always</strong> happen (format after edit, block <code>rm -rf</code>, run tests); instructions in a prompt are advisory, hooks are enforced.</p>
+<h3 id="65-your-own-agent-agent-sdk-or-raw-api">6.5 Your own agent (Agent SDK or raw API)</h3>
+<ol>
+<li><strong>Define the job and success criteria</strong> (what does "done" look like? how will you measure it?).</li>
+<li><strong>Try a plain workflow first</strong>; only go agentic if the steps can't be predetermined.</li>
+<li><strong>Design tools</strong>: few, well-named, clear descriptions, strict JSON schemas, small helpful outputs, actionable error messages. Prefer read-only tools; gate destructive ones.</li>
+<li><strong>Write the system prompt</strong>: role, goal, rules, when to stop, when to ask a human.</li>
+<li><strong>Run the loop</strong> with the Agent SDK (handles loop, tools, context, permissions, MCP, subagents) or hand-roll it (section 5). Always set a <strong>max-steps/budget</strong> and a timeout.</li>
+<li><strong>Manage context</strong>: truncate/summarise big tool outputs, compact history, offload sub-investigations to subagents, keep durable notes in files.</li>
+<li><strong>Guardrails</strong>: least privilege, human approval for irreversible actions (payments, deletes, deploys, external messages), sandboxing, allow-lists, hooks/validators on tool calls.</li>
+<li><strong>Evaluate</strong>: a set of realistic tasks with pass/fail checks (tests pass, expected file changed, correct DB state), run on every prompt/tool/model change. Track success rate, steps, tokens, cost, latency.</li>
+<li><strong>Observe</strong>: log every prompt, tool call, result, token usage; make runs replayable.</li>
+<li><strong>Iterate from failures</strong>: read failed traces, fix the tool description or prompt first, add the failure to the eval set.</li>
+</ol>
+<p>Minimal hand-rolled loop:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run_agent</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">tools</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">15</span><span class="p">):</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">task</span><span class="p">}]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_steps</span><span class="p">):</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">messages</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">MODEL</span><span class="p">,</span> <span class="n">max_tokens</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span> <span class="n">system</span><span class="o">=</span><span class="n">SYSTEM</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">TOOL_SPECS</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"assistant"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">stop_reason</span> <span class="o">!=</span> <span class="s2">"tool_use"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">block</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">block</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">"tool_use"</span><span class="p">:</span>
+                <span class="n">out</span> <span class="o">=</span> <span class="n">tools</span><span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">](</span><span class="o">**</span><span class="n">block</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>      <span class="c1"># validate + authorise here</span>
+                <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"type"</span><span class="p">:</span> <span class="s2">"tool_result"</span><span class="p">,</span> <span class="s2">"tool_use_id"</span><span class="p">:</span> <span class="n">block</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">)})</span>
+        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">"role"</span><span class="p">:</span> <span class="s2">"user"</span><span class="p">,</span> <span class="s2">"content"</span><span class="p">:</span> <span class="n">results</span><span class="p">})</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"step budget exhausted"</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="7-which-one-do-i-need">7. Which one do I need?</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Reach for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reusable <strong>instructions/conventions</strong>, loaded when relevant</td>
+<td><strong>Skill</strong></td>
+</tr>
+<tr>
+<td>Isolated context, parallel work, restricted permissions, a specialised role</td>
+<td><strong>Subagent</strong></td>
+</tr>
+<tr>
+<td>Connect an external system/API/database to any client</td>
+<td><strong>MCP server</strong></td>
+</tr>
+<tr>
+<td>Something that must happen every time, no exceptions</td>
+<td><strong>Hook</strong></td>
+</tr>
+<tr>
+<td>Always-on project rules (build commands, code style)</td>
+<td><code>CLAUDE.md</code></td>
+</tr>
+<tr>
+<td>Shortcut prompt you type (<code>/review</code>)</td>
+<td>Slash command</td>
+</tr>
+<tr>
+<td>Share all of the above with a team</td>
+<td><strong>Plugin</strong> (+ marketplace)</td>
+</tr>
+<tr>
+<td>Your own product needing autonomy</td>
+<td><strong>Agent</strong> (Agent SDK)</td>
+</tr>
+<tr>
+<td>Answers from private/changing docs</td>
+<td><strong>RAG</strong></td>
+</tr>
+</tbody>
+</table>
+<p><code>CLAUDE.md</code> is loaded every session (keep it short: build/test commands, architecture, conventions, pitfalls). Skills load on demand, so put occasional/long procedures there instead.</p>
+<h2 id="8-working-habits-and-safety">8. Working habits and safety</h2>
+<ul>
+<li><strong>You own the output.</strong> Read every diff. AI code compiles more often than it is correct.</li>
+<li><strong>Verify with executable checks</strong>: tests, type-check, linter, build. Give the agent the commands so it can self-verify. Test-first works very well (write/approve the test, let AI make it pass).</li>
+<li><strong>Plan before code</strong> on non-trivial work (plan mode): review the plan, then execute. Small, reviewable steps and commits.</li>
+<li><strong>Context hygiene</strong>: one task per session, <code>/clear</code> between unrelated tasks, <code>/compact</code> on long ones, point to files rather than pasting, use subagents for exploration.</li>
+<li><strong>Good tasks for AI</strong>: boilerplate, tests, refactors with tests as safety net, migrations, explaining unfamiliar code, log/stack-trace triage, docs, first drafts of queries (then <code>EXPLAIN</code>, see <a href="../sql/">SQL</a>). <strong>Poor tasks</strong>: unclear requirements, security-critical logic without expert review, anything you cannot verify.</li>
+<li><strong>Prompt injection</strong>: text from web pages, tickets, emails, files or retrieved docs can contain instructions. Treat it as <strong>untrusted data</strong>, keep it separate from trusted instructions, give the agent least privilege, and require approval for sensitive actions. Bigger models or polite system prompts are not a defence; permissions and hooks are.</li>
+<li><strong>Secrets &amp; data</strong>: never put secrets in prompts, code or <code>CLAUDE.md</code>; minimise PII sent to a model; know your provider's data-retention terms.</li>
+<li><strong>Permissions</strong>: allow-list safe commands, keep dangerous ones on prompt. Don't run "skip all permissions" outside a sandbox/container.</li>
+<li><strong>Cost control</strong>: cheaper model for simple steps, prompt caching, cap output, cap agent steps, monitor token usage.</li>
+<li><strong>Treat prompts and skills as code</strong>: version them, review them, test them with evals.</li>
+<li><strong>Keep your fundamentals sharp</strong>: you must be able to review what the AI writes (design, SQL plans, concurrency, security).</li>
+</ul>
+<h2 id="9-glossary">9. Glossary</h2>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Embedding</td>
+<td>Vector representing the meaning of text</td>
+</tr>
+<tr>
+<td>Vector DB</td>
+<td>Store optimised for nearest-neighbour search on embeddings</td>
+</tr>
+<tr>
+<td>Grounding</td>
+<td>Forcing answers to rely on provided sources</td>
+</tr>
+<tr>
+<td>Few-shot</td>
+<td>Examples included in the prompt</td>
+</tr>
+<tr>
+<td>Chain-of-thought / extended thinking</td>
+<td>Model reasons before the final answer</td>
+</tr>
+<tr>
+<td>Tool use / function calling</td>
+<td>Model requests a function call, you execute it</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>Open protocol to expose tools/data to LLM clients</td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>LLM + tools in a loop that decides its next step</td>
+</tr>
+<tr>
+<td>Orchestrator-worker</td>
+<td>Lead agent delegates to subagents and merges results</td>
+</tr>
+<tr>
+<td>Eval</td>
+<td>Repeatable test set measuring AI behaviour</td>
+</tr>
+<tr>
+<td>LLM-as-judge</td>
+<td>Using a model to grade outputs</td>
+</tr>
+<tr>
+<td>Guardrail</td>
+<td>Enforced limit (validation, permissions, hooks)</td>
+</tr>
+<tr>
+<td>Prompt injection</td>
+<td>Malicious instructions hidden in data the model reads</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

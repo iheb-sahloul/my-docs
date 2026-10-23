@@ -1,0 +1,2941 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/notes/git/">
+      
+      
+        <link rel="prev" href="../../interviews/mock-interview/">
+      
+      
+        <link rel="next" href="../java/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/notes/git/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Git - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#git" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Git
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/notes/git/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#undo-mistakes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Undo mistakes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Undo mistakes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discard-or-unstage-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discard or unstage changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix-the-last-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fix the last commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#undo-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Undo commits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#committed-to-the-wrong-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Committed to the wrong branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#force-push-safely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Force push safely
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stash
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-rebase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive rebase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive rebase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clean-up-the-last-n-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean up the last N commits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autosquash-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autosquash workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebase-onto-and-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rebase onto and conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry-pick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cherry-pick
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bisect-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bisect (Example)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reflog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reflog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worktrees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worktrees
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-config-and-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Useful config and aliases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Useful config and aliases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aliases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-directory-identity-gitconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-directory identity (~/.gitconfig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gitignore-already-tracked-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .gitignore already-tracked files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#undo-mistakes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Undo mistakes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Undo mistakes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discard-or-unstage-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discard or unstage changes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fix-the-last-commit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fix the last commit
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#undo-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Undo commits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#committed-to-the-wrong-branch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Committed to the wrong branch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#force-push-safely" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Force push safely
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stash
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-rebase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive rebase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive rebase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#clean-up-the-last-n-commits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clean up the last N commits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autosquash-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autosquash workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebase-onto-and-conflicts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rebase onto and conflicts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cherry-pick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cherry-pick
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bisect-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bisect (Example)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reflog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reflog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worktrees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worktrees
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tags
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inspecting-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inspecting history
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#useful-config-and-aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Useful config and aliases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Useful config and aliases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aliases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aliases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#per-directory-identity-gitconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Per-directory identity (~/.gitconfig)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gitignore-already-tracked-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .gitignore already-tracked files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="git">Git</h1>
+<h2 id="undo-mistakes">Undo mistakes</h2>
+<h3 id="discard-or-unstage-changes">Discard or unstage changes</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>restore<span class="w"> </span>file.txt<span class="w">                     </span><span class="c1"># discard unstaged changes (unrecoverable)</span>
+git<span class="w"> </span>restore<span class="w"> </span>--staged<span class="w"> </span>file.txt<span class="w">            </span><span class="c1"># unstage, keep the edits</span>
+git<span class="w"> </span>restore<span class="w"> </span>--source<span class="o">=</span>HEAD~2<span class="w"> </span>file.txt<span class="w">     </span><span class="c1"># file as it was 2 commits ago</span>
+git<span class="w"> </span>clean<span class="w"> </span>-nd<span class="w">                            </span><span class="c1"># dry run: untracked files/dirs to delete</span>
+git<span class="w"> </span>clean<span class="w"> </span>-fd<span class="w">                            </span><span class="c1"># delete them</span>
+</code></pre></div>
+<h3 id="fix-the-last-commit">Fix the last commit</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>--amend<span class="w">                       </span><span class="c1"># edit the message</span>
+git<span class="w"> </span>add<span class="w"> </span>forgotten.txt<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>--amend<span class="w"> </span>--no-edit<span class="w">   </span><span class="c1"># add a file, keep the message</span>
+git<span class="w"> </span>commit<span class="w"> </span>--amend<span class="w"> </span>--author<span class="o">=</span><span class="s2">"Name &lt;me@example.com&gt;"</span><span class="w"> </span>--no-edit
+</code></pre></div>
+<h3 id="undo-commits">Undo commits</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>reset<span class="w"> </span>--soft<span class="w"> </span>HEAD~1<span class="w">                  </span><span class="c1"># undo commit, keep changes staged</span>
+git<span class="w"> </span>reset<span class="w"> </span>HEAD~1<span class="w">                         </span><span class="c1"># undo commit, keep changes unstaged (--mixed)</span>
+git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>HEAD~1<span class="w">                  </span><span class="c1"># undo commit and DROP the changes</span>
+git<span class="w"> </span>revert<span class="w"> </span>&lt;hash&gt;<span class="w">                        </span><span class="c1"># new commit that reverses &lt;hash&gt; (safe on shared branches)</span>
+git<span class="w"> </span>revert<span class="w"> </span>-m<span class="w"> </span><span class="m">1</span><span class="w"> </span>&lt;merge-hash&gt;<span class="w">             </span><span class="c1"># revert a merge, keep parent 1 as mainline</span>
+git<span class="w"> </span>revert<span class="w"> </span>HEAD~3..HEAD<span class="w">                  </span><span class="c1"># revert the last 3 commits</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Rewrites history?</th>
+<th>Use on pushed commits?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>revert</code></td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td>Yes</td>
+<td>No (needs force push)</td>
+</tr>
+<tr>
+<td><code>commit --amend</code></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="committed-to-the-wrong-branch">Committed to the wrong branch</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature/right-branch<span class="w">       </span><span class="c1"># new branch at current commit</span>
+git<span class="w"> </span>switch<span class="w"> </span>main
+git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>origin/main<span class="w">             </span><span class="c1"># move main back</span>
+</code></pre></div>
+<h3 id="force-push-safely">Force push safely</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>push<span class="w"> </span>--force-with-lease<span class="w">              </span><span class="c1"># refuses if someone else pushed meanwhile</span>
+</code></pre></div>
+<hr />
+<h2 id="stash">Stash</h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>stash<span class="w">                                </span><span class="c1"># tracked changes</span>
+git<span class="w"> </span>stash<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>-m<span class="w"> </span><span class="s2">"wip: login form"</span><span class="w">   </span><span class="c1"># include untracked files, with a name</span>
+git<span class="w"> </span>stash<span class="w"> </span>push<span class="w"> </span>-p<span class="w">                        </span><span class="c1"># choose hunks interactively</span>
+git<span class="w"> </span>stash<span class="w"> </span>push<span class="w"> </span>--<span class="w"> </span>src/Foo.java<span class="w">           </span><span class="c1"># only one path</span>
+git<span class="w"> </span>stash<span class="w"> </span>list
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>stash@{0}: On main: wip: login form
+stash@{1}: WIP on main: 3f2a1bc Fix typo
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>stash<span class="w"> </span>show<span class="w"> </span>-p<span class="w"> </span>stash@<span class="o">{</span><span class="m">0</span><span class="o">}</span><span class="w">              </span><span class="c1"># see the diff</span>
+git<span class="w"> </span>stash<span class="w"> </span>pop<span class="w">                            </span><span class="c1"># apply latest and drop it</span>
+git<span class="w"> </span>stash<span class="w"> </span>apply<span class="w"> </span>stash@<span class="o">{</span><span class="m">1</span><span class="o">}</span><span class="w">                </span><span class="c1"># apply and keep it</span>
+git<span class="w"> </span>stash<span class="w"> </span>branch<span class="w"> </span>fix-login<span class="w"> </span>stash@<span class="o">{</span><span class="m">0</span><span class="o">}</span><span class="w">     </span><span class="c1"># new branch from the stash's base</span>
+git<span class="w"> </span>stash<span class="w"> </span>drop<span class="w"> </span>stash@<span class="o">{</span><span class="m">1</span><span class="o">}</span>
+git<span class="w"> </span>stash<span class="w"> </span>clear<span class="w">                          </span><span class="c1"># delete all (careful)</span>
+</code></pre></div>
+<hr />
+<h2 id="interactive-rebase">Interactive rebase</h2>
+<h3 id="clean-up-the-last-n-commits">Clean up the last N commits</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>HEAD~4
+git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>origin/main<span class="w">                </span><span class="c1"># everything since branching</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>pick   a1b2c3 Add login endpoint
+squash d4e5f6 fix typo
+reword 7a8b9c Add tests
+drop   0d1e2f debug logging
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pick</code></td>
+<td>Keep as is</td>
+</tr>
+<tr>
+<td><code>reword</code></td>
+<td>Keep, edit the message</td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>Stop to amend the commit or split it</td>
+</tr>
+<tr>
+<td><code>squash</code></td>
+<td>Meld into the previous commit, combine messages</td>
+</tr>
+<tr>
+<td><code>fixup</code></td>
+<td>Like squash, discard this message</td>
+</tr>
+<tr>
+<td><code>drop</code></td>
+<td>Delete the commit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="autosquash-workflow">Autosquash workflow</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>commit<span class="w"> </span>--fixup<span class="w"> </span>a1b2c3<span class="w">                </span><span class="c1"># mark a fix for an earlier commit</span>
+git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>--autosquash<span class="w"> </span>origin/main<span class="w">   </span><span class="c1"># fixups are reordered automatically</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>rebase.autosquash<span class="w"> </span><span class="nb">true</span>
+</code></pre></div>
+<h3 id="rebase-onto-and-conflicts">Rebase onto and conflicts</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rebase<span class="w"> </span>main<span class="w">                          </span><span class="c1"># replay my branch on top of main</span>
+git<span class="w"> </span>rebase<span class="w"> </span>--onto<span class="w"> </span>main<span class="w"> </span>old-base<span class="w"> </span>feature<span class="w">  </span><span class="c1"># move feature from old-base onto main</span>
+git<span class="w"> </span>rebase<span class="w"> </span>--continue<span class="w">                    </span><span class="c1"># after fixing conflicts and `git add`</span>
+git<span class="w"> </span>rebase<span class="w"> </span>--skip
+git<span class="w"> </span>rebase<span class="w"> </span>--abort<span class="w">                       </span><span class="c1"># back to how it was</span>
+</code></pre></div>
+<p>Never rebase commits others already pulled. Use <code>pull --rebase</code> for your own local commits.</p>
+<hr />
+<h2 id="cherry-pick">Cherry-pick</h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>cherry-pick<span class="w"> </span>a1b2c3<span class="w">                   </span><span class="c1"># copy one commit onto the current branch</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>a1b2c3<span class="w"> </span>d4e5f6<span class="w">            </span><span class="c1"># several</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>a1b2c3..f6e5d4<span class="w">           </span><span class="c1"># range (excludes the first)</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>-x<span class="w"> </span>a1b2c3<span class="w">                </span><span class="c1"># append "(cherry picked from ...)" to the message</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>-n<span class="w"> </span>a1b2c3<span class="w">                </span><span class="c1"># apply without committing</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>-m<span class="w"> </span><span class="m">1</span><span class="w"> </span>&lt;merge-hash&gt;<span class="w">        </span><span class="c1"># pick a merge commit</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>--continue<span class="w">               </span><span class="c1"># after resolving conflicts</span>
+git<span class="w"> </span>cherry-pick<span class="w"> </span>--abort
+</code></pre></div>
+<p>Typical use: hotfix on <code>main</code>, then <code>git cherry-pick &lt;hash&gt;</code> onto <code>release/1.4</code>.</p>
+<hr />
+<h2 id="bisect-example">Bisect (<a href="https://www.facebook.com/reel/938159275380021"><code>Example</code></a>)</h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>-50
+git<span class="w"> </span>bisect<span class="w"> </span>start<span class="w">                         </span><span class="c1"># or: git bisect start HEAD v1.4.0 (bad, good)</span>
+git<span class="w"> </span>bisect<span class="w"> </span>bad<span class="w"> </span>&lt;bad-commit-hash&gt;
+git<span class="w"> </span>bisect<span class="w"> </span>good<span class="w"> </span>&lt;good-commit-hash&gt;
+git<span class="w"> </span>bisect<span class="w"> </span>good<span class="w"> </span><span class="p">|</span><span class="w"> </span>bad<span class="w"> </span><span class="p">|</span><span class="w"> </span>skip<span class="w">             </span><span class="c1"># answer for each commit git checks out</span>
+git<span class="w"> </span>bisect<span class="w"> </span>run<span class="w"> </span>node<span class="w"> </span>test.js<span class="w">              </span><span class="c1"># automate: exit 0 = good, 1-127 = bad, 125 = skip</span>
+git<span class="w"> </span>bisect<span class="w"> </span>run<span class="w"> </span>./mvnw<span class="w"> </span>-q<span class="w"> </span><span class="nb">test</span><span class="w"> </span>-Dtest<span class="o">=</span>OrderServiceTest
+git<span class="w"> </span>bisect<span class="w"> </span>log<span class="w">                           </span><span class="c1"># what you decided so far</span>
+git<span class="w"> </span>show<span class="w"> </span>refs/bisect/bad<span class="w">                 </span><span class="c1"># the first bad commit</span>
+git<span class="w"> </span>bisect<span class="w"> </span>reset<span class="w">                         </span><span class="c1"># return to normal once the bad change is found</span>
+</code></pre></div>
+<p>Git needs about log2(N) steps: 1000 commits take ~10 tests.</p>
+<hr />
+<h2 id="reflog">Reflog</h2>
+<p>Records where <code>HEAD</code> and branches pointed, locally, for ~90 days. It is the undo button for resets, bad rebases and deleted branches.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>reflog
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>3f2a1bc HEAD@{0}: reset: moving to HEAD~3
+9d8c7b6 HEAD@{1}: commit: Add invoice export
+5e4d3c2 HEAD@{2}: rebase (finish): returning to refs/heads/feature
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>HEAD@<span class="o">{</span><span class="m">1</span><span class="o">}</span><span class="w">                </span><span class="c1"># go back to before the reset</span>
+git<span class="w"> </span>branch<span class="w"> </span>rescue<span class="w"> </span>9d8c7b6<span class="w">                </span><span class="c1"># or keep the lost commit on a branch</span>
+git<span class="w"> </span>reflog<span class="w"> </span>show<span class="w"> </span>feature<span class="w">                  </span><span class="c1"># reflog of one branch</span>
+git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>restored<span class="w"> </span><span class="k">$(</span>git<span class="w"> </span>rev-list<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>--before<span class="o">=</span><span class="s2">"yesterday"</span><span class="w"> </span>HEAD<span class="k">)</span>
+</code></pre></div>
+<hr />
+<h2 id="worktrees">Worktrees</h2>
+<p>Several branches checked out at once, sharing one <code>.git</code>. No stashing to jump to a hotfix.</p>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>worktree<span class="w"> </span>add<span class="w"> </span>../hotfix<span class="w"> </span>hotfix/123<span class="w">            </span><span class="c1"># existing branch in a new dir</span>
+git<span class="w"> </span>worktree<span class="w"> </span>add<span class="w"> </span>-b<span class="w"> </span>feature/x<span class="w"> </span>../feature-x<span class="w"> </span>main<span class="w">  </span><span class="c1"># create branch from main</span>
+git<span class="w"> </span>worktree<span class="w"> </span>list
+git<span class="w"> </span>worktree<span class="w"> </span>remove<span class="w"> </span>../hotfix
+git<span class="w"> </span>worktree<span class="w"> </span>prune<span class="w">                               </span><span class="c1"># clean up records of deleted dirs</span>
+</code></pre></div>
+<p>The same branch cannot be checked out in two worktrees.</p>
+<hr />
+<h2 id="tags">Tags</h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>tag<span class="w"> </span>v1.2.0<span class="w">                           </span><span class="c1"># lightweight</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.2.0<span class="w"> </span>-m<span class="w"> </span><span class="s2">"Release 1.2.0"</span><span class="w">     </span><span class="c1"># annotated (use this for releases)</span>
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.1.0<span class="w"> </span>a1b2c3<span class="w"> </span>-m<span class="w"> </span><span class="s2">"late tag"</span><span class="w">   </span><span class="c1"># tag an old commit</span>
+git<span class="w"> </span>tag<span class="w"> </span>-l<span class="w"> </span><span class="s2">"v1.*"</span>
+git<span class="w"> </span>show<span class="w"> </span>v1.2.0
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.2.0<span class="w">                   </span><span class="c1"># tags are not pushed by default</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--tags
+git<span class="w"> </span>tag<span class="w"> </span>-d<span class="w"> </span>v1.2.0<span class="w">                        </span><span class="c1"># delete locally</span>
+git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>--delete<span class="w"> </span>v1.2.0<span class="w">          </span><span class="c1"># delete remotely</span>
+git<span class="w"> </span>describe<span class="w"> </span>--tags<span class="w">                      </span><span class="c1"># e.g. v1.2.0-5-g3f2a1bc</span>
+git<span class="w"> </span>checkout<span class="w"> </span>v1.2.0<span class="w">                      </span><span class="c1"># detached HEAD, read-only browsing</span>
+</code></pre></div>
+<hr />
+<h2 id="inspecting-history">Inspecting history</h2>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>log<span class="w"> </span>--oneline<span class="w"> </span>--graph<span class="w"> </span>--decorate<span class="w"> </span>--all
+git<span class="w"> </span>log<span class="w"> </span>-p<span class="w"> </span>--<span class="w"> </span>path/to/file<span class="w">               </span><span class="c1"># patches touching a file</span>
+git<span class="w"> </span>log<span class="w"> </span>-S<span class="s2">"calculateTax"</span><span class="w"> </span>--oneline<span class="w">       </span><span class="c1"># commits that added/removed this string</span>
+git<span class="w"> </span>log<span class="w"> </span>-G<span class="s2">"regex"</span><span class="w"> </span>--oneline
+git<span class="w"> </span>log<span class="w"> </span>--author<span class="o">=</span><span class="s2">"Iheb"</span><span class="w"> </span>--since<span class="o">=</span><span class="s2">"2 weeks ago"</span>
+git<span class="w"> </span>log<span class="w"> </span>main..feature<span class="w">                    </span><span class="c1"># commits in feature not in main</span>
+git<span class="w"> </span>blame<span class="w"> </span>-L<span class="w"> </span><span class="m">10</span>,30<span class="w"> </span>file.txt
+git<span class="w"> </span>diff<span class="w"> </span>main...feature<span class="w">                  </span><span class="c1"># changes on feature since it forked</span>
+git<span class="w"> </span>diff<span class="w"> </span>--stat
+git<span class="w"> </span>shortlog<span class="w"> </span>-sn<span class="w"> </span>--no-merges<span class="w">             </span><span class="c1"># commits per author</span>
+git<span class="w"> </span>branch<span class="w"> </span>--merged<span class="w"> </span>main<span class="w">                 </span><span class="c1"># safe to delete</span>
+git<span class="w"> </span>branch<span class="w"> </span>-vv<span class="w">                           </span><span class="c1"># tracking info</span>
+</code></pre></div>
+<hr />
+<h2 id="useful-config-and-aliases">Useful config and aliases</h2>
+<h3 id="config">Config</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.name<span class="w"> </span><span class="s2">"Iheb Sahloul"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.email<span class="w"> </span><span class="s2">"me@example.com"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>init.defaultBranch<span class="w"> </span>main
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>pull.rebase<span class="w"> </span><span class="nb">true</span><span class="w">             </span><span class="c1"># pull = fetch + rebase</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>fetch.prune<span class="w"> </span><span class="nb">true</span><span class="w">             </span><span class="c1"># drop deleted remote branches</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>rerere.enabled<span class="w"> </span><span class="nb">true</span><span class="w">          </span><span class="c1"># remember conflict resolutions</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>push.autoSetupRemote<span class="w"> </span><span class="nb">true</span><span class="w">    </span><span class="c1"># first push sets upstream</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>core.editor<span class="w"> </span><span class="s2">"code --wait"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>diff.algorithm<span class="w"> </span>histogram
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>merge.conflictstyle<span class="w"> </span>zdiff3
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>--list<span class="w"> </span>--show-origin
+</code></pre></div>
+<h3 id="aliases">Aliases</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.st<span class="w"> </span><span class="s2">"status -sb"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.lg<span class="w"> </span><span class="s2">"log --oneline --graph --decorate --all"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.co<span class="w"> </span><span class="s2">"checkout"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.undo<span class="w"> </span><span class="s2">"reset --soft HEAD~1"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.last<span class="w"> </span><span class="s2">"log -1 --stat"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.amend<span class="w"> </span><span class="s2">"commit --amend --no-edit"</span>
+git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>alias.wip<span class="w"> </span><span class="s2">"!git add -A &amp;&amp; git commit -m wip"</span>
+</code></pre></div>
+<h3 id="per-directory-identity-gitconfig">Per-directory identity (~/.gitconfig)</h3>
+<div class="highlight"><pre><span></span><code>[includeIf "gitdir:~/work/"]
+    path = ~/.gitconfig-work
+</code></pre></div>
+<h3 id="gitignore-already-tracked-files">.gitignore already-tracked files</h3>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>rm<span class="w"> </span>--cached<span class="w"> </span>secrets.env<span class="w">              </span><span class="c1"># untrack but keep on disk</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"secrets.env"</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>.gitignore
+git<span class="w"> </span>check-ignore<span class="w"> </span>-v<span class="w"> </span>secrets.env<span class="w">          </span><span class="c1"># which rule ignores it?</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

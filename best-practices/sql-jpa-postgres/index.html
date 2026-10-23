@@ -1,0 +1,2801 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/best-practices/sql-jpa-postgres/">
+      
+      
+        <link rel="prev" href="../react-typescript/">
+      
+      
+        <link rel="next" href="../docker-k8s-devops/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/best-practices/sql-jpa-postgres/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>SQL, JPA & Postgres - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sql-jpa-postgres-best-practices" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SQL, JPA & Postgres
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/best-practices/sql-jpa-postgres/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#entity-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗺️ Entity mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗺️ Entity mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make-every-association-lazy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Make every association LAZY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-sequence-over-identity-for-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer SEQUENCE over IDENTITY for ids
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-equals-hashcode-carefully-on-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement equals / hashCode carefully on entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-optimistic-locking-with-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use optimistic locking with @Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queries-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Queries &amp; performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚡ Queries &amp; performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avoid-n1-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avoid N+1 queries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-with-projections-not-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read with projections, not entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-keyset-pagination-for-large-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use keyset pagination for large tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index-foreign-keys-and-filtered-columns-and-check-with-explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index foreign keys and filtered columns, and check with EXPLAIN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-use-bind-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always use bind parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-transactions-short" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep transactions short
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#postgres-types-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐘 Postgres types &amp; schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐘 Postgres types &amp; schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-timestamptz-numeric-and-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use timestamptz, numeric and text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-integrity-rules-in-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Put integrity rules in the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚚 Migrations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚚 Migrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-the-schema-with-flyway-or-liquibase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version the schema with Flyway or Liquibase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-migrations-that-dont-lock-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write migrations that don't lock production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#entity-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗺️ Entity mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗺️ Entity mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#make-every-association-lazy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Make every association LAZY
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prefer-sequence-over-identity-for-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer SEQUENCE over IDENTITY for ids
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implement-equals-hashcode-carefully-on-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implement equals / hashCode carefully on entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-optimistic-locking-with-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use optimistic locking with @Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#queries-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Queries &amp; performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚡ Queries &amp; performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#avoid-n1-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Avoid N+1 queries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#read-with-projections-not-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Read with projections, not entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-keyset-pagination-for-large-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use keyset pagination for large tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index-foreign-keys-and-filtered-columns-and-check-with-explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index foreign keys and filtered columns, and check with EXPLAIN
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#always-use-bind-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Always use bind parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-transactions-short" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep transactions short
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#postgres-types-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐘 Postgres types &amp; schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐘 Postgres types &amp; schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-timestamptz-numeric-and-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use timestamptz, numeric and text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#put-integrity-rules-in-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Put integrity rules in the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚚 Migrations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚚 Migrations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#version-the-schema-with-flyway-or-liquibase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Version the schema with Flyway or Liquibase
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-migrations-that-dont-lock-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write migrations that don't lock production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="sql-jpa-postgres-best-practices">SQL, JPA &amp; Postgres Best Practices</h1>
+<h2 id="entity-mapping">🗺️ Entity mapping</h2>
+<h3 id="make-every-association-lazy">Make every association <code>LAZY</code></h3>
+<p>Set <code>fetch = FetchType.LAZY</code> on <code>@ManyToOne</code> and <code>@OneToOne</code>. (<code>@OneToMany</code> and <code>@ManyToMany</code> are already lazy.)</p>
+<p><strong>Why it's a best practice:</strong> <code>@ManyToOne</code> and <code>@OneToOne</code> are <code>EAGER</code> by default. Every time you load an
+<code>Order</code>, Hibernate also loads its <code>Customer</code>, the customer's <code>Address</code>, and so on, often with one extra query
+per row. You can't turn eager fetching off for a single query, but you can always turn lazy fetching on when you
+need it (fetch join, entity graph). Lazy by default, fetch explicitly per use case.</p>
+<p>⛔ <code>@ManyToOne private Customer customer;</code>
+✅ <code>@ManyToOne(fetch = FetchType.LAZY) private Customer customer;</code></p>
+<h3 id="prefer-sequence-over-identity-for-ids">Prefer <code>SEQUENCE</code> over <code>IDENTITY</code> for ids</h3>
+<p>Use <code>@GeneratedValue(strategy = GenerationType.SEQUENCE)</code> with an <code>allocationSize</code> matching the sequence
+increment.</p>
+<p><strong>Why it's a best practice:</strong> with <code>IDENTITY</code>, the id is only known after the <code>INSERT</code>, so Hibernate must run
+each insert immediately and can't batch them: saving 10 000 rows is 10 000 round-trips. With a sequence,
+Hibernate fetches ids in blocks (<code>allocationSize = 50</code> → one sequence call per 50 rows) and sends the inserts in
+JDBC batches (<code>hibernate.jdbc.batch_size</code>). Postgres sequences are cheap and made for this.</p>
+<p>⛔ <code>@GeneratedValue(strategy = GenerationType.IDENTITY)</code>
+✅ <code>@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")</code> + <code>@SequenceGenerator(name = "order_seq", allocationSize = 50)</code></p>
+<p>Enable JDBC batching so the ids you pre-allocated actually pay off:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">spring.jpa.properties.hibernate</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">jdbc.batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+<span class="w">  </span><span class="nt">order_inserts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">  </span><span class="nt">order_updates</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</code></pre></div>
+<p>The database side must match, or ids collide: <code>CREATE SEQUENCE order_seq INCREMENT BY 50;</code></p>
+<h3 id="implement-equals-hashcode-carefully-on-entities">Implement <code>equals</code> / <code>hashCode</code> carefully on entities</h3>
+<p>Base them on a natural business key, or on the id with a constant <code>hashCode</code>. Never use Lombok <code>@Data</code> on an
+entity.</p>
+<p><strong>Why it's a best practice:</strong> a generated id is <code>null</code> until the entity is persisted. If <code>hashCode</code> uses the id,
+it changes after <code>save()</code>, and an entity added to a <code>HashSet</code> before saving can no longer be found in it. Lombok
+<code>@Data</code> / <code>@EqualsAndHashCode</code> includes every field, including lazy collections: calling <code>hashCode</code> triggers
+loading, or a <code>StackOverflowError</code> on bidirectional relations. Its <code>toString</code> has the same problem.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ id-based, stable across the entity lifecycle</span>
+<span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">Order</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="na">id</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">getClass</span><span class="p">().</span><span class="na">hashCode</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="use-optimistic-locking-with-version">Use optimistic locking with <code>@Version</code></h3>
+<p>Add a <code>@Version</code> column to entities that can be edited concurrently.</p>
+<p><strong>Why it's a best practice:</strong> without it, two users load the same row, both edit it, and the second save
+silently overwrites the first: a lost update. With <code>@Version</code>, Hibernate adds <code>WHERE version = ?</code> to the update;
+if someone else changed the row in between, 0 rows match and an <code>OptimisticLockException</code> is thrown, so you can
+ask the user to reload. It costs one integer column and no locks.</p>
+<p>✅ <code>@Version private long version;</code></p>
+<p>Catch the conflict where you can tell the user something useful:</p>
+<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">orderService</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">command</span><span class="p">);</span><span class="w">          </span><span class="c1">// save() flushes UPDATE ... WHERE version = ?</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">ObjectOptimisticLockingFailureException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResponseStatusException</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">CONFLICT</span><span class="p">,</span><span class="w"> </span><span class="s">"Modified by someone else, reload"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="queries-performance">⚡ Queries &amp; performance</h2>
+<h3 id="avoid-n1-queries">Avoid N+1 queries</h3>
+<p>When you need an association for a list of entities, fetch it in the same query with a <code>JOIN FETCH</code> or an
+<code>@EntityGraph</code>.</p>
+<p><strong>Why it's a best practice:</strong> loading 100 orders and then calling <code>order.getCustomer().getName()</code> in a loop
+runs 1 query for the orders plus 100 for the customers. It's invisible in code and in tests with 3 rows, and
+turns a 10 ms page into a 2 s one in production. Turn on SQL logging or use a query-count assertion in tests to
+catch it. For collections, <code>@BatchSize</code> or <code>hibernate.default_batch_fetch_size</code> reduces the N to N / batch size.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ 1 + N queries</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderRepository</span><span class="p">.</span><span class="na">findAll</span><span class="p">();</span>
+<span class="n">orders</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">print</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="na">getCustomer</span><span class="p">().</span><span class="na">getName</span><span class="p">()));</span>
+
+<span class="c1">// ✅ one query</span>
+<span class="nd">@Query</span><span class="p">(</span><span class="s">"select o from Order o join fetch o.customer"</span><span class="p">)</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findAllWithCustomer</span><span class="p">();</span>
+</code></pre></div>
+<p>Same result without writing JPQL, and it composes with derived queries:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@EntityGraph</span><span class="p">(</span><span class="n">attributePaths</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"customer"</span><span class="p">)</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findByStatus</span><span class="p">(</span><span class="n">Status</span><span class="w"> </span><span class="n">status</span><span class="p">);</span>
+</code></pre></div>
+<p>Don't join-fetch two collections at once (<code>MultipleBagFetchException</code>, or a cartesian product): fetch one, and use <code>@BatchSize</code> for the other.</p>
+<h3 id="read-with-projections-not-entities">Read with projections, not entities</h3>
+<p>For read-only screens and APIs, select only the columns you need into a DTO or interface projection.</p>
+<p><strong>Why it's a best practice:</strong> loading entities means selecting every column, creating managed objects, keeping
+a snapshot of each for dirty checking, and flushing at the end. For a list page that only shows 3 fields, that's
+wasted memory and CPU. A projection runs a narrower query and returns plain objects Hibernate doesn't track.</p>
+<p>⛔ <code>List&lt;Order&gt; findByStatus(Status s)</code> then map 3 fields
+✅ <code>@Query("select new com.acme.OrderSummary(o.id, o.total, o.createdAt) from Order o where o.status = :s")</code></p>
+<h3 id="use-keyset-pagination-for-large-tables">Use keyset pagination for large tables</h3>
+<p>For deep pagination or infinite scroll, paginate with <code>WHERE id &gt; :lastId ORDER BY id LIMIT n</code> instead of a big
+<code>OFFSET</code>.</p>
+<p><strong>Why it's a best practice:</strong> <code>OFFSET 100000</code> makes Postgres read and throw away 100 000 rows before returning
+the page, so each page is slower than the previous one. Rows inserted or deleted between two requests also shift
+the pages, giving duplicates or missing items. Keyset pagination uses the index to jump straight to the next
+row: constant time whatever the page, and stable.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- ⛔ gets slower as the offset grows</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="k">OFFSET</span><span class="w"> </span><span class="mi">100000</span><span class="p">;</span>
+
+<span class="c1">-- ✅ uses the index, constant time</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">:</span><span class="n">last_seen_id</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="index-foreign-keys-and-filtered-columns-and-check-with-explain">Index foreign keys and filtered columns, and check with <code>EXPLAIN</code></h3>
+<p>Create indexes for columns used in <code>WHERE</code>, <code>JOIN</code> and <code>ORDER BY</code>, including foreign keys. Verify the plan with
+<code>EXPLAIN (ANALYZE, BUFFERS)</code>.</p>
+<p><strong>Why it's a best practice:</strong> Postgres indexes primary keys and unique constraints automatically, but <em>not</em>
+foreign keys. A join on <code>order_line.order_id</code> or a <code>DELETE</code> on the parent table then does a full scan of the child
+table. Guessing is unreliable: <code>EXPLAIN ANALYZE</code> shows whether the index is used (<code>Index Scan</code>) or not
+(<code>Seq Scan</code>) and where the time goes. Don't index everything either: each index slows down writes.</p>
+<p>⛔ <code>order_line.order_id</code> with no index
+✅ <code>CREATE INDEX idx_order_line_order_id ON order_line (order_id);</code></p>
+<p>Reading the plan:</p>
+<div class="highlight"><pre><span></span><code><span class="k">EXPLAIN</span><span class="w"> </span><span class="p">(</span><span class="k">ANALYZE</span><span class="p">,</span><span class="w"> </span><span class="n">BUFFERS</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">order_line</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">order_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+
+<span class="err">⛔</span><span class="w"> </span><span class="n">Seq</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">order_line</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="p">..</span><span class="mi">18334</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="p">..</span><span class="mi">95</span><span class="p">.</span><span class="mi">4</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="w">     </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="p">(</span><span class="n">order_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">)</span><span class="w">   </span><span class="k">Rows</span><span class="w"> </span><span class="n">Removed</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Filter</span><span class="p">:</span><span class="w"> </span><span class="mi">1000000</span>
+
+<span class="err">✅</span><span class="w"> </span><span class="k">Index</span><span class="w"> </span><span class="n">Scan</span><span class="w"> </span><span class="k">using</span><span class="w"> </span><span class="n">idx_order_line_order_id</span><span class="w">  </span><span class="p">(</span><span class="n">cost</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">42</span><span class="p">..</span><span class="mi">8</span><span class="p">.</span><span class="mi">44</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="k">time</span><span class="o">=</span><span class="mi">0</span><span class="p">.</span><span class="mi">03</span><span class="p">..</span><span class="mi">0</span><span class="p">.</span><span class="mi">05</span><span class="w"> </span><span class="k">rows</span><span class="o">=</span><span class="mi">5</span><span class="w"> </span><span class="n">loops</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<p>Red flags: <code>Seq Scan</code> on a big table, <code>Rows Removed by Filter</code> far above rows returned, and estimated <code>rows</code> far from <code>actual rows</code> (stale statistics: run <code>ANALYZE</code>).</p>
+<h3 id="always-use-bind-parameters">Always use bind parameters</h3>
+<p>Pass values as parameters (<code>?</code>, <code>:name</code>), never by concatenating them into the SQL string.</p>
+<p><strong>Why it's a best practice:</strong> concatenation is SQL injection: <code>name = "x' OR '1'='1"</code> returns every row, and
+worse payloads drop tables or read other users' data. Bind parameters are sent separately from the SQL text, so
+they're always treated as values. They also let the database reuse the query plan. This applies to JPQL and
+native queries too.</p>
+<p>⛔ <code>em.createQuery("from User where name = '" + name + "'")</code>
+✅ <code>em.createQuery("from User where name = :name").setParameter("name", name)</code></p>
+<h3 id="keep-transactions-short">Keep transactions short</h3>
+<p>Open a transaction, do the database work, commit. No user input, remote calls or long computations in between.</p>
+<p><strong>Why it's a best practice:</strong> a long transaction holds its row locks, blocking other writers, and prevents
+Postgres <code>VACUUM</code> from cleaning up dead rows it might still need to see, so tables and indexes bloat. A
+connection left <code>idle in transaction</code> holds everything open indefinitely. Set
+<code>idle_in_transaction_session_timeout</code> as a safety net.</p>
+<p>⛔ call a payment API inside the transaction
+✅ commit first, then call the API, then record the result in a second short transaction</p>
+<h2 id="postgres-types-schema">🐘 Postgres types &amp; schema</h2>
+<h3 id="use-timestamptz-numeric-and-text">Use <code>timestamptz</code>, <code>numeric</code> and <code>text</code></h3>
+<p>Store instants in <code>timestamptz</code>, money in <code>numeric(p, s)</code>, and strings in <code>text</code> (or <code>varchar(n)</code> only when the
+limit is a real rule).</p>
+<p><strong>Why it's a best practice:</strong> <code>timestamp</code> (without time zone) stores a wall-clock time with no zone: the same
+value means different instants on servers configured differently, and DST changes create duplicates.
+<code>timestamptz</code> stores an absolute instant (in UTC) and maps to <code>Instant</code> / <code>OffsetDateTime</code>. <code>real</code> / <code>double
+precision</code> have the same rounding errors as Java <code>double</code>; <code>numeric</code> is exact and maps to <code>BigDecimal</code>. In
+Postgres, <code>text</code> and <code>varchar</code> perform the same, so an arbitrary <code>varchar(255)</code> only adds a limit that breaks later.</p>
+<p>⛔ <code>created_at timestamp</code>, <code>amount double precision</code>
+✅ <code>created_at timestamptz</code>, <code>amount numeric(19, 4)</code></p>
+<h3 id="put-integrity-rules-in-the-database">Put integrity rules in the database</h3>
+<p>Declare <code>NOT NULL</code>, <code>UNIQUE</code>, <code>FOREIGN KEY</code> and <code>CHECK</code> constraints in the schema, not only in application code.</p>
+<p><strong>Why it's a best practice:</strong> application checks race: two requests both check "email not taken" and both
+insert. A <code>UNIQUE</code> constraint can't be bypassed, whatever the code path (a batch job, a manual fix in <code>psql</code>,
+another service). Constraints also document the model for anyone reading the schema, and the planner uses them.</p>
+<p>⛔ <code>if (!repository.existsByEmail(email)) repository.save(user);</code> alone
+✅ <code>ALTER TABLE users ADD CONSTRAINT uq_users_email UNIQUE (email);</code> + handle the violation</p>
+<h2 id="migrations">🚚 Migrations</h2>
+<h3 id="version-the-schema-with-flyway-or-liquibase">Version the schema with Flyway or Liquibase</h3>
+<p>Every schema change is a migration file in the repository. Never use <code>ddl-auto=update</code> (or <code>create</code>) outside
+local development.</p>
+<p><strong>Why it's a best practice:</strong> <code>ddl-auto=update</code> guesses the changes from your entities: it never drops or renames
+anything, can't migrate data, and runs different SQL depending on the state of each database. Environments drift
+apart and nobody knows what production looks like. Migrations are reviewed, repeatable, run in order, and
+recorded in a history table. Set <code>ddl-auto=validate</code> so the app fails at startup if entities and schema don't
+match.</p>
+<p>⛔ <code>spring.jpa.hibernate.ddl-auto: update</code>
+✅ <code>db/migration/V12__add_order_status.sql</code> + <code>ddl-auto: validate</code></p>
+<h3 id="write-migrations-that-dont-lock-production">Write migrations that don't lock production</h3>
+<p>Create indexes with <code>CREATE INDEX CONCURRENTLY</code>, add columns as nullable (or with a constant default), and split
+breaking changes into expand / contract steps.</p>
+<p><strong>Why it's a best practice:</strong> a plain <code>CREATE INDEX</code> blocks all writes to the table for the whole build, which
+can take minutes on a big table. <code>CONCURRENTLY</code> doesn't (it can't run inside a transaction, so configure the
+migration tool for it). Renaming or dropping a column that the running version still uses breaks it during the
+rolling deploy: add the new column, deploy code that writes both, backfill, switch reads, then drop the old one.</p>
+<p>⛔ <code>CREATE INDEX idx_orders_status ON orders (status);</code>
+✅ <code>CREATE INDEX CONCURRENTLY idx_orders_status ON orders (status);</code></p>
+<p>Full expand / contract example: renaming <code>orders.state</code> to <code>orders.status</code> without downtime, one release per step.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- V20 (release 1, expand): add the new column; old code keeps working</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span>
+
+<span class="c1">-- release 1 code writes both columns; V21 backfills in small batches</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">BETWEEN</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="mi">50000</span><span class="p">;</span>
+
+<span class="c1">-- V22 (release 2): reads switch to status; add the constraint without a long lock</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">orders_status_nn</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">VALID</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">VALIDATE</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">orders_status_nn</span><span class="p">;</span>
+
+<span class="c1">-- V23 (release 3, contract): nothing reads `state` anymore</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">DROP</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="k">state</span><span class="p">;</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

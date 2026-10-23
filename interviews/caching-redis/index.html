@@ -1,0 +1,2913 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/caching-redis/">
+      
+      
+        <link rel="prev" href="../system-design/">
+      
+      
+        <link rel="next" href="../leadership-behavioral/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/interviews/caching-redis/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Caching & Redis - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#caching-redis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Caching & Redis
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/interviews/caching-redis/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-cache-which-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Why cache, and at which layer?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-data-structures-use-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Which Redis data structures do you use, and for what?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttl-eviction-maxmemory-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. How do TTL and eviction work in Redis, and which maxmemory-policy do you pick?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-aside-read-write-through" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Cache-aside, read-through, write-through or write-behind: what changes in practice?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-stampede-prevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. What is a cache stampede, and how do you prevent it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-cacheable-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What are the classic Spring Cache (@Cacheable) pitfalls?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-cache-plus-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. When do you combine a local cache with Redis, and how do you keep them consistent?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-durability-rdb-aof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Is Redis durable? When can you use it as a primary datastore?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redis-lock-redlock-debate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. How do you build a lock with Redis, and why is Redlock debated?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-sentinel-cluster-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Sentinel or Cluster: how does Redis scale and fail over?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-atomic-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. How do you implement a rate limiter, a leaderboard or a session store with Redis atomically?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-db-consistency-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. How do you keep the cache consistent with the database at scale?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stale-price-after-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. After a price update, some users see the old price for hours
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-oom-noeviction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Writes to Redis start failing with OOM command not allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-blocked-keys-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Redis latency spikes to seconds for every client, a few times a day
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-penetration-missing-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A bot requests random product ids and the database melts despite a 95% hit ratio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-lock-two-holders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A nightly job that "can only run once" runs twice and double-charges customers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-serialization-after-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. After a deploy, every cached read throws SerializationException and traffic falls through to the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-cache-which-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Why cache, and at which layer?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-data-structures-use-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Which Redis data structures do you use, and for what?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttl-eviction-maxmemory-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. How do TTL and eviction work in Redis, and which maxmemory-policy do you pick?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cache-aside-read-write-through" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Cache-aside, read-through, write-through or write-behind: what changes in practice?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-stampede-prevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. What is a cache stampede, and how do you prevent it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-cacheable-pitfalls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What are the classic Spring Cache (@Cacheable) pitfalls?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#local-cache-plus-redis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. When do you combine a local cache with Redis, and how do you keep them consistent?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-durability-rdb-aof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Is Redis durable? When can you use it as a primary datastore?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#redis-lock-redlock-debate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. How do you build a lock with Redis, and why is Redlock debated?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-sentinel-cluster-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Sentinel or Cluster: how does Redis scale and fail over?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-atomic-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. How do you implement a rate limiter, a leaderboard or a session store with Redis atomically?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-db-consistency-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. How do you keep the cache consistent with the database at scale?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stale-price-after-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. After a price update, some users see the old price for hours
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-oom-noeviction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Writes to Redis start failing with OOM command not allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-blocked-keys-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Redis latency spikes to seconds for every client, a few times a day
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-penetration-missing-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A bot requests random product ids and the database melts despite a 95% hit ratio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-lock-two-holders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A nightly job that "can only run once" runs twice and double-charges customers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-serialization-after-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. After a deploy, every cached read throws SerializationException and traffic falls through to the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="caching-redis">Caching &amp; Redis</h1>
+<p>Deeper caching questions: Redis data structures, eviction, stampedes, Spring Cache pitfalls, locks and cluster topology. The basics are in System Design (<a href="../system-design/#caching-basic-idea-behind-cache">System Design Q7</a>, <a href="../system-design/#invalidate-cached-entry-race-hides">System Design Q17</a>, <a href="../system-design/#cache-aside-write-write-behind">System Design Q26</a>), along with the incident scenarios <a href="../system-design/#after-deploy-every-cache-entry">System Design S1</a> (mass expiry), <a href="../system-design/#cache-expiring-hot-key-causes">System Design S7</a> (hot key expiry) and <a href="../system-design/#one-redis-key-receives-most">System Design S15</a> (hot shard).</p>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h4 id="why-cache-which-layer">Q1. Why cache, and at which layer?</h4>
+<p><strong>Answer:</strong> A cache trades freshness for latency and load: it pays off when reads dominate, the same keys are read repeatedly, and slightly stale data is acceptable. Layers, from closest to the user: browser (<code>Cache-Control</code>), CDN, reverse proxy, in-process (Caffeine), distributed (Redis), and the database's own buffer cache. Cache as close to the user as the data's privacy and freshness allow. Measure the <strong>hit ratio</strong> and the load it removes from the database. A 30% hit ratio on a cheap query adds a network hop and a consistency problem for little gain.</p>
+<h4 id="redis-data-structures-use-what">Q2. Which Redis data structures do you use, and for what?</h4>
+<p><strong>Answer:</strong> <strong>String</strong>: cached JSON, counters (<code>INCR</code>), flags with TTL. <strong>Hash</strong>: an object with fields you update individually (<code>HINCRBY</code>), memory-efficient for small objects. <strong>List</strong>: simple queues, latest-N items (<code>LPUSH</code> + <code>LTRIM</code>). <strong>Set</strong>: membership, unique visitors per day, tags. <strong>Sorted set</strong>: leaderboards, sliding-window rate limits, delayed jobs scored by timestamp. <strong>Stream</strong>: an append-only log with consumer groups, a light alternative to Kafka. <strong>HyperLogLog</strong>: approximate distinct counts in 12 KB. <strong>Bitmap</strong>: per-user daily flags. Picking the right structure moves logic into a single atomic command instead of read-modify-write in the application.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>ZADD leaderboard 1520 user:42          # score update, O(log n)
+ZREVRANGE leaderboard 0 9 WITHSCORES   # top 10
+</code></pre></div>
+<h4 id="ttl-eviction-maxmemory-policy">Q3. How do TTL and eviction work in Redis, and which <code>maxmemory-policy</code> do you pick?</h4>
+<p><strong>Answer:</strong> A TTL deletes a key after a fixed time; eviction deletes keys when <code>maxmemory</code> is reached. The default policy is <code>noeviction</code>, which <strong>rejects writes</strong> with an OOM error when memory is full. That is right for Redis used as a datastore and wrong for a pure cache. For a cache use <code>allkeys-lru</code> or <code>allkeys-lfu</code> (LFU keeps frequently read keys better under scans). The <code>volatile-*</code> policies only evict keys that have a TTL, so a cache full of keys without TTL behaves like <code>noeviction</code>. Redis LRU/LFU is approximate (sampled), which is fine in practice. Always set <code>maxmemory</code> below the container limit, with headroom for fork-based persistence.</p>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h4 id="cache-aside-read-write-through">Q4. Cache-aside, read-through, write-through or write-behind: what changes in practice?</h4>
+<p><strong>Answer:</strong> The trade-offs are in <a href="../system-design/#cache-aside-write-write-behind">System Design Q26</a>. In practice: <strong>cache-aside</strong> (the application reads the cache, falls back to the DB and populates it) is the default with Redis because Redis has no loader. <strong>Read-through</strong> is what Caffeine's <code>LoadingCache</code> or Spring <code>@Cacheable</code> give you in-process. <strong>Write-through</strong> keeps the cache warm but writes data nobody may read. <strong>Write-behind</strong> risks data loss on a crash and needs idempotent flushes. On a write, prefer <strong>delete the key after the DB commit</strong> over updating it: two concurrent updates can otherwise leave the older value in the cache.</p>
+<h4 id="cache-stampede-prevent">Q5. What is a cache stampede, and how do you prevent it?</h4>
+<p><strong>Answer:</strong> When a popular key expires, every concurrent request misses and recomputes it at once, hitting the database with N identical queries. Defences: <strong>TTL jitter</strong> (<code>ttl ± 10%</code>) so keys written together do not expire together; <strong>single-flight</strong> (one request recomputes, the others wait or serve stale), using an in-process lock or a short Redis <code>SET lock NX PX</code>; <strong>early or background refresh</strong> (refresh before expiry, probabilistically or on a schedule, for known hot keys); <strong>serve stale on error</strong>. Caffeine's <code>refreshAfterWrite</code> does early refresh in-process. See <a href="../system-design/#cache-expiring-hot-key-causes">System Design S7</a> for the incident.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">Cache</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Price</span><span class="o">&gt;</span><span class="w"> </span><span class="n">prices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Caffeine</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">expireAfterWrite</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">refreshAfterWrite</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span><span class="w">   </span><span class="c1">// async refresh, callers keep the old value</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">priceRepository</span><span class="p">.</span><span class="na">load</span><span class="p">(</span><span class="n">key</span><span class="p">));</span>
+</code></pre></div>
+<h4 id="spring-cacheable-pitfalls">Q6. What are the classic Spring Cache (<code>@Cacheable</code>) pitfalls?</h4>
+<p><strong>Answer:</strong> (1) <strong>Self-invocation</strong>: a call from the same class bypasses the proxy, so nothing is cached. (2) <strong>Keys</strong>: the default key is the method parameters; two methods sharing a cache name with the same parameters collide, and a parameter without <code>equals</code>/<code>hashCode</code> never hits. Use explicit <code>key = "#id"</code>. (3) <strong>No TTL by default</strong>: configure it per cache on the <code>RedisCacheManager</code>. (4) <strong>Null caching</strong>: on by default with Redis, which is useful against penetration but hides data created later; tune with <code>unless = "#result == null"</code> or a short TTL. (5) <strong>Mutable cached objects</strong> with a local cache: callers mutate the shared instance (<a href="../spring-architecture/#trap-cacheable-returning-mutable-object">Spring Q20</a>). (6) <strong>Serialization</strong>: JDK serialization breaks when the class changes; prefer JSON with a versioned cache prefix. (7) <code>@CacheEvict</code> runs after the method, but <strong>before the transaction commits</strong> if the method is inside one, so a concurrent reader can re-cache the old value.</p>
+<h4 id="local-cache-plus-redis">Q7. When do you combine a local cache with Redis, and how do you keep them consistent?</h4>
+<p><strong>Answer:</strong> A local (L1) Caffeine cache avoids the network hop (sub-microsecond vs about 0.5 ms) and protects Redis from hot keys. Redis (L2) is shared by all pods and survives restarts. The cost is that each pod holds its own copy, so an update leaves N stale L1 copies. Options: a <strong>short L1 TTL</strong> (seconds) when slightly stale data is acceptable, which is simplest; <strong>invalidation broadcast</strong> through Redis Pub/Sub or client-side caching (<code>CLIENT TRACKING</code>), which is fast but best-effort because messages are lost if a pod is disconnected, so keep a TTL as a safety net. Use L1 only for small, hot, rarely changing data (configuration, reference data, feature flags).</p>
+<h4 id="redis-durability-rdb-aof">Q8. Is Redis durable? When can you use it as a primary datastore?</h4>
+<p><strong>Answer:</strong> <strong>RDB</strong> takes periodic fork-based snapshots, so you lose everything since the last snapshot. <strong>AOF</strong> logs every write; with <code>appendfsync everysec</code> you lose up to about a second. Replication is <strong>asynchronous</strong>, so a failover can lose acknowledged writes (<code>WAIT</code> reduces this but does not make it a consensus system). Treat Redis as a cache (losable, rebuildable) by default. Use it as the source of truth only for data whose loss is tolerable or reconstructible: sessions, rate-limit counters, leaderboards. Otherwise use a managed option with stronger guarantees and accept the trade-offs explicitly. Also plan for Redis being down entirely: <a href="../system-design/#redis-cache-crashes-unexpectedly-application">System Design R17</a>.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h4 id="redis-lock-redlock-debate">Q9. How do you build a lock with Redis, and why is Redlock debated?</h4>
+<p><strong>Answer:</strong> Single instance: <code>SET lock:job42 &lt;random-token&gt; NX PX 30000</code> to acquire, and release with a Lua script that deletes only if the value is still your token. Otherwise you may delete a lock someone else took after yours expired. The lease expires, so a GC pause or network stall longer than the TTL lets two holders run at once. <strong>Redlock</strong> acquires on a majority of N independent masters. Kleppmann's critique: it relies on bounded clock drift and pauses, and it cannot stop a paused holder from writing. The fix is a <strong>fencing token</strong> (a monotonic number checked by the resource itself), which Redis does not provide. Conclusion: a Redis lock is fine for <strong>efficiency</strong> (avoid duplicate work). For <strong>correctness</strong> use the database (row lock, unique constraint, version column) or a consensus system with fencing. See <a href="../system-design/#isn-distributed-lock-redis-set">System Design Q30</a>.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- release only if we still own it</span>
+<span class="kr">if</span><span class="w"> </span><span class="nv">redis</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="s2">"GET"</span><span class="p">,</span><span class="w"> </span><span class="nv">KEYS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nv">ARGV</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="kr">then</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="nv">redis</span><span class="p">.</span><span class="nf">call</span><span class="p">(</span><span class="s2">"DEL"</span><span class="p">,</span><span class="w"> </span><span class="nv">KEYS</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="kr">else</span><span class="w"> </span><span class="kr">return</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">end</span>
+</code></pre></div>
+<h4 id="redis-sentinel-cluster-scaling">Q10. Sentinel or Cluster: how does Redis scale and fail over?</h4>
+<p><strong>Answer:</strong> <strong>Sentinel</strong> gives high availability for one primary plus replicas: it monitors, elects and promotes, and clients ask Sentinel for the current primary. It does not scale writes. <strong>Cluster</strong> shards the keyspace into 16,384 <strong>hash slots</strong> spread across primaries, each with replicas, so it scales memory and writes. The catch is that multi-key commands, transactions and Lua scripts only work when all keys are in the same slot. Force this with <strong>hash tags</strong> (<code>{user:42}:cart</code>, <code>{user:42}:profile</code>), at the risk of creating a hot slot. Clients must handle <code>MOVED</code>/<code>ASK</code> redirects (Lettuce does). Managed services (ElastiCache, MemoryDB) run either mode. Read from replicas only if stale reads are acceptable.</p>
+<h4 id="redis-atomic-patterns">Q11. How do you implement a rate limiter, a leaderboard or a session store with Redis atomically?</h4>
+<p><strong>Answer:</strong> The key is to avoid read-modify-write across round trips. <strong>Fixed window</strong>: <code>INCR key</code> then <code>EXPIRE key 60</code> on the first hit (in a <code>MULTI</code> block or Lua, otherwise a crash between the two leaves a counter that never expires). <strong>Sliding window</strong>: a sorted set of timestamps (<code>ZREMRANGEBYSCORE</code>, <code>ZADD</code>, <code>ZCARD</code>) in one Lua script. <strong>Token bucket</strong>: a Lua script storing tokens and last refill time in a hash. <strong>Leaderboard</strong>: <code>ZINCRBY</code> / <code>ZREVRANK</code>. <strong>Sessions</strong>: a hash per session with a sliding TTL (<code>EXPIRE</code> on each access), as Spring Session does. Lua scripts run atomically but block the server, so keep them short. <code>MULTI</code> gives atomic execution, not rollback.</p>
+<h4 id="cache-db-consistency-scale">Q12. How do you keep the cache consistent with the database at scale?</h4>
+<p><strong>Answer:</strong> Accept that cache-aside is <strong>eventually consistent</strong> and bound the staleness. Patterns, from simplest: a <strong>TTL</strong> as the upper bound on staleness; <strong>delete after commit</strong> (in an <code>afterCommit</code> hook or <code>@TransactionalEventListener(phase = AFTER_COMMIT)</code>) instead of during the transaction; <strong>delayed double delete</strong> to cover a concurrent reader that re-cached the old value; <strong>CDC-driven invalidation</strong> (Debezium reads the WAL and deletes keys), which catches writes from every service and from manual SQL; <strong>versioned keys</strong> (<code>product:42:v17</code>), so a new version is a new key and old entries simply age out. For data that must never be stale (balances, stock at checkout), do not cache it, or re-check against the database at the decision point.</p>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="stale-price-after-update">S1. After a price update, some users see the old price for hours</h3>
+<ul>
+<li><strong>Symptoms:</strong> The admin changes a price; the database is correct, but some product pages show the old price until the 6-hour TTL expires. It happens only under load.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> A race in cache-aside. <code>@CacheEvict</code> runs inside the update transaction, before commit. A concurrent reader misses, reads the <strong>old</strong> committed row and writes it back to Redis. Then the commit lands, and the stale value stays for the full TTL. Confirm by comparing the key's write time (<code>OBJECT IDLETIME</code> or a logged timestamp) with the commit time.</li>
+<li><strong>Resolution:</strong> Evict after commit (<code>@TransactionalEventListener(phase = AFTER_COMMIT)</code>), add a delayed second delete for safety, and shorten the TTL for prices.</li>
+<li><strong>Prevention:</strong> Team rule: cache invalidation happens after commit, never inside the transaction. Add an integration test that runs a concurrent read during an update, and consider CDC-based invalidation (<a href="#cache-db-consistency-scale">Q12</a>).</li>
+</ul>
+</details>
+<h3 id="redis-oom-noeviction">S2. Writes to Redis start failing with <code>OOM command not allowed</code></h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>OOM command not allowed when used memory &gt; 'maxmemory'</code> in the logs; logins fail because sessions cannot be written; <code>used_memory</code> is flat at the limit.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> <code>INFO memory</code> and <code>CONFIG GET maxmemory-policy</code> show <code>noeviction</code> (or <code>volatile-lru</code> with keys that have no TTL). <code>INFO keyspace</code> shows <code>expires</code> far below <code>keys</code>; <code>redis-cli --bigkeys</code> / <code>--memkeys</code> finds the growing prefix, often a cache written without TTL.</li>
+<li><strong>Resolution:</strong> Delete or add a TTL to the offending prefix (<code>SCAN</code> + <code>UNLINK</code>, in batches), raise <code>maxmemory</code> temporarily, and separate the cache from sessions: one instance with <code>allkeys-lru</code> for the cache, another with <code>noeviction</code> for data you cannot lose.</li>
+<li><strong>Prevention:</strong> Every cache write has a TTL (enforced in a shared wrapper), alert on <code>used_memory / maxmemory &gt; 80%</code> and on evicted or rejected writes, and track key count per prefix.</li>
+</ul>
+</details>
+<h3 id="redis-blocked-keys-command">S3. Redis latency spikes to seconds for every client, a few times a day</h3>
+<ul>
+<li><strong>Symptoms:</strong> All services report Redis timeouts simultaneously for 2–5 seconds; Redis CPU hits 100% on one core; there is no traffic spike.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Redis executes commands on a single thread, so one slow command blocks everyone. <code>SLOWLOG GET 20</code> shows <code>KEYS user:*</code> from an admin job, or <code>HGETALL</code>/<code>SMEMBERS</code>/<code>DEL</code> on a key with millions of elements. <code>LATENCY DOCTOR</code> and the fork time in <code>INFO persistence</code> rule out an RDB snapshot as the cause.</li>
+<li><strong>Resolution:</strong> Replace <code>KEYS</code> with <code>SCAN</code> (cursor-based), use <code>UNLINK</code> instead of <code>DEL</code> for big keys, split big collections, and paginate with <code>HSCAN</code>/<code>SSCAN</code>.</li>
+<li><strong>Prevention:</strong> Disable dangerous commands (<code>rename-command KEYS ""</code> or ACLs), alert on slowlog entries, and review any O(n) command in code review.</li>
+</ul>
+</details>
+<h3 id="cache-penetration-missing-ids">S4. A bot requests random product ids and the database melts despite a 95% hit ratio</h3>
+<ul>
+<li><strong>Symptoms:</strong> Database CPU at 100%; nearly all queries are <code>SELECT … WHERE id = ?</code> returning zero rows; the cache hit ratio for real users is unchanged.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> <strong>Cache penetration</strong>: misses for keys that do not exist are never cached, so every request for a fake id goes to the database. The access logs show many distinct ids from a few IPs or tokens.</li>
+<li><strong>Resolution:</strong> Cache negative results with a short TTL (<code>product:999999 → NULL</code>, 60 s), validate the id format at the edge, and rate-limit the caller. For huge id spaces, put a <strong>Bloom filter</strong> of existing ids in front (RedisBloom <code>BF.EXISTS</code>).</li>
+<li><strong>Prevention:</strong> Monitor the miss rate and the "not found" rate separately, and rate-limit per client at the gateway.</li>
+</ul>
+</details>
+<h3 id="redis-lock-two-holders">S5. A nightly job that "can only run once" runs twice and double-charges customers</h3>
+<ul>
+<li><strong>Symptoms:</strong> Two pods log <code>acquired lock billing-run</code> about 40 seconds apart; the job takes 2 minutes; the lock TTL is 30 seconds.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> The lease expired while the first pod was still working (the job ran longer than the TTL, or a GC pause stopped it). The second pod acquired the lock legitimately. A Redis lock only gives mutual exclusion while the lease holds (<a href="#redis-lock-redlock-debate">Q9</a>).</li>
+<li><strong>Resolution:</strong> Refund the duplicates. Make the charge idempotent at the resource: a unique constraint on <code>(customer_id, billing_period)</code> so the second insert fails. Renew the lease while working (a watchdog, as in Redisson) or use a database lock (<code>SELECT … FOR UPDATE SKIP LOCKED</code>, ShedLock on a DB table).</li>
+<li><strong>Prevention:</strong> Never rely on a lease lock alone for correctness; the protected operation must be idempotent or fenced. Alert on job duration approaching the lock TTL.</li>
+</ul>
+</details>
+<h3 id="cache-serialization-after-deploy">S6. After a deploy, every cached read throws <code>SerializationException</code> and traffic falls through to the database</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>SerializationException</code> / <code>ClassCastException</code> on <code>GET</code> from the cache right after the release; the database load triples; the rollback "fixes" it but breaks again on the next deploy.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> The cached class changed shape (renamed field, moved package, JDK serialization <code>serialVersionUID</code>) and the new code reads entries written by the old version. During a rolling deploy both versions also overwrite each other's entries.</li>
+<li><strong>Resolution:</strong> Treat deserialization errors as a miss (evict and reload) instead of failing the request, and bump a <strong>version prefix</strong> in the cache name (<code>v2:product:42</code>) so the new release uses fresh keys and old ones age out by TTL.</li>
+<li><strong>Prevention:</strong> Use JSON (Jackson with <code>FAIL_ON_UNKNOWN_PROPERTIES</code> off) instead of JDK serialization, version cache prefixes along with the schema, and pre-warm hot keys on deploy to avoid a cold-cache stampede (<a href="../system-design/#after-deploy-every-cache-entry">System Design S1</a>).</li>
+</ul>
+</details>
+<h2 id="oral-quiz">🎤 Oral quiz</h2>
+<p>Answer each question <strong>aloud in 2–3 minutes</strong> without looking: context → options → decision → trade-offs. Then re-read the linked question and score yourself: <strong>0</strong> blank · <strong>1</strong> definition only · <strong>2</strong> plus an example · <strong>3</strong> plus trade-offs and a pitfall.</p>
+<ol>
+<li>Q2. Which Redis data structures do you use, and for what?</li>
+<li>Q3. How do TTL and eviction work in Redis, and which <code>maxmemory-policy</code> do you pick?</li>
+<li>Q5. What is a cache stampede, and how do you prevent it?</li>
+<li>Q6. What are the classic Spring Cache (<code>@Cacheable</code>) pitfalls?</li>
+<li>Q7. When do you combine a local cache with Redis, and how do you keep them consistent?</li>
+<li>Q8. Is Redis durable? When can you use it as a primary datastore?</li>
+<li>Q9. How do you build a lock with Redis, and why is Redlock debated?</li>
+<li>Q10. Sentinel or Cluster: how does Redis scale and fail over?</li>
+<li>Q12. How do you keep the cache consistent with the database at scale?</li>
+<li>S1. After a price update, some users see the old price for hours</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<ul>
+<li><strong>Where</strong> — cache as close to the user as privacy allows. <em>Measure the hit ratio; a low one is just extra latency.</em></li>
+<li><strong>Eviction</strong> — <code>allkeys-lru</code>/<code>lfu</code> for a cache, <code>noeviction</code> for data. <em>Every cache key has a TTL.</em></li>
+<li><strong>Writes</strong> — delete the key <strong>after commit</strong>, do not update it. <em>CDC or versioned keys at scale.</em></li>
+<li><strong>Stampede</strong> — TTL jitter, single-flight, early refresh, serve stale. <em>Caffeine <code>refreshAfterWrite</code>.</em></li>
+<li><strong>Penetration</strong> — cache negative results, Bloom filter. <em>Rate-limit the caller.</em></li>
+<li><strong>Spring</strong> — explicit keys, per-cache TTL, JSON serializer, no self-invocation. <em><code>@CacheEvict</code> before commit is a race.</em></li>
+<li><strong>Ops</strong> — single thread: no <code>KEYS</code>, no big keys, <code>UNLINK</code>, watch <code>SLOWLOG</code>. <em>Separate cache and data instances.</em></li>
+<li><strong>Locks</strong> — <code>SET NX PX</code> + token, Lua release. <em>Efficiency only; correctness needs fencing or the DB.</em></li>
+<li><strong>Cluster</strong> — 16,384 slots, hash tags for multi-key. <em>Sentinel = HA, Cluster = scale.</em></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3065 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/best-practices/ai-prompts/">
+      
+      
+        <link rel="prev" href="../ci-cd/">
+      
+      
+        <link rel="next" href="../../resources/further-reading/">
+      
+      
+        
+          <link rel="alternate" href="../../../best-practices/ai-prompts/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Prompts IA - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#prompts-ia-pour-ingenieurs-seniors" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Prompts IA
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../best-practices/ai-prompts/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#anatomie-dun-bon-prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Anatomie d'un bon prompt
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Anatomie d&#39;un bon prompt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#donner-contexte-tache-contraintes-format-et-critere-de-fin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Donner contexte, tâche, contraintes, format et critère de fin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demander-un-plan-avant-le-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demander un plan avant le code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comprendre-le-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Comprendre le code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 Comprendre le code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tracer-un-flux-de-bout-en-bout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracer un flux de bout en bout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cartographier-avant-de-modifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cartographier avant de modifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conception-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏛️ Conception &amp; architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏛️ Conception &amp; architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demander-les-compromis-puis-une-recommandation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demander les compromis, puis une recommandation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#le-faire-vous-contredire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Le faire vous contredire
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠️ Implémentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ Implémentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pointer-un-exemple-existant-a-imiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pointer un exemple existant à imiter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#piloter-par-les-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Piloter par les tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debogage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐞 Débogage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐞 Débogage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fournir-les-preuves-demander-des-hypotheses-puis-la-cause-racine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fournir les preuves, demander des hypothèses, puis la cause racine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revue-de-code-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔎 Revue de code &amp; refactoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔎 Revue de code &amp; refactoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relire-avec-un-perimetre-et-un-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relire avec un périmètre et un format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactorer-avec-un-filet-de-securite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactorer avec un filet de sécurité
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demander-les-cas-limites-pas-seulement-le-cas-nominal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demander les cas limites, pas seulement le cas nominal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diagnostiquer-les-tests-instables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostiquer les tests instables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sql-jpa-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗄️ SQL, JPA &amp; performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗄️ SQL, JPA &amp; performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apporter-le-plan-dexecution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apporter le plan d'exécution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traquer-les-n1-et-le-lazy-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traquer les N+1 et le lazy loading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devops-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐳 DevOps &amp; CI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐳 DevOps &amp; CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relire-linfrastructure-selon-une-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relire l'infrastructure selon une checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Documentation &amp; communication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Documentation &amp; communication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generer-depuis-le-diff-dans-le-format-de-votre-equipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Générer depuis le diff, dans le format de votre équipe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ Anti-patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#anatomie-dun-bon-prompt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Anatomie d'un bon prompt
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Anatomie d&#39;un bon prompt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#donner-contexte-tache-contraintes-format-et-critere-de-fin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Donner contexte, tâche, contraintes, format et critère de fin
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demander-un-plan-avant-le-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demander un plan avant le code
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comprendre-le-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Comprendre le code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 Comprendre le code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tracer-un-flux-de-bout-en-bout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tracer un flux de bout en bout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cartographier-avant-de-modifier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cartographier avant de modifier
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conception-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏛️ Conception &amp; architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏛️ Conception &amp; architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demander-les-compromis-puis-une-recommandation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demander les compromis, puis une recommandation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#le-faire-vous-contredire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Le faire vous contredire
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛠️ Implémentation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛠️ Implémentation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pointer-un-exemple-existant-a-imiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pointer un exemple existant à imiter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#piloter-par-les-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Piloter par les tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debogage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐞 Débogage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐞 Débogage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fournir-les-preuves-demander-des-hypotheses-puis-la-cause-racine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fournir les preuves, demander des hypothèses, puis la cause racine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revue-de-code-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔎 Revue de code &amp; refactoring
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔎 Revue de code &amp; refactoring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relire-avec-un-perimetre-et-un-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relire avec un périmètre et un format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refactorer-avec-un-filet-de-securite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactorer avec un filet de sécurité
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demander-les-cas-limites-pas-seulement-le-cas-nominal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demander les cas limites, pas seulement le cas nominal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#diagnostiquer-les-tests-instables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostiquer les tests instables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sql-jpa-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗄️ SQL, JPA &amp; performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗄️ SQL, JPA &amp; performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apporter-le-plan-dexecution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Apporter le plan d'exécution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#traquer-les-n1-et-le-lazy-loading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traquer les N+1 et le lazy loading
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devops-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐳 DevOps &amp; CI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐳 DevOps &amp; CI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relire-linfrastructure-selon-une-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Relire l'infrastructure selon une checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Documentation &amp; communication
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Documentation &amp; communication">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generer-depuis-le-diff-dans-le-format-de-votre-equipe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Générer depuis le diff, dans le format de votre équipe
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#anti-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ Anti-patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="prompts-ia-pour-ingenieurs-seniors">Prompts IA pour ingénieurs seniors</h1>
+<p>Des prompts à copier-coller pour obtenir des résultats de niveau production avec un assistant de code (Claude Code, Copilot Chat, etc.). Remplacez <code>&lt;...&gt;</code> par votre contexte.</p>
+<h2 id="anatomie-dun-bon-prompt">🧱 Anatomie d'un bon prompt</h2>
+<h3 id="donner-contexte-tache-contraintes-format-et-critere-de-fin">Donner contexte, tâche, contraintes, format et critère de fin</h3>
+<p>Dites au modèle ce qu'il ne peut pas deviner : la stack, l'objectif, les limites, le format attendu et comment vous jugerez le résultat.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> le modèle comble chaque trou avec la réponse la plus courante, pas la vôtre. L'avantage d'un senior, ce sont les contraintes (versions, conventions, SLA) : mettez-les dans le prompt et le résultat demande bien moins de reprise.</p>
+<div class="highlight"><pre><span></span><code>// ⛔ vague
+Ajoute du cache au service utilisateur.
+
+// ✅ précis
+Contexte : Spring Boot 3.3, Java 21, Postgres, Redis déjà configuré (voir CacheConfig.java).
+Tâche : mettre en cache UserService.findById.
+Contraintes : abstraction Spring Cache uniquement, TTL 5 min, invalidation à la modification/suppression, aucune nouvelle dépendance.
+Sortie : un diff + un test prouvant l'invalidation.
+Terminé quand : `./mvnw -q test -Dtest=UserServiceCacheTest` passe.
+</code></pre></div>
+<h3 id="demander-un-plan-avant-le-code">Demander un plan avant le code</h3>
+<p>Pour tout ce qui touche plus d'un fichier, demandez un plan et relisez-le d'abord.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> un mauvais plan se corrige en une minute ; un mauvais diff de 600 lignes coûte une heure. Relire l'approche est le point de contrôle le moins cher.</p>
+<div class="highlight"><pre><span></span><code>// ⛔
+Migre notre authentification vers OAuth2.
+
+// ✅
+N'écris pas encore de code. Lis le package security et propose un plan de migration vers OAuth2 resource server :
+fichiers à modifier, ordre des étapes, risques, ce qui peut être annulé indépendamment. Pose-moi des questions si quelque chose est ambigu.
+</code></pre></div>
+<h2 id="comprendre-le-code">🔍 Comprendre le code</h2>
+<h3 id="tracer-un-flux-de-bout-en-bout">Tracer un flux de bout en bout</h3>
+<p>Demandez un chemin concret avec références de fichiers, pas un résumé.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> « explique ce module » donne une description générique. Un flux tracé avec <code>fichier:ligne</code> est vérifiable et révèle le vrai couplage.</p>
+<div class="highlight"><pre><span></span><code>// ⛔
+Explique le module commandes.
+
+// ✅
+Trace ce qui se passe de POST /orders jusqu'au commit en base et à la publication de l'événement.
+Liste chaque classe/méthode dans l'ordre avec fichier:ligne, où la transaction commence/finit, et tout endroit
+où une exception pourrait laisser des données incohérentes.
+</code></pre></div>
+<h3 id="cartographier-avant-de-modifier">Cartographier avant de modifier</h3>
+<p>Demandez le rayon d'impact avant de toucher au code partagé.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> la plupart des régressions viennent d'appelants qu'on ne connaissait pas.</p>
+<div class="highlight"><pre><span></span><code>Avant de changer la signature de PricingService.compute(), liste tous les appelants (y compris réflexion, tests
+et config), ce que chacun passe, et lesquels casseraient. Ne modifie rien.
+</code></pre></div>
+<h2 id="conception-architecture">🏛️ Conception &amp; architecture</h2>
+<h3 id="demander-les-compromis-puis-une-recommandation">Demander les compromis, puis une recommandation</h3>
+<p>Demandez des options avec leurs coûts, et forcez une décision.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une seule réponse cache les alternatives ; une liste non classée vous renvoie la décision. Les contraintes rendent la recommandation pertinente.</p>
+<div class="highlight"><pre><span></span><code>Nous devons envoyer des factures de façon asynchrone. Compare RabbitMQ, Kafka et un outbox Postgres pour notre cas :
+~50 msg/s, at-least-once acceptable, équipe de 3, nous n'exploitons que Postgres.
+Tableau : coût d'exploitation, ordre, rejeu, modes de défaillance. Puis recommande-en un en 3 phrases et rédige l'ADR
+(contexte, décision, conséquences).
+</code></pre></div>
+<h3 id="le-faire-vous-contredire">Le faire vous contredire</h3>
+<p>Demandez les objections les plus fortes contre votre conception.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> les modèles sont complaisants par défaut ; un cadrage adversarial explicite fait ressortir les failles qu'un relecteur trouverait plus tard.</p>
+<div class="highlight"><pre><span></span><code>Voici ma conception &lt;coller&gt;. Joue un staff engineer sceptique. Liste les 5 façons les plus probables dont elle échoue
+en production (charge, cohérence, exploitation, sécurité), classées par probabilité x impact, et ce que tu changerais.
+</code></pre></div>
+<h2 id="implementation">🛠️ Implémentation</h2>
+<h3 id="pointer-un-exemple-existant-a-imiter">Pointer un exemple existant à imiter</h3>
+<p>Référencez un fichier qui suit déjà vos conventions.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> « suis le style du code » n'est pas mesurable ; « imite <code>OrderController</code> » est concret et évite que le modèle invente de nouveaux patterns ou dépendances.</p>
+<div class="highlight"><pre><span></span><code>// ⛔
+Écris un contrôleur pour les factures.
+
+// ✅
+Ajoute InvoiceController en imitant OrderController (gestion d'erreurs, mapping DTO, validation, @PreAuthorize).
+Réutilise ApiError et les mappers MapStruct existants. Aucune nouvelle dépendance. Ajoute un @WebMvcTest comme OrderControllerTest.
+</code></pre></div>
+<h3 id="piloter-par-les-tests">Piloter par les tests</h3>
+<p>Donnez d'abord le test qui échoue, puis demandez l'implémentation minimale.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> le test est une spec exécutable ; le modèle peut itérer jusqu'au vert au lieu de deviner.</p>
+<div class="highlight"><pre><span></span><code>Écris des tests en échec pour : une remise ne dépasse jamais 30 %, le cumul de coupons est refusé, les coupons expirés sont ignorés.
+Lance-les, confirme qu'ils échouent pour la bonne raison. Puis implémente le minimum pour les faire passer et lance tout le module.
+</code></pre></div>
+<h2 id="debogage">🐞 Débogage</h2>
+<h3 id="fournir-les-preuves-demander-des-hypotheses-puis-la-cause-racine">Fournir les preuves, demander des hypothèses, puis la cause racine</h3>
+<p>Collez la stack trace, les étapes de reproduction, le changement récent et ce que vous avez déjà écarté.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> avec le seul symptôme, le modèle corrige le symptôme. Des preuves et des hypothèses classées mènent à un correctif à la cause.</p>
+<div class="highlight"><pre><span></span><code>// ⛔
+Mon app lève une NPE, corrige.
+
+// ✅
+Stack trace : &lt;coller&gt;. Uniquement sous charge, depuis le commit &lt;sha&gt; (ajout d'un enrichissement asynchrone).
+Déjà écarté : lignes null en base. Donne 3 hypothèses classées avec comment confirmer chacune (log, test, point d'arrêt).
+Quand j'en confirme une, corrige la cause racine, pas seulement le test de null, et vérifie les autres appelants.
+</code></pre></div>
+<h2 id="revue-de-code-refactoring">🔎 Revue de code &amp; refactoring</h2>
+<h3 id="relire-avec-un-perimetre-et-un-format">Relire avec un périmètre et un format</h3>
+<p>Limitez ce qu'il faut chercher et comment le rapporter.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> « relis ça » renvoie des remarques de style. Un périmètre étroit et un tri par gravité renvoient les quelques points qui comptent.</p>
+<div class="highlight"><pre><span></span><code>Relis ce diff pour la justesse, la concurrence et la sécurité uniquement (pas de style). 7 remarques max, par gravité,
+chacune avec fichier:ligne, pourquoi c'est faux, et un correctif. S'il n'y a rien, dis-le.
+&lt;diff&gt;...&lt;/diff&gt;
+</code></pre></div>
+<h3 id="refactorer-avec-un-filet-de-securite">Refactorer avec un filet de sécurité</h3>
+<p>Exigez des tests verts et aucun changement de comportement.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> un refactoring sans filet est une réécriture déguisée.</p>
+<div class="highlight"><pre><span></span><code>Refactore OrderService.process() (300 lignes) en méthodes/collaborateurs plus petits. Le comportement ne doit pas changer :
+ajoute d'abord des tests de caractérisation du comportement actuel, lance-les, puis refactore par petites étapes en
+relançant les tests à chaque fois. Aucun changement d'API publique.
+</code></pre></div>
+<h2 id="tests">🧪 Tests</h2>
+<h3 id="demander-les-cas-limites-pas-seulement-le-cas-nominal">Demander les cas limites, pas seulement le cas nominal</h3>
+<p>Listez les catégories à couvrir.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> les tests par défaut du modèle reflètent l'implémentation ; nommer les catégories l'envoie aux limites où vivent les bugs.</p>
+<div class="highlight"><pre><span></span><code>Pour parseAmount(String) : écris des tests JUnit 5 paramétrés couvrant null/vide, séparateurs selon la locale, négatifs,
+dépassement, arrondi (HALF_EVEN), chiffres unicode. Utilise AssertJ. Explique toute hypothèse de comportement.
+</code></pre></div>
+<h3 id="diagnostiquer-les-tests-instables">Diagnostiquer les tests instables</h3>
+<p>Donnez les logs d'échec et la fréquence.</p>
+<div class="highlight"><pre><span></span><code>Ce test échoue ~1 run CI sur 15 : &lt;coller test + log&gt;. Liste les causes possibles (état partagé, temps, ordre,
+asynchrone), quelles preuves les distinguent, puis propose le correctif qui supprime la cause plutôt que d'ajouter des retries.
+</code></pre></div>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> les retries masquent le non-déterminisme ; une cause nommée le supprime.</p>
+<h2 id="sql-jpa-performance">🗄️ SQL, JPA &amp; performance</h2>
+<h3 id="apporter-le-plan-dexecution">Apporter le plan d'exécution</h3>
+<p>Collez l'<code>EXPLAIN (ANALYZE, BUFFERS)</code> et la taille des tables.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> un conseil de performance sans données est du folklore. Le plan montre le vrai goulot.</p>
+<div class="highlight"><pre><span></span><code>Postgres 16. Requête et plan ci-dessous, orders contient 40 M de lignes. Explique où part le temps, propose des index
+(avec le DDL exact et le coût en écriture) et toute réécriture. Ne propose rien qui change les résultats.
+&lt;requête&gt; &lt;sortie EXPLAIN ANALYZE&gt;
+</code></pre></div>
+<h3 id="traquer-les-n1-et-le-lazy-loading">Traquer les N+1 et le lazy loading</h3>
+<div class="highlight"><pre><span></span><code>Voici le graphe d'entités JPA et la méthode de service. Identifie les N+1 selects et le lazy loading hors transaction.
+Propose un correctif (fetch join, @EntityGraph ou projection DTO) avec les compromis, et un test utilisant les
+statistiques Hibernate pour vérifier le nombre de requêtes.
+</code></pre></div>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> demander une assertion sur le nombre de requêtes rend le correctif démontrable et évite la régression.</p>
+<h2 id="devops-ci">🐳 DevOps &amp; CI</h2>
+<h3 id="relire-linfrastructure-selon-une-checklist">Relire l'infrastructure selon une checklist</h3>
+<div class="highlight"><pre><span></span><code>Relis ce Dockerfile et ce Deployment k8s pour la production : utilisateur non-root, digest d'image de base épinglé,
+cache des couches, requests/limits, sondes liveness/readiness, arrêt propre, gestion des secrets.
+Donne un tableau (problème, risque, correctif) puis les fichiers corrigés.
+</code></pre></div>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une checklist explicite empêche le modèle de s'arrêter aux deux premiers problèmes évidents.</p>
+<h2 id="documentation-communication">📝 Documentation &amp; communication</h2>
+<h3 id="generer-depuis-le-diff-dans-le-format-de-votre-equipe">Générer depuis le diff, dans le format de votre équipe</h3>
+<div class="highlight"><pre><span></span><code>Rédige la description de PR à partir de ce diff : quoi et pourquoi (2-3 phrases), risques, comment tester, plan de déploiement/retour arrière.
+Puis rédige l'entrée de runbook pour la nouvelle alerte (symptôme, dashboard, 3 premières vérifications, escalade).
+</code></pre></div>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> le modèle transforme bien des faits que vous avez déjà dans le format voulu ; les faits restent de votre responsabilité.</p>
+<h2 id="anti-patterns">⚠️ Anti-patterns</h2>
+<ul>
+<li><strong>Coller des secrets, tokens ou données clients.</strong> Anonymisez ; considérez que les prompts quittent votre machine.</li>
+<li><strong>Accepter du code qu'on ne comprend pas.</strong> Demandez « explique pourquoi c'est correct et ce qui peut casser » ; vous êtes responsable de ce que vous mergez.</li>
+<li><strong>Aucune étape de vérification.</strong> Terminez toujours par « lance les tests/le linter et montre la sortie ».</li>
+<li><strong>Un seul prompt géant pour une grosse fonctionnalité.</strong> Découpez : plan, puis tranche par tranche, en relisant chaque diff.</li>
+<li><strong>Corriger par répétition.</strong> Si la troisième tentative échoue, reformulez le contexte ou repartez d'une session neuve.</li>
+<li><strong>Demander des faits invérifiables</strong> (versions de bibliothèques, API). Pointez la doc ou le code source de votre dépôt.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

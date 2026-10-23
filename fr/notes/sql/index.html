@@ -1,0 +1,2922 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/notes/sql/">
+      
+      
+        <link rel="prev" href="../maven-gradle/">
+      
+      
+        <link rel="next" href="../postgres/">
+      
+      
+        
+          <link rel="alternate" href="../../../notes/sql/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Optimisation des requêtes SQL - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#optimisation-des-requetes-sql" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Optimisation des requêtes SQL
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../notes/sql/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lire-un-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lire un plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lire un plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explain-vs-explain-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXPLAIN vs EXPLAIN ANALYZE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lire-la-sortie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lire la sortie
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nuds-de-scan-comment-une-table-est-lue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nœuds de scan (comment une table est lue)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nuds-de-jointure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nœuds de jointure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checklist-des-signaux-dalerte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist des signaux d'alerte
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methode-de-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Méthode de tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exemples-commentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemples commentés
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exemples commentés">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exemple-1-index-manquant-seq-scan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 1 : index manquant (Seq Scan)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-2-index-composite-lordre-des-colonnes-compte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 2 : index composite, l'ordre des colonnes compte
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-3-une-fonction-sur-une-colonne-tue-lindex-sargabilite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 3 : une fonction sur une colonne tue l'index (sargabilité)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-4-index-couvrant-index-only-scan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 4 : index couvrant → Index Only Scan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-5-mauvaise-strategie-de-jointure-a-cause-destimations-erronees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 5 : mauvaise stratégie de jointure à cause d'estimations erronées
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-6-pagination-offset-vs-keyset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 6 : pagination, OFFSET vs keyset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-7-index-partiel-nindexer-que-ce-que-vous-interrogez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 7 : index partiel (n'indexer que ce que vous interrogez)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-8-tri-qui-deborde-sur-le-disque" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 8 : tri qui déborde sur le disque
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-9-le-n1-vu-depuis-la-base-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 9 : le N+1 vu depuis la base de données
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requetes-utiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requêtes utiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lire-un-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lire un plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Lire un plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#explain-vs-explain-analyze" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXPLAIN vs EXPLAIN ANALYZE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lire-la-sortie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lire la sortie
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nuds-de-scan-comment-une-table-est-lue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nœuds de scan (comment une table est lue)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nuds-de-jointure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nœuds de jointure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checklist-des-signaux-dalerte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checklist des signaux d'alerte
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#methode-de-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Méthode de tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exemples-commentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemples commentés
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Exemples commentés">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exemple-1-index-manquant-seq-scan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 1 : index manquant (Seq Scan)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-2-index-composite-lordre-des-colonnes-compte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 2 : index composite, l'ordre des colonnes compte
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-3-une-fonction-sur-une-colonne-tue-lindex-sargabilite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 3 : une fonction sur une colonne tue l'index (sargabilité)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-4-index-couvrant-index-only-scan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 4 : index couvrant → Index Only Scan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-5-mauvaise-strategie-de-jointure-a-cause-destimations-erronees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 5 : mauvaise stratégie de jointure à cause d'estimations erronées
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-6-pagination-offset-vs-keyset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 6 : pagination, OFFSET vs keyset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-7-index-partiel-nindexer-que-ce-que-vous-interrogez" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 7 : index partiel (n'indexer que ce que vous interrogez)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-8-tri-qui-deborde-sur-le-disque" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 8 : tri qui déborde sur le disque
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exemple-9-le-n1-vu-depuis-la-base-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exemple 9 : le N+1 vu depuis la base de données
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requetes-utiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requêtes utiles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="optimisation-des-requetes-sql">Optimisation des requêtes SQL</h1>
+<h2 id="lire-un-plan">Lire un plan</h2>
+<h3 id="explain-vs-explain-analyze">EXPLAIN vs EXPLAIN ANALYZE</h3>
+<table>
+<thead>
+<tr>
+<th>Commande</th>
+<th>Exécute la requête ?</th>
+<th>Ce que vous obtenez</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EXPLAIN</code></td>
+<td>Non</td>
+<td>Le plan et les coûts <strong>estimés</strong> par le planificateur</td>
+</tr>
+<tr>
+<td><code>EXPLAIN ANALYZE</code></td>
+<td><strong>Oui</strong></td>
+<td>Estimations <strong>+ réels</strong> : lignes, temps, boucles</td>
+</tr>
+<tr>
+<td><code>EXPLAIN (ANALYZE, BUFFERS)</code></td>
+<td><strong>Oui</strong></td>
+<td>Aussi les hits/reads des shared buffers (mémoire vs I/O disque)</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="p">(</span><span class="k">ANALYZE</span><span class="p">,</span><span class="w"> </span><span class="n">BUFFERS</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="p">(</span><span class="k">ANALYZE</span><span class="p">,</span><span class="w"> </span><span class="n">BUFFERS</span><span class="p">,</span><span class="w"> </span><span class="k">VERBOSE</span><span class="p">,</span><span class="w"> </span><span class="n">SETTINGS</span><span class="p">,</span><span class="w"> </span><span class="n">FORMAT</span><span class="w"> </span><span class="n">JSON</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="p">...;</span><span class="w">  </span><span class="c1">-- JSON : à coller dans explain.dalibo.com</span>
+</code></pre></div>
+<p><code>EXPLAIN ANALYZE</code> exécute réellement l'instruction. Pour <code>INSERT/UPDATE/DELETE</code>, faites un rollback :</p>
+<div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="p">(</span><span class="k">ANALYZE</span><span class="p">,</span><span class="w"> </span><span class="n">BUFFERS</span><span class="p">)</span><span class="w"> </span><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">'2 years'</span><span class="p">;</span>
+<span class="k">ROLLBACK</span><span class="p">;</span>
+</code></pre></div>
+<p>Utilisez toujours <code>BUFFERS</code> ; le temps seul ne dit pas si vous étiez lent à cause du disque ou du CPU.</p>
+<h3 id="lire-la-sortie">Lire la sortie</h3>
+<div class="highlight"><pre><span></span><code>Index Scan using idx_orders_customer on orders  (cost=0.43..8.45 rows=1 width=64) (actual time=0.021..0.023 rows=3 loops=1)
+  Index Cond: (customer_id = 42)
+  Buffers: shared hit=4
+Planning Time: 0.110 ms
+Execution Time: 0.045 ms
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Partie</th>
+<th>Signification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Index Scan using ...</code></td>
+<td>Le <strong>nœud</strong> (opération). Les plans sont des arbres : l'indentation = les enfants ; les données remontent des nœuds les <strong>plus internes/profonds</strong> vers la racine</td>
+</tr>
+<tr>
+<td><code>cost=0.43..8.45</code></td>
+<td>Unités du planificateur (pas des ms). <code>démarrage..total</code> : démarrage = coût avant la première ligne, total = coût pour toutes les lignes. Le coût d'un nœud inclut ses enfants</td>
+</tr>
+<tr>
+<td><code>rows=1</code></td>
+<td>Lignes <strong>estimées</strong> en sortie de ce nœud</td>
+</tr>
+<tr>
+<td><code>width=64</code></td>
+<td>Taille moyenne estimée d'une ligne en octets</td>
+</tr>
+<tr>
+<td><code>actual time=0.021..0.023</code></td>
+<td>ms réelles : temps jusqu'à la première ligne..temps jusqu'à la dernière ligne, <strong>par boucle</strong></td>
+</tr>
+<tr>
+<td><code>rows=3</code> (actual)</td>
+<td>Lignes <strong>réelles</strong> produites, <strong>par boucle</strong></td>
+</tr>
+<tr>
+<td><code>loops=1</code></td>
+<td>Nombre d'exécutions du nœud. Temps total réel = <code>actual time × loops</code> ; lignes totales réelles = <code>rows × loops</code></td>
+</tr>
+<tr>
+<td><code>Index Cond</code> / <code>Filter</code></td>
+<td><code>Index Cond</code> est appliqué <em>dans</em> l'index (bien). <code>Filter</code> est appliqué <em>après</em> la lecture des lignes (lignes lues puis jetées)</td>
+</tr>
+<tr>
+<td><code>Rows Removed by Filter: N</code></td>
+<td>Lignes lues puis écartées. Grand N = travail gaspillé, un index manque probablement ou est inadapté</td>
+</tr>
+<tr>
+<td><code>Buffers: shared hit=4 read=2</code></td>
+<td><code>hit</code> = trouvé dans le cache Postgres, <code>read</code> = lu depuis l'OS/disque, <code>dirtied/written</code> = écritures</td>
+</tr>
+<tr>
+<td><code>Planning Time</code> / <code>Execution Time</code></td>
+<td>Parsing+planification vs exécution. Le temps d'exécution exclut le transfert réseau vers le client</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nuds-de-scan-comment-une-table-est-lue">Nœuds de scan (comment une table est lue)</h3>
+<table>
+<thead>
+<tr>
+<th>Nœud</th>
+<th>Ce qu'il fait</th>
+<th>Quand c'est acceptable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Seq Scan</code></td>
+<td>Lit toute la table</td>
+<td>Petites tables, ou vous avez besoin d'une grande fraction des lignes (&gt; ~5-10 %)</td>
+</tr>
+<tr>
+<td><code>Index Scan</code></td>
+<td>Parcourt l'index, puis lit chaque ligne dans la table (heap)</td>
+<td>Peu de lignes</td>
+</tr>
+<tr>
+<td><code>Index Only Scan</code></td>
+<td>Répond depuis l'index seul. Vérifiez <code>Heap Fetches: 0</code> (sinon la visibility map est périmée, lancez <code>VACUUM</code>)</td>
+<td>Index couvrant</td>
+</tr>
+<tr>
+<td><code>Bitmap Index Scan</code> + <code>Bitmap Heap Scan</code></td>
+<td>Construit un bitmap des pages correspondantes, les lit dans l'ordre physique</td>
+<td>Nombre moyen de lignes, ou combinaison de plusieurs index (<code>BitmapOr/And</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Un <code>Seq Scan</code> n'est <strong>pas toujours mauvais</strong>. Il l'est quand il écarte l'essentiel de ce qu'il lit (<code>Rows Removed by Filter</code> énorme) sur une grosse table.</p>
+<h3 id="nuds-de-jointure">Nœuds de jointure</h3>
+<table>
+<thead>
+<tr>
+<th>Nœud</th>
+<th>Comment</th>
+<th>Bon quand</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Nested Loop</code></td>
+<td>Pour chaque ligne externe, sonde le côté interne</td>
+<td>Côté externe petit <strong>et</strong> côté interne indexé</td>
+</tr>
+<tr>
+<td><code>Hash Join</code></td>
+<td>Construit une table de hachage sur le plus petit côté, sonde avec l'autre</td>
+<td>Grandes entrées non triées, jointures d'égalité</td>
+</tr>
+<tr>
+<td><code>Merge Join</code></td>
+<td>Fusionne deux entrées triées</td>
+<td>Les deux entrées déjà triées (ex. par index)</td>
+</tr>
+</tbody>
+</table>
+<p>Autres nœuds : <code>Sort</code> (surveillez <code>Sort Method: external merge Disk: ...</code> = débordement sur disque, augmentez <code>work_mem</code> ou ajoutez un index), <code>HashAggregate</code> / <code>GroupAggregate</code>, <code>Limit</code>, <code>Materialize</code>, <code>Gather</code> (workers parallèles).</p>
+<h3 id="checklist-des-signaux-dalerte">Checklist des signaux d'alerte</h3>
+<ol>
+<li><strong>Lignes estimées et réelles très éloignées</strong> (<code>rows=1</code> estimé, <code>rows=200000</code> réel) : statistiques périmées ou insuffisantes. Lancez <code>ANALYZE table;</code>, augmentez avec <code>ALTER TABLE t ALTER COLUMN c SET STATISTICS 500;</code>, ou ajoutez des statistiques étendues pour les colonnes corrélées. Une mauvaise estimation pousse le planificateur à choisir le mauvais type et le mauvais ordre de jointure.</li>
+<li><strong><code>Rows Removed by Filter</code></strong> bien plus grand que les lignes renvoyées : index manquant ou inadapté.</li>
+<li><strong><code>Seq Scan</code> sur une grosse table</strong> renvoyant peu de lignes.</li>
+<li><strong><code>Nested Loop</code> avec un <code>loops</code> élevé</strong> et un nœud interne lent : l'interne s'exécute N fois.</li>
+<li><strong><code>Sort Method: external merge Disk</code></strong> ou <code>Hash Batches &gt; 1</code> : pas assez de <code>work_mem</code>.</li>
+<li><strong><code>Heap Fetches</code> élevé sur un Index Only Scan</strong> : il faut un <code>VACUUM</code>.</li>
+<li><strong><code>Buffers: read</code> élevé</strong> : cache froid ou working set trop gros ; lancez deux fois pour comparer chaud vs froid.</li>
+<li><strong>Temps caché dans un enfant</strong> : trouvez toujours le nœud au plus gros temps <strong>exclusif</strong> (son temps moins celui de ses enfants × loops).</li>
+</ol>
+<h3 id="methode-de-tuning">Méthode de tuning</h3>
+<ol>
+<li>Récupérez la vraie requête lente (<code>pg_stat_statements</code>, log des requêtes lentes <code>log_min_duration_statement</code>, logs applicatifs).</li>
+<li><code>EXPLAIN (ANALYZE, BUFFERS)</code> sur un volume de données réaliste (une BD de dev vide ment).</li>
+<li>Trouvez le nœud le plus coûteux, comparez lignes estimées et réelles.</li>
+<li>Corrigez : statistiques, index, réécriture de la requête, ou schéma. Changez <strong>une seule chose à la fois</strong>.</li>
+<li>Relancez et comparez. Lancez deux fois pour chauffer le cache.</li>
+<li>Vérifiez que l'index ne pénalise pas les écritures et qu'il est réellement utilisé (<code>pg_stat_user_indexes.idx_scan</code>).</li>
+</ol>
+<p>Jeu de test utilisé dans les exemples :</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="n">bigserial</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="nb">text</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span>
+<span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="n">bigserial</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="nb">text</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">total</span><span class="w"> </span><span class="nb">numeric</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="n">timestamptz</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">now</span><span class="p">(),</span><span class="w"> </span><span class="n">note</span><span class="w"> </span><span class="nb">text</span><span class="p">);</span>
+<span class="c1">-- ~10k clients, ~1M commandes</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="p">(</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">country</span><span class="p">)</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="s1">'user'</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="k">g</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">'@mail.com'</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="nb">ARRAY</span><span class="p">[</span><span class="s1">'FR'</span><span class="p">,</span><span class="s1">'TN'</span><span class="p">,</span><span class="s1">'DE'</span><span class="p">,</span><span class="s1">'US'</span><span class="p">])[</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">g</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">10000</span><span class="p">)</span><span class="w"> </span><span class="k">g</span><span class="p">;</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span><span class="p">)</span>
+<span class="w">  </span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">9999</span><span class="p">)::</span><span class="nb">int</span><span class="p">,</span>
+<span class="w">         </span><span class="p">(</span><span class="nb">ARRAY</span><span class="p">[</span><span class="s1">'NEW'</span><span class="p">,</span><span class="s1">'PAID'</span><span class="p">,</span><span class="s1">'SHIPPED'</span><span class="p">,</span><span class="s1">'CANCELLED'</span><span class="p">])[</span><span class="mi">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">3</span><span class="p">)::</span><span class="nb">int</span><span class="p">],</span>
+<span class="w">         </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">500</span><span class="p">)::</span><span class="nb">numeric</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+<span class="w">         </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="n">random</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">'730 days'</span><span class="p">)</span>
+<span class="w">  </span><span class="k">FROM</span><span class="w"> </span><span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1000000</span><span class="p">);</span>
+<span class="k">ANALYZE</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="exemples-commentes">Exemples commentés</h2>
+<h3 id="exemple-1-index-manquant-seq-scan">Exemple 1 : index manquant (Seq Scan)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">EXPLAIN</span><span class="w"> </span><span class="p">(</span><span class="k">ANALYZE</span><span class="p">,</span><span class="w"> </span><span class="n">BUFFERS</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Gather  (cost=1000.00..15200.00 rows=100 width=60) (actual time=0.5..48.2 rows=98 loops=1)
+  Workers Planned: 2
+  -&gt;  Parallel Seq Scan on orders  (cost=0.00..14190.00 rows=42 width=60) (actual time=8.1..44.0 rows=33 loops=3)
+        Filter: (customer_id = 42)
+        Rows Removed by Filter: 333300
+        Buffers: shared hit=8200
+Execution Time: 48.4 ms
+</code></pre></div>
+<p>Lecture : 1M de lignes lues pour en renvoyer 98 (<code>Rows Removed by Filter: 333300</code> × 3 workers). Correction :</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_customer</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Bitmap Heap Scan on orders  (cost=5.2..380.0 rows=100 width=60) (actual time=0.05..0.19 rows=98 loops=1)
+  Recheck Cond: (customer_id = 42)
+  -&gt;  Bitmap Index Scan on idx_orders_customer  (actual time=0.03..0.03 rows=98 loops=1)
+        Index Cond: (customer_id = 42)
+Execution Time: 0.25 ms
+</code></pre></div>
+<p>48 ms → 0,25 ms. En production, utilisez <code>CREATE INDEX CONCURRENTLY</code> pour ne pas bloquer les écritures.</p>
+<h3 id="exemple-2-index-composite-lordre-des-colonnes-compte">Exemple 2 : index composite, l'ordre des colonnes compte</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'PAID'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">'7 days'</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+</code></pre></div>
+<p>Règle empirique : <strong>colonnes d'égalité d'abord, puis la colonne de plage/tri</strong>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_status_created</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="k">DESC</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Limit  (actual time=0.03..0.09 rows=20 loops=1)
+  -&gt;  Index Scan using idx_orders_status_created on orders  (actual time=0.03..0.08 rows=20 loops=1)
+        Index Cond: ((status = 'PAID') AND (created_at &gt;= ...))
+</code></pre></div>
+<p>Pas de nœud <code>Sort</code> : l'index fournit déjà les lignes dans l'ordre demandé, et <code>LIMIT</code> s'arrête après 20 lignes. Avec les colonnes inversées <code>(created_at, status)</code>, l'index ne pourrait pas être utilisé aussi efficacement : <code>status</code> ne serait qu'un filtre dans un scan de plage.
+Un index composite <code>(a, b)</code> sert <code>WHERE a</code>, <code>WHERE a AND b</code>, mais <strong>pas</strong> <code>WHERE b</code> seul (règle du préfixe le plus à gauche).</p>
+<h3 id="exemple-3-une-fonction-sur-une-colonne-tue-lindex-sargabilite">Exemple 3 : une fonction sur une colonne tue l'index (sargabilité)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">lower</span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'user42@mail.com'</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Seq Scan on customers  (actual time=0.02..6.1 rows=1 loops=1)
+  Filter: (lower(email) = 'user42@mail.com')
+  Rows Removed by Filter: 9999
+</code></pre></div>
+<p>Un index simple sur <code>email</code> est inutilisable car la requête ne compare pas <code>email</code>, elle compare <code>lower(email)</code>. Deux corrections :</p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- A) réécrire pour que la colonne soit nue (seulement si les données sont déjà normalisées)</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'user42@mail.com'</span>
+<span class="c1">-- B) indexer l'expression</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_customers_email_lower</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">email</span><span class="p">));</span>
+</code></pre></div>
+<p>Même piège : <code>WHERE created_at::date = '2026-01-01'</code> (utilisez <code>created_at &gt;= '2026-01-01' AND created_at &lt; '2026-01-02'</code>), <code>WHERE col + 1 = 10</code>, <code>WHERE col LIKE '%abc'</code> (joker en tête ; utilisez un index GIN <code>pg_trgm</code>), et les casts implicites (<code>WHERE varchar_col = 123</code>).</p>
+<h3 id="exemple-4-index-couvrant-index-only-scan">Exemple 4 : index couvrant → Index Only Scan</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">customer_id</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</code></pre></div>
+<p>Avec <code>idx_orders_customer</code>, le plan visite encore la table pour <code>total</code>. Ajoutez la colonne avec <code>INCLUDE</code> :</p>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_customer_total</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span><span class="w"> </span><span class="n">INCLUDE</span><span class="w"> </span><span class="p">(</span><span class="n">total</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Index Only Scan using idx_orders_customer_total on orders  (actual time=0.03..0.06 rows=98 loops=1)
+  Index Cond: (customer_id = 42)
+  Heap Fetches: 0
+  Buffers: shared hit=4
+</code></pre></div>
+<p>Compromis : index plus gros, écritures plus lentes. À réserver aux chemins de lecture chauds. <code>SELECT *</code> l'annule, ne sélectionnez que les colonnes nécessaires.</p>
+<h3 id="exemple-5-mauvaise-strategie-de-jointure-a-cause-destimations-erronees">Exemple 5 : mauvaise stratégie de jointure à cause d'estimations erronées</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">total</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">o</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">id</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">country</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'TN'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="n">created_at</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">'30 days'</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">email</span><span class="p">;</span>
+</code></pre></div>
+<p>Symptôme d'un mauvais plan :</p>
+<div class="highlight"><pre><span></span><code>Nested Loop  (cost=... rows=5) (actual time=... rows=41000 loops=1)
+  -&gt;  Seq Scan on customers c  (rows=5) (actual rows=2500 ...)
+  -&gt;  Index Scan using idx_orders_customer on orders o  (actual time=0.02..0.30 rows=16 loops=2500)
+</code></pre></div>
+<p><code>rows=5</code> estimé vs <code>rows=2500</code> réel = le planificateur s'est trompé, donc il a choisi un Nested Loop. Que faire, dans l'ordre :</p>
+<div class="highlight"><pre><span></span><code><span class="k">ANALYZE</span><span class="w"> </span><span class="n">customers</span><span class="p">;</span><span class="w">                                            </span><span class="c1">-- 1. rafraîchir les stats</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="k">STATISTICS</span><span class="w"> </span><span class="mi">500</span><span class="p">;</span><span class="w"> </span><span class="c1">-- 2. histogramme plus fin</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">STATISTICS</span><span class="w"> </span><span class="n">s_cust</span><span class="w"> </span><span class="p">(</span><span class="n">dependencies</span><span class="p">)</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">country</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">customers</span><span class="p">;</span><span class="w"> </span><span class="c1">-- 3. colonnes corrélées</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_created</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">created_at</span><span class="p">,</span><span class="w"> </span><span class="n">customer_id</span><span class="p">);</span><span class="w">   </span><span class="c1">-- 4. aider le gros côté</span>
+</code></pre></div>
+<p>Une fois les estimations correctes, le planificateur bascule généralement sur un <code>Hash Join</code>, bien meilleur quand les deux côtés sont grands. Ne forcez pas les types de jointure avec <code>SET enable_nestloop = off</code> en production, utilisez-le seulement comme diagnostic pour voir ce que coûte l'alternative.</p>
+<h3 id="exemple-6-pagination-offset-vs-keyset">Exemple 6 : pagination, OFFSET vs keyset</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="k">OFFSET</span><span class="w"> </span><span class="mi">500000</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Limit  (actual time=95.0..95.1 rows=20 loops=1)
+  -&gt;  Index Scan using orders_pkey on orders  (actual time=0.02..80.0 rows=500020 loops=1)
+</code></pre></div>
+<p><code>OFFSET</code> lit et jette 500 000 lignes. Le coût croît avec le numéro de page. Pagination keyset (seek) :</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="p">:</span><span class="n">last_seen_id</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Limit  (actual time=0.02..0.05 rows=20 loops=1)
+  -&gt;  Index Scan using orders_pkey on orders  (actual time=0.02..0.04 rows=20 loops=1)
+        Index Cond: (id &gt; 500000)
+</code></pre></div>
+<p>95 ms → 0,05 ms, constant quelle que soit la page. Pour des colonnes de tri non uniques, utilisez un tuple : <code>WHERE (created_at, id) &lt; (:ts, :id) ORDER BY created_at DESC, id DESC</code> avec un index sur <code>(created_at DESC, id DESC)</code>.</p>
+<h3 id="exemple-7-index-partiel-nindexer-que-ce-que-vous-interrogez">Exemple 7 : index partiel (n'indexer que ce que vous interrogez)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">-- 95 % des lignes sont SHIPPED/CANCELLED, l'application ne scrute que les commandes NEW</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_new</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">created_at</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'NEW'</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'NEW'</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">created_at</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">50</span><span class="p">;</span>
+</code></pre></div>
+<p>Index petit, peu coûteux à maintenir. Le <code>WHERE</code> de la requête doit impliquer le prédicat de l'index (même littéral <code>status = 'NEW'</code>, un paramètre lié peut l'empêcher avec des plans génériques).</p>
+<h3 id="exemple-8-tri-qui-deborde-sur-le-disque">Exemple 8 : tri qui déborde sur le disque</h3>
+<div class="highlight"><pre><span></span><code>Sort  (actual time=1200..1450 rows=1000000 loops=1)
+  Sort Key: created_at
+  Sort Method: external merge  Disk: 61240kB
+</code></pre></div>
+<p>Options : ajouter un index qui fournit l'ordre, ajouter un <code>LIMIT</code>, réduire les colonnes, ou augmenter <code>work_mem</code> <strong>pour cette session/transaction</strong> :</p>
+<div class="highlight"><pre><span></span><code><span class="k">SET</span><span class="w"> </span><span class="k">LOCAL</span><span class="w"> </span><span class="n">work_mem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'128MB'</span><span class="p">;</span><span class="w">   </span><span class="c1">-- dans une transaction, ne l'augmentez pas globalement (c'est par nœud de tri/hash et par connexion)</span>
+</code></pre></div>
+<p>Objectif : <code>Sort Method: quicksort  Memory: 25kB</code> (ou <code>top-N heapsort</code> avec <code>LIMIT</code>).</p>
+<h3 id="exemple-9-le-n1-vu-depuis-la-base-de-donnees">Exemple 9 : le N+1 vu depuis la base de données</h3>
+<p>Symptôme dans <code>pg_stat_statements</code> : la même minuscule requête avec <code>calls</code> = 100 000. Chaque plan est parfait (0,05 ms) mais le total est énorme (5 s). <code>EXPLAIN</code> ne peut pas corriger ça, corrigez l'appelant :</p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- au lieu de : SELECT * FROM orders WHERE customer_id = ?   (× N)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">ANY</span><span class="p">(:</span><span class="n">ids</span><span class="p">);</span>
+</code></pre></div>
+<p>En JPA/Hibernate : <code>JOIN FETCH</code>, <code>@EntityGraph</code>, ou <code>@BatchSize</code>.</p>
+<hr />
+<h3 id="requetes-utiles">Requêtes utiles</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">-- top requêtes par temps total (nécessite CREATE EXTENSION pg_stat_statements)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">calls</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="n">total_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_ms</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">mean_ms</span><span class="p">,</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="mi">80</span><span class="p">)</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_exec_time</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+
+<span class="c1">-- index inutilisés (coût en écriture sans bénéfice en lecture)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">indexrelname</span><span class="p">,</span><span class="w"> </span><span class="n">idx_scan</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_user_indexes</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">idx_scan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pg_relation_size</span><span class="p">(</span><span class="n">indexrelid</span><span class="p">)</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+
+<span class="c1">-- stats périmées / lignes mortes</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">n_live_tup</span><span class="p">,</span><span class="w"> </span><span class="n">n_dead_tup</span><span class="p">,</span><span class="w"> </span><span class="n">last_autovacuum</span><span class="p">,</span><span class="w"> </span><span class="n">last_autoanalyze</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_user_tables</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">n_dead_tup</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</code></pre></div>
+<p>Diagnostic uniquement (ne le laissez jamais activé en prod) : <code>SET enable_seqscan = off;</code> montre si le planificateur <em>peut</em> utiliser votre index et ce que cela coûterait.</p>
+<p>Outils : <a href="https://explain.dalibo.com">explain.dalibo.com</a>, <a href="https://explain.depesz.com">explain.depesz.com</a> : collez un plan, obtenez le nœud le plus lent mis en évidence.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

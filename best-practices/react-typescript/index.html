@@ -1,0 +1,3069 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/best-practices/react-typescript/">
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../sql-jpa-postgres/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/best-practices/react-typescript/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>React & TypeScript - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#react-typescript-best-practices" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              React & TypeScript
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/best-practices/react-typescript/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#typescript" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔷 TypeScript
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔷 TypeScript">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#turn-on-strict-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turn on strict mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-unknown-not-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use unknown, not any
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-state-with-discriminated-unions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model state with discriminated unions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-satisfies-and-as-const-instead-of-as" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use satisfies and as const instead of as
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚛️ State &amp; rendering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚛️ State &amp; rendering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#derive-values-instead-of-syncing-them-with-useeffect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Derive values instead of syncing them with useEffect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-mutate-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never mutate state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-stable-unique-keys-in-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use stable, unique keys in lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declare-every-effect-dependency-and-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declare every effect dependency and clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-a-data-fetching-library-for-server-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use a data-fetching library for server state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memoize-only-when-youve-measured-a-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memoize only when you've measured a problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧩 Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-components-small-and-extract-custom-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep components small and extract custom hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-props-explicitly-and-avoid-prop-drilling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type props explicitly and avoid prop drilling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forms-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ♿ Forms &amp; accessibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="♿ Forms &amp; accessibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-semantic-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use semantic HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-forms-with-a-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validate forms with a schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚡ Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#split-code-by-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split code by route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virtualize-long-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Virtualize long lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Errors &amp; security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Errors &amp; security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#put-error-boundaries-around-independent-areas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Put error boundaries around independent areas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-render-untrusted-html-without-sanitizing-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never render untrusted HTML without sanitizing it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-behaviour-through-the-ui-and-mock-the-network-not-the-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test behaviour through the UI, and mock the network, not the components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#typescript" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔷 TypeScript
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔷 TypeScript">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#turn-on-strict-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Turn on strict mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-unknown-not-any" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use unknown, not any
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-state-with-discriminated-unions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model state with discriminated unions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-satisfies-and-as-const-instead-of-as" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use satisfies and as const instead of as
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#state-rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚛️ State &amp; rendering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚛️ State &amp; rendering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#derive-values-instead-of-syncing-them-with-useeffect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Derive values instead of syncing them with useEffect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-mutate-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never mutate state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-stable-unique-keys-in-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use stable, unique keys in lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declare-every-effect-dependency-and-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declare every effect dependency and clean up
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-a-data-fetching-library-for-server-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use a data-fetching library for server state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#memoize-only-when-youve-measured-a-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memoize only when you've measured a problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧩 Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧩 Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-components-small-and-extract-custom-hooks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep components small and extract custom hooks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-props-explicitly-and-avoid-prop-drilling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Type props explicitly and avoid prop drilling
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#forms-accessibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ♿ Forms &amp; accessibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="♿ Forms &amp; accessibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-semantic-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use semantic HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-forms-with-a-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validate forms with a schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ Performance
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚡ Performance">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#split-code-by-route" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Split code by route
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#virtualize-long-lists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Virtualize long lists
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#errors-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Errors &amp; security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Errors &amp; security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#put-error-boundaries-around-independent-areas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Put error boundaries around independent areas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-render-untrusted-html-without-sanitizing-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never render untrusted HTML without sanitizing it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-behaviour-through-the-ui-and-mock-the-network-not-the-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test behaviour through the UI, and mock the network, not the components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="react-typescript-best-practices">React &amp; TypeScript Best Practices</h1>
+<h2 id="typescript">🔷 TypeScript</h2>
+<h3 id="turn-on-strict-mode">Turn on <code>strict</code> mode</h3>
+<p>Set <code>"strict": true</code> in <code>tsconfig.json</code>, and add <code>noUncheckedIndexedAccess</code> if you can.</p>
+<p><strong>Why it's a best practice:</strong> without <code>strict</code>, <code>null</code> and <code>undefined</code> are accepted everywhere and untyped
+parameters silently become <code>any</code>, so the compiler misses exactly the bugs you use TypeScript for ("cannot read
+properties of undefined"). <code>noUncheckedIndexedAccess</code> types <code>arr[i]</code> and <code>record[key]</code> as possibly <code>undefined</code>,
+which they are. Turning it on late is painful, so start with it.</p>
+<p>✅ <code>{ "compilerOptions": { "strict": true, "noUncheckedIndexedAccess": true } }</code></p>
+<h3 id="use-unknown-not-any">Use <code>unknown</code>, not <code>any</code></h3>
+<p>Type values you don't know yet (API responses, <code>JSON.parse</code>, <code>catch</code> errors) as <code>unknown</code>, and narrow them before
+use.</p>
+<p><strong>Why it's a best practice:</strong> <code>any</code> turns off type checking, and it spreads: anything derived from an <code>any</code> is
+<code>any</code> too. <code>unknown</code> accepts every value but lets you do nothing with it until you check its type, so the
+compiler forces the validation. For external data, validate with a schema library (zod, valibot) that gives you
+the type and the runtime check at once.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ no error until it crashes at runtime</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="o">:</span><span class="w"> </span><span class="kt">any</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">();</span>
+<span class="nx">user</span><span class="p">.</span><span class="nx">profile</span><span class="p">.</span><span class="nx">name</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">();</span>
+
+<span class="c1">// ✅ validated at the boundary</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">User</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">()</span><span class="w"> </span><span class="p">});</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">User</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">res</span><span class="p">.</span><span class="nx">json</span><span class="p">());</span>
+</code></pre></div>
+<h3 id="model-state-with-discriminated-unions">Model state with discriminated unions</h3>
+<p>Represent states that exclude each other as a union with a <code>status</code> (or <code>kind</code>) field, not as several optional
+booleans.</p>
+<p><strong>Why it's a best practice:</strong> <code>{ isLoading: boolean; error?: Error; data?: User }</code> allows impossible
+combinations: loading <em>and</em> error, or neither loading nor data. Every component has to guess which one wins. A
+discriminated union makes invalid states unrepresentable, and TypeScript narrows the type in each branch: <code>data</code>
+only exists when <code>status === 'success'</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ 8 combinations, 3 valid</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">State</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">isLoading</span><span class="o">:</span><span class="w"> </span><span class="kt">boolean</span><span class="p">;</span><span class="w"> </span><span class="nx">error?</span><span class="o">:</span><span class="w"> </span><span class="kt">Error</span><span class="p">;</span><span class="w"> </span><span class="nx">data?</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="w"> </span><span class="p">};</span>
+
+<span class="c1">// ✅</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">State</span><span class="w"> </span><span class="o">=</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s1">'loading'</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s1">'error'</span><span class="p">;</span><span class="w"> </span><span class="nx">error</span><span class="o">:</span><span class="w"> </span><span class="kt">Error</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="s1">'success'</span><span class="p">;</span><span class="w"> </span><span class="nx">data</span><span class="o">:</span><span class="w"> </span><span class="kt">User</span><span class="w"> </span><span class="p">};</span>
+</code></pre></div>
+<p>Render it with a <code>switch</code>; the <code>never</code> check makes the compiler fail when someone adds a new status and forgets a branch:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">function</span><span class="w"> </span><span class="nx">UserView</span><span class="p">({</span><span class="w"> </span><span class="nx">state</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">state</span><span class="o">:</span><span class="w"> </span><span class="kt">State</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="nx">state</span><span class="p">.</span><span class="nx">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s1">'loading'</span><span class="o">:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">Spinner</span><span class="w"> </span><span class="p">/&gt;;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s1">'error'</span><span class="o">:</span><span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">ErrorMessage</span><span class="w"> </span><span class="na">error</span><span class="o">=</span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">error</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="s1">'success'</span><span class="o">:</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">&lt;</span><span class="nt">Profile</span><span class="w"> </span><span class="na">user</span><span class="o">=</span><span class="p">{</span><span class="nx">state</span><span class="p">.</span><span class="nx">data</span><span class="p">}</span><span class="w"> </span><span class="p">/&gt;;</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">_exhaustive</span><span class="o">:</span><span class="w"> </span><span class="kt">never</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">state</span><span class="p">;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nx">_exhaustive</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="use-satisfies-and-as-const-instead-of-as">Use <code>satisfies</code> and <code>as const</code> instead of <code>as</code></h3>
+<p>Check a value against a type with <code>satisfies</code>, and freeze literal values with <code>as const</code>. Avoid <code>as</code> casts.</p>
+<p><strong>Why it's a best practice:</strong> <code>value as User</code> tells the compiler to trust you, even when the value is missing
+fields: the error moves to runtime. <code>satisfies</code> checks the value against the type but keeps its more precise
+inferred type. <code>as const</code> keeps literal types (<code>'admin'</code> instead of <code>string</code>) and makes the object readonly, which
+lets you derive union types from a single source of truth.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ compiles even though `path` is missing</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">route</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">'home'</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="nx">Route</span><span class="p">;</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">ROLES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s1">'admin'</span><span class="p">,</span><span class="w"> </span><span class="s1">'editor'</span><span class="p">,</span><span class="w"> </span><span class="s1">'viewer'</span><span class="p">]</span><span class="w"> </span><span class="kr">as</span><span class="w"> </span><span class="kd">const</span><span class="p">;</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">Role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="ow">typeof</span><span class="w"> </span><span class="nx">ROLES</span><span class="p">)[</span><span class="kt">number</span><span class="p">];</span><span class="w"> </span><span class="c1">// 'admin' | 'editor' | 'viewer'</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">port</span><span class="o">:</span><span class="w"> </span><span class="kt">3000</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="nx">satisfies</span><span class="w"> </span><span class="nx">Config</span><span class="p">;</span>
+</code></pre></div>
+<h2 id="state-rendering">⚛️ State &amp; rendering</h2>
+<h3 id="derive-values-instead-of-syncing-them-with-useeffect">Derive values instead of syncing them with <code>useEffect</code></h3>
+<p>If a value can be computed from props or state, compute it during render. Don't store it in another state and
+update it in an effect.</p>
+<p><strong>Why it's a best practice:</strong> syncing with an effect renders twice (once with the stale value, then again after
+the effect), and the two states can get out of sync when one update path is forgotten. A value computed during
+render is always correct. If the computation is really expensive, wrap it in <code>useMemo</code>, still without extra
+state.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ extra render, can drift</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">fullName</span><span class="p">,</span><span class="w"> </span><span class="nx">setFullName</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">(</span><span class="s1">''</span><span class="p">);</span>
+<span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setFullName</span><span class="p">(</span><span class="sb">`</span><span class="si">${</span><span class="nx">first</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">last</span><span class="si">}</span><span class="sb">`</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="nx">first</span><span class="p">,</span><span class="w"> </span><span class="nx">last</span><span class="p">]);</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">fullName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sb">`</span><span class="si">${</span><span class="nx">first</span><span class="si">}</span><span class="sb"> </span><span class="si">${</span><span class="nx">last</span><span class="si">}</span><span class="sb">`</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="never-mutate-state">Never mutate state</h3>
+<p>Always create a new object or array when updating state.</p>
+<p><strong>Why it's a best practice:</strong> React compares state by reference. If you <code>push</code> into the existing array and call
+<code>setItems(items)</code>, the reference hasn't changed, so React skips the re-render and the UI shows stale data.
+Memoized children and effects that depend on the value miss the change too. Use spread, <code>map</code>, <code>filter</code>, or
+<code>toSorted</code> / <code>toSpliced</code>, which return new arrays.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ same reference, no re-render</span>
+<span class="nx">items</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">newItem</span><span class="p">);</span>
+<span class="nx">setItems</span><span class="p">(</span><span class="nx">items</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="nx">setItems</span><span class="p">(</span><span class="nx">prev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">[...</span><span class="nx">prev</span><span class="p">,</span><span class="w"> </span><span class="nx">newItem</span><span class="p">]);</span>
+</code></pre></div>
+<h3 id="use-stable-unique-keys-in-lists">Use stable, unique <code>key</code>s in lists</h3>
+<p>Use an id from the data as <code>key</code>, not the array index.</p>
+<p><strong>Why it's a best practice:</strong> React uses the key to match elements between renders. With the index, removing
+or reordering an item shifts the keys, so React reuses the wrong component instance: input values, focus and
+local state jump to the wrong row. A stable id keeps each component attached to its item. The index is only safe
+for static lists that never change order.</p>
+<p>⛔ <code>items.map((item, i) =&gt; &lt;Row key={i} item={item} /&gt;)</code></p>
+<p>✅ <code>items.map(item =&gt; &lt;Row key={item.id} item={item} /&gt;)</code></p>
+<h3 id="declare-every-effect-dependency-and-clean-up">Declare every effect dependency and clean up</h3>
+<p>List everything the effect uses in the dependency array (let the <code>react-hooks/exhaustive-deps</code> lint rule do it),
+and return a cleanup function for subscriptions, timers and requests.</p>
+<p><strong>Why it's a best practice:</strong> a missing dependency means the effect keeps using the value from the first render
+(a stale closure): it fetches the old id or sends the old filter. Without cleanup, timers and listeners pile up
+on each re-render or remount, and a slow response can arrive after a newer one and overwrite it. In development,
+React Strict Mode mounts components twice to reveal missing cleanups.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ ignore stale responses</span>
+<span class="nx">useEffect</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">controller</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">AbortController</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">fetch</span><span class="p">(</span><span class="sb">`/api/users/</span><span class="si">${</span><span class="nx">id</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">signal</span><span class="o">:</span><span class="w"> </span><span class="kt">controller.signal</span><span class="w"> </span><span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">controller</span><span class="p">.</span><span class="nx">abort</span><span class="p">();</span>
+<span class="p">},</span><span class="w"> </span><span class="p">[</span><span class="nx">id</span><span class="p">]);</span>
+</code></pre></div>
+<h3 id="use-a-data-fetching-library-for-server-state">Use a data-fetching library for server state</h3>
+<p>Fetch server data with TanStack Query (or SWR, or your framework's loaders) instead of <code>useState</code> + <code>useEffect</code>.</p>
+<p><strong>Why it's a best practice:</strong> hand-written fetching in effects has to handle loading and error states, race
+conditions, caching, deduplication, retries and refetching after a mutation, and each component ends up doing it
+a bit differently. These libraries do all of that, share the cache between components, and keep the UI in sync
+with the server. Keep <code>useState</code> for real UI state (an open modal, a form input).</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">data</span><span class="p">,</span><span class="w"> </span><span class="nx">isPending</span><span class="p">,</span><span class="w"> </span><span class="nx">error</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useQuery</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">queryKey</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'user'</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">queryFn</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">fetchUser</span><span class="p">(</span><span class="nx">id</span><span class="p">),</span>
+<span class="p">});</span>
+</code></pre></div>
+<p>After a mutation, invalidate the key instead of patching state by hand:</p>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">queryClient</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useQueryClient</span><span class="p">();</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">rename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useMutation</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">mutationFn</span><span class="o">:</span><span class="w"> </span><span class="p">(</span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">updateUser</span><span class="p">(</span><span class="nx">id</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="w"> </span><span class="p">}),</span>
+<span class="w">  </span><span class="nx">onSuccess</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">queryClient</span><span class="p">.</span><span class="nx">invalidateQueries</span><span class="p">({</span><span class="w"> </span><span class="nx">queryKey</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'user'</span><span class="p">,</span><span class="w"> </span><span class="nx">id</span><span class="p">]</span><span class="w"> </span><span class="p">}),</span>
+<span class="p">});</span>
+</code></pre></div>
+<h3 id="memoize-only-when-youve-measured-a-problem">Memoize only when you've measured a problem</h3>
+<p>Don't wrap every value in <code>useMemo</code> and every function in <code>useCallback</code> by default.</p>
+<p><strong>Why it's a best practice:</strong> memoization isn't free: it costs memory, a dependency comparison on every render,
+and readability. It only helps when the computation is really expensive, or when the value is passed to a
+<code>memo</code> component or used as an effect dependency. Use the React DevTools profiler to find slow renders first. The
+React Compiler memoizes automatically, which makes most manual cases unnecessary.</p>
+<p>⛔ <code>const label = useMemo(() =&gt; `Hello ${name}`, [name]);</code>
+✅ <code>const label = `Hello ${name}`;</code></p>
+<h2 id="components">🧩 Components</h2>
+<h3 id="keep-components-small-and-extract-custom-hooks">Keep components small and extract custom hooks</h3>
+<p>One component, one job. Move stateful logic (fetching, subscriptions, form handling) into custom hooks.</p>
+<p><strong>Why it's a best practice:</strong> a 500-line component mixing data fetching, business rules and markup is hard to
+read, re-renders as a whole, and can't be tested in parts. A custom hook (<code>useCart()</code>) gives the logic a name,
+can be reused by several components and tested on its own. Presentational components that only take props are
+easy to reuse and to show in Storybook.</p>
+<p>⛔ a <code>CheckoutPage</code> with 12 <code>useState</code>s and 4 <code>useEffect</code>s
+✅ <code>const cart = useCart(); const payment = usePayment();</code> + <code>&lt;CartSummary cart={cart} /&gt;</code></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ the hook owns the logic, the component only renders</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">useCart</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">[</span><span class="nx">items</span><span class="p">,</span><span class="w"> </span><span class="nx">setItems</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useState</span><span class="p">&lt;</span><span class="nt">Item</span><span class="err">[]</span><span class="p">&gt;([]);</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">total</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">items</span><span class="p">.</span><span class="nx">reduce</span><span class="p">((</span><span class="nx">sum</span><span class="p">,</span><span class="w"> </span><span class="nx">i</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">sum</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">i</span><span class="p">.</span><span class="nx">price</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nx">i</span><span class="p">.</span><span class="nx">qty</span><span class="p">,</span><span class="w"> </span><span class="mf">0</span><span class="p">);</span><span class="w">   </span><span class="c1">// derived, not stored</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="nx">item</span><span class="o">:</span><span class="w"> </span><span class="kt">Item</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">setItems</span><span class="p">(</span><span class="nx">prev</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">[...</span><span class="nx">prev</span><span class="p">,</span><span class="w"> </span><span class="nx">item</span><span class="p">]);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">items</span><span class="p">,</span><span class="w"> </span><span class="nx">total</span><span class="p">,</span><span class="w"> </span><span class="nx">add</span><span class="w"> </span><span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="type-props-explicitly-and-avoid-prop-drilling">Type props explicitly and avoid prop drilling</h3>
+<p>Declare a <code>Props</code> type for each component. When the same prop is passed through 3+ levels, use composition
+(<code>children</code>) or a context.</p>
+<p><strong>Why it's a best practice:</strong> explicit prop types document the component's API and catch wrong usage at every
+call site. Passing a prop through components that don't use it couples all of them: renaming it touches every
+level. Passing already-built elements as <code>children</code> often removes the need for context. Keep context for truly
+global values (theme, current user), since every consumer re-renders when it changes.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">ButtonProps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">variant</span><span class="o">:</span><span class="w"> </span><span class="s1">'primary'</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="s1">'secondary'</span><span class="p">;</span><span class="w"> </span><span class="nx">onClick</span><span class="o">:</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="ow">void</span><span class="p">;</span><span class="w"> </span><span class="nx">children</span><span class="o">:</span><span class="w"> </span><span class="kt">React.ReactNode</span><span class="w"> </span><span class="p">};</span>
+<span class="kd">function</span><span class="w"> </span><span class="nx">Button</span><span class="p">({</span><span class="w"> </span><span class="nx">variant</span><span class="p">,</span><span class="w"> </span><span class="nx">onClick</span><span class="p">,</span><span class="w"> </span><span class="nx">children</span><span class="w"> </span><span class="p">}</span><span class="o">:</span><span class="w"> </span><span class="nx">ButtonProps</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="forms-accessibility">♿ Forms &amp; accessibility</h2>
+<h3 id="use-semantic-html">Use semantic HTML</h3>
+<p>Use <code>&lt;button&gt;</code> for actions, <code>&lt;a href&gt;</code> for navigation, <code>&lt;label&gt;</code> for inputs, and headings in order.</p>
+<p><strong>Why it's a best practice:</strong> a <code>&lt;div onClick&gt;</code> can't be reached with the keyboard, isn't announced as a button
+by screen readers, and doesn't respond to Enter or Space. You'd have to rebuild all of that by hand with <code>role</code>,
+<code>tabIndex</code> and key handlers. Native elements get it for free. An input without a <code>&lt;label&gt;</code> is unnamed for
+assistive technology, and clicking the label no longer focuses the input.</p>
+<p>⛔ <code>&lt;div onClick={save}&gt;Save&lt;/div&gt;</code>, <code>&lt;input placeholder="Email" /&gt;</code>
+✅ <code>&lt;button type="button" onClick={save}&gt;Save&lt;/button&gt;</code>, <code>&lt;label&gt;Email &lt;input type="email" /&gt;&lt;/label&gt;</code></p>
+<h3 id="validate-forms-with-a-schema">Validate forms with a schema</h3>
+<p>Use a form library (React Hook Form) with a schema (zod) instead of ad-hoc checks in <code>onChange</code> handlers.</p>
+<p><strong>Why it's a best practice:</strong> hand-written validation is scattered and inconsistent, and the rules often
+differ between the client and the server. A schema declares all rules in one place, gives you the TypeScript type
+of the form values, and can be shared with the backend. Client validation is only for user experience: the
+server must validate again, since any client can bypass it.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">schema</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">object</span><span class="p">({</span><span class="w"> </span><span class="nx">email</span><span class="o">:</span><span class="w"> </span><span class="kt">z.string</span><span class="p">().</span><span class="nx">email</span><span class="p">(),</span><span class="w"> </span><span class="nx">age</span><span class="o">:</span><span class="w"> </span><span class="kt">z.number</span><span class="p">().</span><span class="kr">int</span><span class="p">().</span><span class="nx">min</span><span class="p">(</span><span class="mf">18</span><span class="p">)</span><span class="w"> </span><span class="p">});</span>
+<span class="kr">type</span><span class="w"> </span><span class="nx">FormValues</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">z</span><span class="p">.</span><span class="nx">infer</span><span class="p">&lt;</span><span class="nt">typeof</span><span class="w"> </span><span class="na">schema</span><span class="p">&gt;;</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">form</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">useForm</span><span class="p">&lt;</span><span class="nt">FormValues</span><span class="p">&gt;({</span><span class="w"> </span><span class="nx">resolver</span><span class="o">:</span><span class="w"> </span><span class="kt">zodResolver</span><span class="p">(</span><span class="nx">schema</span><span class="p">)</span><span class="w"> </span><span class="p">});</span>
+</code></pre></div>
+<h2 id="performance">⚡ Performance</h2>
+<h3 id="split-code-by-route">Split code by route</h3>
+<p>Load each route's code with <code>lazy()</code> and <code>&lt;Suspense&gt;</code>, so the first page downloads only what it needs.</p>
+<p><strong>Why it's a best practice:</strong> a single bundle grows with every feature, and users pay for the admin screens on
+the login page. Route-level splitting is the cut with the best ratio of gain to complexity. Check the result with a
+bundle analyser and a size budget in CI, so a heavy dependency (a full date or chart library) is noticed in review,
+not in production.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">Reports</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">lazy</span><span class="p">(()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="k">import</span><span class="p">(</span><span class="s1">'./pages/Reports'</span><span class="p">));</span>
+<span class="p">&lt;</span><span class="nt">Suspense</span><span class="w"> </span><span class="na">fallback</span><span class="o">=</span><span class="p">{&lt;</span><span class="nt">Spinner</span><span class="w"> </span><span class="p">/&gt;}&gt;&lt;</span><span class="nt">Reports</span><span class="w"> </span><span class="p">/&gt;&lt;/</span><span class="nt">Suspense</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 id="virtualize-long-lists">Virtualize long lists</h3>
+<p>Render only the visible rows of lists and tables with hundreds of items (TanStack Virtual, react-window).</p>
+<p><strong>Why it's a best practice:</strong> 5,000 rows means 5,000 component trees and tens of thousands of DOM nodes; every
+re-render and every keystroke in a filter gets slow, and INP suffers. Virtualization keeps the DOM size constant
+whatever the data size. Paginate on the server first when users don't really need all rows.</p>
+<h2 id="errors-security">🛡️ Errors &amp; security</h2>
+<h3 id="put-error-boundaries-around-independent-areas">Put error boundaries around independent areas</h3>
+<p>Wrap routes and independent widgets in error boundaries with a useful fallback, and report the error.</p>
+<p><strong>Why it's a best practice:</strong> without one, an exception during rendering unmounts the whole app and leaves a blank
+page. A boundary per route or widget keeps the rest of the screen usable and gives you a place to send the error to
+monitoring. Error boundaries don't catch errors in event handlers or async code; handle those where they happen.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ react-error-boundary</span>
+<span class="p">&lt;</span><span class="nt">ErrorBoundary</span><span class="w"> </span><span class="na">FallbackComponent</span><span class="o">=</span><span class="p">{</span><span class="nx">WidgetError</span><span class="p">}</span><span class="w"> </span><span class="na">onError</span><span class="o">=</span><span class="p">{</span><span class="nx">reportError</span><span class="p">}&gt;</span>
+<span class="w">  </span><span class="p">&lt;</span><span class="nt">RevenueChart</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="p">&lt;/</span><span class="nt">ErrorBoundary</span><span class="p">&gt;</span>
+</code></pre></div>
+<h3 id="never-render-untrusted-html-without-sanitizing-it">Never render untrusted HTML without sanitizing it</h3>
+<p>Let React escape content; if you must use <code>dangerouslySetInnerHTML</code>, sanitize with DOMPurify first.</p>
+<p><strong>Why it's a best practice:</strong> JSX escapes text by default, which blocks most XSS. <code>dangerouslySetInnerHTML</code>,
+<code>href={userInput}</code> (a <code>javascript:</code> URL) and injecting HTML from a CMS bypass that protection. An XSS can read
+anything the page can, including tokens kept in <code>localStorage</code>; see the <a href="../security/">security best practices</a> for
+token storage and CSP.</p>
+<p>⛔ <code>&lt;div dangerouslySetInnerHTML={{ __html: comment.body }} /&gt;</code>
+✅ <code>&lt;div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(comment.body) }} /&gt;</code></p>
+<h2 id="testing">🧪 Testing</h2>
+<h3 id="test-behaviour-through-the-ui-and-mock-the-network-not-the-components">Test behaviour through the UI, and mock the network, not the components</h3>
+<p>Query by role and label with React Testing Library, and mock HTTP with MSW rather than mocking hooks or modules.</p>
+<p><strong>Why it's a best practice:</strong> tests that check component state or internal calls break on every refactor and pass
+when the user-visible behaviour is broken. Role queries test what the user sees and also check accessibility. MSW
+intercepts requests at the network level, so the same handlers work in unit tests, Storybook and local development,
+and the real fetching code runs. Details are in the <a href="../testing/">testing best practices</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="nx">server</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/api/orders'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">HttpResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">([{</span><span class="w"> </span><span class="nx">id</span><span class="o">:</span><span class="w"> </span><span class="kt">1</span><span class="p">,</span><span class="w"> </span><span class="nx">total</span><span class="o">:</span><span class="w"> </span><span class="kt">42</span><span class="w"> </span><span class="p">}])));</span>
+<span class="nx">render</span><span class="p">(&lt;</span><span class="nt">OrdersPage</span><span class="w"> </span><span class="p">/&gt;);</span>
+<span class="nx">expect</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">screen</span><span class="p">.</span><span class="nx">findByRole</span><span class="p">(</span><span class="s1">'row'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="sr">/42/</span><span class="w"> </span><span class="p">})).</span><span class="nx">toBeInTheDocument</span><span class="p">();</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

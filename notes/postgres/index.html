@@ -1,0 +1,3771 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/notes/postgres/">
+      
+      
+        <link rel="prev" href="../sql/">
+      
+      
+        <link rel="next" href="../docker/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/notes/postgres/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Postgres - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#postgresql" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Postgres
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/notes/postgres/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#psql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        psql
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="psql">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meta-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meta-commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#psqlrc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ~/.psqlrc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-and-export-csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import and export CSV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#databases-schemas-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Databases, schemas, roles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Databases, schemas, roles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles-and-grants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles and grants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-and-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session and settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indexes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Indexes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-unused-and-duplicate-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find unused and duplicate indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXPLAIN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EXPLAIN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planner-stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planner stats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-an-index-without-building-it-experiment-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test an index without building it (experiment only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activity-locks-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activity, locks, slow queries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Activity, locks, slow queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-running-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is running now
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancel-or-kill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancel or kill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#who-blocks-whom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who blocks whom
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-locks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table locks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip-locked-rows-job-queues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip locked rows (job queues)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pg_stat_statements-top-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pg_stat_statements (top queries)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-useful-stats-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other useful stats views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-hit-ratio-aim-for-99-on-oltp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache hit ratio (aim for &gt; 99% on OLTP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connections
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vacuum-and-bloat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vacuum and bloat
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vacuum and bloat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-dead-tuples-and-last-vacuum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check dead tuples and last vacuum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tune-autovacuum-for-one-hot-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tune autovacuum for one hot table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vacuum-cannot-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vacuum cannot clean up?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebuild-a-bloated-table-online" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rebuild a bloated table online
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backup-and-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup and restore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backup and restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logical-dump-pg_dump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical dump (pg_dump)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-a-database-between-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy a database between servers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#physical-backup-and-pitr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physical backup and PITR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handy-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handy SQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handy SQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSONB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upsert-and-returning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upsert and returning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safe-schema-changes-on-big-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safe schema changes on big tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kill-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kill duplicates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#psql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        psql
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="psql">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#meta-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meta-commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#psqlrc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ~/.psqlrc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-and-export-csv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import and export CSV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#databases-schemas-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Databases, schemas, roles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Databases, schemas, roles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roles-and-grants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Roles and grants
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-and-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session and settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indexes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Indexes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#index-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Index types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#find-unused-and-duplicate-indexes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Find unused and duplicate indexes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EXPLAIN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EXPLAIN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#planner-stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planner stats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-an-index-without-building-it-experiment-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test an index without building it (experiment only)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#activity-locks-slow-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activity, locks, slow queries
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Activity, locks, slow queries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-running-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is running now
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cancel-or-kill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cancel or kill
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#who-blocks-whom" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Who blocks whom
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-locks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table locks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip-locked-rows-job-queues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skip locked rows (job queues)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pg_stat_statements-top-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pg_stat_statements (top queries)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#other-useful-stats-views" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other useful stats views
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-hit-ratio-aim-for-99-on-oltp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache hit ratio (aim for &gt; 99% on OLTP)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connections
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vacuum-and-bloat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vacuum and bloat
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Vacuum and bloat">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-dead-tuples-and-last-vacuum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check dead tuples and last vacuum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tune-autovacuum-for-one-hot-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tune autovacuum for one hot table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vacuum-cannot-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vacuum cannot clean up?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rebuild-a-bloated-table-online" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rebuild a bloated table online
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backup-and-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup and restore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backup and restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logical-dump-pg_dump" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logical dump (pg_dump)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#copy-a-database-between-servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Copy a database between servers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#physical-backup-and-pitr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Physical backup and PITR
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#handy-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Handy SQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Handy SQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jsonb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSONB
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#upsert-and-returning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Upsert and returning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#safe-schema-changes-on-big-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safe schema changes on big tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kill-duplicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Kill duplicates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequences
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="postgresql">PostgreSQL</h1>
+<h2 id="psql">psql</h2>
+<h3 id="connect">Connect</h3>
+<div class="highlight"><pre><span></span><code>psql<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-p<span class="w"> </span><span class="m">5432</span><span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>-d<span class="w"> </span>shop
+psql<span class="w"> </span><span class="s2">"postgresql://app:secret@localhost:5432/shop?sslmode=require"</span>
+<span class="nv">PGPASSWORD</span><span class="o">=</span>secret<span class="w"> </span>psql<span class="w"> </span>-h<span class="w"> </span>db<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>shop<span class="w"> </span>-c<span class="w"> </span><span class="s1">'select now()'</span>
+psql<span class="w"> </span>-f<span class="w"> </span>schema.sql<span class="w"> </span>shop<span class="w">                        </span><span class="c1"># run a file</span>
+psql<span class="w"> </span>-At<span class="w"> </span>-c<span class="w"> </span><span class="s1">'select count(*) from orders'</span><span class="w"> </span>shop<span class="w"> </span><span class="c1"># unaligned, tuples only: script-friendly</span>
+</code></pre></div>
+<h3 id="meta-commands">Meta-commands</h3>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\l</code></td>
+<td>List databases</td>
+</tr>
+<tr>
+<td><code>\c shop</code></td>
+<td>Connect to a database</td>
+</tr>
+<tr>
+<td><code>\dt</code> / <code>\dt+</code></td>
+<td>List tables (with sizes)</td>
+</tr>
+<tr>
+<td><code>\d orders</code></td>
+<td>Describe table: columns, indexes, FKs</td>
+</tr>
+<tr>
+<td><code>\d+ orders</code></td>
+<td>...plus storage and comments</td>
+</tr>
+<tr>
+<td><code>\di+</code></td>
+<td>List indexes with sizes</td>
+</tr>
+<tr>
+<td><code>\dn</code></td>
+<td>Schemas</td>
+</tr>
+<tr>
+<td><code>\du</code></td>
+<td>Roles</td>
+</tr>
+<tr>
+<td><code>\df</code></td>
+<td>Functions</td>
+</tr>
+<tr>
+<td><code>\dx</code></td>
+<td>Installed extensions</td>
+</tr>
+<tr>
+<td><code>\x auto</code></td>
+<td>Expanded output for wide rows</td>
+</tr>
+<tr>
+<td><code>\timing</code></td>
+<td>Show query time</td>
+</tr>
+<tr>
+<td><code>\e</code></td>
+<td>Edit the last query in <code>$EDITOR</code></td>
+</tr>
+<tr>
+<td><code>\i file.sql</code></td>
+<td>Run a file</td>
+</tr>
+<tr>
+<td><code>\copy</code></td>
+<td>Client-side COPY</td>
+</tr>
+<tr>
+<td><code>\watch 2</code></td>
+<td>Re-run last query every 2 s</td>
+</tr>
+<tr>
+<td><code>\q</code></td>
+<td>Quit</td>
+</tr>
+</tbody>
+</table>
+<h3 id="psqlrc">~/.psqlrc</h3>
+<div class="highlight"><pre><span></span><code>\set QUIET 1
+\pset null '(null)'
+\x auto
+\timing on
+\set HISTSIZE 5000
+\set QUIET 0
+</code></pre></div>
+<h3 id="import-and-export-csv">Import and export CSV</h3>
+<div class="highlight"><pre><span></span><code><span class="err">\</span><span class="k">copy</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">'orders.csv'</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="p">(</span><span class="n">FORMAT</span><span class="w"> </span><span class="n">csv</span><span class="p">,</span><span class="w"> </span><span class="n">HEADER</span><span class="p">)</span>
+<span class="err">\</span><span class="k">copy</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s1">'orders.csv'</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="p">(</span><span class="n">FORMAT</span><span class="w"> </span><span class="n">csv</span><span class="p">,</span><span class="w"> </span><span class="n">HEADER</span><span class="p">)</span>
+<span class="err">\</span><span class="k">copy</span><span class="w"> </span><span class="p">(</span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'PAID'</span><span class="p">)</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s1">'paid.csv'</span><span class="w"> </span><span class="n">CSV</span><span class="w"> </span><span class="n">HEADER</span>
+</code></pre></div>
+<hr />
+<h2 id="databases-schemas-roles">Databases, schemas, roles</h2>
+<h3 id="create">Create</h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">shop</span><span class="w"> </span><span class="k">OWNER</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">ENCODING</span><span class="w"> </span><span class="s1">'UTF8'</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="n">billing</span><span class="w"> </span><span class="k">AUTHORIZATION</span><span class="w"> </span><span class="n">app</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="n">EXTENSION</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">pg_stat_statements</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="roles-and-grants">Roles and grants</h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="n">LOGIN</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">'secret'</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">readonly</span><span class="w"> </span><span class="n">NOLOGIN</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="k">CONNECT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">shop</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">readonly</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="k">USAGE</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">readonly</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="n">TABLES</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">readonly</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="k">SCHEMA</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="k">GRANT</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">TABLES</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">readonly</span><span class="p">;</span><span class="w">  </span><span class="c1">-- future tables too</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="n">readonly</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">alice</span><span class="p">;</span><span class="w">                       </span><span class="c1">-- alice inherits the role</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">statement_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'30s'</span><span class="p">;</span>
+<span class="k">REVOKE</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">shop</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">PUBLIC</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="err">\</span><span class="n">du</span>
+<span class="err">\</span><span class="n">dp</span><span class="w"> </span><span class="n">orders</span><span class="w">                                     </span><span class="c1">-- privileges on a table</span>
+</code></pre></div>
+<h3 id="session-and-settings">Session and settings</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SHOW</span><span class="w"> </span><span class="n">search_path</span><span class="p">;</span>
+<span class="k">SET</span><span class="w"> </span><span class="n">search_path</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">billing</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="p">;</span>
+<span class="k">SHOW</span><span class="w"> </span><span class="n">work_mem</span><span class="p">;</span>
+<span class="k">SET</span><span class="w"> </span><span class="k">LOCAL</span><span class="w"> </span><span class="n">work_mem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'256MB'</span><span class="p">;</span><span class="w">                  </span><span class="c1">-- this transaction only</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">SYSTEM</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">max_connections</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">300</span><span class="p">;</span><span class="w">        </span><span class="c1">-- writes postgresql.auto.conf</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pg_reload_conf</span><span class="p">();</span><span class="w">                       </span><span class="c1">-- reload (restart needed for some settings)</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">setting</span><span class="p">,</span><span class="w"> </span><span class="n">unit</span><span class="p">,</span><span class="w"> </span><span class="n">context</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_settings</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">'%mem%'</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="sizes">Sizes</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_database_size</span><span class="p">(</span><span class="s1">'shop'</span><span class="p">));</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_total_relation_size</span><span class="p">(</span><span class="n">oid</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_class</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">relkind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'r'</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pg_total_relation_size</span><span class="p">(</span><span class="n">oid</span><span class="p">)</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="indexes">Indexes</h2>
+<h3 id="create_1">Create</h3>
+<div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_customer</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">CONCURRENTLY</span><span class="w"> </span><span class="n">idx_orders_created</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">created_at</span><span class="w"> </span><span class="k">DESC</span><span class="p">);</span><span class="w">   </span><span class="c1">-- no write lock, slower</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">uq_users_email</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">email</span><span class="p">));</span><span class="w">                 </span><span class="c1">-- expression index</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_open</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'OPEN'</span><span class="p">;</span><span class="w"> </span><span class="c1">-- partial index</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_orders_cover</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span><span class="w"> </span><span class="n">INCLUDE</span><span class="w"> </span><span class="p">(</span><span class="n">total</span><span class="p">);</span><span class="w">      </span><span class="c1">-- covering (index-only scans)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_docs_tags</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">docs</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">gin</span><span class="w"> </span><span class="p">(</span><span class="n">tags</span><span class="p">);</span><span class="w">                        </span><span class="c1">-- arrays, jsonb, full text</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">CONCURRENTLY</span><span class="w"> </span><span class="n">idx_orders_created</span><span class="p">;</span>
+<span class="k">REINDEX</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">CONCURRENTLY</span><span class="w"> </span><span class="n">idx_orders_customer</span><span class="p">;</span>
+</code></pre></div>
+<p><code>CREATE INDEX CONCURRENTLY</code> cannot run inside a transaction. If it fails it leaves an <code>INVALID</code> index: drop it and retry.</p>
+<h3 id="index-types">Index types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Good for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>btree</code> (default)</td>
+<td><code>=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>BETWEEN</code>, <code>ORDER BY</code>, <code>LIKE 'abc%'</code></td>
+</tr>
+<tr>
+<td><code>hash</code></td>
+<td>Equality only</td>
+</tr>
+<tr>
+<td><code>gin</code></td>
+<td><code>jsonb @&gt;</code>, arrays, full-text search, <code>pg_trgm</code></td>
+</tr>
+<tr>
+<td><code>gist</code></td>
+<td>Geometry, ranges, nearest-neighbour</td>
+</tr>
+<tr>
+<td><code>brin</code></td>
+<td>Huge append-only tables ordered by insertion (timestamps)</td>
+</tr>
+</tbody>
+</table>
+<p>Composite index order matters: <code>(a, b)</code> helps <code>WHERE a = ?</code> and <code>WHERE a = ? AND b = ?</code>, not <code>WHERE b = ?</code> alone.</p>
+<h3 id="find-unused-and-duplicate-indexes">Find unused and duplicate indexes</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">schemaname</span><span class="p">,</span><span class="w"> </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">indexrelname</span><span class="p">,</span><span class="w"> </span><span class="n">idx_scan</span><span class="p">,</span><span class="w"> </span><span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_relation_size</span><span class="p">(</span><span class="n">indexrelid</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="k">size</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_user_indexes</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">idx_scan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">indexrelid</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">conindid</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_constraint</span><span class="p">)</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">pg_relation_size</span><span class="p">(</span><span class="n">indexrelid</span><span class="p">)</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+
+<span class="c1">-- foreign keys without a supporting index</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">conrelid</span><span class="p">::</span><span class="n">regclass</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">tbl</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">conname</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_constraint</span><span class="w"> </span><span class="k">c</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">contype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'f'</span>
+<span class="w">  </span><span class="k">AND</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_index</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">indrelid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">conrelid</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="n">indkey</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">conkey</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+</code></pre></div>
+<hr />
+<h2 id="explain">EXPLAIN</h2>
+<h3 id="basics">Basics</h3>
+<div class="highlight"><pre><span></span><code><span class="k">EXPLAIN</span><span class="w"> </span><span class="p">(</span><span class="k">ANALYZE</span><span class="p">,</span><span class="w"> </span><span class="n">BUFFERS</span><span class="p">)</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>Index Scan using idx_orders_customer on orders  (cost=0.43..8.45 rows=3 width=64) (actual time=0.021..0.023 rows=3 loops=1)
+  Index Cond: (customer_id = 42)
+  Buffers: shared hit=4
+Execution Time: 0.045 ms
+</code></pre></div>
+<p>See the SQL note for a full explanation of each field. Checklist:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause / fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Seq Scan</code> + huge <code>Rows Removed by Filter</code></td>
+<td>Missing index on the filter column</td>
+</tr>
+<tr>
+<td><code>rows=1</code> estimated, <code>rows=50000</code> actual</td>
+<td>Stale stats: <code>ANALYZE table;</code> or raise <code>default_statistics_target</code></td>
+</tr>
+<tr>
+<td><code>Sort Method: external merge Disk</code></td>
+<td><code>work_mem</code> too small for this sort</td>
+</tr>
+<tr>
+<td><code>Nested Loop</code> with large <code>loops</code></td>
+<td>Missing join index, or bad row estimate</td>
+</tr>
+<tr>
+<td><code>Buffers: read=</code> large</td>
+<td>Cold cache, or reading far more than needed</td>
+</tr>
+<tr>
+<td>Function on column in <code>WHERE</code> (<code>lower(x)</code>, <code>date(ts)</code>)</td>
+<td>Index not usable: use an expression index or rewrite as a range</td>
+</tr>
+</tbody>
+</table>
+<h3 id="planner-stats">Planner stats</h3>
+<div class="highlight"><pre><span></span><code><span class="k">ANALYZE</span><span class="w"> </span><span class="n">orders</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">attname</span><span class="p">,</span><span class="w"> </span><span class="n">n_distinct</span><span class="p">,</span><span class="w"> </span><span class="n">correlation</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stats</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">tablename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'orders'</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ALTER</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="k">STATISTICS</span><span class="w"> </span><span class="mi">500</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="test-an-index-without-building-it-experiment-only">Test an index without building it (experiment only)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SET</span><span class="w"> </span><span class="n">enable_seqscan</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">off</span><span class="p">;</span><span class="w">                      </span><span class="c1">-- see if the planner CAN use an index</span>
+<span class="k">EXPLAIN</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">customer_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">42</span><span class="p">;</span>
+<span class="k">RESET</span><span class="w"> </span><span class="n">enable_seqscan</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="activity-locks-slow-queries">Activity, locks, slow queries</h2>
+<h3 id="what-is-running-now">What is running now</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="n">usename</span><span class="p">,</span><span class="w"> </span><span class="k">state</span><span class="p">,</span><span class="w"> </span><span class="n">wait_event_type</span><span class="p">,</span><span class="w"> </span><span class="n">wait_event</span><span class="p">,</span>
+<span class="w">       </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">query_start</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">runtime</span><span class="p">,</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">80</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">query</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="s1">'idle'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">pid</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">pg_backend_pid</span><span class="p">()</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">runtime</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>  pid  | usename | state  | wait_event_type | wait_event |    runtime    | query
+-------+---------+--------+-----------------+------------+---------------+------------------
+ 18422 | app     | active | Lock            | transactionid | 00:04:12   | UPDATE orders SET ...
+</code></pre></div>
+<h3 id="cancel-or-kill">Cancel or kill</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">pg_cancel_backend</span><span class="p">(</span><span class="mi">18422</span><span class="p">);</span><span class="w">               </span><span class="c1">-- cancel the query, keep the connection</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pg_terminate_backend</span><span class="p">(</span><span class="mi">18422</span><span class="p">);</span><span class="w">            </span><span class="c1">-- close the connection</span>
+<span class="c1">-- idle in transaction for too long:</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pg_terminate_backend</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'idle in transaction'</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">state_change</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="s1">'10 min'</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="who-blocks-whom">Who blocks whom</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">blocked</span><span class="p">.</span><span class="n">pid</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">blocked_pid</span><span class="p">,</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">blocked</span><span class="p">.</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">blocked_query</span><span class="p">,</span>
+<span class="w">       </span><span class="n">blocking</span><span class="p">.</span><span class="n">pid</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">blocking_pid</span><span class="p">,</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">blocking</span><span class="p">.</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">blocking_query</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="w"> </span><span class="n">blocked</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="k">LATERAL</span><span class="w"> </span><span class="k">unnest</span><span class="p">(</span><span class="n">pg_blocking_pids</span><span class="p">(</span><span class="n">blocked</span><span class="p">.</span><span class="n">pid</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">true</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="w"> </span><span class="n">blocking</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">blocking</span><span class="p">.</span><span class="n">pid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">pid</span><span class="p">;</span>
+</code></pre></div>
+<p>The blocker is usually a session <code>idle in transaction</code> holding row locks. Fix the app (short transactions), and set:</p>
+<div class="highlight"><pre><span></span><code><span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">idle_in_transaction_session_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'60s'</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">app</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">lock_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'5s'</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="table-locks">Table locks</h3>
+<table>
+<thead>
+<tr>
+<th>Statement</th>
+<th>Lock</th>
+<th>Blocks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SELECT</code></td>
+<td><code>ACCESS SHARE</code></td>
+<td>only <code>ACCESS EXCLUSIVE</code></td>
+</tr>
+<tr>
+<td><code>UPDATE/DELETE/INSERT</code></td>
+<td><code>ROW EXCLUSIVE</code></td>
+<td>schema changes, not other DML</td>
+</tr>
+<tr>
+<td><code>SELECT ... FOR UPDATE</code></td>
+<td>row locks</td>
+<td>other writers of those rows</td>
+</tr>
+<tr>
+<td><code>CREATE INDEX</code></td>
+<td><code>SHARE</code></td>
+<td>writes</td>
+</tr>
+<tr>
+<td><code>CREATE INDEX CONCURRENTLY</code></td>
+<td><code>SHARE UPDATE EXCLUSIVE</code></td>
+<td>nothing important</td>
+</tr>
+<tr>
+<td><code>ALTER TABLE</code>, <code>DROP</code>, <code>VACUUM FULL</code></td>
+<td><code>ACCESS EXCLUSIVE</code></td>
+<td>everything, including reads</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">locktype</span><span class="p">,</span><span class="w"> </span><span class="n">relation</span><span class="p">::</span><span class="n">regclass</span><span class="p">,</span><span class="w"> </span><span class="k">mode</span><span class="p">,</span><span class="w"> </span><span class="k">granted</span><span class="p">,</span><span class="w"> </span><span class="n">pid</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_locks</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">granted</span><span class="p">;</span>
+</code></pre></div>
+<p>Before a risky <code>ALTER TABLE</code>, set <code>SET lock_timeout = '3s';</code> so it fails fast instead of queueing behind a long transaction and blocking all traffic.</p>
+<h3 id="skip-locked-rows-job-queues">Skip locked rows (job queues)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">jobs</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'NEW'</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="n">SKIP</span><span class="w"> </span><span class="n">LOCKED</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="pg_stat_statements-top-queries">pg_stat_statements (top queries)</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">-- needs shared_preload_libraries = 'pg_stat_statements' + CREATE EXTENSION</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">calls</span><span class="p">,</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="n">total_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">total_ms</span><span class="p">,</span>
+<span class="w">       </span><span class="n">round</span><span class="p">(</span><span class="n">mean_exec_time</span><span class="p">::</span><span class="nb">numeric</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">mean_ms</span><span class="p">,</span><span class="w"> </span><span class="k">rows</span><span class="p">,</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">70</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">query</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_statements</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">total_exec_time</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">pg_stat_statements_reset</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="other-useful-stats-views">Other useful stats views</h3>
+<table>
+<thead>
+<tr>
+<th>View</th>
+<th>Answers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pg_stat_activity</code></td>
+<td>Who is connected, running what, waiting on what</td>
+</tr>
+<tr>
+<td><code>pg_stat_database</code></td>
+<td>Commits, rollbacks, deadlocks, cache hits per DB</td>
+</tr>
+<tr>
+<td><code>pg_stat_user_tables</code></td>
+<td>Seq vs index scans, live/dead tuples, last vacuum/analyze</td>
+</tr>
+<tr>
+<td><code>pg_stat_user_indexes</code></td>
+<td>Index usage (<code>idx_scan</code>)</td>
+</tr>
+<tr>
+<td><code>pg_statio_user_tables</code></td>
+<td>Heap/index block hits vs reads</td>
+</tr>
+<tr>
+<td><code>pg_stat_replication</code></td>
+<td>Replicas and replay lag</td>
+</tr>
+<tr>
+<td><code>pg_stat_bgwriter</code> / <code>pg_stat_checkpointer</code></td>
+<td>Checkpoint pressure</td>
+</tr>
+<tr>
+<td><code>pg_locks</code></td>
+<td>Held and awaited locks</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cache-hit-ratio-aim-for-99-on-oltp">Cache hit ratio (aim for &gt; 99% on OLTP)</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">blks_hit</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">nullif</span><span class="p">(</span><span class="n">blks_hit</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">blks_read</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">hit_pct</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_database</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">datname</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_database</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="connections">Connections</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">),</span><span class="w"> </span><span class="k">state</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span><span class="w"> </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">state</span><span class="p">;</span>
+<span class="k">SHOW</span><span class="w"> </span><span class="n">max_connections</span><span class="p">;</span>
+</code></pre></div>
+<hr />
+<h2 id="vacuum-and-bloat">Vacuum and bloat</h2>
+<h3 id="why">Why</h3>
+<p><code>UPDATE</code>/<code>DELETE</code> leave dead row versions (MVCC). <code>VACUUM</code> reclaims them for reuse and updates the visibility map. Autovacuum normally does it.</p>
+<div class="highlight"><pre><span></span><code><span class="k">VACUUM</span><span class="w"> </span><span class="p">(</span><span class="k">VERBOSE</span><span class="p">,</span><span class="w"> </span><span class="k">ANALYZE</span><span class="p">)</span><span class="w"> </span><span class="n">orders</span><span class="p">;</span><span class="w">              </span><span class="c1">-- no exclusive lock</span>
+<span class="k">VACUUM</span><span class="w"> </span><span class="k">FULL</span><span class="w"> </span><span class="n">orders</span><span class="p">;</span><span class="w">                            </span><span class="c1">-- rewrites table, ACCESS EXCLUSIVE lock: avoid on live systems</span>
+<span class="k">ANALYZE</span><span class="w"> </span><span class="n">orders</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="check-dead-tuples-and-last-vacuum">Check dead tuples and last vacuum</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">relname</span><span class="p">,</span><span class="w"> </span><span class="n">n_live_tup</span><span class="p">,</span><span class="w"> </span><span class="n">n_dead_tup</span><span class="p">,</span>
+<span class="w">       </span><span class="n">round</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n_dead_tup</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="k">nullif</span><span class="p">(</span><span class="n">n_live_tup</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n_dead_tup</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">),</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">dead_pct</span><span class="p">,</span>
+<span class="w">       </span><span class="n">last_autovacuum</span><span class="p">,</span><span class="w"> </span><span class="n">last_autoanalyze</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_user_tables</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">n_dead_tup</span><span class="w"> </span><span class="k">DESC</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="tune-autovacuum-for-one-hot-table">Tune autovacuum for one hot table</h3>
+<div class="highlight"><pre><span></span><code><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="p">(</span><span class="n">autovacuum_vacuum_scale_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="p">,</span><span class="w"> </span><span class="n">autovacuum_analyze_scale_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span><span class="p">);</span>
+</code></pre></div>
+<p>Default scale factor is 0.2 (20% of the table must be dead), too lazy for large tables.</p>
+<h3 id="vacuum-cannot-clean-up">Vacuum cannot clean up?</h3>
+<p>A long-running or <code>idle in transaction</code> session (or an unused replication slot / prepared transaction) holds back the cleanup horizon.</p>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">pid</span><span class="p">,</span><span class="w"> </span><span class="k">state</span><span class="p">,</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">xact_start</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="k">left</span><span class="p">(</span><span class="n">query</span><span class="p">,</span><span class="w"> </span><span class="mi">60</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">pg_stat_activity</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">xact_start</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">xact_start</span><span class="w"> </span><span class="k">LIMIT</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">slot_name</span><span class="p">,</span><span class="w"> </span><span class="n">active</span><span class="p">,</span><span class="w"> </span><span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_wal_lsn_diff</span><span class="p">(</span><span class="n">pg_current_wal_lsn</span><span class="p">(),</span><span class="w"> </span><span class="n">restart_lsn</span><span class="p">))</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">lag</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">pg_replication_slots</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="rebuild-a-bloated-table-online">Rebuild a bloated table online</h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># extension pg_repack: no long exclusive lock</span>
+pg_repack<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>-d<span class="w"> </span>shop<span class="w"> </span>--table<span class="w"> </span>orders
+</code></pre></div>
+<hr />
+<h2 id="backup-and-restore">Backup and restore</h2>
+<h3 id="logical-dump-pg_dump">Logical dump (pg_dump)</h3>
+<div class="highlight"><pre><span></span><code>pg_dump<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>-Fc<span class="w"> </span>shop<span class="w"> </span>&gt;<span class="w"> </span>shop.dump<span class="w">          </span><span class="c1"># custom format: compressed, selective restore</span>
+pg_dump<span class="w"> </span>-Fd<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span>-f<span class="w"> </span>shop_dir<span class="w"> </span>shop<span class="w">                         </span><span class="c1"># directory format, parallel dump</span>
+pg_dump<span class="w"> </span>-Fp<span class="w"> </span>shop<span class="w"> </span>&gt;<span class="w"> </span>shop.sql<span class="w">                               </span><span class="c1"># plain SQL</span>
+pg_dump<span class="w"> </span>-s<span class="w"> </span>shop<span class="w"> </span>&gt;<span class="w"> </span>schema.sql<span class="w">                              </span><span class="c1"># schema only</span>
+pg_dump<span class="w"> </span>-a<span class="w"> </span>-t<span class="w"> </span>orders<span class="w"> </span>shop<span class="w"> </span>&gt;<span class="w"> </span>orders_data.sql<span class="w">               </span><span class="c1"># data of one table</span>
+pg_dumpall<span class="w"> </span>--globals-only<span class="w"> </span>&gt;<span class="w"> </span>globals.sql<span class="w">                   </span><span class="c1"># roles and tablespaces</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Flag</th>
+<th>Restore with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plain SQL</td>
+<td><code>-Fp</code></td>
+<td><code>psql</code></td>
+</tr>
+<tr>
+<td>Custom</td>
+<td><code>-Fc</code></td>
+<td><code>pg_restore</code></td>
+</tr>
+<tr>
+<td>Directory</td>
+<td><code>-Fd</code></td>
+<td><code>pg_restore</code> (parallel with <code>-j</code>)</td>
+</tr>
+<tr>
+<td>Tar</td>
+<td><code>-Ft</code></td>
+<td><code>pg_restore</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="restore">Restore</h3>
+<div class="highlight"><pre><span></span><code>createdb<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>shop_restored
+pg_restore<span class="w"> </span>-h<span class="w"> </span>localhost<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>-d<span class="w"> </span>shop_restored<span class="w"> </span>--no-owner<span class="w"> </span>-j<span class="w"> </span><span class="m">4</span><span class="w"> </span>shop.dump
+pg_restore<span class="w"> </span>-d<span class="w"> </span>shop_restored<span class="w"> </span>-t<span class="w"> </span>orders<span class="w"> </span>shop.dump<span class="w">           </span><span class="c1"># one table</span>
+pg_restore<span class="w"> </span>-l<span class="w"> </span>shop.dump<span class="w">                                   </span><span class="c1"># list contents</span>
+pg_restore<span class="w"> </span>-d<span class="w"> </span>shop<span class="w"> </span>--clean<span class="w"> </span>--if-exists<span class="w"> </span>shop.dump<span class="w">          </span><span class="c1"># drop objects first</span>
+psql<span class="w"> </span>-d<span class="w"> </span>shop_restored<span class="w"> </span>-f<span class="w"> </span>shop.sql<span class="w">                         </span><span class="c1"># plain format</span>
+psql<span class="w"> </span>-v<span class="w"> </span><span class="nv">ON_ERROR_STOP</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>-1<span class="w"> </span>-f<span class="w"> </span>shop.sql<span class="w"> </span>shop<span class="w">               </span><span class="c1"># single transaction, stop on first error</span>
+</code></pre></div>
+<h3 id="copy-a-database-between-servers">Copy a database between servers</h3>
+<div class="highlight"><pre><span></span><code>pg_dump<span class="w"> </span>-Fc<span class="w"> </span>-h<span class="w"> </span>old-host<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>shop<span class="w"> </span><span class="p">|</span><span class="w"> </span>pg_restore<span class="w"> </span>-h<span class="w"> </span>new-host<span class="w"> </span>-U<span class="w"> </span>app<span class="w"> </span>-d<span class="w"> </span>shop<span class="w"> </span>--no-owner
+</code></pre></div>
+<h3 id="physical-backup-and-pitr">Physical backup and PITR</h3>
+<div class="highlight"><pre><span></span><code>pg_basebackup<span class="w"> </span>-h<span class="w"> </span>primary<span class="w"> </span>-U<span class="w"> </span>replicator<span class="w"> </span>-D<span class="w"> </span>/backups/base<span class="w"> </span>-Ft<span class="w"> </span>-z<span class="w"> </span>-P<span class="w"> </span>-X<span class="w"> </span>stream
+</code></pre></div>
+<div class="highlight"><pre><span></span><code># postgresql.conf for point-in-time recovery
+archive_mode = on
+archive_command = 'test ! -f /wal_archive/%f &amp;&amp; cp %p /wal_archive/%f'
+</code></pre></div>
+<div class="highlight"><pre><span></span><code># restore: unpack base backup, then in postgresql.conf + empty recovery.signal file
+restore_command = 'cp /wal_archive/%f %p'
+recovery_target_time = '2026-09-29 10:15:00'
+</code></pre></div>
+<p>For real setups use pgBackRest or Barman instead of hand-rolled scripts, and test restores regularly: an untested backup is not a backup.</p>
+<hr />
+<h2 id="handy-sql">Handy SQL</h2>
+<h3 id="jsonb">JSONB</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">data</span><span class="o">-&gt;&gt;</span><span class="s1">'name'</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="o">-&gt;</span><span class="s1">'address'</span><span class="o">-&gt;&gt;</span><span class="s1">'city'</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">city</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="o">@&gt;</span><span class="w"> </span><span class="s1">'{"active": true}'</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_users_data</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">gin</span><span class="w"> </span><span class="p">(</span><span class="k">data</span><span class="w"> </span><span class="n">jsonb_path_ops</span><span class="p">);</span>
+<span class="k">UPDATE</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jsonb_set</span><span class="p">(</span><span class="k">data</span><span class="p">,</span><span class="w"> </span><span class="s1">'{address,city}'</span><span class="p">,</span><span class="w"> </span><span class="s1">'"Paris"'</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="upsert-and-returning">Upsert and returning</h3>
+<div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">stock</span><span class="w"> </span><span class="p">(</span><span class="n">sku</span><span class="p">,</span><span class="w"> </span><span class="n">qty</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">'A1'</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="k">ON</span><span class="w"> </span><span class="n">CONFLICT</span><span class="w"> </span><span class="p">(</span><span class="n">sku</span><span class="p">)</span><span class="w"> </span><span class="k">DO</span><span class="w"> </span><span class="k">UPDATE</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">qty</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stock</span><span class="p">.</span><span class="n">qty</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">EXCLUDED</span><span class="p">.</span><span class="n">qty</span>
+<span class="n">RETURNING</span><span class="w"> </span><span class="o">*</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="safe-schema-changes-on-big-tables">Safe schema changes on big tables</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SET</span><span class="w"> </span><span class="n">lock_timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'3s'</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">note</span><span class="w"> </span><span class="nb">text</span><span class="p">;</span><span class="w">                          </span><span class="c1">-- fast, no rewrite</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">flag</span><span class="w"> </span><span class="nb">boolean</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="k">false</span><span class="p">;</span><span class="w"> </span><span class="c1">-- fast since PG 11</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_c</span><span class="w"> </span><span class="k">FOREIGN</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">(</span><span class="n">customer_id</span><span class="p">)</span><span class="w"> </span><span class="k">REFERENCES</span><span class="w"> </span><span class="n">customers</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">VALID</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="n">VALIDATE</span><span class="w"> </span><span class="k">CONSTRAINT</span><span class="w"> </span><span class="n">fk_c</span><span class="p">;</span><span class="w">                      </span><span class="c1">-- validates without blocking writes</span>
+</code></pre></div>
+<h3 id="kill-duplicates">Kill duplicates</h3>
+<div class="highlight"><pre><span></span><code><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="n">b</span>
+<span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">ctid</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">ctid</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">email</span><span class="p">;</span>
+</code></pre></div>
+<h3 id="sequences">Sequences</h3>
+<div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">setval</span><span class="p">(</span><span class="n">pg_get_serial_sequence</span><span class="p">(</span><span class="s1">'orders'</span><span class="p">,</span><span class="w"> </span><span class="s1">'id'</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="k">max</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">orders</span><span class="p">));</span><span class="w">   </span><span class="c1">-- after a data import</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

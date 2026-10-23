@@ -1,0 +1,2961 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/best-practices/security/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+        <link rel="next" href="../observability/">
+      
+      
+        
+          <link rel="alternate" href="../../../best-practices/security/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Sécurité - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bonnes-pratiques-de-securite" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sécurité
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../best-practices/security/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#entrees-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚪 Entrées &amp; injection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚪 Entrées &amp; injection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validez-toutes-les-entrees-a-la-frontiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validez toutes les entrées à la frontière
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-requetes-parametrees-jamais-de-concatenation-de-chaines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des requêtes paramétrées, jamais de concaténation de chaînes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#echappez-les-sorties-et-definissez-une-content-security-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Échappez les sorties et définissez une Content Security Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prevenez-le-path-traversal-et-le-ssrf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prévenez le path traversal et le SSRF
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentification-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔑 Authentification &amp; secrets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔑 Authentification &amp; secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hachez-les-mots-de-passe-avec-un-algorithme-lent-et-adaptatif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hachez les mots de passe avec un algorithme lent et adaptatif
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-secrets-out-of-code-and-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez les secrets hors du code et de Git
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validez-completement-les-jwt-et-gardez-les-de-courte-duree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validez complètement les JWT et gardez-les de courte durée
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitez-le-debit-et-verrouillez-les-endpoints-de-connexion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitez le débit et verrouillez les endpoints de connexion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#protections-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Protections web
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Protections web">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurez-cors-avec-une-liste-dorigines-explicite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurez CORS avec une liste d'origines explicite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gardez-la-protection-csrf-activee-pour-les-sessions-par-cookie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez la protection CSRF activée pour les sessions par cookie
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imposez-https-et-des-cookies-securises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imposez HTTPS et des cookies sécurisés
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autorisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧑‍⚖️ Autorisation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧑‍⚖️ Autorisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refusez-par-defaut-et-appliquez-le-moindre-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refusez par défaut et appliquez le moindre privilège
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifiez-la-propriete-a-chaque-acces-a-un-objet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vérifiez la propriété à chaque accès à un objet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chaine-dapprovisionnement-exposition-des-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Chaîne d'approvisionnement &amp; exposition des données
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Chaîne d&#39;approvisionnement &amp; exposition des données">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scannez-les-dependances-et-mettez-les-a-jour-regulierement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scannez les dépendances et mettez-les à jour régulièrement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nexposez-jamais-les-entites-ni-les-erreurs-internes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N'exposez jamais les entités ni les erreurs internes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-loguez-jamais-de-secrets-ni-de-donnees-personnelles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne loguez jamais de secrets ni de données personnelles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#securisez-lactuator-et-les-autres-endpoints-de-gestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sécurisez l'actuator et les autres endpoints de gestion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#entrees-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚪 Entrées &amp; injection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚪 Entrées &amp; injection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validez-toutes-les-entrees-a-la-frontiere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validez toutes les entrées à la frontière
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-requetes-parametrees-jamais-de-concatenation-de-chaines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des requêtes paramétrées, jamais de concaténation de chaînes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#echappez-les-sorties-et-definissez-une-content-security-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Échappez les sorties et définissez une Content Security Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prevenez-le-path-traversal-et-le-ssrf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prévenez le path traversal et le SSRF
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentification-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔑 Authentification &amp; secrets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔑 Authentification &amp; secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hachez-les-mots-de-passe-avec-un-algorithme-lent-et-adaptatif" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hachez les mots de passe avec un algorithme lent et adaptatif
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-secrets-out-of-code-and-git" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez les secrets hors du code et de Git
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validez-completement-les-jwt-et-gardez-les-de-courte-duree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validez complètement les JWT et gardez-les de courte durée
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitez-le-debit-et-verrouillez-les-endpoints-de-connexion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitez le débit et verrouillez les endpoints de connexion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#protections-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🛡️ Protections web
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🛡️ Protections web">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#configurez-cors-avec-une-liste-dorigines-explicite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurez CORS avec une liste d'origines explicite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gardez-la-protection-csrf-activee-pour-les-sessions-par-cookie" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez la protection CSRF activée pour les sessions par cookie
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#imposez-https-et-des-cookies-securises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imposez HTTPS et des cookies sécurisés
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#autorisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧑‍⚖️ Autorisation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧑‍⚖️ Autorisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refusez-par-defaut-et-appliquez-le-moindre-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refusez par défaut et appliquez le moindre privilège
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifiez-la-propriete-a-chaque-acces-a-un-objet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vérifiez la propriété à chaque accès à un objet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chaine-dapprovisionnement-exposition-des-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Chaîne d'approvisionnement &amp; exposition des données
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Chaîne d&#39;approvisionnement &amp; exposition des données">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scannez-les-dependances-et-mettez-les-a-jour-regulierement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scannez les dépendances et mettez-les à jour régulièrement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nexposez-jamais-les-entites-ni-les-erreurs-internes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        N'exposez jamais les entités ni les erreurs internes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-loguez-jamais-de-secrets-ni-de-donnees-personnelles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne loguez jamais de secrets ni de données personnelles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#securisez-lactuator-et-les-autres-endpoints-de-gestion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sécurisez l'actuator et les autres endpoints de gestion
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="bonnes-pratiques-de-securite">Bonnes pratiques de sécurité</h1>
+<h2 id="entrees-injection">🚪 Entrées &amp; injection</h2>
+<h3 id="validez-toutes-les-entrees-a-la-frontiere">Validez toutes les entrées à la frontière</h3>
+<p>Validez chaque corps de requête, paramètre et en-tête avec Bean Validation, et rejetez les mauvaises entrées avec un 400.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> toute valeur venue de l'extérieur n'est pas fiable. Sans limites, une chaîne
+de 500 Mo, une quantité négative ou un id nul se propagent profondément dans le système et échouent à des endroits
+imprévisibles, ou pire, réussissent. Valider une fois à la périphérie donne un seul jeu de règles clair. Préférez
+les listes d'autorisation (un enum, une regex) aux listes de blocage, que les attaquants contournent.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="kd">record</span> <span class="nc">CreateUser</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">record</span> <span class="nc">CreateUser</span><span class="p">(</span>
+<span class="w">    </span><span class="nd">@NotBlank</span><span class="w"> </span><span class="nd">@Email</span><span class="w"> </span><span class="nd">@Size</span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">254</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">,</span>
+<span class="w">    </span><span class="nd">@Min</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span><span class="w"> </span><span class="nd">@Max</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="nd">@PostMapping</span><span class="p">(</span><span class="s">"/users"</span><span class="p">)</span>
+<span class="n">User</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CreateUser</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="utilisez-des-requetes-parametrees-jamais-de-concatenation-de-chaines">Utilisez des requêtes paramétrées, jamais de concaténation de chaînes</h3>
+<p>Passez les valeurs en paramètres liés dans JDBC, JPQL et les requêtes natives.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> l'injection SQL figure dans l'OWASP Top 10 depuis vingt ans et provoque
+encore des dumps complets de base de données. Avec <code>name = "x' OR '1'='1"</code>, une requête concaténée renvoie toutes
+les lignes ; <code>'; DROP TABLE users;--</code> est pire. Un paramètre lié est envoyé séparément du texte SQL, donc la base
+ne le traite jamais comme du code.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">jdbc</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">"SELECT * FROM users WHERE name = '"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"'"</span><span class="p">,</span><span class="w"> </span><span class="n">mapper</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">jdbc</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="s">"SELECT * FROM users WHERE name = ?"</span><span class="p">,</span><span class="w"> </span><span class="n">mapper</span><span class="p">,</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+
+<span class="c1">// ✅ Spring Data</span>
+<span class="nd">@Query</span><span class="p">(</span><span class="s">"select u from User u where u.name = :name"</span><span class="p">)</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findByName</span><span class="p">(</span><span class="nd">@Param</span><span class="p">(</span><span class="s">"name"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="echappez-les-sorties-et-definissez-une-content-security-policy">Échappez les sorties et définissez une Content Security Policy</h3>
+<p>Encodez les données selon le contexte où elles sont rendues (HTML, JS, URL), et envoyez des en-têtes de sécurité.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une XSS stockée permet au commentaire d'un utilisateur d'exécuter du
+JavaScript dans le navigateur de chaque lecteur et de voler des sessions. Les moteurs de template comme Thymeleaf
+échappent par défaut (<code>th:text</code>) ; la sortie brute (<code>th:utext</code>, <code>innerHTML</code>) désactive cette protection. Une CSP
+limite les dégâts si vous en oubliez un endroit. Spring Security ajoute plusieurs en-têtes par défaut.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">th</span><span class="p">:</span><span class="n">utext</span><span class="o">=</span><span class="s">"${comment}"</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+
+<span class="c1">// ✅</span>
+<span class="o">&lt;</span><span class="n">div</span><span class="w"> </span><span class="n">th</span><span class="p">:</span><span class="n">text</span><span class="o">=</span><span class="s">"${comment}"</span><span class="o">&gt;&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+
+<span class="c1">// ✅</span>
+<span class="n">http</span><span class="p">.</span><span class="na">headers</span><span class="p">(</span><span class="n">h</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">h</span><span class="p">.</span><span class="na">contentSecurityPolicy</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">policyDirectives</span><span class="p">(</span><span class="s">"default-src 'self'"</span><span class="p">)));</span>
+</code></pre></div>
+<h3 id="prevenez-le-path-traversal-et-le-ssrf">Prévenez le path traversal et le SSRF</h3>
+<p>Ne construisez jamais de chemins de fichiers ou d'URL sortantes directement à partir d'une saisie utilisateur. Normalisez et vérifiez contre une liste d'autorisation.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> <code>../../etc/passwd</code> dans un nom de fichier lit n'importe quel fichier
+accessible au processus. Un attaquant qui contrôle une URL appelée par votre serveur peut atteindre
+<code>http://169.254.169.254/</code> (métadonnées cloud) et voler les identifiants de l'instance, comme lors de la fuite
+Capital One en 2019.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">Path</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/data/uploads"</span><span class="p">,</span><span class="w"> </span><span class="n">filename</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">Path</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Path</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"/data/uploads"</span><span class="p">).</span><span class="na">toRealPath</span><span class="p">();</span>
+<span class="n">Path</span><span class="w"> </span><span class="n">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">base</span><span class="p">.</span><span class="na">resolve</span><span class="p">(</span><span class="n">filename</span><span class="p">).</span><span class="na">normalize</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">file</span><span class="p">.</span><span class="na">startsWith</span><span class="p">(</span><span class="n">base</span><span class="p">))</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ResponseStatusException</span><span class="p">(</span><span class="n">HttpStatus</span><span class="p">.</span><span class="na">BAD_REQUEST</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="authentification-secrets">🔑 Authentification &amp; secrets</h2>
+<h3 id="hachez-les-mots-de-passe-avec-un-algorithme-lent-et-adaptatif">Hachez les mots de passe avec un algorithme lent et adaptatif</h3>
+<p>Utilisez <code>BCryptPasswordEncoder</code>, Argon2 ou <code>DelegatingPasswordEncoder</code>. Ne stockez jamais de texte en clair, de MD5 ou de SHA simple.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> un GPU calcule des milliards de hachages SHA-256 par seconde, donc une table
+fuitée sans sel est cassée en quelques heures. BCrypt est salé et volontairement lent (environ 100 ms par hachage
+avec un coût de 10 à 12), ce qui rend la force brute impraticable. <code>DelegatingPasswordEncoder</code> stocke l'id de
+l'algorithme, ce qui permet de migrer plus tard.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">user</span><span class="p">.</span><span class="na">setPassword</span><span class="p">(</span><span class="n">DigestUtils</span><span class="p">.</span><span class="na">md5Hex</span><span class="p">(</span><span class="n">rawPassword</span><span class="p">));</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Bean</span>
+<span class="n">PasswordEncoder</span><span class="w"> </span><span class="nf">passwordEncoder</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">PasswordEncoderFactories</span><span class="p">.</span><span class="na">createDelegatingPasswordEncoder</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="n">user</span><span class="p">.</span><span class="na">setPassword</span><span class="p">(</span><span class="n">passwordEncoder</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="n">rawPassword</span><span class="p">));</span>
+</code></pre></div>
+<h3 id="keep-secrets-out-of-code-and-git">Gardez les secrets hors du code et de Git</h3>
+<p>Chargez les secrets depuis des variables d'environnement ou un gestionnaire de secrets (Vault, AWS Secrets Manager, secrets Kubernetes), et faites-les tourner.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> des bots scannent les commits publics de GitHub en quelques minutes et
+utilisent les clés cloud fuitées pour miner de la cryptomonnaie ; les dépôts privés fuient via les forks et les
+logs de CI. Un secret dans l'historique Git y reste après suppression, donc la seule solution est de le renouveler.
+Ajoutez un scanner (gitleaks) en CI et un hook de pre-commit.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ⛔</span>
+<span class="nt">spring.datasource.password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">s3cr3t</span>
+<span class="c1"># ✅</span>
+<span class="nt">spring.datasource.password</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${DB_PASSWORD}</span>
+</code></pre></div>
+<h3 id="validez-completement-les-jwt-et-gardez-les-de-courte-duree">Validez complètement les JWT et gardez-les de courte durée</h3>
+<p>Vérifiez la signature, <code>iss</code>, <code>aud</code> et <code>exp</code>. Utilisez des access tokens courts (5 à 15 min) avec des refresh tokens. N'acceptez jamais <code>alg: none</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> un JWT ne peut pas être révoqué avant son expiration, donc un token volé de
+30 jours est une brèche de 30 jours. Sauter la vérification de l'audience permet d'utiliser sur le service B un
+token émis pour le service A. Utilisez le resource server de Spring plutôt qu'un parsing écrit à la main.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ décodage sans vérification</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">claims</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Jwts</span><span class="p">.</span><span class="na">parser</span><span class="p">().</span><span class="na">build</span><span class="p">().</span><span class="na">parseUnsecuredClaims</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">http</span><span class="p">.</span><span class="na">oauth2ResourceServer</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">jwt</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">()));</span>
+<span class="c1">// application.yml</span>
+<span class="c1">// spring.security.oauth2.resourceserver.jwt.issuer-uri: https://auth.example.com</span>
+</code></pre></div>
+<h3 id="limitez-le-debit-et-verrouillez-les-endpoints-de-connexion">Limitez le débit et verrouillez les endpoints de connexion</h3>
+<p>Limitez les tentatives d'authentification, et renvoyez le même message pour un mauvais utilisateur et un mauvais mot de passe.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> sans limites, un attaquant essaie 10 millions de mots de passe fuités contre
+votre connexion (credential stuffing). Des messages différents (« utilisateur inconnu » vs « mauvais mot de
+passe ») lui permettent d'énumérer d'abord les comptes valides. Ajoutez la MFA pour les comptes sensibles.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">"User not found"</span><span class="p">;</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">matches</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="s">"Wrong password"</span><span class="p">;</span>
+
+<span class="c1">// ✅</span>
+<span class="k">return</span><span class="w"> </span><span class="n">ResponseEntity</span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="mi">401</span><span class="p">).</span><span class="na">body</span><span class="p">(</span><span class="n">problem</span><span class="p">(</span><span class="s">"Invalid credentials"</span><span class="p">));</span>
+</code></pre></div>
+<h2 id="protections-web">🛡️ Protections web</h2>
+<h3 id="configurez-cors-avec-une-liste-dorigines-explicite">Configurez CORS avec une liste d'origines explicite</h3>
+<p>Autorisez des origines, méthodes et en-têtes précis. Ne combinez jamais <code>*</code> avec les credentials.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> CORS est une règle du navigateur qui décide quels sites web peuvent lire les
+réponses de votre API avec les cookies de l'utilisateur. <code>allowedOrigins("*")</code> sur une API authentifiée permet à
+n'importe quel site malveillant de le faire. Les navigateurs refusent <code>*</code> avec les credentials, donc on « corrige »
+en reflétant l'en-tête <code>Origin</code>, ce qui revient à la même faille.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">registry</span><span class="p">.</span><span class="na">addMapping</span><span class="p">(</span><span class="s">"/**"</span><span class="p">).</span><span class="na">allowedOriginPatterns</span><span class="p">(</span><span class="s">"*"</span><span class="p">).</span><span class="na">allowCredentials</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">registry</span><span class="p">.</span><span class="na">addMapping</span><span class="p">(</span><span class="s">"/api/**"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">allowedOrigins</span><span class="p">(</span><span class="s">"https://app.example.com"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">allowedMethods</span><span class="p">(</span><span class="s">"GET"</span><span class="p">,</span><span class="w"> </span><span class="s">"POST"</span><span class="p">,</span><span class="w"> </span><span class="s">"PUT"</span><span class="p">,</span><span class="w"> </span><span class="s">"DELETE"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">allowCredentials</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="gardez-la-protection-csrf-activee-pour-les-sessions-par-cookie">Gardez la protection CSRF activée pour les sessions par cookie</h3>
+<p>Ne désactivez CSRF que pour les API sans état qui s'authentifient avec un bearer token dans un en-tête.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> les navigateurs joignent les cookies automatiquement, donc un formulaire
+caché sur <code>evil.com</code> peut soumettre <code>POST /transfer</code> en tant qu'utilisateur connecté. Des tokens ou des cookies
+<code>SameSite=Lax/Strict</code> l'empêchent. Désactiver CSRF « parce que le POST échouait dans Postman » retire la
+protection de toute l'application.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ application à sessions avec protection désactivée</span>
+<span class="n">http</span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">);</span>
+
+<span class="c1">// ✅ uniquement pour une API sans état à bearer token</span>
+<span class="n">http</span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">AbstractHttpConfigurer</span><span class="p">::</span><span class="n">disable</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">sessionManagement</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">sessionCreationPolicy</span><span class="p">(</span><span class="n">SessionCreationPolicy</span><span class="p">.</span><span class="na">STATELESS</span><span class="p">));</span>
+</code></pre></div>
+<h3 id="imposez-https-et-des-cookies-securises">Imposez HTTPS et des cookies sécurisés</h3>
+<p>Redirigez vers HTTPS, envoyez HSTS, et définissez <code>Secure</code>, <code>HttpOnly</code> et <code>SameSite</code> sur les cookies de session.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> sur le Wi-Fi d'un café, le trafic HTTP en clair peut être lu et modifié.
+<code>HttpOnly</code> empêche JavaScript de lire le cookie de session, donc une faille XSS ne peut pas le voler. <code>Secure</code> le
+garde hors des requêtes HTTP.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">server.servlet.session.cookie.secure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">server.servlet.session.cookie.http-only</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">server.servlet.session.cookie.same-site</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lax</span>
+</code></pre></div>
+<h2 id="autorisation">🧑‍⚖️ Autorisation</h2>
+<h3 id="refusez-par-defaut-et-appliquez-le-moindre-privilege">Refusez par défaut et appliquez le moindre privilège</h3>
+<p>Exigez l'authentification pour chaque route, ouvrez explicitement certaines routes, et donnez à chaque compte ou service uniquement les permissions dont il a besoin.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> « Broken Access Control » est le numéro 1 de l'OWASP Top 10 (2021). Un
+nouvel endpoint oublié sous un motif permit-all est public dès le premier jour. Un utilisateur de base de données
+avec le droit <code>DROP</code> transforme une petite injection en perte totale ; un utilisateur applicatif qui ne peut faire
+que <code>SELECT/INSERT/UPDATE</code> limite le rayon d'action.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/api/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">())</span>
+
+<span class="c1">// ✅</span>
+<span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/actuator/health/**"</span><span class="p">,</span><span class="w"> </span><span class="s">"/v3/api-docs/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/api/admin/**"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">())</span>
+</code></pre></div>
+<h3 id="verifiez-la-propriete-a-chaque-acces-a-un-objet">Vérifiez la propriété à chaque accès à un objet</h3>
+<p>Vérifiez que l'appelant a le droit d'accéder à cet enregistrement précis, pas seulement qu'il est connecté.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> l'IDOR (insecure direct object reference) est le bug classique : l'utilisateur
+5 appelle <code>GET /orders/1234</code> et obtient la commande de quelqu'un d'autre, parce que le code vérifie seulement « est
+authentifié ». Les attaquants n'ont qu'à parcourir les ids. Imposez-le avec la sécurité par méthode ou en
+interrogeant avec le propriétaire.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="k">return</span><span class="w"> </span><span class="n">orders</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">).</span><span class="na">orElseThrow</span><span class="p">();</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@PreAuthorize</span><span class="p">(</span><span class="s">"@orderAccess.isOwner(#id, authentication)"</span><span class="p">)</span>
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/orders/{id}"</span><span class="p">)</span>
+<span class="n">Order</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ ou restreindre la requête</span>
+<span class="n">orders</span><span class="p">.</span><span class="na">findByIdAndCustomerId</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">currentUser</span><span class="p">.</span><span class="na">id</span><span class="p">());</span>
+</code></pre></div>
+<h2 id="chaine-dapprovisionnement-exposition-des-donnees">📦 Chaîne d'approvisionnement &amp; exposition des données</h2>
+<h3 id="scannez-les-dependances-et-mettez-les-a-jour-regulierement">Scannez les dépendances et mettez-les à jour régulièrement</h3>
+<p>Lancez OWASP Dependency-Check, Dependabot, Renovate ou Trivy en CI, et échouez sur les CVE de sévérité élevée.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> Log4Shell (CVE-2021-44228) était une exécution de code à distance dans une
+bibliothèque que beaucoup d'équipes ne savaient même pas avoir. L'essentiel du code qui tourne chez vous est tiers.
+Les pull requests automatiques rendent les mises à jour petites et fréquentes, au lieu d'un saut douloureux par-dessus
+trois versions majeures pendant un incident.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅ .github/dependabot.yml</span>
+<span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="nt">updates</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">package-ecosystem</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">maven</span>
+<span class="w">    </span><span class="nt">directory</span><span class="p">:</span><span class="w"> </span><span class="s">"/"</span>
+<span class="w">    </span><span class="nt">schedule</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> interval</span><span class="p">:</span><span class="w"> </span><span class="nv">weekly</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="nexposez-jamais-les-entites-ni-les-erreurs-internes">N'exposez jamais les entités ni les erreurs internes</h3>
+<p>Renvoyez des DTO et des corps d'erreur génériques. Loguez les détails uniquement côté serveur.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> renvoyer une entité JPA divulgue des colonnes comme <code>passwordHash</code> ou
+<code>isAdmin</code>, et permet aux clients de définir des champs par mass assignment (<code>{"role":"ADMIN"}</code>). Une stack trace
+révèle les versions du framework, les noms de tables et les chemins de fichiers, ce qui aide l'attaque suivante.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="nd">@PostMapping</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">repo</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">user</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">record</span> <span class="nc">UserResponse</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="nd">@PostMapping</span><span class="w"> </span><span class="n">UserResponse</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="nd">@Valid</span><span class="w"> </span><span class="nd">@RequestBody</span><span class="w"> </span><span class="n">CreateUser</span><span class="w"> </span><span class="n">body</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// application.yml</span>
+<span class="c1">// server.error.include-stacktrace: never</span>
+<span class="c1">// server.error.include-message: never</span>
+</code></pre></div>
+<h3 id="ne-loguez-jamais-de-secrets-ni-de-donnees-personnelles">Ne loguez jamais de secrets ni de données personnelles</h3>
+<p>Masquez les tokens, mots de passe, numéros de carte et données personnelles avant de les loguer.</p>
+<p><strong>Pourquoi :</strong> traité dans <a href="../observability/#never-log-secrets-or-personal-data">Ne loguez jamais de secrets ni de données personnelles</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"Login request: {}"</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">);</span><span class="w">   </span><span class="c1">// contient le mot de passe</span>
+
+<span class="c1">// ✅</span>
+<span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"Login attempt for user id={}"</span><span class="p">,</span><span class="w"> </span><span class="n">userId</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="securisez-lactuator-et-les-autres-endpoints-de-gestion">Sécurisez l'actuator et les autres endpoints de gestion</h3>
+<p>N'exposez publiquement que <code>health</code> et <code>info</code>, et placez le reste derrière une authentification ou un port privé.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> <code>/actuator/env</code>, <code>/heapdump</code> et <code>/threaddump</code> révèlent la configuration, et un
+heap dump contient tous les secrets en mémoire. Les actuators exposés sont un constat fréquent dans les tests
+d'intrusion.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ⛔</span>
+<span class="nt">management.endpoints.web.exposure.include</span><span class="p">:</span><span class="w"> </span><span class="s">"*"</span>
+
+<span class="c1"># ✅</span>
+<span class="nt">management.endpoints.web.exposure.include</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health,info,prometheus</span>
+<span class="nt">management.server.port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">9090</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

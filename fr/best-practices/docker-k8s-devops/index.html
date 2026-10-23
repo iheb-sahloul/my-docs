@@ -1,0 +1,2970 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/best-practices/docker-k8s-devops/">
+      
+      
+        <link rel="prev" href="../sql-jpa-postgres/">
+      
+      
+        <link rel="next" href="../ci-cd/">
+      
+      
+        
+          <link rel="alternate" href="../../../best-practices/docker-k8s-devops/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Docker, K8s & DevOps - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#bonnes-pratiques-docker-kubernetes-devops" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Docker, K8s & DevOps
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../best-practices/docker-k8s-devops/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#images-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐳 Images Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐳 Images Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-builds-multi-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des builds multi-stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#figez-les-versions-des-images-de-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Figez les versions des images de base
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ordonnez-les-couches-de-la-moins-a-la-plus-souvent-modifiee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordonnez les couches de la moins à la plus souvent modifiée
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ajoutez-un-dockerignore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ajoutez un .dockerignore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-tournez-pas-en-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne tournez pas en root
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-mettez-jamais-de-secrets-dans-limage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne mettez jamais de secrets dans l'image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conteneurs-a-lexecution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Conteneurs à l'exécution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Conteneurs à l&#39;exécution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-la-forme-exec-et-gerez-sigterm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez la forme exec et gérez SIGTERM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#un-processus-par-conteneur-logs-sur-stdout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Un processus par conteneur, logs sur stdout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ☸️ Kubernetes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="☸️ Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#definissez-les-requests-et-limits-de-ressources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Définissez les requests et limits de ressources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-liveness-readiness-and-startup-probes-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurez correctement les probes liveness, readiness et startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gardez-la-configuration-dans-des-configmaps-et-des-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez la configuration dans des ConfigMaps et des Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lancez-plusieurs-replicas-avec-un-poddisruptionbudget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lancez plusieurs réplicas avec un PodDisruptionBudget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-rolling-updates-avec-maxunavailable-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des rolling updates avec maxUnavailable: 0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⎈ Helm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⎈ Helm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#un-chart-un-fichier-de-values-par-environnement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Un chart, un fichier de values par environnement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lintez-et-rendez-les-charts-en-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lintez et rendez les charts en CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 CI/CD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 CI/CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#construisez-une-fois-promouvez-le-meme-artefact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Construisez une fois, promouvez le même artefact
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scannez-les-images-et-les-dependances-dans-le-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scannez les images et les dépendances dans le pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#images-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐳 Images Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐳 Images Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-builds-multi-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des builds multi-stage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#figez-les-versions-des-images-de-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Figez les versions des images de base
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ordonnez-les-couches-de-la-moins-a-la-plus-souvent-modifiee" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ordonnez les couches de la moins à la plus souvent modifiée
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ajoutez-un-dockerignore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ajoutez un .dockerignore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-tournez-pas-en-root" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne tournez pas en root
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ne-mettez-jamais-de-secrets-dans-limage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ne mettez jamais de secrets dans l'image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conteneurs-a-lexecution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Conteneurs à l'exécution
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Conteneurs à l&#39;exécution">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-la-forme-exec-et-gerez-sigterm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez la forme exec et gérez SIGTERM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#un-processus-par-conteneur-logs-sur-stdout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Un processus par conteneur, logs sur stdout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kubernetes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ☸️ Kubernetes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="☸️ Kubernetes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#definissez-les-requests-et-limits-de-ressources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Définissez les requests et limits de ressources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-liveness-readiness-and-startup-probes-correctly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurez correctement les probes liveness, readiness et startup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gardez-la-configuration-dans-des-configmaps-et-des-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gardez la configuration dans des ConfigMaps et des Secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lancez-plusieurs-replicas-avec-un-poddisruptionbudget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lancez plusieurs réplicas avec un PodDisruptionBudget
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utilisez-des-rolling-updates-avec-maxunavailable-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisez des rolling updates avec maxUnavailable: 0
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⎈ Helm
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⎈ Helm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#un-chart-un-fichier-de-values-par-environnement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Un chart, un fichier de values par environnement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lintez-et-rendez-les-charts-en-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lintez et rendez les charts en CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 CI/CD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 CI/CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#construisez-une-fois-promouvez-le-meme-artefact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Construisez une fois, promouvez le même artefact
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scannez-les-images-et-les-dependances-dans-le-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scannez les images et les dépendances dans le pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="bonnes-pratiques-docker-kubernetes-devops">Bonnes pratiques Docker, Kubernetes &amp; DevOps</h1>
+<h2 id="images-docker">🐳 Images Docker</h2>
+<h3 id="utilisez-des-builds-multi-stage">Utilisez des builds multi-stage</h3>
+<p>Construisez dans une étape avec toute la chaîne d'outils, et ne copiez que le résultat dans une petite image
+d'exécution.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une image mono-étape embarque en production le JDK, Maven, le cache
+<code>~/.m2</code>, le code source et la chaîne d'outils Node. Ce sont des centaines de Mo à télécharger à chaque
+déploiement, un démarrage à froid plus lent, et beaucoup plus de paquets avec des vulnérabilités connues à
+corriger. L'étape finale n'a besoin que d'un JRE et du jar.</p>
+<div class="highlight"><pre><span></span><code><span class="c"># ✅</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jdk</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">build</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>./mvnw<span class="w"> </span>-q<span class="w"> </span>package<span class="w"> </span>-DskipTests
+
+<span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jre</span>
+<span class="k">COPY</span><span class="w"> </span>--from<span class="o">=</span>build<span class="w"> </span>/app/target/app.jar<span class="w"> </span>/app/app.jar
+<span class="k">ENTRYPOINT</span><span class="w"> </span><span class="p">[</span><span class="s2">"java"</span><span class="p">,</span><span class="w"> </span><span class="s2">"-jar"</span><span class="p">,</span><span class="w"> </span><span class="s2">"/app/app.jar"</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="figez-les-versions-des-images-de-base">Figez les versions des images de base</h3>
+<p>Utilisez un tag de version précis, ou un digest pour une reproductibilité totale. Jamais <code>latest</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> <code>latest</code> pointe vers ce qui a été poussé en dernier. Le même Dockerfile
+produit une image différente la semaine suivante, peut-être avec une nouvelle version majeure du runtime, et un
+build qui marchait hier casse sans aucun changement dans votre dépôt. Vous ne pouvez pas non plus savoir quelle
+version tourne en production. Figez la version, et laissez un bot (Renovate, Dependabot) ouvrir des PR pour la
+mettre à jour afin que les montées de version soient relues et testées.</p>
+<p>⛔ <code>FROM node:latest</code>
+✅ <code>FROM node:22.11-alpine</code> ou <code>FROM node:22.11-alpine@sha256:...</code></p>
+<h3 id="ordonnez-les-couches-de-la-moins-a-la-plus-souvent-modifiee">Ordonnez les couches de la moins à la plus souvent modifiée</h3>
+<p>Copiez d'abord les fichiers de dépendances et installez les dépendances, puis copiez le code source.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> Docker met chaque couche en cache et reconstruit tout ce qui suit la
+première couche modifiée. Avec <code>COPY . .</code> en premier, toute modification du code invalide la couche des
+dépendances, donc chaque build retélécharge toutes les dépendances. Copier <code>package.json</code> / <code>pom.xml</code> seuls
+d'abord fait que les dépendances ne sont réinstallées que quand elles changent vraiment : les builds passent de
+minutes à secondes.</p>
+<div class="highlight"><pre><span></span><code><span class="c"># ✅</span>
+<span class="k">COPY</span><span class="w"> </span>package.json<span class="w"> </span>package-lock.json<span class="w"> </span>./
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>ci
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>.
+<span class="k">RUN</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>build
+</code></pre></div>
+<h3 id="ajoutez-un-dockerignore">Ajoutez un <code>.dockerignore</code></h3>
+<p>Excluez <code>.git</code>, <code>node_modules</code>, <code>target</code>, les fichiers <code>.env</code> locaux et les dossiers d'IDE du contexte de build.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> sans lui, <code>COPY . .</code> envoie tout le répertoire au build, y compris un
+dossier <code>.git</code> qui peut peser plus lourd que l'application, des sorties de build locales qui écrasent celles
+construites dans l'image, et des fichiers <code>.env</code> contenant de vrais secrets qui finissent dans une couche lisible
+par quiconque possède l'image.</p>
+<p>✅ <code>.dockerignore</code> : <code>.git</code>, <code>node_modules</code>, <code>target</code>, <code>.env*</code>, <code>*.log</code></p>
+<h3 id="ne-tournez-pas-en-root">Ne tournez pas en root</h3>
+<p>Créez un utilisateur non root dans l'image et basculez dessus avec <code>USER</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> par défaut, le processus du conteneur tourne en root. Si l'application est
+compromise, l'attaquant est root dans le conteneur, peut modifier ses fichiers, et n'est qu'à une vulnérabilité du
+noyau ou du runtime d'être root sur le nœud. Avec un utilisateur non root, une évasion du conteneur rapporte bien
+moins. Kubernetes peut l'imposer avec <code>securityContext.runAsNonRoot: true</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="c"># ✅</span>
+<span class="k">RUN</span><span class="w"> </span>useradd<span class="w"> </span>--system<span class="w"> </span>--uid<span class="w"> </span><span class="m">10001</span><span class="w"> </span>app
+<span class="k">USER</span><span class="w"> </span><span class="s">10001</span>
+</code></pre></div>
+<h3 id="ne-mettez-jamais-de-secrets-dans-limage">Ne mettez jamais de secrets dans l'image</h3>
+<p>Ne faites pas de <code>COPY</code> d'identifiants et ne les définissez pas avec <code>ENV</code> / <code>ARG</code>. Injectez-les à l'exécution
+(Secret Kubernetes, vault). Utilisez <code>RUN --mount=type=secret</code> si le build lui-même en a besoin.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> chaque couche d'une image est conservée et peut être extraite avec
+<code>docker save</code> ou <code>docker history</code>, même si une couche suivante supprime le fichier. Les valeurs <code>ENV</code> et <code>ARG</code>
+sont stockées en clair dans les métadonnées de l'image. Quiconque peut récupérer l'image (un registry, un cache
+de CI, le poste d'un développeur) obtient le secret, et le renouveler oblige à reconstruire toutes les images.</p>
+<p>⛔ <code>ENV DB_PASSWORD=s3cr3t</code>, <code>COPY id_rsa /root/.ssh/</code>
+✅ secret monté à l'exécution, <code>RUN --mount=type=secret,id=npmrc npm ci</code> au moment du build</p>
+<h2 id="conteneurs-a-lexecution">📦 Conteneurs à l'exécution</h2>
+<h3 id="utilisez-la-forme-exec-et-gerez-sigterm">Utilisez la forme exec et gérez <code>SIGTERM</code></h3>
+<p>Écrivez <code>ENTRYPOINT</code> / <code>CMD</code> sous forme de tableau JSON, et faites en sorte que l'application termine le travail
+en cours quand elle reçoit <code>SIGTERM</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> la forme shell (<code>ENTRYPOINT java -jar app.jar</code>) lance <code>/bin/sh</code> en PID 1,
+et le shell ne transmet pas les signaux. Lors d'un arrêt ou d'un déploiement, l'application ne reçoit jamais
+<code>SIGTERM</code>, est tuée par <code>SIGKILL</code> à la fin du délai de grâce, et les requêtes en cours échouent. La forme exec
+fait de l'application le PID 1, elle reçoit donc le signal et peut s'arrêter proprement.</p>
+<p>⛔ <code>ENTRYPOINT java -jar /app/app.jar</code>
+✅ <code>ENTRYPOINT ["java", "-jar", "/app/app.jar"]</code></p>
+<h3 id="un-processus-par-conteneur-logs-sur-stdout">Un processus par conteneur, logs sur stdout</h3>
+<p>Lancez un seul processus principal par conteneur, et écrivez les logs sur stdout / stderr, pas dans des fichiers.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> le cycle de vie du conteneur suit son processus principal : si vous en
+lancez plusieurs avec un script, l'un peut planter alors que le conteneur reste « running » et en bonne santé.
+Des conteneurs séparés peuvent être mis à l'échelle, redémarrés et surveillés indépendamment. La plateforme
+collecte stdout automatiquement ; les fichiers de log dans un conteneur remplissent son disque et disparaissent à
+son redémarrage. Loggez en JSON pour que l'agrégateur puisse indexer les champs.</p>
+<p>⛔ un <code>start.sh</code> qui lance nginx et l'application en arrière-plan et fait un tail d'un fichier de log
+✅ un conteneur par processus, logs JSON sur stdout</p>
+<h2 id="kubernetes">☸️ Kubernetes</h2>
+<h3 id="definissez-les-requests-et-limits-de-ressources">Définissez les requests et limits de ressources</h3>
+<p>Donnez à chaque conteneur des <code>requests</code> CPU et mémoire, et une <code>limit</code> mémoire.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> le scheduler place les pods selon leurs <code>requests</code>. Sans elles, il entasse
+trop de pods sur un nœud, qui se disputent le CPU et la mémoire. Sans limite mémoire, un pod qui fuit peut
+consommer toute la mémoire du nœud et faire évincer les autres pods. Une limite mémoire trop basse fait tuer le
+pod (<code>OOMKilled</code>), donc mesurez d'abord la consommation réelle. Pour la JVM, dimensionnez le heap par rapport au
+conteneur (<code>-XX:MaxRAMPercentage=75</code>). Une limite CPU provoque du throttling, donc beaucoup d'équipes ne
+définissent qu'une request CPU.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">resources</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">requests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> cpu</span><span class="p">:</span><span class="w"> </span><span class="nv">250m</span><span class="p p-Indicator">,</span><span class="nt"> memory</span><span class="p">:</span><span class="w"> </span><span class="nv">512Mi</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">limits</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> memory</span><span class="p">:</span><span class="w"> </span><span class="nv">512Mi</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="configure-liveness-readiness-and-startup-probes-correctly">Configurez correctement les probes liveness, readiness et startup</h3>
+<p>La readiness décide si le pod reçoit du trafic. La liveness décide s'il est redémarré. La startup protège les
+démarrages lents.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> sans probe de readiness, du trafic est envoyé à un pod qui n'a pas fini
+de démarrer, et les clients reçoivent des erreurs à chaque déploiement. Une probe de liveness qui vérifie la base
+redémarre tous les pods quand la base a un raté, ce qui transforme une petite panne en panne totale : la liveness
+ne doit vérifier que le processus lui-même. Une application lente à démarrer avec seulement une probe de liveness
+est tuée avant d'être prête, en boucle ; une <code>startupProbe</code> désactive les autres probes jusqu'à ce que le
+démarrage réussisse.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">startupProbe</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/liveness</span><span class="p p-Indicator">,</span><span class="nt">  port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">},</span><span class="nt"> failureThreshold</span><span class="p">:</span><span class="w"> </span><span class="nv">30</span><span class="p p-Indicator">,</span><span class="nt"> periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="nv">5</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">livenessProbe</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/liveness</span><span class="p p-Indicator">,</span><span class="nt">  port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">readinessProbe</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/readiness</span><span class="p p-Indicator">,</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="gardez-la-configuration-dans-des-configmaps-et-des-secrets">Gardez la configuration dans des ConfigMaps et des Secrets</h3>
+<p>Stockez la configuration propre à chaque environnement dans des <code>ConfigMap</code> et les identifiants dans des <code>Secret</code>
+(idéalement synchronisés depuis un vault), pas dans l'image.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> la même image doit tourner dans tous les environnements, seule la
+configuration change. Si l'URL de la base est figée dans l'image, il faut un build par environnement, et ce que
+vous avez testé n'est pas ce que vous déployez. Les Secrets sont seulement encodés en base64, pas chiffrés :
+activez le chiffrement au repos, restreignez l'accès avec RBAC, et préférez un outil comme External Secrets ou
+Sealed Secrets plutôt que de les commiter.</p>
+<p>⛔ une image par environnement, identifiants dans <code>values.yaml</code> sur Git
+✅ <code>envFrom: [{ configMapRef: { name: app-config } }, { secretRef: { name: app-secrets } }]</code></p>
+<h3 id="lancez-plusieurs-replicas-avec-un-poddisruptionbudget">Lancez plusieurs réplicas avec un <code>PodDisruptionBudget</code></h3>
+<p>Lancez au moins 2 réplicas de tout ce qui est exposé aux utilisateurs, répartis sur plusieurs nœuds, et
+protégez-les avec un <code>PodDisruptionBudget</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> avec un seul réplica, chaque déploiement, mise à jour de nœud ou crash est
+une interruption de service. Même avec plusieurs, un drain de nœud peut tous les évincer en même temps. Un PDB
+indique à Kubernetes combien de pods doivent rester actifs pendant les interruptions volontaires, donc la
+maintenance attend au lieu de faire tomber le service. Les topology spread constraints empêchent tous les
+réplicas d'atterrir sur le même nœud.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PodDisruptionBudget</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h3 id="utilisez-des-rolling-updates-avec-maxunavailable-0">Utilisez des rolling updates avec <code>maxUnavailable: 0</code></h3>
+<p>Configurez la stratégie de déploiement pour que les nouveaux pods soient prêts avant que les anciens ne soient
+supprimés.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> combinés à une probe de readiness, <code>maxUnavailable: 0</code> et <code>maxSurge: 1</code>
+font que Kubernetes démarre un nouveau pod, attend qu'il soit prêt, et seulement ensuite arrête un ancien. Si la
+nouvelle version n'est jamais prête, le déploiement s'arrête et les anciens pods continuent de servir le trafic.
+Revenez en arrière avec <code>kubectl rollout undo</code>.</p>
+<p>✅ <code>strategy: { type: RollingUpdate, rollingUpdate: { maxUnavailable: 0, maxSurge: 1 } }</code></p>
+<p>Tout ce qui précède dans un seul manifeste :</p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">apps/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deployment</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">replicas</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<span class="w">  </span><span class="nt">strategy</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> type</span><span class="p">:</span><span class="w"> </span><span class="nv">RollingUpdate</span><span class="p p-Indicator">,</span><span class="nt"> rollingUpdate</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> maxUnavailable</span><span class="p">:</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="nt"> maxSurge</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">  </span><span class="nt">template</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> labels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">    </span><span class="nt">spec</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">terminationGracePeriodSeconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">      </span><span class="nt">topologySpreadConstraints</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">maxSkew</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">          </span><span class="nt">topologyKey</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubernetes.io/hostname</span>
+<span class="w">          </span><span class="nt">whenUnsatisfiable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ScheduleAnyway</span>
+<span class="w">          </span><span class="nt">labelSelector</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">securityContext</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> runAsNonRoot</span><span class="p">:</span><span class="w"> </span><span class="nv">true</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="nt">containers</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">orders</span>
+<span class="w">          </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">registry.example.com/orders:3f9c2ab</span><span class="w">   </span><span class="c1"># immutable tag, never latest</span>
+<span class="w">          </span><span class="nt">ports</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[{</span><span class="nt"> containerPort</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}]</span>
+<span class="w">          </span><span class="nt">envFrom</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">configMapRef</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">app-config</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">secretRef</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">app-secrets</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="nt">resources</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">requests</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> cpu</span><span class="p">:</span><span class="w"> </span><span class="nv">250m</span><span class="p p-Indicator">,</span><span class="nt"> memory</span><span class="p">:</span><span class="w"> </span><span class="nv">512Mi</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">            </span><span class="nt">limits</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> memory</span><span class="p">:</span><span class="w"> </span><span class="nv">512Mi</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="nt">startupProbe</span><span class="p">:</span><span class="w">   </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/liveness</span><span class="p p-Indicator">,</span><span class="nt">  port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">},</span><span class="nt"> failureThreshold</span><span class="p">:</span><span class="w"> </span><span class="nv">30</span><span class="p p-Indicator">,</span><span class="nt"> periodSeconds</span><span class="p">:</span><span class="w"> </span><span class="nv">5</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="nt">livenessProbe</span><span class="p">:</span><span class="w">  </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/liveness</span><span class="p p-Indicator">,</span><span class="nt">  port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">          </span><span class="nt">readinessProbe</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> httpGet</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> path</span><span class="p">:</span><span class="w"> </span><span class="nv">/actuator/health/readiness</span><span class="p p-Indicator">,</span><span class="nt"> port</span><span class="p">:</span><span class="w"> </span><span class="nv">8080</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nn">---</span>
+<span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">policy/v1</span>
+<span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PodDisruptionBudget</span>
+<span class="nt">metadata</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">spec</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">minAvailable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> matchLabels</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> app</span><span class="p">:</span><span class="w"> </span><span class="nv">orders</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+</code></pre></div>
+<h2 id="helm">⎈ Helm</h2>
+<h3 id="un-chart-un-fichier-de-values-par-environnement">Un chart, un fichier de values par environnement</h3>
+<p>Gardez un seul chart avec des valeurs par défaut raisonnables dans <code>values.yaml</code>, et ne surchargez que ce qui
+diffère dans <code>values-&lt;env&gt;.yaml</code>.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> copier le chart ou les manifestes par environnement oblige à appliquer
+chaque correction plusieurs fois, et les copies divergent jusqu'à ce que la production ne corresponde plus à ce
+que vous avez testé. Avec des fichiers de values par environnement, la différence entre environnements est petite
+et visible dans un seul diff.</p>
+<p>⛔ <code>charts/orders-dev/</code>, <code>charts/orders-prod/</code>
+✅ <code>helm upgrade --install orders ./chart -f values.yaml -f values-prod.yaml</code></p>
+<h3 id="lintez-et-rendez-les-charts-en-ci">Lintez et rendez les charts en CI</h3>
+<p>Lancez <code>helm lint</code> et <code>helm template</code> (plus un validateur de schéma comme kubeconform) à chaque modification.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> une erreur de template ou une mauvaise indentation YAML n'est découverte
+qu'au déploiement, souvent en production. Rendre le chart en CI détecte les erreurs de syntaxe et les manifestes
+invalides avant le merge, et la sortie rendue peut être comparée en review pour voir les vrais objets Kubernetes
+qui vont changer.</p>
+<p>✅ <code>helm lint ./chart &amp;&amp; helm template ./chart -f values-prod.yaml | kubeconform -strict</code></p>
+<h2 id="cicd">🚀 CI/CD</h2>
+<h3 id="construisez-une-fois-promouvez-le-meme-artefact">Construisez une fois, promouvez le même artefact</h3>
+<p>Construisez l'image une seule fois, taguez-la avec le SHA du commit, et déployez cette même image dans tous les
+environnements.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> reconstruire pour chaque environnement peut produire une image différente
+(une nouvelle image de base, une autre version de dépendance), donc ce que vous avez testé en staging n'est pas ce
+qui tourne en production. Un tag immuable comme le SHA du commit dit exactement quel code tourne et fait d'un
+rollback un simple redéploiement du tag précédent. Les tags mutables (<code>latest</code>, <code>prod</code>) changent sous vos pieds et
+cassent les deux.</p>
+<p>⛔ reconstruire à chaque merge de branche, déployer <code>myapp:latest</code>
+✅ <code>myapp:3f9c2ab</code> construit une fois, promu dev → staging → prod</p>
+<h3 id="scannez-les-images-et-les-dependances-dans-le-pipeline">Scannez les images et les dépendances dans le pipeline</h3>
+<p>Scannez les images (Trivy, Grype) et les dépendances à chaque build, et faites échouer le build sur les
+vulnérabilités critiques.</p>
+<p><strong>Pourquoi c'est une bonne pratique :</strong> la plupart des vulnérabilités viennent des images de base et des
+bibliothèques tierces, pas de votre propre code, et de nouvelles sont publiées chaque jour pour des paquets que
+vous avez livrés il y a des mois. Scanner en CI bloque les problèmes connus avant qu'ils n'atteignent la
+production, et scanner régulièrement les images en cours d'exécution vous dit quand il faut reconstruire.</p>
+<p>✅ <code>trivy image --exit-code 1 --severity CRITICAL myapp:3f9c2ab</code></p>
+<p>Un pipeline minimal qui construit une fois, scanne, et promeut la même image taguée par SHA (configuration des accès au cluster omise) :</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># .github/workflows/ci.yml</span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ci</span>
+<span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> push</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> branches</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">main</span><span class="p p-Indicator">]</span><span class="w"> </span><span class="p p-Indicator">}</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">permissions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> contents</span><span class="p">:</span><span class="w"> </span><span class="nv">read</span><span class="p p-Indicator">,</span><span class="nt"> packages</span><span class="p">:</span><span class="w"> </span><span class="nv">write</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./mvnw -B verify</span><span class="w">                       </span><span class="c1"># fail fast: tests before anything else</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker/login-action@v3</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> registry</span><span class="p">:</span><span class="w"> </span><span class="nv">ghcr.io</span><span class="p p-Indicator">,</span><span class="nt"> username</span><span class="p">:</span><span class="w"> </span><span class="s">"${{</span><span class="nv"> </span><span class="s">github.actor</span><span class="nv"> </span><span class="s">}}"</span><span class="p p-Indicator">,</span><span class="nt"> password</span><span class="p">:</span><span class="w"> </span><span class="s">"${{</span><span class="nv"> </span><span class="s">secrets.GITHUB_TOKEN</span><span class="nv"> </span><span class="s">}}"</span><span class="w"> </span><span class="p p-Indicator">}</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">IMAGE=ghcr.io/${{ github.repository }}:${GITHUB_SHA::7}</span>
+<span class="w">          </span><span class="no">docker build -t "$IMAGE" .</span>
+<span class="w">          </span><span class="no">docker run --rm aquasec/trivy image --exit-code 1 --severity CRITICAL "$IMAGE"</span>
+<span class="w">          </span><span class="no">docker push "$IMAGE"                      # build once, push once</span>
+
+<span class="w">  </span><span class="nt">deploy-staging</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">build</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">staging</span><span class="w">                            </span><span class="c1"># prod uses its own environment with required reviewers</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">helm upgrade --install orders ./chart -f values.yaml -f values-staging.yaml --set image.tag=${GITHUB_SHA::7} --atomic</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

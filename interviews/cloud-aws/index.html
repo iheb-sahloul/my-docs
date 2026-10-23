@@ -1,0 +1,3396 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/cloud-aws/">
+      
+      
+        <link rel="prev" href="../coding/">
+      
+      
+        <link rel="next" href="../rest-api/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/interviews/cloud-aws/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Cloud (AWS) - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cloud-aws" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cloud (AWS)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/interviews/cloud-aws/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity &amp; network
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identity &amp; network">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-iam-spring-boot-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. How does AWS IAM work, and how should a Spring Boot service get its credentials?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-public-private-subnets-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What is a VPC, and how do public and private subnets fit together?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute &amp; data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compute &amp; data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ec2-ecs-eks-lambda-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. EC2, ECS, EKS or Lambda — how do you choose where to run a Java service?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-data-messaging-services-full" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Which managed data and messaging services should a full-stack developer know, and when do you use each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-react-spa-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. How do you deploy a React SPA on AWS?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apply-least-privilege-iam-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How do you apply least privilege in IAM without blocking every team?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-secrets-live-aws-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. Where do application secrets live on AWS, and how do they reach the app?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drives-aws-bill-web-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What drives the AWS bill for a typical web application, and what are the usual surprises?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#highly-available-aws-multi-az" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. What does "highly available" mean on AWS, and what's the difference between Multi-AZ and multi-region?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organise-aws-accounts-infrastructure-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. How would you organise AWS accounts and infrastructure as code for a company with several teams?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serverless-right-architecture-java-team" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. When is serverless the right architecture for a Java team, and when does it hurt?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-gets-accessdenied-s3-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. The service gets AccessDenied on S3 right after a deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-bill-doubled-month-nobody" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. The AWS bill doubled this month and nobody changed the architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-zone-has-problems-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. An availability zone has problems, and part of the traffic fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-exhausts-rds-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A Lambda-based API works in testing, then exhausts RDS connections during the first marketing campaign
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rds-failover-stale-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. After an RDS Multi-AZ failover, the database is healthy in 60 seconds but the app keeps failing for 15 minutes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reported-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Reported interview questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Reported interview questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access &amp; services
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Access &amp; services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ec2-instance-needs-access-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. An EC2 instance needs to access S3 securely. How do you configure it without storing credentials?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ec2-ecs-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. Difference between EC2, ECS and Lambda.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-applications-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. How do you monitor applications in AWS?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#have-deployed-microservices-aws-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R4. Have you deployed microservices on AWS? Explain the deployment flow.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-network_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity &amp; network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-data_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute &amp; data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reliability-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reliability &amp; cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity &amp; network
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identity &amp; network">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aws-iam-spring-boot-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. How does AWS IAM work, and how should a Spring Boot service get its credentials?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpc-public-private-subnets-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What is a VPC, and how do public and private subnets fit together?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute &amp; data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Compute &amp; data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ec2-ecs-eks-lambda-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. EC2, ECS, EKS or Lambda — how do you choose where to run a Java service?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-data-messaging-services-full" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Which managed data and messaging services should a full-stack developer know, and when do you use each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deploy-react-spa-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. How do you deploy a React SPA on AWS?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apply-least-privilege-iam-blocking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How do you apply least privilege in IAM without blocking every team?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-secrets-live-aws-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. Where do application secrets live on AWS, and how do they reach the app?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#drives-aws-bill-web-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What drives the AWS bill for a typical web application, and what are the usual surprises?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#highly-available-aws-multi-az" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. What does "highly available" mean on AWS, and what's the difference between Multi-AZ and multi-region?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organise-aws-accounts-infrastructure-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. How would you organise AWS accounts and infrastructure as code for a company with several teams?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serverless-right-architecture-java-team" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. When is serverless the right architecture for a Java team, and when does it hurt?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#service-gets-accessdenied-s3-right" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. The service gets AccessDenied on S3 right after a deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aws-bill-doubled-month-nobody" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. The AWS bill doubled this month and nobody changed the architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-zone-has-problems-part" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. An availability zone has problems, and part of the traffic fails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lambda-exhausts-rds-connections" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A Lambda-based API works in testing, then exhausts RDS connections during the first marketing campaign
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rds-failover-stale-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. After an RDS Multi-AZ failover, the database is healthy in 60 seconds but the app keeps failing for 15 minutes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reported-interview-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Reported interview questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Reported interview questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Access &amp; services
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Access &amp; services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ec2-instance-needs-access-s3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. An EC2 instance needs to access S3 securely. How do you configure it without storing credentials?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ec2-ecs-lambda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. Difference between EC2, ECS and Lambda.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-applications-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. How do you monitor applications in AWS?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#have-deployed-microservices-aws-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R4. Have you deployed microservices on AWS? Explain the deployment flow.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-network_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identity &amp; network
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-data_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compute &amp; data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reliability-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reliability &amp; cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="cloud-aws">Cloud (AWS)</h1>
+<p>Most Java/React job ads list "AWS, Azure or GCP". This module uses AWS names, but the reasoning (identity, network, compute choice, managed data, cost) transfers to the other clouds. Kubernetes itself is in <a href="../fullstack-devops-k8s/">Full Stack &amp; DevOps</a>, and Terraform commands are in the <a href="../../notes/terraform/">Terraform notes</a>.</p>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h3 id="identity-network">Identity &amp; network</h3>
+<h4 id="aws-iam-spring-boot-service">Q1. How does AWS IAM work, and how should a Spring Boot service get its credentials?</h4>
+<p><strong>Answer:</strong> IAM decides <strong>who</strong> (a principal: user, role, service) can do <strong>what</strong> (actions such as <code>s3:GetObject</code>) on
+<strong>which resource</strong> (an ARN), under which conditions. Policies are JSON documents attached to identities or resources;
+an explicit <code>Deny</code> always wins, and everything not allowed is denied. Applications should never use long-lived access
+keys: they assume a <strong>role</strong> and get short-lived credentials automatically, through the EC2 instance profile, the ECS
+task role, <strong>EKS Pod Identity / IRSA</strong>, or the Lambda execution role. The AWS SDK's default credential chain picks
+these up with no code. Humans log in through SSO (IAM Identity Center), not IAM users with static keys.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"s3:GetObject"</span><span class="p">,</span><span class="w"> </span><span class="s2">"s3:PutObject"</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:s3:::acme-invoices-prod/*"</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="vpc-public-private-subnets-fit">Q2. What is a VPC, and how do public and private subnets fit together?</h4>
+<p><strong>Answer:</strong> A <strong>VPC</strong> is your private network in a region, split into <strong>subnets</strong>, each in one availability zone (AZ).
+A <strong>public subnet</strong> has a route to an <strong>Internet Gateway</strong>; put only load balancers and bastions (or nothing) there.
+<strong>Private subnets</strong> hold application and database instances; they reach the internet for outbound calls through a
+<strong>NAT Gateway</strong>, and reach AWS services privately through <strong>VPC endpoints</strong> (cheaper than NAT for S3/DynamoDB traffic).
+<strong>Security groups</strong> are stateful firewalls on each resource; reference other security groups instead of IP ranges
+(the DB accepts 5432 only from the app's security group). Spread every tier across at least two AZs.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>Internet → ALB (public subnets, AZ a/b)
+         → ECS tasks / EKS pods (private subnets, AZ a/b)   SG: 8080 from ALB SG
+         → RDS Postgres Multi-AZ (private DB subnets)       SG: 5432 from app SG
+outbound: NAT Gateway per AZ; S3 via gateway endpoint
+</code></pre></div>
+<h3 id="compute-data">Compute &amp; data</h3>
+<h4 id="ec2-ecs-eks-lambda-run">Q3. EC2, ECS, EKS or Lambda — how do you choose where to run a Java service?</h4>
+<p><strong>Answer:</strong> <strong>Lambda</strong> suits event-driven, spiky or low-traffic work (S3 triggers, queue consumers, small APIs): no
+servers, pay per request, but there are limits on duration (15 min) and payload, and JVM cold starts (mitigate with
+SnapStart, GraalVM native or a lighter framework). <strong>ECS on Fargate</strong> is the simplest way to run long-running
+containers: no cluster to manage, good for most Spring Boot services. <strong>EKS</strong> gives you Kubernetes: portable, a rich
+ecosystem (Helm, operators, service mesh), but with platform work you must staff. <strong>EC2</strong> directly is for special
+needs (GPUs, licensed software, very tuned workloads). Default for a small team: ECS Fargate; EKS when the
+organization already runs a Kubernetes platform.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>Order API, steady traffic, Spring Boot         -&gt; ECS Fargate (or EKS if the platform exists)
+Thumbnail generation on S3 upload              -&gt; Lambda
+Nightly 3-hour batch                           -&gt; ECS scheduled task / AWS Batch (not Lambda: 15 min limit)
+</code></pre></div>
+<h4 id="managed-data-messaging-services-full">Q4. Which managed data and messaging services should a full-stack developer know, and when do you use each?</h4>
+<p><strong>Answer:</strong> <strong>RDS / Aurora</strong> for relational data (Postgres), with Multi-AZ for availability and read replicas for read
+scaling. <strong>DynamoDB</strong> for key-value access at any scale when you know your access patterns upfront. <strong>S3</strong> for files,
+backups and static sites (with CloudFront in front). <strong>ElastiCache</strong> (Redis/Valkey) for caching and sessions. <strong>SQS</strong> for
+point-to-point queues (standard: at-least-once, best-effort order; FIFO: ordered per group, lower throughput), <strong>SNS</strong>
+for pub/sub fan-out (often SNS → several SQS queues), <strong>EventBridge</strong> for event routing between services and SaaS, and
+<strong>MSK</strong> or <strong>Amazon MQ</strong> when you need Kafka or RabbitMQ semantics (see <a href="../messaging-rabbitmq-kafka/">Messaging</a>).</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>OrderPlaced -&gt; SNS topic -&gt; SQS "billing"   -&gt; billing service
+                         -&gt; SQS "shipping"  -&gt; shipping service
+                         -&gt; SQS "analytics" -&gt; Lambda -&gt; S3 data lake
+each queue has its own DLQ and retry policy
+</code></pre></div>
+<h4 id="deploy-react-spa-aws">Q5. How do you deploy a React SPA on AWS?</h4>
+<p><strong>Answer:</strong> Build static files and upload them to a <strong>private S3 bucket</strong>, served through <strong>CloudFront</strong> with Origin
+Access Control (the bucket isn't public). Cache hashed assets (<code>main.abc123.js</code>) for a year and <code>index.html</code> for a short
+time or not at all, so a deploy takes effect immediately; invalidate <code>index.html</code> on deploy. Return <code>index.html</code> for
+client-side routes (a CloudFront error response or function). Use ACM for TLS, add security headers (CSP, HSTS) with a
+response-headers policy, and route <code>/api/*</code> to the backend's ALB as a second origin, so browser and API share one
+domain and CORS disappears.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>aws s3 sync dist/ s3://acme-web-prod --delete \
+  --cache-control "public,max-age=31536000,immutable" --exclude index.html
+aws s3 cp dist/index.html s3://acme-web-prod/ --cache-control "no-cache"
+aws cloudfront create-invalidation --distribution-id E123 --paths /index.html
+</code></pre></div>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h3 id="questions">Questions</h3>
+<h4 id="apply-least-privilege-iam-blocking">Q6. How do you apply least privilege in IAM without blocking every team?</h4>
+<p><strong>Answer:</strong> One role per workload with only the actions and resources it uses, scoped by ARN and, where useful,
+conditions (tags, <code>aws:SourceVpce</code>, encryption required). Avoid <code>*</code> actions and resources, and never attach
+<code>AdministratorAccess</code> to a service. Start from <strong>IAM Access Analyzer</strong> (it can generate a policy from CloudTrail
+activity) and its unused-access findings. Use <strong>separate AWS accounts</strong> per environment (and per team for larger
+organizations) under <strong>AWS Organizations</strong>, with <strong>Service Control Policies</strong> as guardrails (deny disabling CloudTrail,
+deny unapproved regions). Define roles in Terraform so they are reviewed like code.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>⛔ "Action": "s3:*", "Resource": "*"
+✅ "Action": ["s3:GetObject"], "Resource": "arn:aws:s3:::acme-invoices-prod/tenant/*",
+   "Condition": {"StringEquals": {"aws:ResourceTag/env": "prod"}}
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> a leaked credential's blast radius is the policy attached to it; <code>s3:*</code> on <code>*</code> turns a bug in one
+small service into a data breach of every bucket in the account.</p>
+<h4 id="application-secrets-live-aws-app">Q7. Where do application secrets live on AWS, and how do they reach the app?</h4>
+<p><strong>Answer:</strong> In <strong>Secrets Manager</strong> (rotation built in, for example for RDS passwords) or <strong>SSM Parameter Store</strong>
+SecureString (cheaper, for config and secrets without rotation), encrypted with <strong>KMS</strong>. The workload's role is allowed
+to read only its own secrets. They reach the app through ECS task-definition <code>secrets</code>, the Kubernetes External Secrets
+Operator or Secrets Store CSI driver (<a href="../fullstack-devops-k8s/#application-secrets-managed-kubernetes-kubernetes">Full Stack Q38</a>), or Spring Cloud AWS reading them at
+startup. Even better, avoid the secret altogether: <strong>RDS IAM authentication</strong> uses the role instead of a password.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nt">"secrets"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SPRING_DATASOURCE_PASSWORD"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"valueFrom"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:secretsmanager:eu-west-1:123456789012:secret:orders/db-AbCd"</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> secrets in Terraform variables or plain environment variables in the task definition end up in
+state files, the console and CI logs.</p>
+<h4 id="drives-aws-bill-web-application">Q8. What drives the AWS bill for a typical web application, and what are the usual surprises?</h4>
+<p><strong>Answer:</strong> Compute (instance and Fargate hours, overprovisioned requests), managed databases (instance size,
+Multi-AZ, storage IOPS), and the surprises: <strong>NAT Gateway</strong> data processing (all private traffic to S3 or ECR going
+through NAT instead of VPC endpoints), <strong>cross-AZ and internet data transfer</strong>, <strong>CloudWatch Logs</strong> ingestion of debug
+logs, idle resources (old environments, unattached volumes, forgotten snapshots), and high-cardinality custom metrics.
+Levers: rightsizing, Graviton (ARM) instances, Savings Plans for the steady baseline, Spot for interruptible work,
+autoscaling to zero for non-prod at night, S3 lifecycle rules, and <strong>tagging plus budgets and anomaly alerts</strong> so each
+team sees its own cost.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>Cost Explorer, top line items this month:
+  NAT Gateway bytes processed   $4,100   &lt;- ECR image pulls + S3 traffic through NAT
+  → add S3 gateway endpoint + ECR interface endpoints: -$3,300/month
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> architecture diagrams don't show data transfer, and it's often the line that grows fastest.</p>
+<h4 id="highly-available-aws-multi-az">Q9. What does "highly available" mean on AWS, and what's the difference between Multi-AZ and multi-region?</h4>
+<p><strong>Answer:</strong> <strong>Multi-AZ</strong> (at least two availability zones in one region) is the baseline for production: load balancer
+across AZs, tasks or pods spread across AZs, RDS Multi-AZ with automatic failover (about a minute), and no single-AZ
+dependency such as one NAT Gateway. It protects against the failure of a data centre and is cheap. <strong>Multi-region</strong>
+protects against a regional outage or meets data-residency rules, but it's expensive and complex: data replication
+(Aurora Global Database, DynamoDB global tables), DNS failover with Route 53 health checks, and writes in two regions
+bring conflicts. Pick it from the RTO/RPO the business really needs (<a href="../system-design/#rto-rpo-disaster-recovery-planning">System Design Q31</a>): often
+backups plus infrastructure as code that can rebuild in another region (pilot light) is enough.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>RTO 4 h, RPO 15 min   -&gt; Multi-AZ + cross-region backups + Terraform to rebuild (pilot light)
+RTO 1 min, RPO ~0     -&gt; active-active multi-region, global tables, conflict strategy (rarely justified)
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> "we're on AWS so we're highly available" is false; a single-AZ deployment fails like any data
+centre, and many outages come from a forgotten single-AZ component.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h3 id="questions_1">Questions</h3>
+<h4 id="organise-aws-accounts-infrastructure-code">Q10. How would you organise AWS accounts and infrastructure as code for a company with several teams?</h4>
+<p><strong>Answer:</strong> A <strong>multi-account landing zone</strong> (Control Tower or a Terraform equivalent): management, security/log
+archive, shared networking, and workload accounts per environment (and per team or domain as it grows). Centralised
+CloudTrail, GuardDuty and Config, SSO for humans with permission sets, SCP guardrails. Infrastructure in <strong>Terraform</strong>
+(or CDK) with remote state per environment and component, small modules owned by a platform team, and plan/apply from
+CI with OIDC-federated roles (no static keys in CI). Teams own their service stacks; the platform team owns the paved
+road (VPC, cluster, pipelines, observability).</p>
+<h4 id="serverless-right-architecture-java-team">Q11. When is serverless the right architecture for a Java team, and when does it hurt?</h4>
+<p><strong>Answer:</strong> Serverless (API Gateway, Lambda, SQS, DynamoDB, Step Functions) is attractive for event-driven and spiky
+workloads, small teams with no ops capacity, and glue between managed services: you pay for use and scale to zero. It
+hurts with steady high traffic (per-request pricing exceeds containers), long or stateful processing, heavy
+relational work with many connections (use RDS Proxy), strict latency where cold starts matter, and when local
+development and testing across many functions slows the team down. For Java: SnapStart or native images for cold
+starts, one function per bounded use case rather than per endpoint, and Step Functions for workflows instead of
+Lambdas calling Lambdas.</p>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="service-gets-accessdenied-s3-right">S1. The service gets <code>AccessDenied</code> on S3 right after a deployment</h3>
+<ul>
+<li><strong>Symptoms:</strong> A new ECS task (or pod) logs <code>software.amazon.awssdk.services.s3.model.S3Exception: Access Denied
+  (Status Code: 403)</code> when writing invoices; the previous version worked.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Check which identity the app is really using (<code>aws sts get-caller-identity</code> from the container, or
+  the SDK debug log); the new task definition or service account may reference a different role, or none (falling back
+  to the node role). Then check the role policy, the <strong>bucket policy</strong>, the KMS key policy if the bucket uses SSE-KMS,
+  and any SCP. CloudTrail shows the denied call with the principal and the reason.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>CloudTrail: PutObject  principal=arn:aws:sts::123:assumed-role/eks-node-role/...  errorCode=AccessDenied
+-&gt; pod is using the node role: serviceAccountName was dropped from the Helm values
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Restore the correct role binding (task role or service account annotation/Pod Identity association),
+  and add <code>kms:GenerateDataKey</code> if the bucket is KMS-encrypted.</li>
+<li><strong>Prevention:</strong> Keep role and binding in the same Terraform/Helm change, make node roles minimal so a fallback fails
+  loudly, and add a startup smoke check for the critical permissions.</li>
+</ul>
+</details>
+<h3 id="aws-bill-doubled-month-nobody">S2. The AWS bill doubled this month and nobody changed the architecture</h3>
+<ul>
+<li><strong>Symptoms:</strong> Finance flags a 2× increase; the main growth line is "EC2-Other" and "Data Transfer".</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> In Cost Explorer, group by usage type and then by tag/account. "EC2-Other" usually hides NAT Gateway
+  bytes, EBS volumes and snapshots. Check VPC Flow Logs for the top talkers through NAT, and look for cross-AZ chatter
+  (a service calling a cache or broker in another AZ at high volume).</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>usage type NatGateway-Bytes: 38 TB (+30 TB)
+top flow: batch job pods -&gt; S3 (via NAT), new nightly export
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Add the S3 gateway endpoint (free) and interface endpoints for ECR, STS and Secrets Manager; move the
+  export closer to its data; delete orphaned volumes and snapshots.</li>
+<li><strong>Prevention:</strong> Mandatory cost-allocation tags, per-team budgets with anomaly detection, and a cost review in the
+  design checklist for any new data flow.</li>
+</ul>
+</details>
+<h3 id="availability-zone-has-problems-part">S3. An availability zone has problems, and part of the traffic fails</h3>
+<ul>
+<li><strong>Symptoms:</strong> Error rate rises to about 30% during an AWS incident in one AZ; the service runs in two AZs.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Break errors down by AZ (load balancer target metrics, logs with AZ metadata). Common causes: tasks in
+  the bad AZ still pass shallow health checks, a single NAT Gateway or cache node lives in that AZ, or the remaining
+  AZ lacks capacity to absorb the load.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>ALB: 5xx only from targets in eu-west-1b; health checks green (/health returns 200 without checking deps)
+all private subnets route outbound through one NAT Gateway in eu-west-1b
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Shift traffic away from the impaired AZ (ALB zonal shift / ARC), scale up the healthy AZ, and fail
+  over stateful components if needed.</li>
+<li><strong>Prevention:</strong> One NAT Gateway per AZ, capacity planned for N-1 AZs, meaningful readiness checks, zonal autoshift,
+  and regular game days that simulate an AZ loss.</li>
+</ul>
+</details>
+<h3 id="lambda-exhausts-rds-connections">S4. A Lambda-based API works in testing, then exhausts RDS connections during the first marketing campaign</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>FATAL: remaining connection slots are reserved</code> from Postgres; Lambda concurrency went from 20 to 900 in minutes; cold-start p99 at 3 s.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Each concurrent Lambda execution environment opens its own connection (or pool), so connections scale with concurrency, not with load on the database. Cold starts add JVM startup plus a TLS + auth handshake to the DB.</li>
+<li><strong>Resolution:</strong> Put RDS Proxy in front of the database (pools and multiplexes connections), set reserved concurrency on the function to cap fan-out, keep the pool size at 1 per environment, and reduce cold starts with SnapStart (Java) or provisioned concurrency for the hot path.</li>
+<li><strong>Prevention:</strong> Load-test with the expected concurrency, alert on <code>DatabaseConnections</code> and Lambda <code>ConcurrentExecutions</code>, and document the concurrency budget per function.</li>
+</ul>
+</details>
+<h3 id="rds-failover-stale-dns">S5. After an RDS Multi-AZ failover, the database is healthy in 60 seconds but the app keeps failing for 15 minutes</h3>
+<ul>
+<li><strong>Symptoms:</strong> AWS event shows failover completed at 03:12; the application logs <code>Connection refused</code> / read-only errors until pods are restarted at 03:27.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> The cluster endpoint DNS now points to the new primary, but the JVM cached the old IP (<code>networkaddress.cache.ttl</code> unlimited with a security manager, or long by default), and the pool keeps handing out dead connections without validation or a max lifetime.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># JVM: respect the endpoint's short DNS TTL</span>
+<span class="na">networkaddress.cache.ttl</span><span class="o">=</span><span class="s">5</span>
+<span class="c1"># HikariCP: recycle connections and fail fast</span>
+<span class="na">spring.datasource.hikari.max-lifetime</span><span class="o">=</span><span class="s">600000</span>
+<span class="na">spring.datasource.hikari.connection-timeout</span><span class="o">=</span><span class="s">3000</span>
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Set a short JVM DNS TTL, configure <code>maxLifetime</code> and timeouts in the pool, and use the AWS Advanced JDBC Wrapper (failover plugin) or RDS Proxy, which hides the failover from clients.</li>
+<li><strong>Prevention:</strong> Run a failover drill in staging every quarter (<code>aws rds failover-db-cluster</code>) and measure time-to-recover for the application, not just for the database.</li>
+</ul>
+</details>
+<h2 id="reported-interview-questions">🗣️ Reported interview questions</h2>
+<p>Questions reported from real interviews, grouped by topic. Each has a short model answer: expand it with the detailed questions and scenarios above, and say the answer aloud.</p>
+<h3 id="access-services">Access &amp; services</h3>
+<h4 id="ec2-instance-needs-access-s3">R1. An EC2 instance needs to access S3 securely. How do you configure it without storing credentials?</h4>
+<p><strong>Answer:</strong> Attach an <strong>IAM role</strong> (instance profile) with a least-privilege policy for the specific bucket/prefix; the SDK gets temporary credentials from the instance metadata service (use IMDSv2). Optionally restrict with a bucket policy, a VPC endpoint and <code>aws:SourceVpce</code>. No access keys in code, env vars or AMIs.</p>
+<h4 id="ec2-ecs-lambda">R2. Difference between EC2, ECS and Lambda.</h4>
+<p><strong>Answer:</strong> <strong>EC2</strong>: virtual machines you manage (OS, scaling, patching): maximum control. <strong>ECS</strong>: container orchestrator, on EC2 or serverless <strong>Fargate</strong>. <strong>Lambda</strong>: functions run on events, auto-scaled, pay per invocation, with time and memory limits and cold starts. Choose by control vs operations vs workload shape.</p>
+<h4 id="monitor-applications-aws">R3. How do you monitor applications in AWS?</h4>
+<p><strong>Answer:</strong> <strong>CloudWatch</strong> metrics, logs and alarms (plus Logs Insights, Container Insights); <strong>X-Ray</strong>/OpenTelemetry for traces; CloudTrail for API audit; health checks and SNS/PagerDuty for alerts. Alert on SLOs (latency, errors, saturation), not just CPU, and use dashboards per service.</p>
+<h4 id="have-deployed-microservices-aws-deployment">R4. Have you deployed microservices on AWS? Explain the deployment flow.</h4>
+<p><strong>Answer:</strong> Typical flow: commit → CI (build, test, scan) → build a Docker image → push to <strong>ECR</strong> → deploy to ECS/EKS (Terraform/CloudFormation for infra, ArgoCD/CodeDeploy for releases) behind an <strong>ALB</strong>, using rolling/blue-green/canary → health checks → CloudWatch monitoring and automatic rollback. Secrets in Secrets Manager, IAM roles per task, config per environment.</p>
+<h2 id="oral-quiz">🎤 Oral quiz</h2>
+<p>Ten questions picked across the levels. Answer each <strong>aloud in 2–3 minutes</strong> without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: <strong>0</strong> blank · <strong>1</strong> definition only · <strong>2</strong> plus an example · <strong>3</strong> plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.</p>
+<ol>
+<li>Q1. How does AWS IAM work, and how should a Spring Boot service get its credentials?</li>
+<li>Q2. What is a VPC, and how do public and private subnets fit together?</li>
+<li>Q3. EC2, ECS, EKS or Lambda — how do you choose where to run a Java service?</li>
+<li>Q4. Which managed data and messaging services should a full-stack developer know, and when do you use each?</li>
+<li>Q5. How do you deploy a React SPA on AWS?</li>
+<li>Q6. How do you apply least privilege in IAM without blocking every team?</li>
+<li>Q8. What drives the AWS bill for a typical web application, and what are the usual surprises?</li>
+<li>Q9. What does "highly available" mean on AWS, and what's the difference between Multi-AZ and multi-region?</li>
+<li>Q11. When is serverless the right architecture for a Java team, and when does it hurt?</li>
+<li>S1. The service gets <code>AccessDenied</code> on S3 right after a deployment</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<h3 id="identity-network_1">Identity &amp; network</h3>
+<blockquote>
+<p><strong>Start here:</strong> roles not keys, private subnets, security groups referencing security groups.</p>
+</blockquote>
+<ul>
+<li><strong>IAM</strong> — principal, action, resource, condition; explicit deny wins. <em>Workloads assume roles (task role, Pod Identity/IRSA).</em></li>
+<li><strong>Accounts</strong> — one per environment, Organizations + SCPs, SSO for humans.</li>
+<li><strong>VPC</strong> — public subnets for ALB only, private for apps and DBs, NAT per AZ, VPC endpoints for S3/ECR.</li>
+</ul>
+<h3 id="compute-data_1">Compute &amp; data</h3>
+<blockquote>
+<p><strong>Start here:</strong> ECS Fargate by default, Lambda for events, EKS when the platform exists.</p>
+</blockquote>
+<ul>
+<li><strong>Lambda</strong> — 15 min max, cold starts (SnapStart/native), RDS Proxy for DB connections.</li>
+<li><strong>Data</strong> — RDS/Aurora (relational), DynamoDB (known access patterns), S3 (files), ElastiCache (cache).</li>
+<li><strong>Messaging</strong> — SQS (queue + DLQ), SNS (fan-out), EventBridge (routing), MSK/Amazon MQ (Kafka/RabbitMQ).</li>
+<li><strong>SPA</strong> — private S3 + CloudFront OAC, immutable hashed assets, <code>index.html</code> no-cache, <code>/api/*</code> origin.</li>
+</ul>
+<h3 id="reliability-cost">Reliability &amp; cost</h3>
+<blockquote>
+<p><strong>Start here:</strong> Multi-AZ always, multi-region only when RTO/RPO demand it.</p>
+</blockquote>
+<ul>
+<li><strong>HA</strong> — spread across AZs, no single-AZ dependency, capacity for N-1 AZs.</li>
+<li><strong>Secrets</strong> — Secrets Manager/SSM + KMS, or RDS IAM auth; never in Terraform state or plain env.</li>
+<li><strong>Cost</strong> — NAT bytes, data transfer, logs, idle resources; tags, budgets, anomaly alerts, Savings Plans, Graviton.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

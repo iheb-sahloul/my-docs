@@ -1,0 +1,4067 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/testing/">
+      
+      
+        <link rel="prev" href="../claude-code/">
+      
+      
+        <link rel="next" href="../security/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/interviews/testing/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Testing - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/interviews/testing/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-pyramid-right-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. What is the test pyramid, and is it still the right shape?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-integration-end-end-draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Unit, integration, end-to-end — where do you draw the boundaries?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-stub-fake-spy-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Mock, stub, fake, spy — what is the difference, and when do you use each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-test-good" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. What makes a unit test good?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#java-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Java tooling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Java tooling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#junit-5-features-rely-beyond" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Which JUnit 5 features do you rely on beyond @Test?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mockito-well-never-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How do you use Mockito well, and what should you never mock?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#react-testing-library-philosophy-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What is the React Testing Library philosophy, and how do you query elements?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h2-repository-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Why not use H2 for repository tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-test-suite-slow-make" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Why is a Spring test suite slow, and how do you make it fast again?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-spring-service-calls-external" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. How do you test a Spring service that calls an external HTTP API?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mocking-recognise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What is over-mocking, and how do you recognise it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-code-depends-current-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. How do you test code that depends on the current time?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#80-code-coverage-good-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. Is 80% code coverage a good target?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-flaky-deal-flaky-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. What makes tests flaky, and how do you deal with flaky tests as a team?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-putting-transactional-integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. What is the risk of putting @Transactional on integration tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-transaction-rolls-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. How do you test that a transaction really rolls back?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-http-calls-frontend-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. How do you mock HTTP calls in frontend tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-test-rest-api-gatling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. How do you load-test a REST API with Gatling, and how do you read the results?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer-driven-contract-testing-worth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. What is consumer-driven contract testing, and when is it worth it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-testing-strategy-system-ten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Design the testing strategy for a system of ten microservices. What runs where?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdd-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. When does TDD help, and when do you not use it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-asynchronous-messaging-kafka-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. How do you test asynchronous messaging (Kafka/RabbitMQ consumers and producers)?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-playwright-cypress-end-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. How do you keep a Playwright/Cypress end-to-end suite fast and reliable?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-test-suite-takes-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. The backend test suite takes 25 minutes, and developers have stopped running it locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-passes-locally-rerun-but" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. A test passes locally and on rerun, but fails on CI about once in ten runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-tests-green-but-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. All tests are green, but a query fails in production with a syntax error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pure-refactoring-breaks-200-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A pure refactoring breaks 200 tests while the application still works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-end-suite-fails-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. The end-to-end suite fails 10% of the time, and the team now ignores its failures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-passes-alone-but-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. A test passes alone but fails when the whole suite runs, in a different order each time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mocks-green-provider-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Every test is green, but the integration with the billing service breaks in production after their deploy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snapshot-tests-rubber-stamped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. A visual bug ships even though snapshot tests cover the component, because the snapshot was just updated
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commonly-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Commonly asked questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Commonly asked questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-integration-end-end-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. Unit vs integration vs end-to-end tests.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-mockbean-mockitobean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. @Mock vs @MockBean (@MockitoBean).
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-private-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. How do you test a private method?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#java-spring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Java &amp; Spring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-cross-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend &amp; cross-service
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-pyramid-right-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. What is the test pyramid, and is it still the right shape?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-integration-end-end-draw" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Unit, integration, end-to-end — where do you draw the boundaries?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-stub-fake-spy-each" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Mock, stub, fake, spy — what is the difference, and when do you use each?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unit-test-good" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. What makes a unit test good?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#java-tooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Java tooling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Java tooling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#junit-5-features-rely-beyond" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Which JUnit 5 features do you rely on beyond @Test?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mockito-well-never-mock" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How do you use Mockito well, and what should you never mock?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#react-testing-library-philosophy-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What is the React Testing Library philosophy, and how do you query elements?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h2-repository-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Why not use H2 for repository tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-test-suite-slow-make" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Why is a Spring test suite slow, and how do you make it fast again?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-spring-service-calls-external" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. How do you test a Spring service that calls an external HTTP API?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mocking-recognise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What is over-mocking, and how do you recognise it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-code-depends-current-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. How do you test code that depends on the current time?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#80-code-coverage-good-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. Is 80% code coverage a good target?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-flaky-deal-flaky-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. What makes tests flaky, and how do you deal with flaky tests as a team?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-putting-transactional-integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. What is the risk of putting @Transactional on integration tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-transaction-rolls-back" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. How do you test that a transaction really rolls back?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-http-calls-frontend-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. How do you mock HTTP calls in frontend tests?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load-test-rest-api-gatling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. How do you load-test a REST API with Gatling, and how do you read the results?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer-driven-contract-testing-worth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. What is consumer-driven contract testing, and when is it worth it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-testing-strategy-system-ten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Design the testing strategy for a system of ten microservices. What runs where?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tdd-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. When does TDD help, and when do you not use it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-asynchronous-messaging-kafka-rabbitmq" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. How do you test asynchronous messaging (Kafka/RabbitMQ consumers and producers)?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keep-playwright-cypress-end-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. How do you keep a Playwright/Cypress end-to-end suite fast and reliable?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend-test-suite-takes-25" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. The backend test suite takes 25 minutes, and developers have stopped running it locally
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-passes-locally-rerun-but" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. A test passes locally and on rerun, but fails on CI about once in ten runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#all-tests-green-but-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. All tests are green, but a query fails in production with a syntax error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pure-refactoring-breaks-200-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A pure refactoring breaks 200 tests while the application still works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-end-suite-fails-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. The end-to-end suite fails 10% of the time, and the team now ignores its failures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-passes-alone-but-fails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. A test passes alone but fails when the whole suite runs, in a different order each time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mocks-green-provider-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Every test is green, but the integration with the billing service breaks in production after their deploy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#snapshot-tests-rubber-stamped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S8. A visual bug ships even though snapshot tests cover the component, because the snapshot was just updated
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commonly-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Commonly asked questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Commonly asked questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-integration-end-end-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. Unit vs integration vs end-to-end tests.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-mockbean-mockitobean" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. @Mock vs @MockBean (@MockitoBean).
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-private-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. How do you test a private method?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#java-spring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Java &amp; Spring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-signals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality signals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-cross-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend &amp; cross-service
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="testing">Testing</h1>
+<p>Rules and code-review checklists live in <a href="../../best-practices/testing/">Best practices › Testing</a>; this module is the interview Q&amp;A.</p>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h3 id="strategy">Strategy</h3>
+<h4 id="test-pyramid-right-shape">Q1. What is the test pyramid, and is it still the right shape?</h4>
+<p><strong>Answer:</strong> The pyramid says: many fast, isolated unit tests at the base, fewer integration tests in the middle,
+and a handful of slow end-to-end tests at the top. The reasoning is cost and feedback speed: a unit test runs in
+milliseconds and points at one class, while an end-to-end test takes seconds to minutes, needs a full environment,
+and when it fails it tells you "something is broken somewhere". The shape is a guideline, not a law. For a typical
+CRUD-heavy Spring service, most bugs live in the SQL, the mapping and the wiring, not in the business logic, so a
+"testing trophy" with a thicker integration layer (real database through Testcontainers, real HTTP through MockMvc)
+often catches more for the same effort. The constant across both shapes: keep end-to-end tests few and focused on
+critical user journeys.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>            /\        E2E: login → checkout → payment (5–20 tests, minutes)
+           /  \
+          /----\      Integration: repository + real Postgres, controller + MockMvc (hundreds, seconds)
+         /      \
+        /--------\    Unit: pricing rules, validators, mappers (thousands, milliseconds)
+</code></pre></div>
+<h4 id="unit-integration-end-end-draw">Q2. Unit, integration, end-to-end — where do you draw the boundaries?</h4>
+<p><strong>Answer:</strong> Draw them by what is real and what is replaced, not by the tool. A <strong>unit test</strong> exercises one unit of
+behaviour (often one class, sometimes a small cluster) with every I/O dependency replaced: no network, no database,
+no file system, no clock. An <strong>integration test</strong> puts at least one real external piece in the loop: a real
+database, a real broker, the real Spring context, or real HTTP serialization. An <strong>end-to-end test</strong> drives the
+deployed system the way a user or client would, through its public interface, with everything real. The useful
+question for each test: "if this fails, how many places could the bug be?" The answer should grow as you go up.</p>
+<h4 id="mock-stub-fake-spy-each">Q3. Mock, stub, fake, spy — what is the difference, and when do you use each?</h4>
+<p><strong>Answer:</strong> A <strong>stub</strong> returns canned answers so the code under test can run (<code>when(repo.findById(1)).thenReturn(...)</code>);
+you don't assert on it. A <strong>mock</strong> is set up with expectations and you <strong>verify interactions</strong> with it
+(<code>verify(mailer).send(...)</code>); use it when the interaction <em>is</em> the behaviour, such as "an email is sent". A <strong>fake</strong> is
+a working lightweight implementation (an in-memory repository, a fake clock); it gives realistic behaviour without
+infrastructure. A <strong>spy</strong> wraps a real object and records calls, letting you override some methods. Rule of thumb:
+prefer real objects, then fakes, then stubs; use mocks only for outgoing commands whose side effect you must check.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Stub: provides data</span>
+<span class="n">when</span><span class="p">(</span><span class="n">rates</span><span class="p">.</span><span class="na">rateFor</span><span class="p">(</span><span class="s">"EUR"</span><span class="p">)).</span><span class="na">thenReturn</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">BigDecimal</span><span class="p">(</span><span class="s">"1.08"</span><span class="p">));</span>
+<span class="c1">// Mock: verifies an outgoing command</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">notifier</span><span class="p">).</span><span class="na">orderConfirmed</span><span class="p">(</span><span class="n">orderId</span><span class="p">);</span>
+<span class="c1">// Fake: a working in-memory implementation</span>
+<span class="kd">class</span> <span class="nc">InMemoryOrderRepository</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">OrderRepository</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">OrderId</span><span class="p">,</span><span class="w"> </span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="na">id</span><span class="p">(),</span><span class="w"> </span><span class="n">o</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">OrderId</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Optional</span><span class="p">.</span><span class="na">ofNullable</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">id</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="unit-test-good">Q4. What makes a unit test good?</h4>
+<p><strong>Answer:</strong> It tests <strong>one behaviour</strong>, through the public API, and its name says which (<code>rejectsOrderWhenStockIsEmpty</code>,
+not <code>testProcess2</code>). It follows <strong>Arrange–Act–Assert</strong> with a visible separation. It is <strong>F.I.R.S.T.</strong>: fast,
+independent (no order dependency, no shared mutable state), repeatable (no clock, randomness or network), self-validating
+(asserts, no reading logs), and timely (written with the code). And it fails for one reason: when it goes red, the
+name plus the assertion message tell you what broke without opening a debugger.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">appliesTenPercentDiscountAboveThreshold</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">anOrder</span><span class="p">().</span><span class="na">withTotal</span><span class="p">(</span><span class="s">"120.00"</span><span class="p">).</span><span class="na">build</span><span class="p">();</span><span class="w">      </span><span class="c1">// Arrange</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">price</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pricing</span><span class="p">.</span><span class="na">finalPrice</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w">                   </span><span class="c1">// Act</span>
+
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">price</span><span class="p">).</span><span class="na">isEqualByComparingTo</span><span class="p">(</span><span class="s">"108.00"</span><span class="p">);</span><span class="w">        </span><span class="c1">// Assert</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="java-tooling">Java tooling</h3>
+<h4 id="junit-5-features-rely-beyond">Q5. Which JUnit 5 features do you rely on beyond <code>@Test</code>?</h4>
+<p><strong>Answer:</strong> <code>@ParameterizedTest</code> with <code>@CsvSource</code>/<code>@MethodSource</code> to cover a table of cases without copy-pasted tests;
+<code>@Nested</code> classes to group cases by context ("when the cart is empty"); <code>@DisplayName</code> for readable reports;
+<code>assertThrows</code>/<code>assertAll</code> for exceptions and grouped assertions; extensions (<code>@ExtendWith</code>) for Mockito, Spring
+and Testcontainers; and <code>@Tag</code> to split fast and slow suites in the build. Most teams pair JUnit with <strong>AssertJ</strong> for
+fluent, well-reported assertions (<code>assertThat(list).extracting(Order::status).containsOnly(PAID)</code>).</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@ParameterizedTest</span>
+<span class="nd">@CsvSource</span><span class="p">({</span><span class="w"> </span><span class="s">"99.99, 0"</span><span class="p">,</span><span class="w"> </span><span class="s">"100.00, 10"</span><span class="p">,</span><span class="w"> </span><span class="s">"500.00, 50"</span><span class="w"> </span><span class="p">})</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">discountByTotal</span><span class="p">(</span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">total</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">expectedDiscount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">pricing</span><span class="p">.</span><span class="na">discount</span><span class="p">(</span><span class="n">total</span><span class="p">)).</span><span class="na">isEqualByComparingTo</span><span class="p">(</span><span class="n">expectedDiscount</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="mockito-well-never-mock">Q6. How do you use Mockito well, and what should you never mock?</h4>
+<p><strong>Answer:</strong> Use <code>@ExtendWith(MockitoExtension.class)</code> with <code>@Mock</code>/<code>@InjectMocks</code>, stub only what the test needs
+(strict stubs flag unused stubbing), and use <code>ArgumentCaptor</code> when you must inspect what was passed. Don't mock:
+<strong>value objects and DTOs</strong> (just build them), <strong>the class under test</strong>, <strong>types you don't own</strong> (mocking
+<code>RestTemplate</code> or <code>JdbcTemplate</code> encodes your assumptions about a library; wrap it behind your own port and mock
+that, or test the adapter against the real thing), and <strong>everything by default</strong>. A test where the setup is twenty
+<code>when(...)</code> lines and the assertion is <code>verify(...)</code> is usually testing the implementation, not the behaviour.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Test</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">publishesEventWithOrderTotal</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">service</span><span class="p">.</span><span class="na">confirm</span><span class="p">(</span><span class="n">orderId</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">captor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgumentCaptor</span><span class="p">.</span><span class="na">forClass</span><span class="p">(</span><span class="n">OrderConfirmed</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="w">    </span><span class="n">verify</span><span class="p">(</span><span class="n">events</span><span class="p">).</span><span class="na">publish</span><span class="p">(</span><span class="n">captor</span><span class="p">.</span><span class="na">capture</span><span class="p">());</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">captor</span><span class="p">.</span><span class="na">getValue</span><span class="p">().</span><span class="na">total</span><span class="p">()).</span><span class="na">isEqualByComparingTo</span><span class="p">(</span><span class="s">"108.00"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="frontend">Frontend</h3>
+<h4 id="react-testing-library-philosophy-query">Q7. What is the React Testing Library philosophy, and how do you query elements?</h4>
+<p><strong>Answer:</strong> "The more your tests resemble the way your software is used, the more confidence they give you." Render
+the component, interact as a user would (<code>userEvent.click</code>, <code>userEvent.type</code>), and assert on what the user sees, not
+on state or internal methods. Query in priority order: <code>getByRole</code> (with an accessible name), <code>getByLabelText</code>,
+<code>getByText</code>, and only then <code>getByTestId</code>. Querying by role doubles as an accessibility check: if you can't find the
+button by role and name, neither can a screen reader. Use <code>findBy*</code> for elements that appear asynchronously instead
+of manual waits. Deeper React angle: <a href="../react-typescript/#test-react-component-per-react">React Q30</a>.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">test</span><span class="p">(</span><span class="s1">'shows an error when the email is invalid'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">userEvent</span><span class="p">.</span><span class="nx">setup</span><span class="p">();</span>
+<span class="w">  </span><span class="nx">render</span><span class="p">(&lt;</span><span class="nt">SignupForm</span><span class="w"> </span><span class="p">/&gt;);</span>
+
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="kr">type</span><span class="p">(</span><span class="nx">screen</span><span class="p">.</span><span class="nx">getByLabelText</span><span class="p">(</span><span class="sr">/email/i</span><span class="p">),</span><span class="w"> </span><span class="s1">'not-an-email'</span><span class="p">);</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">user</span><span class="p">.</span><span class="nx">click</span><span class="p">(</span><span class="nx">screen</span><span class="p">.</span><span class="nx">getByRole</span><span class="p">(</span><span class="s1">'button'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="sr">/sign up/i</span><span class="w"> </span><span class="p">}));</span>
+
+<span class="w">  </span><span class="nx">expect</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">screen</span><span class="p">.</span><span class="nx">findByRole</span><span class="p">(</span><span class="s1">'alert'</span><span class="p">)).</span><span class="nx">toHaveTextContent</span><span class="p">(</span><span class="sr">/valid email/i</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h3 id="questions">Questions</h3>
+<h4 id="h2-repository-tests">Q8. Why not use H2 for repository tests?</h4>
+<p><strong>Answer:</strong> Because H2 is a different database. Its SQL dialect, type system, locking and constraint behaviour differ
+from PostgreSQL's, even in "PostgreSQL mode". Queries using <code>jsonb</code>, <code>ON CONFLICT</code>, window functions, partial indexes,
+<code>citext</code> or specific date arithmetic either fail on H2 or, worse, pass on H2 and fail in production. Flyway migrations
+written for Postgres often don't run on H2 at all, so teams end up maintaining a second schema. Use
+<strong>Testcontainers</strong> to run the real engine and version in a container; with a reused container and Spring's context
+cache, the cost is a few seconds per suite.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@DataJpaTest</span>
+<span class="nd">@AutoConfigureTestDatabase</span><span class="p">(</span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AutoConfigureTestDatabase</span><span class="p">.</span><span class="na">Replace</span><span class="p">.</span><span class="na">NONE</span><span class="p">)</span>
+<span class="nd">@Testcontainers</span>
+<span class="kd">class</span> <span class="nc">OrderRepositoryTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Container</span><span class="w"> </span><span class="nd">@ServiceConnection</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">pg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">"postgres:16-alpine"</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// ...</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> H2 makes the suite green and fast, which looks like success. The bugs it hides are exactly the
+database-specific ones that integration tests exist to catch.</p>
+<h4 id="spring-test-suite-slow-make">Q9. Why is a Spring test suite slow, and how do you make it fast again?</h4>
+<p><strong>Answer:</strong> The usual cause is <strong>context churn</strong>. Spring caches application contexts between test classes, keyed by
+their configuration. Every distinct combination of <code>@MockitoBean</code> (formerly <code>@MockBean</code>), <code>@TestPropertySource</code>,
+active profiles or <code>@DirtiesContext</code> creates a new context, and each one can take several seconds to start. Fixes:
+use <strong>slices</strong> (<code>@WebMvcTest</code>, <code>@DataJpaTest</code>, <code>@JsonTest</code>) instead of <code>@SpringBootTest</code> everywhere; move the common
+mocked beans into a shared base class or test configuration so classes share one cache key; remove
+<code>@DirtiesContext</code> unless a test really corrupts the context; and run the plain unit tests outside Spring entirely.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>Spring test log:  "Storing ApplicationContext ... in cache"  x 37
+37 contexts × ~6 s startup ≈ 4 minutes spent only booting Spring
+After consolidating mocks into one base class: 4 contexts
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> each <code>@MockitoBean</code> looks harmless locally. The cost only shows when you count distinct contexts
+across the whole suite.</p>
+<h4 id="test-spring-service-calls-external">Q10. How do you test a Spring service that calls an external HTTP API?</h4>
+<p><strong>Answer:</strong> Test at three levels, and never call the real third party from an automated test. (1) <strong>Unit test with a mock of
+the client interface</strong>: the service depends on a small port (<code>PatientDirectory.find(id)</code>), so Mockito returns canned
+results and failures; this covers your branching logic fast. (2) <strong>Component test of the HTTP adapter</strong> against a fake HTTP
+server: <strong>WireMock</strong> (or MockWebServer, or <code>MockRestServiceServer</code> for <code>RestTemplate</code>/<code>RestClient</code>) lets you stub real
+responses and assert on the <em>request</em> you sent (path, headers, auth, body) and on the behaviour for 404, 500, slow
+responses, malformed JSON, and connection resets, which is where timeouts, retries and the circuit breaker are actually
+verified. (3) <strong>Contract test</strong> (Spring Cloud Contract / Pact) so the stub cannot silently drift from the provider's real
+API (see <a href="./#consumer-driven-contract-testing-worth">Testing Q19</a>); optionally a few smoke tests against the provider's sandbox in a separate non-blocking
+pipeline. Test what matters for resilience: the timeout actually fires, a retry happens only for idempotent calls and
+stops after N attempts, the fallback returns the degraded response, and the error is mapped to your own exception rather
+than leaking the vendor's.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@SpringBootTest</span>
+<span class="nd">@WireMockTest</span><span class="p">(</span><span class="n">httpPort</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8089</span><span class="p">)</span><span class="w">                       </span><span class="c1">// starts WireMock for the test</span>
+<span class="kd">class</span> <span class="nc">PatientDirectoryClientTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="n">PatientDirectoryClient</span><span class="w"> </span><span class="n">client</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">returnsPatient</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">stubFor</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/patients/42"</span><span class="p">).</span><span class="na">willReturn</span><span class="p">(</span><span class="n">okJson</span><span class="p">(</span><span class="s">"{\"id\":42,\"name\":\"Ada\"}"</span><span class="p">)));</span>
+<span class="w">        </span><span class="n">assertThat</span><span class="p">(</span><span class="n">client</span><span class="p">.</span><span class="na">find</span><span class="p">(</span><span class="mi">42</span><span class="p">).</span><span class="na">name</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="s">"Ada"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">verify</span><span class="p">(</span><span class="n">getRequestedFor</span><span class="p">(</span><span class="n">urlEqualTo</span><span class="p">(</span><span class="s">"/patients/42"</span><span class="p">)).</span><span class="na">withHeader</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span><span class="w"> </span><span class="n">matching</span><span class="p">(</span><span class="s">"Bearer .+"</span><span class="p">)));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">timesOutInsteadOfHanging</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">stubFor</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/patients/42"</span><span class="p">).</span><span class="na">willReturn</span><span class="p">(</span><span class="n">ok</span><span class="p">().</span><span class="na">withFixedDelay</span><span class="p">(</span><span class="mi">5_000</span><span class="p">)));</span><span class="w">   </span><span class="c1">// slower than our 1 s timeout</span>
+<span class="w">        </span><span class="n">assertThrows</span><span class="p">(</span><span class="n">DirectoryUnavailableException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">find</span><span class="p">(</span><span class="mi">42</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">retriesTwiceOn503ThenFails</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">stubFor</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/patients/42"</span><span class="p">).</span><span class="na">willReturn</span><span class="p">(</span><span class="n">serviceUnavailable</span><span class="p">()));</span>
+<span class="w">        </span><span class="n">assertThrows</span><span class="p">(</span><span class="n">DirectoryUnavailableException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">find</span><span class="p">(</span><span class="mi">42</span><span class="p">));</span>
+<span class="w">        </span><span class="n">verify</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">getRequestedFor</span><span class="p">(</span><span class="n">urlEqualTo</span><span class="p">(</span><span class="s">"/patients/42"</span><span class="p">)));</span><span class="w">               </span><span class="c1">// 1 call + 2 retries</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> a Mockito mock of <code>RestTemplate</code> proves nothing about URLs, serialisation or timeouts: it tests that
+you called a method you configured yourself. And stubs only returning <code>200</code> leave every failure path untested, which is
+exactly where the external dependency hurts you (see also <a href="../spring-architecture/#circuit-breaker-pattern-service-need">Spring Q35</a> on circuit breakers).</p>
+<h4 id="mocking-recognise">Q11. What is over-mocking, and how do you recognise it?</h4>
+<p><strong>Answer:</strong> Over-mocking is replacing so many collaborators that the test only checks "method A calls method B with
+these arguments", which is a restatement of the implementation. Symptoms: refactoring without changing behaviour
+breaks many tests; tests pass while the feature is broken because the mocks returned what the author assumed;
+setup is longer than the test. Fix by testing at a slightly larger unit (a service plus its real domain objects, with
+only I/O replaced), using fakes for repositories, and asserting on outcomes (returned value, saved state, published
+event) rather than on call sequences.</p>
+<p><strong>Why it's a trap:</strong> high coverage and many green tests suggest safety, yet the suite can't catch an integration
+mistake and actively resists refactoring, the opposite of what tests are for.</p>
+<h4 id="test-code-depends-current-time">Q12. How do you test code that depends on the current time?</h4>
+<p><strong>Answer:</strong> Never call <code>LocalDateTime.now()</code> or <code>Instant.now()</code> directly in business code. Inject a
+<code>java.time.Clock</code> (a Spring bean in production, <code>Clock.fixed(...)</code> or a mutable test clock in tests) and call
+<code>LocalDate.now(clock)</code>. The same applies to randomness (inject a <code>Supplier&lt;UUID&gt;</code> or <code>RandomGenerator</code>) and to
+time zones (pass a <code>ZoneId</code> explicitly). For asynchronous waits, use Awaitility with a timeout instead of
+<code>Thread.sleep</code>.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">SubscriptionService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Clock</span><span class="w"> </span><span class="n">clock</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isExpired</span><span class="p">(</span><span class="n">Subscription</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">endsAt</span><span class="p">().</span><span class="na">isBefore</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">(</span><span class="n">clock</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">var</span><span class="w"> </span><span class="n">clock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Clock</span><span class="p">.</span><span class="na">fixed</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">"2026-01-31T23:59:59Z"</span><span class="p">),</span><span class="w"> </span><span class="n">ZoneOffset</span><span class="p">.</span><span class="na">UTC</span><span class="p">);</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SubscriptionService</span><span class="p">(</span><span class="n">clock</span><span class="p">).</span><span class="na">isExpired</span><span class="p">(</span><span class="n">sub</span><span class="p">)).</span><span class="na">isFalse</span><span class="p">();</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> tests that use the real clock pass for months, then fail on 29 February, at midnight UTC, or
+on the CI runner in another time zone.</p>
+<h4 id="80-code-coverage-good-target">Q13. Is 80% code coverage a good target?</h4>
+<p><strong>Answer:</strong> Coverage is a useful <strong>floor signal</strong> and a poor <strong>target</strong>. Line coverage only proves code was
+executed, not that its result was checked: a test with no assertion still covers every line. Once coverage becomes
+a goal, people write tests that execute code without verifying it (Goodhart's law). Use it to find untested
+areas, especially in critical modules. To measure test <em>quality</em>, use <strong>mutation testing</strong> (PIT for Java,
+Stryker for JS/TS): it changes the code (flips a <code>&gt;</code> to <code>&gt;=</code>, removes a call) and checks whether a test fails. A
+surviving mutant is a behaviour no test checks.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>PIT report, PricingService:
+  line coverage 96%   mutation score 61%
+  SURVIVED: changed conditional boundary  total &gt; 100  →  total &gt;= 100
+  =&gt; no test checks an order of exactly 100.00
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> a team proudly at 90% can still ship an off-by-one at a pricing boundary, because nothing
+asserted on the boundary value.</p>
+<h4 id="tests-flaky-deal-flaky-tests">Q14. What makes tests flaky, and how do you deal with flaky tests as a team?</h4>
+<p><strong>Answer:</strong> Common causes: <strong>time</strong> (real clock, time zones, <code>Thread.sleep</code> for async work); <strong>order dependency</strong>
+(shared static state, a database not cleaned between tests, test A creating data test B relies on); <strong>concurrency</strong>
+(asserting before an async consumer has run); <strong>external dependencies</strong> (real network, third-party sandboxes);
+and <strong>resource limits</strong> on CI (ports, slow containers, timeouts tuned on a fast laptop). Team process matters as much
+as fixes: detect flakiness (rerun failures and track tests that pass on retry), <strong>quarantine</strong> a flaky test into a
+non-blocking job with an owner and a deadline, fix the root cause, and never let "just rerun the build" become
+normal.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ sleeps and hopes</span>
+<span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="n">repo</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)).</span><span class="na">isPresent</span><span class="p">();</span>
+
+<span class="c1">// ✅ waits for the condition, fails with a clear timeout</span>
+<span class="n">await</span><span class="p">().</span><span class="na">atMost</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+<span class="w">       </span><span class="p">.</span><span class="na">untilAsserted</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">assertThat</span><span class="p">(</span><span class="n">repo</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">)).</span><span class="na">isPresent</span><span class="p">());</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> automatic retries make the pipeline green but teach the team to ignore red, and real
+intermittent production bugs (races) hide among the "known flaky" tests.</p>
+<h4 id="risk-putting-transactional-integration-tests">Q15. What is the risk of putting <code>@Transactional</code> on integration tests?</h4>
+<p><strong>Answer:</strong> Spring rolls back a <code>@Transactional</code> test at the end, which is convenient for cleanup but changes
+behaviour. The test, the service and the repository share <strong>one transaction</strong>, so: lazy loading works in the test
+even though it throws <code>LazyInitializationException</code> in production; constraints and triggers checked at commit
+(deferred constraints) never fire; <code>@TransactionalEventListener(AFTER_COMMIT)</code> handlers never run; and a bug where the
+service forgot <code>@Transactional</code> is masked because the test supplied one. For tests that exercise transaction
+boundaries, don't annotate the test; clean up explicitly (truncate tables, or a fresh container schema per class).</p>
+<p><strong>Why it's a trap:</strong> the test passes precisely because it wraps the code in a transaction production doesn't have.</p>
+<h4 id="test-transaction-rolls-back">Q16. How do you test that a transaction really rolls back?</h4>
+<p><strong>Answer:</strong> You must assert on the <em>committed</em> state of the database after a failure, so the test must <strong>not</strong> run inside the
+usual rollback-after-test transaction (see <a href="./#risk-putting-transactional-integration-tests">Testing Q15</a>): that wrapper makes everything look rolled back and also
+hides the bug where nothing was transactional. Recipe: (1) call the service method with input that forces a failure
+<em>after</em> a first write (a stubbed collaborator throws, or a constraint is violated); (2) assert the expected exception;
+(3) then query through a <strong>fresh transaction/connection</strong> (repository call outside the service, or <code>JdbcTemplate</code>) and
+assert the first write is <strong>absent</strong>. Run it against a real PostgreSQL via Testcontainers, as H2 differs on locking and DDL
+(see <a href="./#h2-repository-tests">Testing Q8</a>). Use <code>@Transactional(propagation = NOT_SUPPORTED)</code> or no <code>@Transactional</code> on the test, and
+clean data in <code>@AfterEach</code>. Cover the rules from <a href="../spring-architecture/#transactional-propagation-rollback-rules-interact">Spring Q16</a>: a checked exception does not roll back
+unless <code>rollbackFor</code> is set, <code>REQUIRES_NEW</code> work commits even if the outer transaction rolls back, and a swallowed exception
+commits. For <code>@TransactionalEventListener(AFTER_COMMIT)</code> side effects, assert they are <em>not</em> triggered after a rollback.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@SpringBootTest</span>
+<span class="nd">@Testcontainers</span>
+<span class="kd">class</span> <span class="nc">BookingRollbackTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="n">BookingService</span><span class="w"> </span><span class="n">service</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="n">AppointmentRepository</span><span class="w"> </span><span class="n">appointments</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="n">AuditRepository</span><span class="w"> </span><span class="n">audits</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@MockitoBean</span><span class="w"> </span><span class="n">NotificationClient</span><span class="w"> </span><span class="n">notifications</span><span class="p">;</span><span class="w">          </span><span class="c1">// MockBean on Spring Boot &lt; 3.4</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">bookingIsRolledBackWhenNotificationFails</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">       </span><span class="c1">// no @Transactional on the test</span>
+<span class="w">        </span><span class="n">doThrow</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"smtp down"</span><span class="p">)).</span><span class="na">when</span><span class="p">(</span><span class="n">notifications</span><span class="p">).</span><span class="na">confirm</span><span class="p">(</span><span class="n">any</span><span class="p">());</span>
+
+<span class="w">        </span><span class="n">assertThrows</span><span class="p">(</span><span class="n">IllegalStateException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">service</span><span class="p">.</span><span class="na">bookAndNotify</span><span class="p">(</span><span class="n">command</span><span class="p">()));</span>
+
+<span class="w">        </span><span class="n">assertThat</span><span class="p">(</span><span class="n">appointments</span><span class="p">.</span><span class="na">count</span><span class="p">()).</span><span class="na">isZero</span><span class="p">();</span><span class="w">           </span><span class="c1">// first write was undone</span>
+<span class="w">        </span><span class="n">assertThat</span><span class="p">(</span><span class="n">audits</span><span class="p">.</span><span class="na">count</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span><span class="w">             </span><span class="c1">// REQUIRES_NEW audit row survives, by design</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> with <code>@Transactional</code> on the test the assertion passes even when the service has no transaction at all
+(the test's own transaction rolls everything back and the persistence context returns unflushed entities). A rollback test
+that cannot fail is worthless: temporarily remove <code>@Transactional</code> from the service and check the test goes red.</p>
+<h4 id="mock-http-calls-frontend-tests">Q17. How do you mock HTTP calls in frontend tests?</h4>
+<p><strong>Answer:</strong> Mock at the <strong>network boundary</strong>, not the module boundary. Mock Service Worker (MSW) intercepts <code>fetch</code>
+and XHR and returns responses from handlers you define, so your component, data-fetching library (React Query,
+SWR) and serialization all run for real. Mocking <code>fetch</code> or your API module by hand skips that code and tends to
+drift from the real contract. Define handlers per scenario (success, 500, slow response, empty list) and reuse the
+same handlers in Storybook and in local development.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">server</span><span class="p">.</span><span class="nx">use</span><span class="p">(</span>
+<span class="w">  </span><span class="nx">http</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/api/orders'</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">HttpResponse</span><span class="p">.</span><span class="nx">json</span><span class="p">([],</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">status</span><span class="o">:</span><span class="w"> </span><span class="kt">200</span><span class="w"> </span><span class="p">})),</span>
+<span class="p">);</span>
+<span class="nx">render</span><span class="p">(</span><span class="o">&lt;</span><span class="nx">OrdersPage</span><span class="w"> </span><span class="o">/&gt;</span><span class="p">);</span>
+<span class="nx">expect</span><span class="p">(</span><span class="k">await</span><span class="w"> </span><span class="nx">screen</span><span class="p">.</span><span class="nx">findByText</span><span class="p">(</span><span class="sr">/no orders yet/i</span><span class="p">)).</span><span class="nx">toBeInTheDocument</span><span class="p">();</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> <code>jest.mock('../api')</code> tests that the component calls a function, not that it handles the real
+response shape, loading state and errors.</p>
+<h4 id="load-test-rest-api-gatling">Q18. How do you load-test a REST API with Gatling, and how do you read the results?</h4>
+<p><strong>Answer:</strong> A load test answers "how does latency and error rate behave as concurrent load rises, and where does it break?",
+so it needs a <strong>realistic scenario, realistic data and an explicit goal</strong>. Gatling (a code-first tool: Scala/Java/Kotlin DSL,
+HTML reports) models a user journey (log in, search slots, book, cancel) with feeders for test data (unique patients, tokens),
+checks on each response (status, JSON field, response time) and an <strong>injection profile</strong> that sets the load shape. Prefer an
+<strong>open model</strong> (<code>constantUsersPerSec</code>, <code>rampUsersPerSec</code>: new users arrive at a fixed rate regardless of how slow the system
+is, as in real life) over a <strong>closed model</strong> (<code>atOnceUsers</code>, <code>constantConcurrentUsers</code>: a fixed number of users wait for each
+response), because the closed model slows its own arrivals when the server slows down and hides the tail (<em>coordinated
+omission</em>, see <a href="../fullstack-devops-k8s/#p50-p95-p99-latency-average">Full Stack Q8</a>). Typical test types: <strong>smoke</strong> (1 user, validate the script),
+<strong>load</strong> (expected peak, steady), <strong>stress</strong> (ramp past the limit to find the breaking point and how it fails), <strong>soak</strong>
+(hours at moderate load to reveal leaks and pool exhaustion), <strong>spike</strong> (sudden 10x). Define <strong>assertions</strong> as pass/fail
+criteria (<code>p95 &lt; 300 ms</code>, <code>failed &lt; 1%</code>) so the build can fail automatically. Read the report by looking at: response-time
+percentiles over time (not the mean), requests/s vs active users, the error breakdown, and then <strong>correlate with server-side
+metrics</strong> (CPU, GC, connection pool, DB) to find the saturated resource. Run it against a production-like environment, never
+the laptop that also hosts the app, and warm up the JVM first.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BookingSimulation</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Simulation</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HttpProtocolBuilder</span><span class="w"> </span><span class="n">http</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">http</span><span class="p">.</span><span class="na">baseUrl</span><span class="p">(</span><span class="s">"https://staging.api.example.com"</span><span class="p">).</span><span class="na">acceptHeader</span><span class="p">(</span><span class="s">"application/json"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">FeederBuilder</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">patients</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">csv</span><span class="p">(</span><span class="s">"patients.csv"</span><span class="p">).</span><span class="na">circular</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">ScenarioBuilder</span><span class="w"> </span><span class="n">book</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">scenario</span><span class="p">(</span><span class="s">"search and book"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">feed</span><span class="p">(</span><span class="n">patients</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">exec</span><span class="p">(</span><span class="n">http</span><span class="p">(</span><span class="s">"search slots"</span><span class="p">).</span><span class="na">get</span><span class="p">(</span><span class="s">"/slots?doctor=#{doctorId}&amp;day=2026-11-02"</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">check</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">is</span><span class="p">(</span><span class="mi">200</span><span class="p">),</span><span class="w"> </span><span class="n">jsonPath</span><span class="p">(</span><span class="s">"$[0].id"</span><span class="p">).</span><span class="na">saveAs</span><span class="p">(</span><span class="s">"slotId"</span><span class="p">)))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">pause</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w">                                          </span><span class="c1">// think time</span>
+<span class="w">        </span><span class="p">.</span><span class="na">exec</span><span class="p">(</span><span class="n">http</span><span class="p">(</span><span class="s">"book"</span><span class="p">).</span><span class="na">post</span><span class="p">(</span><span class="s">"/appointments"</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"Idempotency-Key"</span><span class="p">,</span><span class="w"> </span><span class="s">"#{randomUuid()}"</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">body</span><span class="p">(</span><span class="n">StringBody</span><span class="p">(</span><span class="s">"{\"slotId\":\"#{slotId}\",\"patientId\":\"#{patientId}\"}"</span><span class="p">)).</span><span class="na">asJson</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">check</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">in</span><span class="p">(</span><span class="mi">201</span><span class="p">,</span><span class="w"> </span><span class="mi">409</span><span class="p">)));</span><span class="w">                   </span><span class="c1">// 409 = lost the race, an expected outcome</span>
+
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="n">setUp</span><span class="p">(</span><span class="n">book</span><span class="p">.</span><span class="na">injectOpen</span><span class="p">(</span>
+<span class="w">            </span><span class="n">rampUsersPerSec</span><span class="p">(</span><span class="mi">5</span><span class="p">).</span><span class="na">to</span><span class="p">(</span><span class="mi">50</span><span class="p">).</span><span class="na">during</span><span class="p">(</span><span class="mi">120</span><span class="p">),</span><span class="w">            </span><span class="c1">// ramp</span>
+<span class="w">            </span><span class="n">constantUsersPerSec</span><span class="p">(</span><span class="mi">50</span><span class="p">).</span><span class="na">during</span><span class="p">(</span><span class="mi">600</span><span class="p">)))</span><span class="w">             </span><span class="c1">// steady peak</span>
+<span class="w">        </span><span class="p">.</span><span class="na">protocols</span><span class="p">(</span><span class="n">http</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">assertions</span><span class="p">(</span><span class="n">global</span><span class="p">().</span><span class="na">responseTime</span><span class="p">().</span><span class="na">percentile</span><span class="p">(</span><span class="mi">95</span><span class="p">).</span><span class="na">lt</span><span class="p">(</span><span class="mi">300</span><span class="p">),</span>
+<span class="w">                    </span><span class="n">global</span><span class="p">().</span><span class="na">failedRequests</span><span class="p">().</span><span class="na">percent</span><span class="p">().</span><span class="na">lt</span><span class="p">(</span><span class="mf">1.0</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> a green test against an empty database, with one hot cached record and a closed model, proves nothing
+about production. Test data volume, cache state, and think times change the answer as much as the code does, and the
+numbers from a shared CI runner are only good for <em>relative</em> comparison between builds. See
+<a href="../fullstack-devops-k8s/#reducing-endpoint-p95-latency-9">Full Stack Q36</a> for how to use the results to fix a bottleneck.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h3 id="questions_1">Questions</h3>
+<h4 id="consumer-driven-contract-testing-worth">Q19. What is consumer-driven contract testing, and when is it worth it?</h4>
+<p><strong>Answer:</strong> Each <strong>consumer</strong> writes tests that record what it actually needs from a provider's API (request, and the
+fields of the response it reads). That produces a <strong>contract</strong> (Pact file) published to a broker. The <strong>provider</strong>
+verifies every consumer's contract in its own pipeline against the real implementation. If the provider removes a
+field a consumer reads, the provider's build fails before deployment. It replaces most cross-service end-to-end
+tests for API compatibility. Worth it with several teams owning services that call each other over HTTP or
+messaging and deploying independently. Not worth it for a single team deploying everything together, or for a public
+API with unknown consumers (use OpenAPI schema diffing and versioning instead). Spring Cloud Contract is the
+provider-driven alternative in the Spring ecosystem.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code>order-ui (consumer)    -&gt; pact: GET /orders/42 returns { id, status, total }
+order-service (provider) CI: verify pact against real controller -&gt; ✅
+Developer removes `total` from the response -&gt; provider CI fails: "order-ui expects total"
+can-i-deploy order-service --to prod -&gt; ❌ blocked
+</code></pre></div>
+<h4 id="design-testing-strategy-system-ten">Q20. Design the testing strategy for a system of ten microservices. What runs where?</h4>
+<p><strong>Answer:</strong> Per service, on every commit: unit tests and integration tests against real dependencies in containers
+(database, broker), plus <strong>contract tests</strong> for each API it provides or consumes. That gives fast, owner-local
+feedback and catches most bugs. On merge to main, deploy to a shared environment and run a <strong>small smoke suite</strong>
+(health, one critical path per service). Keep a <strong>thin end-to-end suite</strong> (10–20 journeys: sign-up, checkout,
+refund) running on the integrated environment, owned by the teams, not a separate QA silo. In production, use
+<strong>synthetic monitoring</strong> on the same critical journeys, plus canary releases with automatic rollback on SLO
+breach. What to avoid: a huge shared end-to-end suite that gates every deploy, takes an hour, and fails for reasons
+nobody owns; it recreates the coupling microservices were meant to remove.</p>
+<h4 id="tdd-help">Q21. When does TDD help, and when do you not use it?</h4>
+<p><strong>Answer:</strong> TDD (red → green → refactor) helps most where behaviour is well defined and logic-heavy: pricing,
+validation, parsing, state machines, bug fixes (write the failing test that reproduces the bug first). It drives a
+testable design with small units and explicit dependencies, and it gives a regression net for free. It helps less
+during exploratory spikes, when you don't yet know what to build (spike, throw away, then test-drive the real
+version), and for thin glue code where an integration test is the meaningful check. <strong>Outside-in</strong> TDD starts from an
+acceptance test and mocks downward (London school); <strong>inside-out</strong> starts from the domain and builds up (Chicago
+school). A senior answer is pragmatic: the goal is fast, trustworthy feedback, and TDD is one way to get it.</p>
+<h4 id="test-asynchronous-messaging-kafka-rabbitmq">Q22. How do you test asynchronous messaging (Kafka/RabbitMQ consumers and producers)?</h4>
+<p><strong>Answer:</strong> Split it in layers. <strong>Unit-test the handler</strong> as a plain method: given this message, it produces this
+state change or this outgoing event, with no broker. <strong>Integration-test the wiring</strong> with a real broker in
+Testcontainers: publish a message and assert the effect with Awaitility, which checks serialization, topic
+names, consumer group config and error handling. Test the <strong>failure paths</strong> explicitly: a poison message lands in the
+DLQ after the configured retries; a <strong>duplicate delivery</strong> of the same message leaves state unchanged (idempotency,
+see <a href="../messaging-rabbitmq-kafka/#consumer-idempotent-even-messaging-system">Messaging Q13</a>); a crash after processing but before commit replays the message
+safely. For schemas, add a compatibility check (Schema Registry) in CI.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">kafkaTemplate</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="s">"orders"</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">payload</span><span class="p">);</span>
+<span class="n">kafkaTemplate</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="s">"orders"</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">payload</span><span class="p">);</span><span class="w">           </span><span class="c1">// duplicate delivery</span>
+
+<span class="n">await</span><span class="p">().</span><span class="na">atMost</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="mi">10</span><span class="p">)).</span><span class="na">untilAsserted</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">paymentRepo</span><span class="p">.</span><span class="na">countByOrderId</span><span class="p">(</span><span class="n">orderId</span><span class="p">)).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</code></pre></div>
+<h4 id="keep-playwright-cypress-end-end">Q23. How do you keep a Playwright/Cypress end-to-end suite fast and reliable?</h4>
+<p><strong>Answer:</strong> Cover only critical user journeys; push everything else down to component and API tests. Make each test
+<strong>independent</strong>: create its own data through the API (not the UI) and don't depend on what another test left behind.
+Use <strong>resilient selectors</strong> (role and accessible name, or <code>data-testid</code>), never CSS paths. Rely on the tool's
+auto-waiting assertions instead of fixed timeouts. Stub third parties you don't control (payment sandbox, email) at
+the network layer. Run tests in parallel with isolated accounts, record traces and videos on failure, and track
+flakiness per test. Limit retries to one and treat a pass-on-retry as a flaky signal to fix.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nx">test</span><span class="p">(</span><span class="s1">'checkout with a saved card'</span><span class="p">,</span><span class="w"> </span><span class="k">async</span><span class="w"> </span><span class="p">({</span><span class="w"> </span><span class="nx">page</span><span class="p">,</span><span class="w"> </span><span class="nx">request</span><span class="w"> </span><span class="p">})</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">await</span><span class="w"> </span><span class="nx">createUserWithCart</span><span class="p">(</span><span class="nx">request</span><span class="p">);</span><span class="w">          </span><span class="c1">// setup via API, not UI</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">loginAs</span><span class="p">(</span><span class="nx">page</span><span class="p">,</span><span class="w"> </span><span class="nx">user</span><span class="p">);</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">page</span><span class="p">.</span><span class="nx">getByRole</span><span class="p">(</span><span class="s1">'button'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">'Checkout'</span><span class="w"> </span><span class="p">}).</span><span class="nx">click</span><span class="p">();</span>
+<span class="w">  </span><span class="k">await</span><span class="w"> </span><span class="nx">expect</span><span class="p">(</span><span class="nx">page</span><span class="p">.</span><span class="nx">getByRole</span><span class="p">(</span><span class="s1">'heading'</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">'Order confirmed'</span><span class="w"> </span><span class="p">})).</span><span class="nx">toBeVisible</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre></div>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="backend-test-suite-takes-25">S1. The backend test suite takes 25 minutes, and developers have stopped running it locally</h3>
+<ul>
+<li><strong>Symptoms:</strong> CI is the only place tests run; PRs wait half an hour for feedback; people push "fix test" commits in
+  a loop.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Measure before guessing. Get per-class timings from the build report and count Spring context starts
+  in the logs. The usual findings: dozens of distinct contexts caused by varying <code>@MockitoBean</code> sets and
+  <code>@DirtiesContext</code>; <code>@SpringBootTest</code> used for logic that needs no Spring; a fresh database container per class;
+  and tests running sequentially.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>grep -c "Started .* in" build/test-output.log   -&gt; 41 context starts
+top 10 slowest classes: all @SpringBootTest, all with different @MockitoBean sets
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Convert pure logic tests to plain JUnit; use slices for web and persistence; consolidate mocks into
+  shared test configuration; reuse one Testcontainers instance per JVM (static container or <code>@ServiceConnection</code> in a
+  shared config); enable parallel test execution in Gradle/Maven forks.</li>
+<li><strong>Prevention:</strong> Track suite duration as a metric with a budget (for example 5 minutes for the PR gate), and review
+  new <code>@SpringBootTest</code> and <code>@DirtiesContext</code> usages in code review.</li>
+</ul>
+</details>
+<h3 id="test-passes-locally-rerun-but">S2. A test passes locally and on rerun, but fails on CI about once in ten runs</h3>
+<ul>
+<li><strong>Symptoms:</strong> The failure is always the same assertion, never reproducible on a laptop, and "rerun" fixes it.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Look for what differs on CI: <strong>test order</strong> (run the class alone vs with the full suite; JUnit's random
+  <code>MethodOrderer</code> exposes order coupling), <strong>time zone and locale</strong> of the runner, <strong>speed</strong> (slower CPU makes async
+  assertions race), and <strong>shared state</strong> (static caches, a database not cleaned, a fixed port).</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>CI runner TZ=UTC, laptop TZ=Europe/Paris
+test builds LocalDate.now() at 23:30 UTC -&gt; date differs from the expected "today" in Paris
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Fix the root cause: inject a fixed <code>Clock</code> and <code>ZoneId</code>, replace sleeps with Awaitility, isolate data
+  per test (unique ids, truncation between tests), use random ports.</li>
+<li><strong>Prevention:</strong> Run CI with a non-default time zone and random test order on purpose, quarantine new flaky tests
+  with an owner, and report the pass-on-retry rate.</li>
+</ul>
+</details>
+<h3 id="all-tests-green-but-query">S3. All tests are green, but a query fails in production with a syntax error</h3>
+<ul>
+<li><strong>Symptoms:</strong> A new search endpoint returns 500 in production with a PostgreSQL error; the repository test for it
+  passes.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Check which database the tests use. The repository tests run on H2 in compatibility mode, which
+  accepted a function or syntax that PostgreSQL rejects (or the reverse behaviour for case sensitivity, <code>ILIKE</code>,
+  <code>jsonb</code> operators, or date functions).</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>test profile: spring.datasource.url=jdbc:h2:mem:test;MODE=PostgreSQL
+prod error:   ERROR: function datediff(unknown, timestamp) does not exist
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Fix the query, then switch repository tests to PostgreSQL in Testcontainers with the same major
+  version as production, running the real Flyway migrations.</li>
+<li><strong>Prevention:</strong> Ban the in-memory database for persistence tests (an ArchUnit rule or a dependency check that
+  fails the build if H2 is on the test classpath).</li>
+</ul>
+</details>
+<h3 id="pure-refactoring-breaks-200-tests">S4. A pure refactoring breaks 200 tests while the application still works</h3>
+<ul>
+<li><strong>Symptoms:</strong> A developer extracts a class and renames two methods; behaviour is unchanged (manual and end-to-end
+  checks pass), but hundreds of unit tests fail and the PR stalls.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> The tests are coupled to the implementation: they mock every collaborator, verify internal call
+  sequences, and test private helpers made package-visible "for testing".</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">verify</span><span class="p">(</span><span class="n">validator</span><span class="p">).</span><span class="na">validate</span><span class="p">(</span><span class="n">order</span><span class="p">);</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">mapper</span><span class="p">).</span><span class="na">toEntity</span><span class="p">(</span><span class="n">order</span><span class="p">);</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">repo</span><span class="p">).</span><span class="na">save</span><span class="p">(</span><span class="n">any</span><span class="p">());</span>
+<span class="n">verifyNoMoreInteractions</span><span class="p">(</span><span class="n">validator</span><span class="p">,</span><span class="w"> </span><span class="n">mapper</span><span class="p">,</span><span class="w"> </span><span class="n">repo</span><span class="p">);</span>
+<span class="c1">// asserts *how* it works, not *what* it does</span>
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Rewrite the worst offenders at a larger unit: real domain objects and mappers, a fake repository,
+  and assertions on the returned value and saved state. Delete tests that only restate the implementation.</li>
+<li><strong>Prevention:</strong> Agree on a team rule in code review: mock only I/O boundaries and outgoing side effects; test
+  through public APIs; <code>verifyNoMoreInteractions</code> needs a justification.</li>
+</ul>
+</details>
+<h3 id="end-end-suite-fails-10">S5. The end-to-end suite fails 10% of the time, and the team now ignores its failures</h3>
+<ul>
+<li><strong>Symptoms:</strong> Nightly end-to-end runs are red most mornings; reruns usually pass; a real regression shipped last
+  week because its failure was dismissed as "flaky again".</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Classify the last 30 failures from traces: timing (fixed waits, animations), shared test data
+  (two tests using the same account), environment instability (a dependency down), and selectors broken by UI
+  changes. Usually two or three causes explain most failures.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>12 failures: shared user "e2e@test.com" modified by a parallel test
+ 8 failures: waitForTimeout(2000) too short on CI
+ 5 failures: payment sandbox timeout
+ 5 failures: real bugs
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Give each test its own data created through the API, replace fixed waits with web-first assertions,
+  stub the payment sandbox, and move non-critical journeys down to component tests.</li>
+<li><strong>Prevention:</strong> Publish a per-test flakiness dashboard, quarantine with an owner and deadline, cap the suite size,
+  and make a red end-to-end run block the release until someone triages it.</li>
+</ul>
+</details>
+<h3 id="test-passes-alone-but-fails">S6. A test passes alone but fails when the whole suite runs, in a different order each time</h3>
+<ul>
+<li><strong>Symptoms:</strong> Failures change from run to run and disappear when you re-run the one test.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Almost always shared state between tests: a static field or singleton, a database not cleaned, a shared clock or file, or tests that depend on execution order. Run with a fixed random order and bisect.</li>
+<li><strong>See also:</strong> <a href="../design-patterns/#integration-tests-pass-isolation-but">Design Patterns S1</a>, the hand-rolled Singleton version of this bug.</li>
+<li><strong>Resolution:</strong> Make each test own its data (create in setup, roll back or truncate after), reset static state, inject a <code>Clock</code>, remove ordering dependencies. Quarantine, do not delete, the test while fixing.</li>
+<li><strong>Prevention:</strong> Run the suite in random order in CI; fail the build on tests that touch shared global state.</li>
+</ul>
+</details>
+<h3 id="mocks-green-provider-changed">S7. Every test is green, but the integration with the billing service breaks in production after their deploy</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>400 Bad Request: field 'currency' is required</code> from the billing service; our unit tests mock the client and still pass.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Our mocks encode our assumption of the provider's API, not the real one. The provider added a required field (or renamed one) and nothing on their side knew we depended on its absence.</li>
+<li><strong>Resolution:</strong> Hotfix by sending the field; then add consumer-driven contract tests (Pact or Spring Cloud Contract): our tests generate the contract, the provider's pipeline verifies it before deploying, and <code>can-i-deploy</code> blocks incompatible releases.</li>
+<li><strong>Prevention:</strong> Contract tests for every synchronous cross-team dependency, mocks generated from the provider's published OpenAPI rather than hand-written, and a smoke test in staging against the real service.</li>
+</ul>
+</details>
+<h3 id="snapshot-tests-rubber-stamped">S8. A visual bug ships even though snapshot tests cover the component, because the snapshot was just updated</h3>
+<ul>
+<li><strong>Symptoms:</strong> The checkout button disappears on mobile; the PR contained a 900-line <code>__snapshots__</code> diff that the reviewer approved with "snapshots updated".</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Large snapshots fail on every change, so the team runs <code>-u</code> by reflex. They assert 'nothing changed', not 'the behavior is correct', and nobody reads a 900-line DOM diff.</li>
+<li><strong>Resolution:</strong> Replace big component snapshots with behavior assertions (Testing Library: <code>getByRole('button', { name: /pay/i })</code> is visible and enabled), keep small inline snapshots only for stable serialized output, and add visual regression screenshots (Playwright) for key pages reviewed as images.</li>
+<li><strong>Prevention:</strong> Review rule: a snapshot update must be explained in the PR; lint rule capping snapshot size; CI that fails if snapshots are updated without the <code>snapshot-update</code> label.</li>
+</ul>
+</details>
+<h2 id="commonly-asked-questions">🗣️ Commonly asked questions</h2>
+<p>Questions that come up often in interviews on this topic (a typical set, not tied to one specific interview). Each has a short model answer: expand it with the sections above and say it aloud.</p>
+<h4 id="unit-integration-end-end-tests">R1. Unit vs integration vs end-to-end tests.</h4>
+<p><strong>Answer:</strong> Unit: one class in isolation, fast, no I/O. Integration: several real components together (repository + real database via Testcontainers, a Spring slice). End-to-end: the whole system through its public entry point, slowest and most brittle. Keep many unit tests, fewer integration tests, very few E2E (the test pyramid).</p>
+<h4 id="mock-mockbean-mockitobean">R2. <code>@Mock</code> vs <code>@MockBean</code> (<code>@MockitoBean</code>).</h4>
+<p><strong>Answer:</strong> <code>@Mock</code> is plain Mockito: a mock for a unit test with no Spring context. <code>@MockBean</code> replaces a bean in the Spring context (deprecated in Spring Boot 3.4 in favour of <code>@MockitoBean</code>), which dirties the context cache and slows the suite. Prefer constructor injection with <code>@Mock</code>, and mock beans only in slice tests.</p>
+<h4 id="test-private-method">R3. How do you test a private method?</h4>
+<p><strong>Answer:</strong> Do not test it directly: test it through the public behaviour that uses it. If the private logic is complex enough to need its own tests, it is probably a separate class with its own public API: extract it. Reflection to call private methods couples tests to the implementation.</p>
+<h2 id="oral-quiz">🎤 Oral quiz</h2>
+<p>Ten questions picked across the levels. Answer each <strong>aloud in 2–3 minutes</strong> without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: <strong>0</strong> blank · <strong>1</strong> definition only · <strong>2</strong> plus an example · <strong>3</strong> plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.</p>
+<ol>
+<li>Q1. What is the test pyramid, and is it still the right shape?</li>
+<li>Q3. Mock, stub, fake, spy — what is the difference, and when do you use each?</li>
+<li>Q8. Why not use H2 for repository tests?</li>
+<li>Q9. Why is a Spring test suite slow, and how do you make it fast again?</li>
+<li>Q13. Is 80% code coverage a good target?</li>
+<li>Q14. What makes tests flaky, and how do you deal with flaky tests as a team?</li>
+<li>Q19. What is consumer-driven contract testing, and when is it worth it?</li>
+<li>Q18. How do you load-test a REST API with Gatling, and how do you read the results?</li>
+<li>S1. The backend test suite takes 25 minutes, and developers have stopped running it locally</li>
+<li>S4. A pure refactoring breaks 200 tests while the application still works</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<h3 id="strategy_1">Strategy</h3>
+<blockquote>
+<p><strong>Start here:</strong> many fast tests, few slow ones; replace only I/O; assert on behaviour, not on calls.</p>
+</blockquote>
+<ul>
+<li><strong>Pyramid vs trophy</strong> — pyramid = mostly unit; trophy = thicker integration layer. <em>For CRUD-heavy services, integration tests on a real database catch more.</em></li>
+<li><strong>Boundaries</strong> — unit = all I/O replaced; integration = at least one real external piece; E2E = everything real. <em>Ask "where could the bug be if this fails?".</em></li>
+<li><strong>Test doubles</strong> — stub supplies data, mock verifies an outgoing command, fake is a working light implementation, spy wraps a real object. <em>Prefer real &gt; fake &gt; stub &gt; mock.</em></li>
+<li><strong>Good unit test</strong> — one behaviour, AAA, descriptive name, F.I.R.S.T. <em>Fails for one reason.</em></li>
+<li><strong>TDD</strong> — great for logic and bug fixes, weak for spikes and glue. <em>Outside-in (London) vs inside-out (Chicago).</em></li>
+</ul>
+<h3 id="java-spring">Java &amp; Spring</h3>
+<blockquote>
+<p><strong>Start here:</strong> real database in a container, slices over full contexts, a fixed clock.</p>
+</blockquote>
+<ul>
+<li><strong>Testcontainers over H2</strong> — same engine and version as production, real migrations. <em><code>@ServiceConnection</code> wires it in Spring Boot 3.1+.</em></li>
+<li><strong>Context cache</strong> — every distinct <code>@MockitoBean</code>/property/profile set boots a new context. <em>Consolidate; avoid <code>@DirtiesContext</code>.</em></li>
+<li><strong>Slices</strong> — <code>@WebMvcTest</code>, <code>@DataJpaTest</code>, <code>@JsonTest</code>. <em><code>@SpringBootTest</code> for a few end-to-end wiring tests only.</em></li>
+<li><strong><code>@Transactional</code> tests</strong> — rollback is handy but hides lazy loading, commit-time constraints and after-commit events.</li>
+<li><strong>Time</strong> — inject <code>Clock</code>; Awaitility instead of <code>Thread.sleep</code>.</li>
+<li><strong>Mockito</strong> — don't mock value objects, the class under test, or types you don't own.</li>
+</ul>
+<h3 id="quality-signals">Quality signals</h3>
+<blockquote>
+<p><strong>Start here:</strong> coverage finds untested code; mutation testing tells you whether tests actually check anything.</p>
+</blockquote>
+<ul>
+<li><strong>Coverage</strong> — a floor, not a goal. <em>Executed ≠ asserted.</em></li>
+<li><strong>Mutation testing</strong> — PIT (Java), Stryker (JS/TS). <em>Surviving mutant = unchecked behaviour.</em></li>
+<li><strong>Flaky tests</strong> — time, order, async, shared data, external services. <em>Quarantine with owner and deadline; track pass-on-retry.</em></li>
+</ul>
+<h3 id="frontend-cross-service">Frontend &amp; cross-service</h3>
+<blockquote>
+<p><strong>Start here:</strong> test like a user, mock at the network, keep E2E for critical journeys.</p>
+</blockquote>
+<ul>
+<li><strong>RTL</strong> — query by role/label/text; <code>userEvent</code>; <code>findBy*</code> for async. <em>Role queries double as accessibility checks.</em></li>
+<li><strong>MSW</strong> — mock HTTP at the network layer; reuse handlers in Storybook and dev.</li>
+<li><strong>Playwright/Cypress</strong> — few journeys, own data via API, resilient selectors, auto-waiting, max one retry.</li>
+<li><strong>Contract tests (Pact)</strong> — consumer records needs, provider verifies in CI, <code>can-i-deploy</code> gates release. <em>Replaces most cross-service E2E.</em></li>
+<li><strong>Load tests</strong> — open model (arrival rate), realistic data volume and think time, steady-state window, assert on p95/p99 not the average. <em>409/429 can be expected outcomes; CI numbers are for relative comparison only.</em></li>
+<li><strong>Messaging tests</strong> — handler as plain unit; wiring with a containerised broker; test duplicates, DLQ and replay.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,3976 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/fr/interviews/security/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+        <link rel="next" href="../coding/">
+      
+      
+        
+          <link rel="alternate" href="../../../interviews/security/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Sécurité - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#securite" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../../" title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sécurité
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sélectionner la langue">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../interviews/security/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Entretien
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Bonnes pratiques
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Ressources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entretien
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entretien
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vue d'ensemble
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistance & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception de systèmes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cache & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Comportemental (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingénierie IA & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fondamentaux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fondamentaux
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fondamentaux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identité
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identité">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-authorization-each-spring-react" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Authentification vs autorisation — et où chacune se passe-t-elle dans une app Spring + React typique ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwords-stored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Comment stocker les mots de passe ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth-2-0-openid-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Que sont OAuth 2.0 et OpenID Connect, et en quoi diffèrent-ils ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth2-flow-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Quel flux OAuth2 utiliser pour quel client ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attaques-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attaques web
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attaques web">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sql-injection-escaping-input-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Qu'est-ce que l'injection SQL, et pourquoi « échapper l'entrée » est-il le mauvais correctif ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xss-kinds-exist-react-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. Qu'est-ce que le XSS, quels types existent, et comment une app React s'en défend-elle ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csrf-need-csrf-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. Qu'est-ce que le CSRF, et quand faut-il une protection CSRF ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spring Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spring Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spring-security-filter-chain-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Comment la filter chain de Spring Security traite-t-elle une requête ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-spring-boot-api-oauth2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Comment configurer une API Spring Boot en resource server OAuth2 ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pieges-seniors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Pièges seniors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Pièges seniors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exactly-validate-jwt-before-trusting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Que faut-il exactement valider sur un JWT avant de lui faire confiance ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revoke-jwt-refresh-tokens-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idor-broken-object-level-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssrf-prevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. Qu'est-ce que le SSRF, et comment l'empêcher ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browser-app-store-tokens-bff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. Où une app navigateur doit-elle stocker les tokens, et qu'est-ce qu'un BFF ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#software-supply-chain-security-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-ouvert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Ouvert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Ouvert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#propagate-user-identity-across-microservices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. Comment propager l'identité de l'utilisateur entre microservices ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-threat-modeling-session-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. Comment mèneriez-vous une séance de threat modeling pour une nouvelle fonctionnalité ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protect-sensitive-data-rest-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Comment protéger les données sensibles au repos et dans les logs, et où le chiffrement aide-t-il vraiment ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-protection-sensitive-healthcare-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-end-encryption-patientpractitioner-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Comment fonctionne le chiffrement de bout en bout des messages et documents entre patient et praticien, et que coûte-t-il au produit ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenarios-reels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Scénarios réels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Scénarios réels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customer-reports-see-another-customer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Un client signale qu'il peut voir les factures d'un autre client en changeant l'URL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt-signing-key-appears-public" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Une clé de signature JWT apparaît dans un dépôt GitHub public
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-scan-flags-critical-cve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Un scan de sécurité signale une CVE critique dans une dépendance transitive un vendredi après-midi
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-moving-frontend-new-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. Après le déplacement du frontend vers un nouveau domaine, des utilisateurs connectés reçoivent des 403 sur chaque POST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-was-committed-git-pushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. Un secret a été commité dans Git et poussé sur le dépôt distant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssrf-image-url-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. Une fonctionnalité « importer un avatar depuis une URL » sert à lire les credentials de l'instance cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt-valid-after-logout-role-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Le compte d'un salarié licencié est désactivé, mais il continue d'utiliser l'API d'admin pendant encore une heure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-posees-en-entretien" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Questions posées en entretien
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Questions posées en entretien">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tokens-authentification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tokens &amp; authentification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tokens &amp; authentification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relationship-oauth-2-0-jwt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. Différence et relation entre OAuth 2.0, JWT et OpenID Connect.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt-structure-jwt-authentication-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. Expliquez la structure d'un JWT et le flux d'authentification/validation.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-401-unauthorized-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. Comment déboguer une erreur 401 Unauthorized ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reponse-a-incident" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Réponse à incident
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Réponse à incident">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secret-was-accidentally-committed-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R4. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quiz-oral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Quiz oral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identite-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identité &amp; tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attaques-web_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attaques web
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-security_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spring Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plateforme-processus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plateforme &amp; processus
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conception d'API REST
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & tests de charge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Checklist d'entretien blanc
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Optimisation des requêtes SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bonnes pratiques
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Bonnes pratiques
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sécurité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observabilité
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messagerie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompts IA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ressources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Ressources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pour aller plus loin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fondamentaux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fondamentaux
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fondamentaux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identité
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Identité">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-authorization-each-spring-react" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. Authentification vs autorisation — et où chacune se passe-t-elle dans une app Spring + React typique ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#passwords-stored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. Comment stocker les mots de passe ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth-2-0-openid-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. Que sont OAuth 2.0 et OpenID Connect, et en quoi diffèrent-ils ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oauth2-flow-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. Quel flux OAuth2 utiliser pour quel client ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attaques-web" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attaques web
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attaques web">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sql-injection-escaping-input-wrong" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Qu'est-ce que l'injection SQL, et pourquoi « échapper l'entrée » est-il le mauvais correctif ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#xss-kinds-exist-react-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. Qu'est-ce que le XSS, quels types existent, et comment une app React s'en défend-elle ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csrf-need-csrf-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. Qu'est-ce que le CSRF, et quand faut-il une protection CSRF ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spring Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spring Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spring-security-filter-chain-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. Comment la filter chain de Spring Security traite-t-elle une requête ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure-spring-boot-api-oauth2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. Comment configurer une API Spring Boot en resource server OAuth2 ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pieges-seniors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Pièges seniors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Pièges seniors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#exactly-validate-jwt-before-trusting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. Que faut-il exactement valider sur un JWT avant de lui faire confiance ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revoke-jwt-refresh-tokens-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idor-broken-object-level-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssrf-prevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. Qu'est-ce que le SSRF, et comment l'empêcher ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browser-app-store-tokens-bff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. Où une app navigateur doit-elle stocker les tokens, et qu'est-ce qu'un BFF ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#software-supply-chain-security-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-ouvert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Ouvert
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Ouvert">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#propagate-user-identity-across-microservices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. Comment propager l'identité de l'utilisateur entre microservices ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-threat-modeling-session-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. Comment mèneriez-vous une séance de threat modeling pour une nouvelle fonctionnalité ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protect-sensitive-data-rest-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. Comment protéger les données sensibles au repos et dans les logs, et où le chiffrement aide-t-il vraiment ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-protection-sensitive-healthcare-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#end-end-encryption-patientpractitioner-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. Comment fonctionne le chiffrement de bout en bout des messages et documents entre patient et praticien, et que coûte-t-il au produit ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scenarios-reels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Scénarios réels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Scénarios réels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#customer-reports-see-another-customer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Un client signale qu'il peut voir les factures d'un autre client en changeant l'URL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt-signing-key-appears-public" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Une clé de signature JWT apparaît dans un dépôt GitHub public
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-scan-flags-critical-cve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. Un scan de sécurité signale une CVE critique dans une dépendance transitive un vendredi après-midi
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-moving-frontend-new-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. Après le déplacement du frontend vers un nouveau domaine, des utilisateurs connectés reçoivent des 403 sur chaque POST
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secret-was-committed-git-pushed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. Un secret a été commité dans Git et poussé sur le dépôt distant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssrf-image-url-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S6. Une fonctionnalité « importer un avatar depuis une URL » sert à lire les credentials de l'instance cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt-valid-after-logout-role-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S7. Le compte d'un salarié licencié est désactivé, mais il continue d'utiliser l'API d'admin pendant encore une heure
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions-posees-en-entretien" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Questions posées en entretien
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Questions posées en entretien">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tokens-authentification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tokens &amp; authentification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tokens &amp; authentification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#relationship-oauth-2-0-jwt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. Différence et relation entre OAuth 2.0, JWT et OpenID Connect.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jwt-structure-jwt-authentication-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. Expliquez la structure d'un JWT et le flux d'authentification/validation.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debug-401-unauthorized-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. Comment déboguer une erreur 401 Unauthorized ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reponse-a-incident" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Réponse à incident
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Réponse à incident">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secret-was-accidentally-committed-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R4. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quiz-oral" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Quiz oral
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identite-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Identité &amp; tokens
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attaques-web_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attaques web
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spring-security_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spring Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plateforme-processus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plateforme &amp; processus
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="securite">Sécurité</h1>
+<p>Les règles et checklists de revue sont dans <a href="../../best-practices/security/">Bonnes pratiques › Sécurité</a> ; ce module est le Q&amp;A d'entretien. Questions liées ailleurs : CORS dans <a href="../fullstack-devops-k8s/#browser-request-fail-cors-error">Full Stack Q12</a>, stockage des tokens dans <a href="../fullstack-devops-k8s/#jwt-localstorage-jwt-httponly-cookie">Full Stack Q13</a>, secrets Kubernetes dans <a href="../fullstack-devops-k8s/#application-secrets-managed-kubernetes-kubernetes">Full Stack Q38</a>, OWASP Top 10 au niveau conception dans <a href="../system-design/#name-several-owasp-top-10">System Design Q34</a>, et autorisation par URL vs par méthode dans <a href="../spring-architecture/#authorization-live-url-rules-method">Spring Q41</a>.</p>
+<h2 id="fondamentaux">🟢 Fondamentaux</h2>
+<h3 id="identite">Identité</h3>
+<h4 id="authentication-authorization-each-spring-react">Q1. Authentification vs autorisation — et où chacune se passe-t-elle dans une app Spring + React typique ?</h4>
+<p><strong>Réponse :</strong> L'<strong>authentification</strong> répond à « qui êtes-vous ? » (vérifier des identifiants ou un token et établir
+une identité). L'<strong>autorisation</strong> répond à « que pouvez-vous faire ? » (comparer les rôles, scopes ou la propriété de
+cette identité à la ressource). Dans une architecture moderne, l'app React envoie l'utilisateur vers un fournisseur
+d'identité (Keycloak, Auth0, Entra ID, Cognito), récupère des tokens et appelle l'API avec un access token. L'API
+Spring, configurée en <strong>resource server OAuth2</strong>, authentifie chaque requête en validant le token, puis autorise à deux
+niveaux : des règles d'URL grossières dans la filter chain et des contrôles fins dans le service (<code>@PreAuthorize</code>,
+contrôles de propriété). Le frontend peut masquer des boutons, mais c'est de l'UX, pas de la sécurité : chaque
+contrôle doit aussi exister côté serveur.</p>
+<h4 id="passwords-stored">Q2. Comment stocker les mots de passe ?</h4>
+<p><strong>Réponse :</strong> Jamais chiffrés et jamais avec un hash rapide (MD5, SHA-1, SHA-256). Utilisez une <strong>fonction de hachage
+de mots de passe lente, salée et adaptative</strong> : Argon2id, bcrypt ou scrypt (PBKDF2 quand la conformité FIPS l'exige).
+« Salée » signifie que chaque mot de passe reçoit un sel aléatoire, donc deux mots de passe identiques donnent des
+hashs différents et les tables précalculées ne servent à rien. « Adaptative » signifie qu'on peut augmenter le facteur
+de coût à mesure que le matériel accélère. Dans Spring, utilisez
+<code>PasswordEncoderFactories.createDelegatingPasswordEncoder()</code>, qui préfixe l'identifiant de l'algorithme
+(<code>{bcrypt}...</code>) pour pouvoir migrer d'algorithme en rehachant à la connexion suivante. Encore mieux pour la plupart des
+applications métier : ne stockez pas de mots de passe du tout, déléguez à un fournisseur d'identité.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">PasswordEncoder</span><span class="w"> </span><span class="n">encoder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PasswordEncoderFactories</span><span class="p">.</span><span class="na">createDelegatingPasswordEncoder</span><span class="p">();</span>
+<span class="n">String</span><span class="w"> </span><span class="n">stored</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">encoder</span><span class="p">.</span><span class="na">encode</span><span class="p">(</span><span class="s">"s3cret!"</span><span class="p">);</span><span class="w">   </span><span class="c1">// {bcrypt}$2a$10$...</span>
+<span class="n">encoder</span><span class="p">.</span><span class="na">matches</span><span class="p">(</span><span class="s">"s3cret!"</span><span class="p">,</span><span class="w"> </span><span class="n">stored</span><span class="p">);</span><span class="w">          </span><span class="c1">// true</span>
+</code></pre></div>
+<h4 id="oauth-2-0-openid-connect">Q3. Que sont OAuth 2.0 et OpenID Connect, et en quoi diffèrent-ils ?</h4>
+<p><strong>Réponse :</strong> <strong>OAuth 2.0</strong> est un cadre d'<strong>autorisation déléguée</strong> : il permet à un client d'obtenir un <strong>access
+token</strong> pour appeler une API au nom d'un utilisateur (ou en son propre nom), avec des <strong>scopes</strong> limités, sans voir le
+mot de passe de l'utilisateur. Il ne dit rien de standard sur l'identité de l'utilisateur. <strong>OpenID Connect (OIDC)</strong>
+est une couche d'identité au-dessus d'OAuth 2.0 : il ajoute un <strong>ID token</strong> (un JWT décrivant l'utilisateur
+authentifié, destiné au client), un endpoint <code>userinfo</code>, la découverte (<code>/.well-known/openid-configuration</code>) et des
+claims standard. Règle : l'<strong>ID token</strong> sert au client à savoir qui s'est connecté ; l'<strong>access token</strong> sert à l'API.
+Envoyer l'ID token à son API comme bearer token est une erreur courante.</p>
+<h4 id="oauth2-flow-client">Q4. Quel flux OAuth2 utiliser pour quel client ?</h4>
+<p><strong>Réponse :</strong></p>
+<ul>
+<li><strong>SPA navigateur ou app mobile</strong> (client public, ne peut pas garder de secret) : <strong>Authorization Code + PKCE</strong>. Le
+  flux implicite est déprécié car il renvoyait les tokens dans l'URL.</li>
+<li><strong>App web côté serveur ou BFF</strong> (client confidentiel) : Authorization Code (+ PKCE, recommandé partout désormais),
+  avec un secret client ou un JWT signé par clé privée.</li>
+<li><strong>Service à service, sans utilisateur</strong> : <strong>Client Credentials</strong>.</li>
+<li><strong>Appareils sans navigateur</strong> (TV, CLI) : flux <strong>Device Authorization</strong>.</li>
+<li>Flux <strong>Resource Owner Password</strong> : déprécié ; il remet le mot de passe de l'utilisateur au client.</li>
+</ul>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code>SPA ──(1) redirection /authorize?response_type=code&amp;code_challenge=S256(verifier)──▶ IdP
+SPA ◀─(2) retour avec ?code=abc ───────────────────────────────────────────────────── IdP
+SPA ──(3) POST /token code=abc&amp;code_verifier=verifier ─────────────────────────────▶ IdP
+SPA ◀─(4) access_token (+ refresh_token, id_token) ──────────────────────────────── IdP
+SPA ──(5) GET /api/orders  Authorization: Bearer &lt;access_token&gt; ───────────────────▶ API
+</code></pre></div>
+<h3 id="attaques-web">Attaques web</h3>
+<h4 id="sql-injection-escaping-input-wrong">Q5. Qu'est-ce que l'injection SQL, et pourquoi « échapper l'entrée » est-il le mauvais correctif ?</h4>
+<p><strong>Réponse :</strong> L'injection SQL survient quand une entrée utilisateur est concaténée dans une chaîne SQL : l'entrée
+devient alors du code de la requête (<code>' OR 1=1 --</code>). Le correctif est la <strong>requête paramétrée / prepared statement</strong> :
+la structure SQL est envoyée séparément des valeurs, donc une valeur ne peut jamais en modifier la structure. Les
+paramètres nommés JPA, les requêtes dérivées de Spring Data, <code>JdbcTemplate</code> avec <code>?</code> et MyBatis <code>#{}</code> font tous cela.
+L'échappement manuel est fragile (encodages, particularités de dialecte) et facile à oublier une fois. Attention aux
+endroits où un paramètre ne peut pas aller : <strong>les noms de colonnes dynamiques ou <code>ORDER BY</code></strong> exigent une liste
+blanche, et MyBatis <code>${}</code> fait une substitution brute.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ injectable</span>
+<span class="n">em</span><span class="p">.</span><span class="na">createQuery</span><span class="p">(</span><span class="s">"select u from User u where u.email = '"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">email</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">"'"</span><span class="p">);</span>
+<span class="c1">// ✅ paramétré</span>
+<span class="n">em</span><span class="p">.</span><span class="na">createQuery</span><span class="p">(</span><span class="s">"select u from User u where u.email = :email"</span><span class="p">).</span><span class="na">setParameter</span><span class="p">(</span><span class="s">"email"</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">);</span>
+<span class="c1">// ✅ ORDER BY exige une liste blanche</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Set</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">"createdAt"</span><span class="p">,</span><span class="w"> </span><span class="s">"total"</span><span class="p">).</span><span class="na">contains</span><span class="p">(</span><span class="n">sort</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">sort</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">"createdAt"</span><span class="p">;</span>
+</code></pre></div>
+<h4 id="xss-kinds-exist-react-app">Q6. Qu'est-ce que le XSS, quels types existent, et comment une app React s'en défend-elle ?</h4>
+<p><strong>Réponse :</strong> Le cross-site scripting injecte un script contrôlé par l'attaquant dans une page vue par d'autres
+utilisateurs, qui s'exécute alors avec la session de la victime. Le XSS <strong>stocké</strong> est enregistré en base (un
+commentaire) ; le XSS <strong>réfléchi</strong> rebondit sur un paramètre d'URL ; le XSS <strong>DOM</strong> se produit entièrement dans le
+JavaScript côté client. React échappe par défaut tout ce qui est rendu via JSX, ce qui supprime l'essentiel du risque.
+Les failles sont <code>dangerouslySetInnerHTML</code> (assainir d'abord avec DOMPurify), les <code>href</code>/<code>src</code> construits à partir
+d'une entrée utilisateur (URLs <code>javascript:</code>), les API DOM directes (<code>innerHTML</code>, <code>eval</code>) et les scripts tiers. Défense
+en profondeur : une <strong>Content-Security-Policy</strong> stricte (pas d'<code>unsafe-inline</code>, nonces ou hashs), des cookies
+<code>HttpOnly</code> pour que le script ne puisse pas lire les tokens de session, et l'encodage de sortie côté serveur pour tout
+HTML qu'il rend.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ exécute &lt;img src=x onerror=...&gt;</span>
+<span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">dangerouslySetInnerHTML</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">__html</span><span class="o">:</span><span class="w"> </span><span class="kt">comment.body</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="c1">// ✅ assaini</span>
+<span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">dangerouslySetInnerHTML</span><span class="o">=</span><span class="p">{{</span><span class="w"> </span><span class="nx">__html</span><span class="o">:</span><span class="w"> </span><span class="kt">DOMPurify.sanitize</span><span class="p">(</span><span class="nx">comment</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span><span class="w"> </span><span class="p">}}</span><span class="w"> </span><span class="p">/&gt;</span>
+<span class="c1">// ⛔ URL javascript: issue d'une entrée utilisateur</span>
+<span class="p">&lt;</span><span class="nt">a</span><span class="w"> </span><span class="na">href</span><span class="o">=</span><span class="p">{</span><span class="nx">profile</span><span class="p">.</span><span class="nx">website</span><span class="p">}&gt;</span><span class="nx">site</span><span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span><span class="w">   </span><span class="c1">// vérifier que le schéma est http(s)</span>
+</code></pre></div>
+<h4 id="csrf-need-csrf-protection">Q7. Qu'est-ce que le CSRF, et quand faut-il une protection CSRF ?</h4>
+<p><strong>Réponse :</strong> Le cross-site request forgery fait envoyer par le navigateur de la victime une requête modifiant l'état
+vers votre site depuis un autre site, et le navigateur <strong>joint automatiquement les cookies de la victime</strong>. Cela
+compte dès que l'authentification repose sur des cookies (cookie de session, ou JWT dans un cookie). Défenses : cookies
+<strong>SameSite</strong> (<code>Lax</code> bloque la plupart des POST inter-sites, <code>Strict</code> davantage), un <strong>token CSRF</strong> (synchronizer ou
+double-submit) vérifié par le serveur, et le contrôle de l'en-tête <code>Origin</code>. Une API qui n'accepte que des en-têtes
+<code>Authorization: Bearer</code> posés par JavaScript n'est pas exposée au CSRF classique, car le navigateur n'ajoute jamais cet
+en-tête de lui-même. C'est pourquoi désactiver le CSRF dans Spring Security convient à une API purement bearer et est
+dangereux pour une app à session par cookie.</p>
+<p><strong>Pourquoi c'est un piège :</strong> « On utilise des JWT, donc le CSRF ne s'applique pas » devient faux dès que le JWT est
+stocké dans un cookie.</p>
+<h3 id="spring-security">Spring Security</h3>
+<h4 id="spring-security-filter-chain-process">Q8. Comment la filter chain de Spring Security traite-t-elle une requête ?</h4>
+<p><strong>Réponse :</strong> Un filtre servlet, <code>DelegatingFilterProxy</code>, passe la requête à <code>FilterChainProxy</code>, qui choisit la
+première <code>SecurityFilterChain</code> dont le matcher correspond (on peut en définir plusieurs, par exemple une pour <code>/api/**</code>
+avec bearer tokens et une pour <code>/admin/**</code> avec form login). Cette chaîne exécute une liste ordonnée de filtres : CORS,
+CSRF, filtres d'authentification (<code>BearerTokenAuthenticationFilter</code>, <code>UsernamePasswordAuthenticationFilter</code>), qui
+construisent une <code>Authentication</code> et la stockent dans le <code>SecurityContextHolder</code> ; puis <code>ExceptionTranslationFilter</code>,
+qui transforme <code>AuthenticationException</code> en 401 et <code>AccessDeniedException</code> en 403 ; et enfin <code>AuthorizationFilter</code>, qui
+applique les règles d'URL. La sécurité de méthode (<code>@PreAuthorize</code>) s'exécute plus tard, via un proxy AOP autour de
+vos beans.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Bean</span>
+<span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">api</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">http</span>
+<span class="w">        </span><span class="p">.</span><span class="na">securityMatcher</span><span class="p">(</span><span class="s">"/api/**"</span><span class="p">)</span>
+<span class="w">        </span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span>
+<span class="w">            </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="n">HttpMethod</span><span class="p">.</span><span class="na">GET</span><span class="p">,</span><span class="w"> </span><span class="s">"/api/products/**"</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span>
+<span class="w">            </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">"/api/admin/**"</span><span class="p">).</span><span class="na">hasRole</span><span class="p">(</span><span class="s">"ADMIN"</span><span class="p">)</span>
+<span class="w">            </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">())</span>
+<span class="w">        </span><span class="p">.</span><span class="na">oauth2ResourceServer</span><span class="p">(</span><span class="n">o</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">jwt</span><span class="p">(</span><span class="n">Customizer</span><span class="p">.</span><span class="na">withDefaults</span><span class="p">()))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">sessionManagement</span><span class="p">(</span><span class="n">s</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">sessionCreationPolicy</span><span class="p">(</span><span class="n">SessionCreationPolicy</span><span class="p">.</span><span class="na">STATELESS</span><span class="p">))</span>
+<span class="w">        </span><span class="p">.</span><span class="na">csrf</span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">disable</span><span class="p">())</span><span class="w">              </span><span class="c1">// API bearer uniquement, voir Q7</span>
+<span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="configure-spring-boot-api-oauth2">Q9. Comment configurer une API Spring Boot en resource server OAuth2 ?</h4>
+<p><strong>Réponse :</strong> Ajoutez <code>spring-boot-starter-oauth2-resource-server</code> et définissez l'émetteur :
+<code>spring.security.oauth2.resourceserver.jwt.issuer-uri</code>. Spring récupère le document de découverte et le JWKS (clés
+publiques) de l'émetteur, vérifie la signature, <code>exp</code>/<code>nbf</code> et <code>iss</code> à chaque requête, et met les clés en cache (il les
+recharge quand il voit un <code>kid</code> inconnu, ce qui gère la rotation des clés). Il faut encore ajouter la <strong>validation de
+l'audience</strong> (le token doit être destiné à cette API) et mapper les claims en autorités : par défaut les scopes
+deviennent <code>SCOPE_x</code> ; des rôles dans un claim personnalisé (par exemple <code>realm_access.roles</code> de Keycloak) nécessitent
+un <code>JwtAuthenticationConverter</code>.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@Bean</span>
+<span class="n">JwtDecoder</span><span class="w"> </span><span class="nf">jwtDecoder</span><span class="p">(</span><span class="nd">@Value</span><span class="p">(</span><span class="s">"${spring.security.oauth2.resourceserver.jwt.issuer-uri}"</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">issuer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">NimbusJwtDecoder</span><span class="w"> </span><span class="n">decoder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JwtDecoders</span><span class="p">.</span><span class="na">fromIssuerLocation</span><span class="p">(</span><span class="n">issuer</span><span class="p">);</span>
+<span class="w">    </span><span class="n">decoder</span><span class="p">.</span><span class="na">setJwtValidator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DelegatingOAuth2TokenValidator</span><span class="o">&lt;&gt;</span><span class="p">(</span>
+<span class="w">        </span><span class="n">JwtValidators</span><span class="p">.</span><span class="na">createDefaultWithIssuer</span><span class="p">(</span><span class="n">issuer</span><span class="p">),</span>
+<span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">JwtClaimValidator</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="s">"aud"</span><span class="p">,</span><span class="w"> </span><span class="n">aud</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">aud</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">aud</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="s">"orders-api"</span><span class="p">))));</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">decoder</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="pieges-seniors">🟡 Pièges seniors</h2>
+<h3 id="questions">Questions</h3>
+<h4 id="exactly-validate-jwt-before-trusting">Q10. Que faut-il exactement valider sur un JWT avant de lui faire confiance ?</h4>
+<p><strong>Réponse :</strong> La <strong>signature</strong> avec une clé du JWKS de l'émetteur, selon une <strong>liste blanche d'algorithmes</strong> choisie
+par le serveur (ne jamais faire confiance à l'en-tête <code>alg</code> du token : les attaques <code>alg: none</code> et la confusion
+RS256→HS256 l'exploitent). <strong><code>iss</code></strong> égal à l'émetteur attendu. <strong><code>aud</code></strong> contenant cette API. <strong><code>exp</code></strong> et <strong><code>nbf</code></strong>
+avec une petite tolérance d'horloge. Puis les <strong>scopes/rôles</strong> pour l'opération. Rappelez-vous aussi qu'un JWT est
+<strong>signé, pas chiffré</strong> : n'importe qui peut le décoder en base64, donc ne mettez jamais de secrets ni de données
+personnelles sensibles dans les claims.</p>
+<p><strong>Pourquoi c'est un piège :</strong> Beaucoup de filtres écrits à la main se contentent de décoder le token et de lire <code>sub</code>,
+ou vérifient la signature mais sautent <code>aud</code>, ce qui laisse un token émis pour une autre API du même realm appeler la
+vôtre.</p>
+<h4 id="revoke-jwt-refresh-tokens-fit">Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ?</h4>
+<p><strong>Réponse :</strong> Un JWT autoportant reste valide jusqu'à <code>exp</code> ; l'API ne demande rien à personne. Options, par coût :
+garder des access tokens <strong>courts</strong> (5–15 minutes) et accepter cette fenêtre ; utiliser des <strong>refresh tokens</strong> (plus
+longs, stockés de façon sûre, <strong>renouvelés</strong> à chaque usage avec détection de réutilisation, révocables chez le
+fournisseur d'identité) pour obtenir de nouveaux access tokens ; pour une révocation immédiate, tenir une <strong>liste
+noire</strong> d'identifiants de token (<code>jti</code>) ou un horodatage « tokens émis avant » par utilisateur dans un store rapide,
+vérifié à chaque requête ; ou utiliser des <strong>tokens opaques avec introspection</strong>, ce qui fait appeler le fournisseur
+d'identité (ou un cache) à chaque requête. Les sessions côté serveur sont le plus simple quand il faut une déconnexion
+instantanée avec un seul backend.</p>
+<p><strong>Pourquoi c'est un piège :</strong> une « déconnexion » dans une SPA qui supprime seulement le token localement laisse une
+copie volée utilisable jusqu'à expiration.</p>
+<h4 id="idor-broken-object-level-authorization">Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ?</h4>
+<p><strong>Réponse :</strong> Insecure Direct Object Reference : l'API vérifie que l'appelant est authentifié, mais pas que <strong>cet</strong>
+objet lui appartient. <code>GET /api/invoices/1043</code> fonctionne pour tout utilisateur connecté qui change l'identifiant.
+C'est le premier élément de l'OWASP API Security Top 10. Les scanners et les contrôles de rôle le ratent parce que la
+requête est bien formée et que l'utilisateur a le bon rôle ; seule la relation métier est fausse. Corrigez-le dans la
+couche d'accès aux données : requêter par identifiant <strong>et</strong> propriétaire/tenant (<code>findByIdAndCustomerId</code>), ou vérifier
+la propriété dans une expression <code>@PreAuthorize</code> ou un service du domaine, et renvoyer 404 plutôt que 403 pour ne pas
+confirmer que l'identifiant existe. Des UUID aléatoires rendent les identifiants plus durs à deviner mais ne sont pas
+de l'autorisation.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ tout utilisateur authentifié peut lire n'importe quelle facture</span>
+<span class="k">return</span><span class="w"> </span><span class="n">invoiceRepo</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">).</span><span class="na">orElseThrow</span><span class="p">(</span><span class="n">NotFoundException</span><span class="p">::</span><span class="k">new</span><span class="p">);</span>
+<span class="c1">// ✅ limité à l'appelant</span>
+<span class="k">return</span><span class="w"> </span><span class="n">invoiceRepo</span><span class="p">.</span><span class="na">findByIdAndCustomerId</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">currentUser</span><span class="p">.</span><span class="na">customerId</span><span class="p">()).</span><span class="na">orElseThrow</span><span class="p">(</span><span class="n">NotFoundException</span><span class="p">::</span><span class="k">new</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Pourquoi c'est un piège :</strong> un <code>hasRole("CUSTOMER")</code> au niveau de l'endpoint paraît complet en revue ; la
+vulnérabilité est dans la requête.</p>
+<h4 id="ssrf-prevent">Q13. Qu'est-ce que le SSRF, et comment l'empêcher ?</h4>
+<p><strong>Réponse :</strong> Server-side request forgery : le serveur récupère une URL contrôlée par l'attaquant (URL de webhook,
+fonctionnalité « importer depuis une URL », proxy d'images, moteur de rendu PDF), et l'attaquant la fait pointer vers
+des cibles internes : l'endpoint de métadonnées cloud <code>169.254.169.254</code> (qui peut divulguer des identifiants IAM), des
+services d'administration internes, ou <code>localhost</code>. Défenses : <strong>liste blanche</strong> des destinations quand c'est
+possible ; sinon résoudre l'hôte et <strong>bloquer les plages privées, loopback, link-local et métadonnées</strong> après
+résolution DNS (et revérifier sur les redirections, car le DNS rebinding et les redirections contournent un contrôle
+sur la chaîne du nom d'hôte) ; désactiver ou limiter les redirections ; exécuter les récupérateurs dans un segment
+réseau isolé sans route vers les services internes ; et sur AWS imposer <strong>IMDSv2</strong>, qui exige un token qu'un simple GET
+SSRF ne peut pas obtenir.</p>
+<p><strong>Pourquoi c'est un piège :</strong> vérifier que l'URL « commence par https:// » ou n'est pas littéralement <code>localhost</code> est
+contourné par <code>https://127.0.0.1.nip.io</code>, des IP décimales ou une redirection ouverte.</p>
+<h4 id="browser-app-store-tokens-bff">Q14. Où une app navigateur doit-elle stocker les tokens, et qu'est-ce qu'un BFF ?</h4>
+<p><strong>Réponse :</strong> Les compromis entre <code>localStorage</code>, mémoire et cookies sont traités dans <a href="../fullstack-devops-k8s/#jwt-localstorage-jwt-httponly-cookie">Full Stack Q13</a>.
+La réponse senior pour une app sensible est le pattern <strong>Backend for Frontend (BFF)</strong> : un petit composant côté serveur
+(Spring Cloud Gateway avec <code>TokenRelay</code>, ou un service dédié) joue le rôle de client OAuth confidentiel. Il exécute le
+code flow, garde access et refresh tokens côté serveur, et ne donne au navigateur qu'un <strong>cookie de session
+<code>HttpOnly</code>, <code>Secure</code>, <code>SameSite</code></strong>. Le navigateur ne voit jamais de token, donc un XSS ne peut pas en voler (il peut
+encore agir comme l'utilisateur tant que la page est ouverte). En échange, il faut une protection CSRF sur le BFF et un
+composant avec état à exploiter.</p>
+<p><strong>Pourquoi c'est un piège :</strong> « On utilise PKCE, donc les tokens dans la SPA sont sûrs » mélange deux problèmes : PKCE
+protège l'échange du code, pas les tokens posés dans un stockage lisible par JavaScript.</p>
+<h4 id="software-supply-chain-security-practice">Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ?</h4>
+<p><strong>Réponse :</strong> Votre build tire des centaines de dépendances transitives, d'images de base et d'actions CI, chacune
+pouvant être vulnérable ou malveillante. Pratiques : <strong>épingler les versions</strong> avec des lockfiles
+(<code>package-lock.json</code>, verrouillage des dépendances Gradle) et épingler actions CI et images de base par digest ;
+<strong>scanner</strong> dépendances et images (OWASP Dependency-Check, Trivy, Snyk, Dependabot/Renovate pour les mises à jour) et
+faire échouer le build sur les vulnérabilités critiques réellement atteignables ; générer un <strong>SBOM</strong> (CycloneDX) par
+build pour répondre à « sommes-nous touchés par la CVE-X ? » en quelques minutes ; <strong>signer</strong> artefacts et images
+(Sigstore/cosign) et vérifier les signatures au déploiement ; utiliser un proxy de registre privé ; surveiller le
+<strong>typosquatting et la dependency confusion</strong> (un nom de package interne publié publiquement avec une version
+supérieure) ; et lancer <code>npm ci</code> avec <code>--ignore-scripts</code> quand les scripts d'installation ne sont pas nécessaires.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code>Jour de Log4Shell : « quels services embarquent log4j-core &lt; 2.17.1 ? »
+Avec des SBOM indexés : une requête, 15 minutes.
+Sans : grep dans chaque dépôt, rebuild pour inspecter les fat jars, deux jours.
+</code></pre></div>
+<p><strong>Pourquoi c'est un piège :</strong> ne scanner que les dépendances directes rate l'essentiel de l'arbre ; Log4Shell est
+surtout arrivé de façon transitive.</p>
+<h2 id="expert-ouvert">🔴 Expert / Ouvert</h2>
+<h3 id="questions_1">Questions</h3>
+<h4 id="propagate-user-identity-across-microservices">Q16. Comment propager l'identité de l'utilisateur entre microservices ?</h4>
+<p><strong>Réponse :</strong> Options : <strong>transmettre l'access token de l'utilisateur</strong> (simple, chaque service le valide et voit le
+vrai utilisateur, mais l'audience du token doit inclure chaque service, et un service compromis peut le rejouer
+ailleurs) ; l'<strong>échange de token</strong> (RFC 8693 : la gateway ou le service échange le token utilisateur contre un nouveau
+token à portée restreinte pour le service aval, en gardant l'utilisateur comme sujet et l'appelant comme acteur) ; ou
+<strong>l'identité de service seule</strong> (client credentials ou mTLS) avec l'identifiant utilisateur passé dans un en-tête de
+confiance, sûr uniquement si le réseau garantit que personne d'autre ne peut poser cet en-tête. Pour
+l'authentification de service à service, un service mesh avec <strong>mTLS</strong> (Istio, Linkerd) ou des identités SPIFFE
+supprime les secrets partagés. Quel que soit le choix, l'autorisation sur les données utilisateur reste dans le
+service qui les possède.</p>
+<h4 id="run-threat-modeling-session-new">Q17. Comment mèneriez-vous une séance de threat modeling pour une nouvelle fonctionnalité ?</h4>
+<p><strong>Réponse :</strong> Légère et tôt, dans la revue de conception. Dessinez un <strong>diagramme de flux de données</strong> : acteurs,
+processus, stockages, flux, et <strong>frontières de confiance</strong> (navigateur↔API, API↔tiers, tenant↔tenant). Parcourez chaque
+flux avec <strong>STRIDE</strong> : Spoofing (usurpation), Tampering (altération), Repudiation (répudiation), Information disclosure
+(divulgation), Denial of service (déni de service), Elevation of privilege (élévation de privilèges). Pour chaque menace
+crédible, écrivez la mitigation, un responsable et un test, et classez par probabilité × impact. Résultat : une courte
+liste d'exigences de sécurité dans les tickets, pas un document de 40 pages. Le rôle d'un tech lead est d'en faire une
+habitude (un modèle dans le design doc, 30 minutes par fonctionnalité significative) et d'impliquer l'équipe sécurité
+sur les zones à haut risque comme le paiement, l'authentification et le traitement de fichiers.</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code>Fonctionnalité : « téléverser une facture PDF »
+S  — téléverser au nom d'un autre tenant ?        → tenant tiré du token, jamais d'un champ de formulaire
+T  — PDF remplacé après l'antivirus ?             → stockage par hash de contenu, bucket immuable
+I  — URL de bucket public devinable ?             → bucket privé, URLs signées courtes
+D  — téléversement de 2 Go ?                      → limite de taille à la gateway + streaming
+E  — PDF malveillant exploitant le moteur de rendu ? → rendu dans un worker isolé sans réseau
+</code></pre></div>
+<h4 id="protect-sensitive-data-rest-logs">Q18. Comment protéger les données sensibles au repos et dans les logs, et où le chiffrement aide-t-il vraiment ?</h4>
+<p><strong>Réponse :</strong> Commencez par <strong>minimiser</strong> : ne collectez ni ne conservez ce dont vous n'avez pas besoin, et fixez une
+durée de rétention. Le chiffrement <strong>au repos</strong> (disque, RDS, S3 avec KMS) protège contre le vol de disques et de
+snapshots, pas contre un attaquant qui passe par votre application, car l'app déchiffre de façon transparente. Pour les
+champs à forte valeur (numéros d'identité, IBAN, données de santé), ajoutez un <strong>chiffrement applicatif ou par colonne</strong>
+avec des clés dans un KMS et du <strong>chiffrement d'enveloppe</strong> (une clé de données par enregistrement ou par tenant,
+enveloppée par une clé maîtresse), pour qu'un dump de base seul soit inutilisable et que les clés puissent tourner.
+Utilisez la <strong>tokenisation</strong> quand d'autres systèmes ont besoin d'une référence mais pas de la valeur. Utilisez le
+<strong>hachage</strong> (HMAC avec une clé secrète) quand seules les recherches d'égalité sont nécessaires. Gardez les données
+personnelles hors des logs avec du logging structuré et du masquage, et rendez l'accès aux données auditable. Le
+chiffrement en transit (TLS partout, y compris dans le cluster) est le socle.</p>
+<h4 id="design-protection-sensitive-healthcare-data">Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ?</h4>
+<p><strong>Réponse :</strong> Les données de santé sont une catégorie particulière au sens du RGPD (et en France doivent être hébergées chez un
+hébergeur certifié HDS) ; on conçoit donc dès le départ avec <strong>moindre privilège, traçabilité et minimisation</strong>, en couches.
+(1) <strong>Authentification</strong> : authentification forte des praticiens (MFA, et schémas nationaux comme Pro Santé Connect le cas
+échéant), OIDC avec jetons d'accès de courte durée (voir <a href="./#configure-spring-boot-api-oauth2">Security Q9</a>, <a href="./#exactly-validate-jwt-before-trusting">Security Q10</a>), expiration
+de session et contrôle d'appareil. (2) <strong>Autorisation</strong> : refus par défaut, contrôles par rôle et <strong>par relation</strong> (« ce
+praticien suit ce patient »), contrôles au niveau objet sur chaque endpoint pour éviter l'IDOR (voir
+<a href="./#idor-broken-object-level-authorization">Security Q12</a>), et une voie <strong>« bris de glace »</strong> pour les urgences, journalisée de façon très visible. (3)
+<strong>Minimisation des données et limitation des finalités</strong> : ne collecter et n'exposer que les champs nécessaires au cas
+d'usage ; index de recherche et analytique sur des données pseudonymisées ou agrégées ; séparer données d'identité et données
+cliniques pour qu'une fuite ne révèle pas les deux. (4) <strong>Audit</strong> : un journal en ajout seul, inviolable, de <em>qui</em> a consulté
+ou modifié <em>quel</em> dossier patient, <em>quand</em>, <em>pourquoi</em> et d'où, y compris les lectures ; conservé séparément, relu, avec
+alertes (volume inhabituel, hors horaires, dossiers « sensibles »). Ne mettez jamais de données de santé dans les logs ou
+traces applicatifs (masquer les identifiants). (5) <strong>Chiffrement</strong> : TLS 1.2+ partout y compris entre services internes,
+chiffrement au repos (disque et base), <strong>chiffrement au niveau du champ / par enveloppe</strong> pour les colonnes les plus
+sensibles avec des clés dans un KMS/HSM, clés par tenant si nécessaire, rotation des clés et politiques d'accès strictes (voir
+<a href="./#protect-sensitive-data-rest-logs">Security Q18</a>). (6) <strong>Secrets</strong> : aucun secret dans le code ou les images ; un coffre ou gestionnaire de secrets
+cloud avec rotation et identifiants de base de courte durée. (7) <strong>Conservation et droits</strong> : durées de conservation par
+catégorie de données, suppression ou archivage automatisés, prise en charge des demandes d'accès/rectification/effacement
+(l'effacement face à l'obligation légale de conserver les dossiers médicaux est une décision métier/juridique à faire
+remonter), registre des consentements, et sauvegardes soumises aux mêmes règles. (8) <strong>Hygiène des environnements</strong> : aucune
+donnée de production en dev/test (données synthétiques ou anonymisées uniquement), segmentation réseau, analyse des
+dépendances et des images, tests d'intrusion, processus de réponse aux incidents et de notification de violation (72 h pour le
+RGPD).</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@PreAuthorize</span><span class="p">(</span><span class="s">"hasRole('PRACTITIONER') and @careTeam.isInCareTeam(authentication.name, #patientId)"</span><span class="p">)</span>
+<span class="kd">public</span><span class="w"> </span><span class="n">PatientRecord</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">UUID</span><span class="w"> </span><span class="n">patientId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">PatientRecord</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">records</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">patientId</span><span class="p">).</span><span class="na">orElseThrow</span><span class="p">();</span>
+<span class="w">    </span><span class="n">audit</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">AuditEvent</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">currentUser</span><span class="p">(),</span><span class="w"> </span><span class="n">patientId</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">purpose</span><span class="p">(),</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">ip</span><span class="p">()));</span><span class="w"> </span><span class="c1">// stockage en ajout seul</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Protection au niveau du champ : l'application chiffre avec une clé de données KMS ; la colonne ne contient que du chiffré.</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">patient</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">national_id_enc</span><span class="w"> </span><span class="n">bytea</span><span class="p">,</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="k">COLUMN</span><span class="w"> </span><span class="n">national_id_hmac</span><span class="w"> </span><span class="n">bytea</span><span class="p">;</span><span class="w"> </span><span class="c1">-- hmac = index aveugle pour les recherches d'égalité</span>
+<span class="c1">-- Row Level Security comme seconde ligne de défense :</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">medical_note</span><span class="w"> </span><span class="n">ENABLE</span><span class="w"> </span><span class="k">ROW</span><span class="w"> </span><span class="k">LEVEL</span><span class="w"> </span><span class="k">SECURITY</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">care_team</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">medical_note</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span><span class="n">patient_id</span><span class="w"> </span><span class="k">IN</span><span class="w"> </span><span class="p">(</span><span class="k">SELECT</span><span class="w"> </span><span class="n">patient_id</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">care_team</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">user_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">current_setting</span><span class="p">(</span><span class="s1">'app.user_id'</span><span class="p">)::</span><span class="n">uuid</span><span class="p">));</span>
+</code></pre></div>
+<p><strong>Pourquoi c'est un piège :</strong> réduire la conformité à « activer le chiffrement » ignore les vraies fuites habituelles :
+autorisations trop larges, données de santé dans les logs et exports analytiques, copies en environnements hors production, et
+absence de piste d'audit pour prouver qui a consulté un dossier. Précisez que les points juridiques (HDS, consentement, durées
+de conservation) se confirment auprès du DPO/service juridique plutôt que de s'en remettre à des suppositions.</p>
+<h4 id="end-end-encryption-patientpractitioner-messages">Q20. Comment fonctionne le chiffrement de bout en bout des messages et documents entre patient et praticien, et que coûte-t-il au produit ?</h4>
+<p><strong>Réponse :</strong> Avec le chiffrement <strong>au repos</strong>, le serveur détient les clés (via un KMS) et peut déchiffrer. Avec le chiffrement <strong>de bout en bout</strong>, seuls les participants le peuvent. Chaque utilisateur a une paire de clés générée sur son appareil ; la clé privée ne quitte jamais l'appareil en clair (elle peut être sauvegardée enveloppée par un secret de l'utilisateur ou une clé de récupération). Chaque document ou conversation reçoit une clé symétrique aléatoire (AES-256-GCM) qui chiffre le contenu. Cette clé est ensuite <strong>enveloppée</strong> avec la clé publique de chaque destinataire, et le serveur ne stocke que le texte chiffré et les clés enveloppées. Coûts à énoncer : pas de recherche, d'aperçu, d'analyse antivirus ni d'analytics côté serveur sur le contenu ; la <strong>récupération de clé</strong> en cas de perte d'appareil (codes de récupération, synchronisation des clés entre appareils) ; ajouter un nouveau praticien à un dossier impose de réenvelopper les clés depuis l'appareil d'un participant existant ; le support ne peut pas voir ce qui s'est mal passé. C'est une décision produit autant que de sécurité : appliquez-la aux données les plus sensibles, et utilisez pour le reste un chiffrement par KMS avec contrôle d'accès strict et audit (<a href="./#design-protection-sensitive-healthcare-data">Q19</a>).</p>
+<p><strong>Exemple :</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Chiffrer une fois, envelopper la clé de contenu pour chaque destinataire. Le serveur ne stocke que le résultat.</span>
+<span class="kd">record</span> <span class="nc">Sealed</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">iv</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">ciphertext</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">wrappedKeys</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="kd">static</span><span class="w"> </span><span class="n">Sealed</span><span class="w"> </span><span class="nf">seal</span><span class="p">(</span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">content</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">PublicKey</span><span class="o">&gt;</span><span class="w"> </span><span class="n">recipients</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">GeneralSecurityException</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">KeyGenerator</span><span class="w"> </span><span class="n">keyGen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KeyGenerator</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">"AES"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">keyGen</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="mi">256</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SecretKey</span><span class="w"> </span><span class="n">contentKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">keyGen</span><span class="p">.</span><span class="na">generateKey</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">byte</span><span class="o">[</span><span class="mi">12</span><span class="o">]</span><span class="p">;</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">SecureRandom</span><span class="p">().</span><span class="na">nextBytes</span><span class="p">(</span><span class="n">iv</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Cipher</span><span class="w"> </span><span class="n">cipher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cipher</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">"AES/GCM/NoPadding"</span><span class="p">);</span>
+<span class="w">    </span><span class="n">cipher</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">Cipher</span><span class="p">.</span><span class="na">ENCRYPT_MODE</span><span class="p">,</span><span class="w"> </span><span class="n">contentKey</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GCMParameterSpec</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span><span class="w"> </span><span class="n">iv</span><span class="p">));</span>
+<span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="kt">byte</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">PublicKey</span><span class="w"> </span><span class="n">pk</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">recipients</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Cipher</span><span class="w"> </span><span class="n">rsa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cipher</span><span class="p">.</span><span class="na">getInstance</span><span class="p">(</span><span class="s">"RSA/ECB/OAEPWithSHA-256AndMGF1Padding"</span><span class="p">);</span>
+<span class="w">        </span><span class="n">rsa</span><span class="p">.</span><span class="na">init</span><span class="p">(</span><span class="n">Cipher</span><span class="p">.</span><span class="na">WRAP_MODE</span><span class="p">,</span><span class="w"> </span><span class="n">pk</span><span class="p">);</span>
+<span class="w">        </span><span class="n">wrapped</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">rsa</span><span class="p">.</span><span class="na">wrap</span><span class="p">(</span><span class="n">contentKey</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Sealed</span><span class="p">(</span><span class="n">iv</span><span class="p">,</span><span class="w"> </span><span class="n">cipher</span><span class="p">.</span><span class="na">doFinal</span><span class="p">(</span><span class="n">content</span><span class="p">),</span><span class="w"> </span><span class="n">wrapped</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Pourquoi c'est un piège :</strong> appeler TLS plus chiffrement disque « de bout en bout ». Si le serveur peut déchiffrer, ce n'est pas du bout en bout. Le piège inverse est de proposer le E2E partout sans dire ce que le produit y perd.</p>
+<h2 id="scenarios-reels">🎯 Scénarios réels</h2>
+<h3 id="customer-reports-see-another-customer">S1. Un client signale qu'il peut voir les factures d'un autre client en changeant l'URL</h3>
+<ul>
+<li><strong>Symptômes :</strong> Le support transmet une capture : <code>/invoices/18342</code> affiche la facture d'une autre entreprise. Les
+  tests d'intrusion de l'an dernier étaient passés.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> IDOR classique. Confirmer sur l'endpoint : il vérifie l'authentification et le rôle mais charge la
+  facture par identifiant seulement. Puis chercher le même motif partout : chaque <code>findById</code> atteignable depuis un
+  controller avec un identifiant dans le chemin. Vérifier dans les logs d'accès s'il y a eu énumération (un utilisateur
+  demandant beaucoup d'identifiants séquentiels) pour mesurer l'exposition.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>grep -rn "findById(id)" src/main/java/**/web
+log d'accès : l'utilisateur 7731 a demandé /invoices/18000..18450 en 4 minutes
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> Corriger en urgence l'endpoint pour requêter par identifiant et tenant (404 sinon), déployer, puis
+  corriger toutes les autres occurrences. Traiter comme une violation de données : impliquer la sécurité et le DPO,
+  déterminer quels enregistrements ont été consultés, et notifier comme l'exige le RGPD (72 heures auprès de
+  l'autorité).</li>
+<li><strong>Prévention :</strong> Imposer le cloisonnement par tenant de façon centrale (filtre Hibernate ou row-level security
+  PostgreSQL basée sur une variable de session), ajouter un test d'autorisation par endpoint (« l'utilisateur A ne peut
+  pas lire la ressource de B »), et ajouter les contrôles BOLA à la checklist de revue.</li>
+</ul>
+</details>
+<h3 id="jwt-signing-key-appears-public">S2. Une clé de signature JWT apparaît dans un dépôt GitHub public</h3>
+<ul>
+<li><strong>Symptômes :</strong> Le secret scanning de GitHub (ou un chercheur externe) signale que le secret HS256 utilisé pour signer
+  les tokens a été commité il y a six mois dans une config de test.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Avec cette clé, n'importe qui peut forger des tokens valides pour tout utilisateur et tout rôle.
+  Partir du principe que c'est compromis. Vérifier si la même clé est utilisée en production, combien de temps elle a
+  été publique, et chercher dans les logs des tokens aux claims, émetteurs ou sujets inhabituels qui ne se sont jamais
+  connectés.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>log<span class="w"> </span>-S<span class="w"> </span><span class="s2">"jwt.secret"</span><span class="w"> </span>--all
+logs<span class="w"> </span>:<span class="w"> </span>tokens<span class="w"> </span>avec<span class="w"> </span><span class="nv">sub</span><span class="o">=</span>admin<span class="w"> </span>émis<span class="w"> </span>hors<span class="w"> </span>du<span class="w"> </span>service<span class="w"> </span>d<span class="err">'</span>authentification<span class="w"> </span><span class="o">(</span>aucun<span class="w"> </span>événement<span class="w"> </span>de<span class="w"> </span>login<span class="w"> </span>correspondant<span class="o">)</span>
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> <strong>Faire tourner la clé immédiatement</strong> (tous les tokens existants deviennent invalides, les
+  utilisateurs se reconnectent), la retirer de l'historique (BFG/<code>git filter-repo</code>) en sachant que la fuite elle-même
+  est déjà définitive, et auditer les actions effectuées avec des tokens suspects.</li>
+<li><strong>Prévention :</strong> Passer à une <strong>signature asymétrique</strong> (RS256/ES256) par un fournisseur d'identité, pour que les API
+  ne détiennent que des clés publiques ; garder les secrets dans un vault ; activer la push protection des secrets ;
+  prévoir la rotation des clés avec <code>kid</code> pour qu'elle soit une routine plutôt qu'une urgence.</li>
+</ul>
+</details>
+<h3 id="security-scan-flags-critical-cve">S3. Un scan de sécurité signale une CVE critique dans une dépendance transitive un vendredi après-midi</h3>
+<ul>
+<li><strong>Symptômes :</strong> Le pipeline échoue désormais sur un CVSS 9.8 dans une bibliothèque qu'aucun code n'importe
+  directement ; une release est prévue lundi.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Trouver quel chemin la tire et si le code vulnérable est <strong>atteignable</strong> dans votre usage (l'avis
+  nomme la classe ou la fonctionnalité concernée). Vérifier si elle est exploitée activement (CISA KEV, score EPSS).
+  Vérifier quels services l'embarquent via l'index des SBOM.</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>./gradlew dependencyInsight --dependency snakeyaml
+snakeyaml:1.33  &lt;- spring-boot-starter:3.0.5
+avis : RCE lors du parsing de YAML non fiable avec le constructeur par défaut
+notre usage : parse seulement notre application.yml au démarrage -&gt; non atteignable depuis une entrée utilisateur
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> Si atteignable ou activement exploitée : mettre à jour (ou forcer la version par une
+  contrainte/BOM) et livrer aujourd'hui. Sinon : enregistrer une exception limitée dans le temps avec sa
+  justification, maintenir la release, et planifier la mise à jour.</li>
+<li><strong>Prévention :</strong> Renovate/Dependabot avec des mises à jour groupées hebdomadaires pour garder l'écart faible, un SBOM
+  par artefact, et une politique écrite sur la sévérité, l'atteignabilité et les délais pour que les décisions du
+  vendredi ne soient pas improvisées.</li>
+</ul>
+</details>
+<h3 id="after-moving-frontend-new-domain">S4. Après le déplacement du frontend vers un nouveau domaine, des utilisateurs connectés reçoivent des 403 sur chaque POST</h3>
+<ul>
+<li><strong>Symptômes :</strong> Les GET fonctionnent ; les POST/PUT/DELETE échouent en 403 pour certains utilisateurs seulement. Le
+  frontend est passé de <code>app.example.com</code> à <code>example.com/app</code>, et parle toujours à la même API à session par cookie.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Un 403 uniquement sur les méthodes qui modifient l'état oriente vers le <strong>CSRF</strong>, pas vers
+  l'authentification. Vérifier que le cookie CSRF est toujours envoyé et lu : son <code>Path</code>/<code>Domain</code> était limité à
+  l'ancien hôte, donc le frontend ne peut pas lire <code>XSRF-TOKEN</code> et n'envoie pas l'en-tête. Les utilisateurs qui ont un
+  ancien cookie fonctionnent encore, ce qui explique le « certains ».</li>
+<li><strong>Exemple :</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>DevTools : POST /api/orders -&gt; 403, pas d'en-tête X-XSRF-TOKEN
+Set-Cookie: XSRF-TOKEN=...; Domain=app.example.com; Path=/
+Log Spring : "Invalid CSRF token found for http://example.com/api/orders"
+</code></pre></div>
+<ul>
+<li><strong>Résolution :</strong> Configurer <code>CookieCsrfTokenRepository</code> avec le bon chemin/domaine (et <code>withHttpOnlyFalse()</code> pour que
+  la SPA puisse le lire), et s'assurer que la SPA envoie l'en-tête sur chaque requête de modification.</li>
+<li><strong>Prévention :</strong> Un smoke test end-to-end qui effectue un POST après connexion à chaque déploiement, et une checklist
+  de migration explicite pour les changements de domaine (cookies, CORS, CSP, redirect URIs chez le fournisseur
+  d'identité).</li>
+</ul>
+</details>
+<h3 id="secret-was-committed-git-pushed">S5. Un secret a été commité dans Git et poussé sur le dépôt distant</h3>
+<ul>
+<li><strong>Symptômes :</strong> Un scanner ou un collègue signale une clé d'API ou un mot de passe de base dans l'historique.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Considérez-le comme compromis dès le push, même si le commit est supprimé : clones, forks et logs CI peuvent le contenir. Vérifiez les journaux d'audit du fournisseur pour tout usage de la clé.</li>
+<li><strong>Résolution :</strong> Révoquez et renouvelez d'abord le secret, puis déployez le nouveau depuis un gestionnaire de secrets. Réécrire l'historique (<code>git filter-repo</code>) est un nettoyage secondaire, pas la correction. Examinez les journaux d'audit et documentez l'incident.</li>
+<li><strong>Prévention :</strong> Scan de secrets en pre-commit et CI (gitleaks), push protection sur le dépôt, identifiants à courte durée de vie, secrets uniquement dans un coffre ou l'environnement.</li>
+</ul>
+</details>
+<h3 id="ssrf-image-url-metadata">S6. Une fonctionnalité « importer un avatar depuis une URL » sert à lire les credentials de l'instance cloud</h3>
+<ul>
+<li><strong>Symptômes :</strong> Un pentesteur (ou un rapport de bug bounty) montre qu'en soumettant <code>http://169.254.169.254/latest/meta-data/iam/security-credentials/</code> comme URL d'avatar, le message d'erreur renvoie des clés AWS.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> Server-side request forgery : le backend récupère n'importe quelle URL fournie, y compris link-local, interne (<code>10.x</code>, <code>localhost:8080/actuator</code>) et cibles de redirection, et renvoie la réponse ou l'erreur.</li>
+<li><strong>Résolution :</strong> Faites tourner immédiatement les credentials du rôle exposé ; imposez IMDSv2 (token obligatoire, hop limit 1) sur toutes les instances ; récupérez les URL utilisateur via un proxy de sortie avec une allowlist de schémas/ports, résolvez l'hôte et rejetez les IP privées/link-local après chaque redirection, plafonnez taille et timeout, et ne renvoyez jamais l'erreur brute de l'amont.</li>
+<li><strong>Prévention :</strong> Cas de test SSRF dans la suite de tests de sécurité, IMDSv2 imposé par politique (SCP/règle Config), et network policies pour que les pods applicatifs n'atteignent pas les endpoints d'admin internes.</li>
+</ul>
+</details>
+<h3 id="jwt-valid-after-logout-role-change">S7. Le compte d'un salarié licencié est désactivé, mais il continue d'utiliser l'API d'admin pendant encore une heure</h3>
+<ul>
+<li><strong>Symptômes :</strong> Les logs d'audit montrent des appels admin après la désactivation du compte dans l'IdP ; l'API accepte son JWT car il n'a pas atteint son <code>exp</code> d'une heure.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>À essayer d'abord :</strong> Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.</p>
+</blockquote>
+<details>
+<summary>Afficher diagnostic, résolution &amp; prévention</summary>
+<ul>
+<li><strong>Diagnostic :</strong> La validation stateless d'un JWT ne vérifie que la signature et l'expiration ; rien ne consulte l'IdP à chaque appel, donc désactiver l'utilisateur ou retirer un rôle n'a aucun effet avant l'expiration. Un refresh token longue durée aggrave le problème.</li>
+<li><strong>Résolution :</strong> Révoquez les sessions/refresh tokens de l'utilisateur dans l'IdP, puis raccourcissez la durée des access tokens (5–15 min), faites tourner les refresh tokens en vérifiant le statut de l'utilisateur au refresh, et pour les scopes sensibles utilisez l'introspection ou une petite deny-list (par <code>jti</code>/<code>sub</code>) vérifiée au niveau de la gateway.</li>
+<li><strong>Prévention :</strong> Runbook de départ incluant la révocation des tokens, un test garantissant qu'un utilisateur désactivé est rejeté dans la durée de vie de l'access token, et une ré-authentification renforcée pour les actions d'admin.</li>
+</ul>
+</details>
+<h2 id="questions-posees-en-entretien">🗣️ Questions posées en entretien</h2>
+<p>Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une courte réponse type : approfondissez avec les questions et scénarios détaillés ci-dessus, et dites la réponse à voix haute.</p>
+<h3 id="tokens-authentification">Tokens &amp; authentification</h3>
+<h4 id="relationship-oauth-2-0-jwt">R1. Différence et relation entre OAuth 2.0, JWT et OpenID Connect.</h4>
+<p><strong>Réponse :</strong> <strong>OAuth 2.0</strong> est un framework d'autorisation (accès délégué via des access tokens). <strong>OpenID Connect</strong> est une couche d'identité par-dessus (ajoute l'ID token et <code>/userinfo</code>, soit <em>qui est l'utilisateur</em>). <strong>JWT</strong> n'est qu'un <em>format</em> de jeton (JSON signé), utilisé pour les ID tokens OIDC et souvent les access tokens OAuth. OAuth ≠ authentification, JWT ≠ protocole.</p>
+<h4 id="jwt-structure-jwt-authentication-validation">R2. Expliquez la structure d'un JWT et le flux d'authentification/validation.</h4>
+<p><strong>Réponse :</strong> <code>header.payload.signature</code>, en base64url : en-tête (<code>alg</code>, <code>kid</code>), claims (<code>sub</code>, <code>iss</code>, <code>aud</code>, <code>exp</code>, rôles), signature.</p>
+<p>Flux : l'utilisateur se connecte → le serveur d'auth émet un JWT de courte durée → le client envoie <code>Authorization: Bearer</code> → le serveur de ressources vérifie la signature (clé publique JWKS, algorithme imposé), <code>iss</code>, <code>aud</code>, <code>exp</code>/<code>nbf</code>, puis autorise d'après les claims.</p>
+<p>Courte expiration plus refresh tokens ; jamais de secrets dans le payload (il est seulement signé).</p>
+<h4 id="debug-401-unauthorized-error">R3. Comment déboguer une erreur 401 Unauthorized ?</h4>
+<p><strong>Réponse :</strong> 401 = <em>non authentifié</em>.</p>
+<p>Vérifier que la requête porte l'identifiant (en-tête <code>Authorization</code> présent, bon schéma), que le jeton n'est pas expiré (<code>exp</code>, décalage d'horloge), que signature/<code>iss</code>/<code>aud</code> correspondent à la config du serveur, le bon environnement/realm/clé (rotation JWKS), qu'un proxy ou une gateway ne retire pas l'en-tête, et les logs serveur en DEBUG pour la raison exacte de l'échec.</p>
+<p>Décoder le JWT (sans lui faire confiance) pour inspecter les claims. Ne pas confondre avec <strong>403</strong> (authentifié mais non autorisé).</p>
+<h3 id="reponse-a-incident">Réponse à incident</h3>
+<h4 id="secret-was-accidentally-committed-github">R4. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ?</h4>
+<p><strong>Réponse :</strong> 1) <strong>Révoquer/faire tourner le secret immédiatement</strong> (le considérer compromis ; supprimer le commit ne suffit pas). 2) Examiner logs/CloudTrail pour tout usage depuis le commit. 3) Le retirer de l'historique (<code>git filter-repo</code>/BFG) et force-push, sachant que clones et forks le gardent. 4) Émettre le nouveau secret via un gestionnaire de secrets, jamais dans le dépôt. 5) Prévention : scan de secrets en pre-commit/CI (gitleaks), push protection GitHub, et court post-mortem. Voir aussi <a href="../fullstack-devops-k8s/">Full Stack &amp; DevOps</a>.</p>
+<h2 id="quiz-oral">🎤 Quiz oral</h2>
+<p>Dix questions réparties sur les niveaux. Répondez à chacune <strong>à voix haute en 2–3 minutes</strong>, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : <strong>0</strong> vide · <strong>1</strong> définition seule · <strong>2</strong> plus un exemple · <strong>3</strong> plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.</p>
+<ol>
+<li>Q3. Que sont OAuth 2.0 et OpenID Connect, et en quoi diffèrent-ils ?</li>
+<li>Q4. Quel flux OAuth2 utiliser pour quel client ?</li>
+<li>Q7. Qu'est-ce que le CSRF, et quand faut-il une protection CSRF ?</li>
+<li>Q8. Comment la filter chain de Spring Security traite-t-elle une requête ?</li>
+<li>Q10. Que faut-il exactement valider sur un JWT avant de lui faire confiance ?</li>
+<li>Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ?</li>
+<li>Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ?</li>
+<li>Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ?</li>
+<li>Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ?</li>
+<li>S2. Une clé de signature JWT apparaît dans un dépôt GitHub public</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<h3 id="identite-tokens">Identité &amp; tokens</h3>
+<blockquote>
+<p><strong>Pour commencer :</strong> l'authentification prouve qui, l'autorisation décide quoi ; le serveur vérifie les deux à chaque requête.</p>
+</blockquote>
+<ul>
+<li><strong>Mots de passe</strong> — Argon2id/bcrypt/scrypt, salés, adaptatifs. <em>Ou déléguer à un fournisseur d'identité.</em></li>
+<li><strong>OAuth2 vs OIDC</strong> — OAuth2 = accès délégué (access token) ; OIDC = identité (ID token). <em>Ne jamais envoyer l'ID token à l'API.</em></li>
+<li><strong>Flux</strong> — SPA/mobile : code + PKCE ; serveur : code ; machine : client credentials ; appareils : device flow. <em>Implicite et password sont dépréciés.</em></li>
+<li><strong>Validation JWT</strong> — signature avec alg en liste blanche, <code>iss</code>, <code>aud</code>, <code>exp</code>/<code>nbf</code>, puis scopes. <em>Signé ≠ chiffré.</em></li>
+<li><strong>Révocation</strong> — access tokens courts, refresh tokens renouvelés, liste noire par <code>jti</code>, ou introspection.</li>
+<li><strong>BFF</strong> — tokens côté serveur, cookie <code>HttpOnly</code> vers le navigateur. <em>Exige une protection CSRF.</em></li>
+</ul>
+<h3 id="attaques-web_1">Attaques web</h3>
+<blockquote>
+<p><strong>Pour commencer :</strong> ne jamais laisser une donnée devenir du code — paramétrer les requêtes, échapper la sortie, vérifier la propriété.</p>
+</blockquote>
+<ul>
+<li><strong>SQLi</strong> — des paramètres partout ; liste blanche pour les noms de colonnes et <code>ORDER BY</code> ; MyBatis <code>#{}</code> et non <code>${}</code>.</li>
+<li><strong>XSS</strong> — React échappe le JSX ; surveiller <code>dangerouslySetInnerHTML</code>, les URLs <code>javascript:</code> ; CSP stricte.</li>
+<li><strong>CSRF</strong> — compte avec les cookies ; SameSite + token + contrôle d'Origin. <em>Les API à en-tête bearer ne sont pas exposées.</em></li>
+<li><strong>IDOR/BOLA</strong> — requêter par identifiant <strong>et</strong> propriétaire/tenant ; renvoyer 404. <em>Les contrôles de rôle ne l'attrapent pas.</em></li>
+<li><strong>SSRF</strong> — liste blanche, bloquer les plages privées après DNS, pas de redirections, IMDSv2.</li>
+<li><strong>Données de santé</strong> — moindre privilège + contrôles relationnels, bris de glace journalisé, audit append-only incluant les lectures, chiffrement au niveau des champs avec clés KMS, aucune donnée de santé dans les logs ni en dev. <em>Catégorie spéciale RGPD ; hébergement HDS en France ; notification de violation sous 72 h.</em></li>
+</ul>
+<h3 id="spring-security_1">Spring Security</h3>
+<blockquote>
+<p><strong>Pour commencer :</strong> <code>FilterChainProxy</code> → <code>SecurityFilterChain</code> correspondante → filtres d'authentification → traduction des exceptions → autorisation.</p>
+</blockquote>
+<ul>
+<li><strong>Resource server</strong> — <code>issuer-uri</code>, cache JWKS, ajouter un validateur <code>aud</code>, mapper les rôles avec <code>JwtAuthenticationConverter</code>.</li>
+<li><strong>401 vs 403</strong> — non authentifié vs authentifié mais non autorisé (<code>ExceptionTranslationFilter</code>).</li>
+<li><strong>Sécurité de méthode</strong> — <code>@PreAuthorize</code> pour la propriété et les règles fines ; voir <a href="../spring-architecture/#authorization-live-url-rules-method">Spring Q41</a>.</li>
+</ul>
+<h3 id="plateforme-processus">Plateforme &amp; processus</h3>
+<blockquote>
+<p><strong>Pour commencer :</strong> savoir ce qu'on livre, garder les secrets hors du code, et éliminer les menaces dès la conception.</p>
+</blockquote>
+<ul>
+<li><strong>Supply chain</strong> — lockfiles, digests épinglés, scan, SBOM (CycloneDX), signature (cosign). <em>Surveiller les dépendances transitives et la dependency confusion.</em></li>
+<li><strong>Identité de service</strong> — transmission du token vs échange de token vs mTLS/SPIFFE.</li>
+<li><strong>Protection des données</strong> — minimiser, chiffrer au repos, chiffrement d'enveloppe pour les champs sensibles, masquer les logs.</li>
+<li><strong>Threat modeling</strong> — diagramme de flux + frontières de confiance + STRIDE ; résultat = tickets avec responsables.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

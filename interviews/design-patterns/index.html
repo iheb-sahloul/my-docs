@@ -1,0 +1,4178 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/design-patterns/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../java-core-jvm/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/interviews/design-patterns/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Design Patterns - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#design-patterns" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Design Patterns
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/interviews/design-patterns/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creational-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creational patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creational patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-singleton-solve-implement-thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. What problem does Singleton actually solve, and how do you implement it thread-safely in Java?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory-method-abstract-factory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What's the actual difference between Factory Method and Abstract Factory?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builder-beat-telescoping-constructor-plain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. When does a Builder beat a telescoping constructor or plain JavaBean setters?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prototype-pattern-cloning-beat-calling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. When does the Prototype pattern (cloning) beat calling new?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Structural patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adapter-reconcile-two-incompatible-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. How does Adapter reconcile two incompatible interfaces, and what's the object-vs-class adapter distinction?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decorator-differ-just-subclassing-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How does Decorator differ from just subclassing to add behavior?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-problem-facade-solve-complex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What specific problem does Facade solve for a complex subsystem?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proxy-variants-differ-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What are Proxy's variants, and how does it differ from Decorator?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavioral-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behavioral patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Behavioral patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy-buy-large-switch-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. What does Strategy buy you over a large if/switch on behavior?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observer-decouple-publishers-subscribers-classic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. How does Observer decouple publishers from subscribers, and what's the classic pitfall to flag up front?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-method-fix-differ-just" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What does Template Method fix, and how does it differ from just calling helper methods in order?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-buy-beyond-just-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. What does Command buy you beyond "just call the method directly," and what are its main use cases?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-differ-strategy-given-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. How does State differ from Strategy, given that their class diagrams are almost identical?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-responsibility-right-fit-already" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. When is Chain of Responsibility the right fit, and where do you already use it without naming it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#many-senior-engineers-treat-singleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stacking-decorators-become-worse-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. When does stacking Decorators become worse than the inheritance explosion it was meant to avoid?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#introducing-strategy-add-more-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. When does introducing Strategy add more complexity than a plain if/switch would?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#happens-observer-subscribers-never-unregistered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. What happens when Observer subscribers are never unregistered, concretely?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anemic-domain-model-trap-uncritical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. What's the "anemic domain model" trap, and how does uncritical pattern application feed it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrency-trap-shared-mutable-builder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. What's the concurrency trap with a shared, mutable Builder instance?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#design-plugin-architecture-using-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-pattern-engineering-right-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. When is a design pattern over-engineering versus the right call, and how do you decide that in a code review?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gof-creational-structural-patterns-relate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. How do GoF creational/structural patterns relate to DDD tactical patterns like Repository, Factory, and Aggregate?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-plus-visitor-tree-shaped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q24. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests-pass-isolation-but" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Integration tests pass in isolation but fail intermittently when the full suite runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heap-usage-climbs-steadily-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Heap usage climbs steadily over days of uptime with no obvious spike
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one-line-behavior-change-requires" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. A one-line behavior change requires touching a five-layer decorator chain, and nobody is confident about the order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flexible-plugin-abstraction-has-exactly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A "flexible" plugin abstraction has exactly one implementation a year after it shipped
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-payment-method-requires-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A new payment method requires editing a 300-line switch in five places
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commonly-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Commonly asked questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Commonly asked questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. Strategy vs State: what is the difference?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory-method-abstract-factory-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. Factory Method vs Abstract Factory.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observer-publish-subscribe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. Observer vs publish/subscribe.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creational-patterns-how-objects-get-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creational patterns (how objects get created)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-patterns-how-objects-are-wired-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural patterns (how objects are wired together)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavioral-patterns-how-objects-collaborate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behavioral patterns (how objects collaborate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-judgment-and-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design judgment and architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creational-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creational patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creational patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problem-singleton-solve-implement-thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. What problem does Singleton actually solve, and how do you implement it thread-safely in Java?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory-method-abstract-factory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. What's the actual difference between Factory Method and Abstract Factory?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builder-beat-telescoping-constructor-plain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. When does a Builder beat a telescoping constructor or plain JavaBean setters?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prototype-pattern-cloning-beat-calling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. When does the Prototype pattern (cloning) beat calling new?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Structural patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adapter-reconcile-two-incompatible-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. How does Adapter reconcile two incompatible interfaces, and what's the object-vs-class adapter distinction?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decorator-differ-just-subclassing-add" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. How does Decorator differ from just subclassing to add behavior?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#specific-problem-facade-solve-complex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What specific problem does Facade solve for a complex subsystem?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proxy-variants-differ-decorator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. What are Proxy's variants, and how does it differ from Decorator?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavioral-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behavioral patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Behavioral patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy-buy-large-switch-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. What does Strategy buy you over a large if/switch on behavior?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observer-decouple-publishers-subscribers-classic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. How does Observer decouple publishers from subscribers, and what's the classic pitfall to flag up front?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-method-fix-differ-just" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. What does Template Method fix, and how does it differ from just calling helper methods in order?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-buy-beyond-just-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. What does Command buy you beyond "just call the method directly," and what are its main use cases?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-differ-strategy-given-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. How does State differ from Strategy, given that their class diagrams are almost identical?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-responsibility-right-fit-already" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q14. When is Chain of Responsibility the right fit, and where do you already use it without naming it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#many-senior-engineers-treat-singleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q15. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stacking-decorators-become-worse-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q16. When does stacking Decorators become worse than the inheritance explosion it was meant to avoid?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#introducing-strategy-add-more-complexity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q17. When does introducing Strategy add more complexity than a plain if/switch would?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#happens-observer-subscribers-never-unregistered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q18. What happens when Observer subscribers are never unregistered, concretely?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#anemic-domain-model-trap-uncritical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q19. What's the "anemic domain model" trap, and how does uncritical pattern application feed it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#concurrency-trap-shared-mutable-builder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q20. What's the concurrency trap with a shared, mutable Builder instance?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#questions_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#design-plugin-architecture-using-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q21. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-pattern-engineering-right-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q22. When is a design pattern over-engineering versus the right call, and how do you decide that in a code review?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gof-creational-structural-patterns-relate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q23. How do GoF creational/structural patterns relate to DDD tactical patterns like Repository, Factory, and Aggregate?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#composite-plus-visitor-tree-shaped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q24. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests-pass-isolation-but" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. Integration tests pass in isolation but fail intermittently when the full suite runs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heap-usage-climbs-steadily-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. Heap usage climbs steadily over days of uptime with no obvious spike
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one-line-behavior-change-requires" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. A one-line behavior change requires touching a five-layer decorator chain, and nobody is confident about the order
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flexible-plugin-abstraction-has-exactly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A "flexible" plugin abstraction has exactly one implementation a year after it shipped
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-payment-method-requires-editing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. A new payment method requires editing a 300-line switch in five places
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commonly-asked-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗣️ Commonly asked questions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗣️ Commonly asked questions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategy-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R1. Strategy vs State: what is the difference?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory-method-abstract-factory-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R2. Factory Method vs Abstract Factory.
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observer-publish-subscribe" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R3. Observer vs publish/subscribe.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📌 Cheat-sheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creational-patterns-how-objects-get-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creational patterns (how objects get created)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structural-patterns-how-objects-are-wired-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structural patterns (how objects are wired together)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behavioral-patterns-how-objects-collaborate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Behavioral patterns (how objects collaborate)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#design-judgment-and-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design judgment and architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="design-patterns">Design Patterns</h1>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h3 id="creational-patterns">Creational patterns</h3>
+<h4 id="problem-singleton-solve-implement-thread">Q1. What problem does Singleton actually solve, and how do you implement it thread-safely in Java?</h4>
+<p><strong>Answer:</strong> Singleton guarantees a class has exactly one instance and gives a single global access
+point to it — appropriate for something that is genuinely unique in the process: a logging
+facade, a configuration registry, a connection pool wrapper. A naive <code>if (instance == null)
+instance = new Foo();</code> is not thread-safe: two threads can both pass the null check before either
+assigns, producing two instances. The idiomatic thread-safe Java implementations are (1) an
+<strong>eager</strong> <code>static final</code> field (JVM class-loading guarantees are the safety net, at the cost of
+always constructing it even if never used), (2) the <strong>Bill Pugh / static inner holder class</strong>
+idiom (lazy, thread-safe, no synchronization overhead — the holder class is only loaded on first
+access), or (3) a single-element <strong>enum</strong> (Joshua Bloch's recommendation — the JVM guarantees
+enum instances are created exactly once and it's serialization-safe for free).</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Bill Pugh idiom: lazy, thread-safe, no synchronized block on every call.</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConfigRegistry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">ConfigRegistry</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Holder</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ConfigRegistry</span><span class="w"> </span><span class="n">INSTANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ConfigRegistry</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">ConfigRegistry</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Holder</span><span class="p">.</span><span class="na">INSTANCE</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Enum idiom: shortest correct form, immune to reflection and serialization attacks.</span>
+<span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">ConfigRegistryEnum</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">INSTANCE</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reload</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> double-checked locking without <code>volatile</code> on the field is a classic wrong
+answer that "looks" correct — without <code>volatile</code>, another thread can observe a partially
+constructed object due to instruction reordering. If double-checked locking is used at all, the
+field must be <code>private static volatile Foo instance;</code>.</p>
+<p><em>See also:</em> <a href="../java-core-jvm/#name-thread-safe-singleton-implementation">Java Q28</a> for the JVM mechanics: class loading, and why <code>enum</code> also survives reflection and deserialization.</p>
+<h4 id="factory-method-abstract-factory">Q2. What's the actual difference between Factory Method and Abstract Factory?</h4>
+<p><strong>Answer:</strong> <strong>Factory Method</strong> is a single method — often overridden in a subclass — that creates
+one kind of object, letting subclasses decide which concrete type to instantiate while the caller
+depends only on the return type's interface. <strong>Abstract Factory</strong> is a step up: an interface
+exposing <em>several</em> factory methods that together produce a <strong>family of related objects</strong> meant to
+be used together, guaranteeing the caller never accidentally mixes objects from incompatible
+families. The distinguishing question in an interview isn't "which one creates objects" (both do)
+but "does the caller need one product, or a consistent family of several products together."</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Factory Method: one product, decided by the subclass.</span>
+<span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DocumentExporter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">abstract</span><span class="w"> </span><span class="n">Exporter</span><span class="w"> </span><span class="nf">createExporter</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">export</span><span class="p">(</span><span class="n">Document</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">createExporter</span><span class="p">().</span><span class="na">write</span><span class="p">(</span><span class="n">d</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">PdfDocumentExporter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DocumentExporter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Exporter</span><span class="w"> </span><span class="nf">createExporter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PdfExporter</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// Abstract Factory: a whole family of related products, guaranteed compatible.</span>
+<span class="kd">interface</span> <span class="nc">UiFactory</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Button</span><span class="w"> </span><span class="nf">createButton</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Checkbox</span><span class="w"> </span><span class="nf">createCheckbox</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">DarkThemeFactory</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UiFactory</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Button</span><span class="w"> </span><span class="nf">createButton</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DarkButton</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Checkbox</span><span class="w"> </span><span class="nf">createCheckbox</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DarkCheckbox</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> reciting the definitions without the "family of related products" distinction
+is the tell that a candidate memorized the names rather than understood why Abstract Factory
+exists — the actual bug it prevents is a caller ending up with a <code>DarkButton</code> next to a
+<code>LightCheckbox</code> because two independent Factory Methods were called with mismatched themes.</p>
+<h4 id="builder-beat-telescoping-constructor-plain">Q3. When does a Builder beat a telescoping constructor or plain JavaBean setters?</h4>
+<p><strong>Answer:</strong> A telescoping constructor (<code>new Pizza(size)</code>, <code>new Pizza(size, cheese)</code>, <code>new
+Pizza(size, cheese, pepperoni)</code>, ...) becomes unreadable and error-prone past 3-4 parameters,
+especially when several share a type (which <code>boolean</code> is which?). Plain setters fix readability
+but sacrifice immutability and leave the object in an inconsistent state between construction and
+the last setter call — dangerous if it's read by another thread mid-construction, or if
+validation needs "all required fields present" before the object is usable at all. Builder
+supplies named, chainable setter-like methods that accumulate state and only construct the real
+(optionally immutable) object in a final <code>build()</code> call, which is the one place invariants across
+multiple fields can be validated together.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">Pizza</span><span class="w"> </span><span class="n">pizza</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Pizza</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">size</span><span class="p">(</span><span class="n">Size</span><span class="p">.</span><span class="na">LARGE</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">cheese</span><span class="p">(</span><span class="kc">true</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">pepperoni</span><span class="p">(</span><span class="kc">false</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w"> </span><span class="c1">// validation across fields happens here, and the result can be fully immutable</span>
+
+<span class="kd">class</span> <span class="nc">Pizza</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Size</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">cheese</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Pizza</span><span class="p">(</span><span class="n">Builder</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">size</span><span class="p">;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">cheese</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="na">cheese</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Builder</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">Size</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">cheese</span><span class="p">;</span>
+<span class="w">        </span><span class="n">Builder</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="n">Size</span><span class="w"> </span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">s</span><span class="p">;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="n">Builder</span><span class="w"> </span><span class="nf">cheese</span><span class="p">(</span><span class="kt">boolean</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">cheese</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="n">Pizza</span><span class="w"> </span><span class="nf">build</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"size is required"</span><span class="p">);</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Pizza</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> reaching for Builder on a 2-field class is the opposite mistake — it's
+boilerplate for boilerplate's sake. The pattern earns its cost specifically when there are several
+optional parameters, some cross-field validation, and a desire for the final object to be
+immutable.</p>
+<h4 id="prototype-pattern-cloning-beat-calling">Q4. When does the Prototype pattern (cloning) beat calling <code>new</code>?</h4>
+<p><strong>Answer:</strong> Prototype creates new objects by copying an existing, fully-configured instance rather
+than building one from scratch, which is worth it when construction is expensive (a costly
+database read, network call, or heavy computation to arrive at the initial state) or when the
+exact concrete class to instantiate isn't known at compile time and only an existing instance is
+available to copy. Java's <code>Cloneable</code>/<code>clone()</code> is the textbook mechanism but is famously
+awkward (shallow-copy by default, no constructor call, easy to get wrong with mutable fields); in
+practice, a copy constructor or a static factory method that explicitly deep-copies mutable state
+is usually the safer choice over implementing <code>Cloneable</code>.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Report</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Cloneable</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sections</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="nd">@Override</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Report</span><span class="w"> </span><span class="nf">clone</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Report</span><span class="w"> </span><span class="n">copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Report</span><span class="p">();</span>
+<span class="w">        </span><span class="n">copy</span><span class="p">.</span><span class="na">sections</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">sections</span><span class="p">);</span><span class="w"> </span><span class="c1">// explicit deep copy of the mutable field</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">copy</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// A cheaper alternative avoiding Cloneable's pitfalls entirely:</span>
+<span class="kd">class</span> <span class="nc">ReportCopy</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">Report</span><span class="w"> </span><span class="nf">copyOf</span><span class="p">(</span><span class="n">Report</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* explicit field-by-field deep copy */</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Report</span><span class="p">(</span><span class="n">r</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> relying on <code>Object.clone()</code>'s default shallow copy when a field is a mutable
+collection or nested object — both the original and the "copy" then share the same underlying
+list, and a mutation through one silently corrupts the other's supposedly independent state.</p>
+<h3 id="structural-patterns">Structural patterns</h3>
+<h4 id="adapter-reconcile-two-incompatible-interfaces">Q5. How does Adapter reconcile two incompatible interfaces, and what's the object-vs-class adapter distinction?</h4>
+<p><strong>Answer:</strong> Adapter wraps an existing class behind the interface a client actually expects,
+translating calls without changing either side — the classic use case is integrating a
+third-party library whose API doesn't match the interface the rest of the codebase depends on. An
+<strong>object adapter</strong> holds an instance of the adaptee via composition and delegates to it (works in
+any language, including Java, and can adapt subclasses too). A <strong>class adapter</strong> uses multiple
+inheritance to inherit from both the target interface and the adaptee directly — not possible in
+Java for two concrete classes (single inheritance), so Java code is effectively always the object
+adapter form.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">MediaPlayer</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">play</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">file</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">LegacyThirdPartyDecoder</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">decodeAndPlay</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* incompatible API shape */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">LegacyDecoderAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MediaPlayer</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// object adapter: composition, not inheritance</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">LegacyThirdPartyDecoder</span><span class="w"> </span><span class="n">decoder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LegacyThirdPartyDecoder</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">play</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">file</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">decoder</span><span class="p">.</span><span class="na">decodeAndPlay</span><span class="p">(</span><span class="n">file</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> reaching for Adapter to paper over a genuinely wrong abstraction inside your
+<em>own</em> codebase (rather than at a real third-party boundary) just hides a design problem behind an
+extra layer of indirection instead of fixing the interface that shouldn't have diverged in the
+first place.</p>
+<h4 id="decorator-differ-just-subclassing-add">Q6. How does Decorator differ from just subclassing to add behavior?</h4>
+<p><strong>Answer:</strong> Subclassing adds behavior at compile time, statically, and multiplies combinatorially —
+<code>CoffeeWithMilk</code>, <code>CoffeeWithSugar</code>, <code>CoffeeWithMilkAndSugar</code>, one subclass per combination.
+Decorator wraps an object of the same interface at <em>runtime</em>, adding behavior before/after
+delegating to the wrapped instance, so any combination is achieved by nesting decorators instead
+of declaring a new class per combination — the number of classes stays linear in the number of
+behaviors, not exponential in their combinations.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">Coffee</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">class</span> <span class="nc">SimpleCoffee</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Coffee</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CoffeeDecorator</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Coffee</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Coffee</span><span class="w"> </span><span class="n">wrapped</span><span class="p">;</span>
+<span class="w">    </span><span class="n">CoffeeDecorator</span><span class="p">(</span><span class="n">Coffee</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">wrapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">MilkDecorator</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CoffeeDecorator</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">MilkDecorator</span><span class="p">(</span><span class="n">Coffee</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">super</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">wrapped</span><span class="p">.</span><span class="na">cost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.5</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">SugarDecorator</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CoffeeDecorator</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">SugarDecorator</span><span class="p">(</span><span class="n">Coffee</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">super</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">wrapped</span><span class="p">.</span><span class="na">cost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">0.2</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Coffee</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SugarDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MilkDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SimpleCoffee</span><span class="p">()));</span><span class="w"> </span><span class="c1">// any combo, no new class</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> Decorator preserves the <em>same</em> interface at every layer — if the added
+behavior genuinely needs new methods callers must invoke, Decorator is the wrong tool; that's a
+signal for Strategy or plain composition instead, not a decorator with an interface it doesn't
+honor.</p>
+<h4 id="specific-problem-facade-solve-complex">Q7. What specific problem does Facade solve for a complex subsystem?</h4>
+<p><strong>Answer:</strong> A subsystem with many interacting classes (a video conversion library with codecs,
+buffers, bitrate management, etc.) forces every caller to learn and correctly sequence that
+internal complexity. Facade introduces one simplified, higher-level interface exposing the common
+use cases, without removing or restricting access to the underlying subsystem for callers who
+still need fine-grained control. It's a usability/coupling improvement, not a security boundary —
+the subsystem classes remain directly reachable.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">VideoConversionFacade</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">File</span><span class="w"> </span><span class="nf">convertToMp4</span><span class="p">(</span><span class="n">File</span><span class="w"> </span><span class="n">video</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Codec</span><span class="w"> </span><span class="n">codec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CodecFactory</span><span class="p">.</span><span class="na">extract</span><span class="p">(</span><span class="n">video</span><span class="p">);</span>
+<span class="w">        </span><span class="n">BitrateReader</span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">video</span><span class="p">,</span><span class="w"> </span><span class="n">codec</span><span class="p">);</span>
+<span class="w">        </span><span class="n">AudioMixer</span><span class="w"> </span><span class="n">mixer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AudioMixer</span><span class="p">();</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">mixer</span><span class="p">.</span><span class="na">fix</span><span class="p">(</span><span class="n">video</span><span class="p">);</span><span class="w"> </span><span class="c1">// caller never touches Codec, BitrateReader, AudioMixer directly</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> treating the facade as the <em>only</em> allowed entry point and then bending it to
+expose every subsystem knob "just in case" defeats the purpose — a facade that grows parameters
+for every underlying option has become the subsystem's full API again, just renamed.</p>
+<h4 id="proxy-variants-differ-decorator">Q8. What are Proxy's variants, and how does it differ from Decorator?</h4>
+<p><strong>Answer:</strong> Proxy controls <strong>access</strong> to an object by standing in for it behind the same interface:
+a <strong>virtual proxy</strong> defers expensive construction until first real use (lazy loading), a
+<strong>protection proxy</strong> adds authorization checks before delegating, a <strong>remote proxy</strong> hides the
+fact that the real object lives in another process/machine, and a <strong>logging/caching proxy</strong>
+records or short-circuits calls. The structural shape is identical to Decorator (wrap the same
+interface, delegate, add behavior around the call) — the difference is <em>intent</em>: Decorator adds
+new <em>responsibilities/behavior</em> the client explicitly wants layered on; Proxy controls <em>access</em> to
+an object the client believes it's talking to directly, often transparently.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">Image</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">display</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">class</span> <span class="nc">RealImage</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Image</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">RealImage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">loadFromDisk</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"> </span><span class="cm">/* expensive */</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">display</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">VirtualProxyImage</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Image</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// same interface, defers the expensive construction</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">;</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">RealImage</span><span class="w"> </span><span class="n">real</span><span class="p">;</span>
+<span class="w">    </span><span class="n">VirtualProxyImage</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">path</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">display</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">real</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">real</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RealImage</span><span class="p">(</span><span class="n">path</span><span class="p">);</span><span class="w"> </span><span class="c1">// loaded only on first actual display()</span>
+<span class="w">        </span><span class="n">real</span><span class="p">.</span><span class="na">display</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> claiming Proxy and Decorator are "the same pattern with different names" —
+Spring's own <code>@Transactional</code>/security proxies are a real, load-bearing example of <em>access
+control</em> (should this call even be allowed to proceed, and under what transaction?), not of
+adding a new decorative capability; see <code>spring-architecture.md</code> Q11/Q13 for how that specific
+proxy interacts with self-invocation.</p>
+<h3 id="behavioral-patterns">Behavioral patterns</h3>
+<h4 id="strategy-buy-large-switch-behavior">Q9. What does Strategy buy you over a large <code>if</code>/<code>switch</code> on behavior?</h4>
+<p><strong>Answer:</strong> Strategy extracts an algorithm (or one of several interchangeable variants) behind a
+common interface, so the algorithm can be selected and swapped at runtime — often via
+dependency injection — without the class using it knowing which concrete implementation it holds.
+It directly follows the Open/Closed Principle: adding a new strategy means adding a new class, not
+editing every branch of an existing conditional.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">DiscountStrategy</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">price</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">class</span> <span class="nc">NoDiscount</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">DiscountStrategy</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+<span class="kd">class</span> <span class="nc">PercentageDiscount</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">DiscountStrategy</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">pct</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PercentageDiscount</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">pct</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">pct</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pct</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">apply</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pct</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">Checkout</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">DiscountStrategy</span><span class="w"> </span><span class="n">discount</span><span class="p">;</span><span class="w"> </span><span class="c1">// injected, swappable, no if/switch inside Checkout</span>
+<span class="w">    </span><span class="n">Checkout</span><span class="p">(</span><span class="n">DiscountStrategy</span><span class="w"> </span><span class="n">discount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">discount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">discount</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="nf">total</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">price</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">discount</span><span class="p">.</span><span class="na">apply</span><span class="p">(</span><span class="n">price</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> naming the pattern without naming the actual payoff (Open/Closed compliance,
+independent testability of each strategy) is the shallow half of the answer — see Q17 for when
+this indirection isn't worth it.</p>
+<h4 id="observer-decouple-publishers-subscribers-classic">Q10. How does Observer decouple publishers from subscribers, and what's the classic pitfall to flag up front?</h4>
+<p><strong>Answer:</strong> A subject maintains a list of observers and notifies all of them on a state change,
+without knowing anything about what each observer does with that notification — publishers and
+subscribers depend only on a thin <code>Observer</code>/<code>Listener</code> interface, not on each other's concrete
+types, which is what enables adding new subscribers with zero changes to the publisher. The
+pitfall to flag immediately (detailed with a concrete failure scenario in Q18/S2): if a subscriber
+is never explicitly unregistered, the subject's list keeps a live reference to it forever, which
+is a textbook memory leak in a long-running process.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">OrderListener</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onOrderPlaced</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrderListener</span><span class="o">&gt;</span><span class="w"> </span><span class="n">listeners</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">subscribe</span><span class="p">(</span><span class="n">OrderListener</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">listeners</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">unsubscribe</span><span class="p">(</span><span class="n">OrderListener</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">listeners</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">l</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// easy to forget to call this</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">place</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">listeners</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">l</span><span class="p">.</span><span class="na">onOrderPlaced</span><span class="p">(</span><span class="n">o</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> describing Observer purely as "pub/sub" without mentioning the unregistration
+responsibility is incomplete — see Q18 for the memory-leak trap this creates in practice.</p>
+<h4 id="template-method-fix-differ-just">Q11. What does Template Method fix, and how does it differ from just calling helper methods in order?</h4>
+<p><strong>Answer:</strong> Template Method defines the <em>fixed skeleton</em> of an algorithm in a base class method
+(often <code>final</code>, so subclasses can't reorder or skip steps), while deferring specific steps to
+abstract or overridable "hook" methods that subclasses implement. Unlike a caller manually calling
+helper methods in the right order every time (easy to reorder or forget a step by mistake), the
+sequencing itself lives in one place and can never be gotten wrong by a subclass — subclasses can
+only fill in the customizable steps, not the order they run in.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DataImporter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">File</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">           </span><span class="c1">// the algorithm's fixed skeleton — final, can't be reordered</span>
+<span class="w">        </span><span class="n">Data</span><span class="w"> </span><span class="n">raw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">read</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Data</span><span class="w"> </span><span class="n">valid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">validate</span><span class="p">(</span><span class="n">raw</span><span class="p">);</span>
+<span class="w">        </span><span class="n">persist</span><span class="p">(</span><span class="n">valid</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">abstract</span><span class="w"> </span><span class="n">Data</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">File</span><span class="w"> </span><span class="n">f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Data</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="n">Data</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">d</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// default hook, overridable but not mandatory</span>
+<span class="w">    </span><span class="kd">abstract</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">persist</span><span class="p">(</span><span class="n">Data</span><span class="w"> </span><span class="n">d</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">CsvImporter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">DataImporter</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Data</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">File</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* CSV-specific */</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">persist</span><span class="p">(</span><span class="n">Data</span><span class="w"> </span><span class="n">d</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* ... */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> making the skeleton method non-<code>final</code> invites a subclass to override the
+whole sequence, silently reintroducing exactly the "steps run in the wrong order" bug the pattern
+exists to prevent.</p>
+<h4 id="command-buy-beyond-just-call">Q12. What does Command buy you beyond "just call the method directly," and what are its main use cases?</h4>
+<p><strong>Answer:</strong> Command turns a request (a method call plus its arguments) into a standalone object
+implementing a common interface (typically one <code>execute()</code> method), which decouples the object
+that <em>invokes</em> an action from the object that <em>knows how to perform</em> it, and lets that request be
+stored, queued, logged, or reversed. Direct method calls can't be queued for later, retried,
+serialized, or trivially undone — a <code>Command</code> object can be all of those, because the request
+itself is now data, not just a stack frame in flight.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">Command</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">();</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">undo</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">AddTextCommand</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Command</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">;</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">text</span><span class="p">;</span>
+<span class="w">    </span><span class="n">AddTextCommand</span><span class="p">(</span><span class="n">Document</span><span class="w"> </span><span class="n">doc</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">text</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">doc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">doc</span><span class="p">;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">text</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">text</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">execute</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">doc</span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="n">text</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">undo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">doc</span><span class="p">.</span><span class="na">removeLast</span><span class="p">(</span><span class="n">text</span><span class="p">.</span><span class="na">length</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">CommandHistory</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Deque</span><span class="o">&lt;</span><span class="n">Command</span><span class="o">&gt;</span><span class="w"> </span><span class="n">history</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayDeque</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">Command</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span><span class="w"> </span><span class="n">history</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">undoLast</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">history</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="n">history</span><span class="p">.</span><span class="na">pop</span><span class="p">().</span><span class="na">undo</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> reaching for Command on a simple, immediate, one-shot action that will never
+need to be queued, logged, retried, or undone is pure ceremony — the pattern earns its cost
+specifically when one of those cross-cutting needs (undo, a job queue, an audit log of executed
+actions) is actually present.</p>
+<h4 id="state-differ-strategy-given-class">Q13. How does State differ from Strategy, given that their class diagrams are almost identical?</h4>
+<p>Both delegate behavior to an interchangeable object behind an interface; the difference is <em>who chooses and why</em>. With <strong>Strategy</strong> the client picks an algorithm from outside and it rarely changes during the object's life (a pricing rule, a sort order).</p>
+<p>With <strong>State</strong> the object's own behavior changes as its internal state changes, and the state objects themselves usually trigger the transitions (<code>Order</code> goes <code>NEW -&gt; PAID -&gt; SHIPPED</code>; <code>ship()</code> is legal in one state and an error in another).</p>
+<p>State replaces a growing <code>switch (status)</code> repeated in every method with one class per state, so illegal transitions become impossible by construction instead of being guarded by scattered <code>if</code>s.</p>
+<p>The cost is more classes: for two or three states with trivial rules, an enum with a <code>switch</code> is simpler (the same over-engineering test as Q22).</p>
+<p>Flag shared mutable state objects as the usual pitfall: stateless state objects can be singletons, but ones holding per-order data cannot.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">OrderState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">OrderState</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">);</span>
+<span class="w">    </span><span class="n">OrderState</span><span class="w"> </span><span class="nf">ship</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">New</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">charge</span><span class="p">();</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Paid</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="nf">ship</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"pay first"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">class</span> <span class="nc">Paid</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"already paid"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">OrderState</span><span class="w"> </span><span class="nf">ship</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">dispatch</span><span class="p">();</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Shipped</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="c1">// Order: this.state = state.pay(this);   &lt;- the state decides the next state</span>
+</code></pre></div>
+<h4 id="chain-responsibility-right-fit-already">Q14. When is Chain of Responsibility the right fit, and where do you already use it without naming it?</h4>
+<p>Chain of Responsibility passes a request along a sequence of handlers, each of which either handles it, modifies it, or forwards it to the next one; the sender doesn't know which handler will act.</p>
+<p>It fits pipelines where steps are independent, ordered, and added or removed by configuration: servlet filters and Spring Security's filter chain, HTTP middleware, validation or approval rules ("under 1k: team lead; under 10k: director"), logging levels.</p>
+<p>The benefits are decoupled steps that can be reordered or tested alone; the traps mirror stacked Decorators (Q16): order is a hidden contract, a handler that forgets to call <code>next</code> silently swallows the request, and with no handler matching you need an explicit default (fail or reject) rather than a silent no-op.</p>
+<p>Compared to Decorator, a handler may <em>stop</em> the chain; a decorator always delegates.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">Handler</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">Request</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">Runnable</span><span class="w"> </span><span class="n">next</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="n">Handler</span><span class="w"> </span><span class="n">auth</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">next</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">r</span><span class="p">.</span><span class="na">hasToken</span><span class="p">())</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UnauthorizedException</span><span class="p">();</span><span class="w"> </span><span class="n">next</span><span class="p">.</span><span class="na">run</span><span class="p">();</span><span class="w"> </span><span class="p">};</span>
+<span class="n">Handler</span><span class="w"> </span><span class="n">rate</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">next</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">limiter</span><span class="p">.</span><span class="na">tooMany</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="na">ip</span><span class="p">()))</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TooManyRequests</span><span class="p">();</span><span class="w"> </span><span class="n">next</span><span class="p">.</span><span class="na">run</span><span class="p">();</span><span class="w"> </span><span class="p">};</span>
+<span class="n">Handler</span><span class="w"> </span><span class="n">audit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">next</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"{} {}"</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="na">method</span><span class="p">(),</span><span class="w"> </span><span class="n">r</span><span class="p">.</span><span class="na">path</span><span class="p">());</span><span class="w"> </span><span class="n">next</span><span class="p">.</span><span class="na">run</span><span class="p">();</span><span class="w"> </span><span class="p">};</span>
+<span class="c1">// order matters: authenticate before rate-limiting by user, audit last. Forgetting next.run() swallows the request.</span>
+</code></pre></div>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h3 id="questions">Questions</h3>
+<h4 id="many-senior-engineers-treat-singleton">Q15. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?</h4>
+<p><strong>Answer:</strong> The implementation being easy to get right (Q1) isn't the problem — the <em>design</em>
+consequence is. A Singleton is global mutable state with a static access point, which means any
+class using it has a hidden dependency invisible in its constructor signature, making the
+dependency graph harder to reason about and impossible to substitute for a test double without
+reaching for heavier tools (static mocking, classloader tricks). Worse, in a test suite, a
+Singleton's state can leak between tests that run in the same JVM/classloader — a test that
+mutates it and doesn't clean up can make an unrelated, later-run test fail nondeterministically,
+often only under parallel test execution. The senior alternative in most cases: dependency
+injection with a framework-managed singleton <em>scope</em> (e.g. a Spring <code>@Bean</code> with default scope) —
+same "one instance" guarantee, but the dependency is explicit in the constructor and trivially
+replaceable with a mock in a test.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Hand-rolled Singleton: hidden dependency, hard to substitute in a test.</span>
+<span class="kd">class</span> <span class="nc">ReportGenerator</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">generate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConfigRegistry</span><span class="p">.</span><span class="na">getInstance</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="s">"api.key"</span><span class="p">);</span><span class="w"> </span><span class="c1">// invisible dependency</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// DI equivalent: same "one instance in the app" guarantee, explicit and swappable.</span>
+<span class="kd">class</span> <span class="nc">ReportGenerator</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Config</span><span class="w"> </span><span class="n">config</span><span class="p">;</span>
+<span class="w">    </span><span class="n">ReportGenerator</span><span class="p">(</span><span class="n">Config</span><span class="w"> </span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// trivially mockable in a test</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> "Singleton is fine, I implemented it thread-safely" answers the wrong
+question — thread-safety was never the objection; testability and hidden coupling are, and a
+correct implementation doesn't fix either.</p>
+<h4 id="stacking-decorators-become-worse-inheritance">Q16. When does stacking Decorators become worse than the inheritance explosion it was meant to avoid?</h4>
+<p><strong>Answer:</strong> Decorator trades an exponential <em>class</em> explosion for a potentially deep, order-
+sensitive <em>runtime</em> chain — five or six nested decorators, each silently depending on running
+before or after another (a logging decorator that must wrap a caching decorator, not the reverse,
+or the cache key is computed on stale data), turns "which combination is this?" into a debugging
+problem at construction sites scattered across the codebase instead of a fixed, visible class
+hierarchy. The chain also makes stepping through a debugger noticeably harder — one logical call
+now traverses N proxy-like layers.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Order matters and is easy to get backwards with no compiler help either way:</span>
+<span class="n">Coffee</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LoggingDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">CachingDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MilkDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SimpleCoffee</span><span class="p">())));</span>
+<span class="n">Coffee</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CachingDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LoggingDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">MilkDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SimpleCoffee</span><span class="p">())));</span>
+<span class="c1">// a logs the (correct) cached result; b logs a cache-bypassing call every time — same classes, different bug</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> treating "any number of decorators, freely combined" as the pattern's
+selling point without acknowledging ordering constraints — past a handful of layers with real
+sequencing dependencies, a builder or an explicit small pipeline class documenting the required
+order is often more debuggable than the theoretically-infinite decorator composition.</p>
+<h4 id="introducing-strategy-add-more-complexity">Q17. When does introducing Strategy add more complexity than a plain <code>if</code>/<code>switch</code> would?</h4>
+<p><strong>Answer:</strong> Strategy pays off when the number of variants is genuinely open-ended (plugins,
+runtime configuration, per-tenant behavior) or when each variant has enough internal logic and
+its own test surface to deserve its own class. It's the wrong call for 2-3 stable, simple
+branches that will rarely change — a <code>switch</code> is more readable in one place, requires no extra
+indirection to trace, and doesn't force a reader to jump across files to see what each option
+actually does.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Plain switch: three stable options, trivial bodies — perfectly readable as-is.</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">shipping</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">method</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">method</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">"STANDARD"</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mf">5.0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">"EXPRESS"</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mf">15.0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">case</span><span class="w"> </span><span class="s">"OVERNIGHT"</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="mf">30.0</span><span class="p">;</span>
+<span class="w">        </span><span class="k">default</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="n">method</span><span class="p">);</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="p">}</span>
+<span class="c1">// Strategy here would be three tiny classes and an injected interface for logic this simple.</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> applying Strategy reflexively to "avoid conditionals" as a rule, rather than
+because new variants are actually expected to arrive over time, is pattern-for-its-own-sake — the
+Open/Closed benefit from Q9 only matters if the closed set of cases is realistically going to open.</p>
+<h4 id="happens-observer-subscribers-never-unregistered">Q18. What happens when Observer subscribers are never unregistered, concretely?</h4>
+<p><strong>Answer:</strong> The subject's listener list holds a strong reference to every subscriber it was ever
+given — if a subscriber is, say, a UI component or a request-scoped object that should have been
+garbage collected once its owning screen/request ended, that reference alone keeps it (and
+everything it transitively holds) alive for the lifetime of the <em>subject</em>, which is often the
+whole application. In a long-running service, this shows up as slow, steady memory growth that
+becomes an OutOfMemoryError days or weeks into uptime — hard to attribute to Observer specifically
+without a heap dump, because nothing has crashed or errored along the way.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">ScreenController</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">OrderListener</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">ScreenController</span><span class="p">(</span><span class="n">OrderService</span><span class="w"> </span><span class="n">svc</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">svc</span><span class="p">.</span><span class="na">subscribe</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="c1">// if close()/unsubscribe is never called, OrderService.listeners keeps this alive forever</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">onOrderPlaced</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* update UI */</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> the leak produces no exception and no immediately wrong behavior — it's
+discovered as a slow memory-growth curve in production monitoring, at which point tracing it back
+to a specific forgotten <code>unsubscribe()</code> call requires a heap dump and dominator-tree analysis, not
+a stack trace.</p>
+<h4 id="anemic-domain-model-trap-uncritical">Q19. What's the "anemic domain model" trap, and how does uncritical pattern application feed it?</h4>
+<p><strong>Answer:</strong> An anemic domain model is a set of classes that are pure data holders (fields plus
+getters/setters) with all actual behavior pulled out into separate "service" or "manager"
+classes — it looks organized (clean separation of data and logic) but actually violates
+encapsulation: nothing stops a service from putting an object into an invalid state, because the
+object itself enforces no invariants. Patterns get blamed for enabling this when Strategy,
+Factory, or a Builder become an excuse to keep pushing behavior <em>out</em> of the domain object rather
+than modeling the invariant directly on it — the patterns aren't the cause, but reaching for one
+reflexively, instead of asking "should this object just enforce this rule itself," is how a
+codebase drifts there.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Anemic: nothing stops OrderService from setting an impossible state.</span>
+<span class="kd">class</span> <span class="nc">Order</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Item</span><span class="o">&gt;</span><span class="w"> </span><span class="n">items</span><span class="p">;</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// pure data, no behavior, no protection</span>
+<span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">markShipped</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">o</span><span class="p">.</span><span class="na">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"SHIPPED"</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// no check that items is non-empty, etc.</span>
+<span class="p">}</span>
+
+<span class="c1">// Rich: the invariant lives where the data does — can't be bypassed by a careless caller.</span>
+<span class="kd">class</span> <span class="nc">Order</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Item</span><span class="o">&gt;</span><span class="w"> </span><span class="n">items</span><span class="p">;</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="n">Status</span><span class="w"> </span><span class="n">status</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">markShipped</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">items</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">"cannot ship an empty order"</span><span class="p">);</span>
+<span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Status</span><span class="p">.</span><span class="na">SHIPPED</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> "I used the Strategy pattern so the logic is decoupled from the entity" can
+describe either a genuinely good decoupling of an interchangeable <em>algorithm</em>, or a symptom of
+having stripped an entity of every invariant it should itself be responsible for — the pattern's
+presence doesn't tell you which one happened; the question is always "who can put this object into
+an invalid state," not "is the logic in a separate class."</p>
+<h4 id="concurrency-trap-shared-mutable-builder">Q20. What's the concurrency trap with a shared, mutable Builder instance?</h4>
+<p><strong>Answer:</strong> A Builder accumulates mutable state across chained calls before a final <code>build()</code> —
+that's fine for the common case of one builder used by one thread to construct one object. It
+breaks the moment the <em>same builder instance</em> is shared or reused across threads (e.g. cached and
+reused "for efficiency," or passed to a shared configuration step): concurrent calls to its
+<code>with...()</code> methods race on the same mutable fields, and one thread's <code>build()</code> can observe a
+half-updated combination of fields that no single caller ever intended, with no exception thrown.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Unsafe if `builder` is shared across threads/requests:</span>
+<span class="n">RequestBuilder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RequestBuilder</span><span class="p">();</span><span class="w"> </span><span class="c1">// NOT thread-safe by design</span>
+<span class="c1">// Thread A:</span>
+<span class="n">builder</span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"X-Tenant"</span><span class="p">,</span><span class="w"> </span><span class="s">"acme"</span><span class="p">);</span>
+<span class="c1">// Thread B, concurrently:</span>
+<span class="n">builder</span><span class="p">.</span><span class="na">header</span><span class="p">(</span><span class="s">"X-Tenant"</span><span class="p">,</span><span class="w"> </span><span class="s">"other"</span><span class="p">);</span>
+<span class="n">Request</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w"> </span><span class="c1">// could observe either tenant, or a state neither thread set alone</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> Builder's usual immutability of the <em>final built object</em> gets mentally
+conflated with the builder itself being safe to share — the builder is a mutable, single-use,
+typically single-threaded object, and reusing one instance across requests to "save an
+allocation" reintroduces exactly the race conditions immutability was supposed to eliminate
+downstream.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h3 id="questions_1">Questions</h3>
+<h4 id="design-plugin-architecture-using-strategy">Q21. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.</h4>
+<p>A plugin system needs three things: a common contract every plugin implements (<strong>Strategy</strong> — so
+the host code depends only on the interface, never a concrete plugin class), a way to obtain the
+right plugin instance for a given name/type without the caller hardcoding a class name
+(<strong>Factory</strong>), and a place new plugins register themselves without editing the host's source
+(<strong>Registry</strong>, often populated via Java's <code>ServiceLoader</code>, a Spring <code>Map&lt;String, Strategy&gt;</code>
+auto-wired from all beans of that type, or explicit registration on startup). The Factory becomes
+thin here — it's really just "look up the registered strategy by key" — but keeping it as a
+separate step still isolates callers from the registry's internal representation. The open design
+question worth raising unprompted: what happens for an unknown plugin key at runtime (fail fast
+vs. a documented no-op default), and whether plugins can depend on each other's presence/ordering,
+which a flat registry doesn't express.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">interface</span> <span class="nc">PaymentPlugin</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="n">Payment</span><span class="w"> </span><span class="n">p</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="kd">class</span> <span class="nc">PaymentPluginRegistry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">PaymentPlugin</span><span class="o">&gt;</span><span class="w"> </span><span class="n">plugins</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PaymentPluginRegistry</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">PaymentPlugin</span><span class="o">&gt;</span><span class="w"> </span><span class="n">plugins</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">plugins</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plugins</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="c1">// Spring auto-wires all beans</span>
+<span class="w">    </span><span class="n">PaymentPlugin</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">PaymentPlugin</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">plugins</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">"no plugin registered for "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">key</span><span class="p">);</span><span class="w"> </span><span class="c1">// fail fast, decided explicitly</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="design-pattern-engineering-right-call">Q22. When is a design pattern over-engineering versus the right call, and how do you decide that in a code review?</h4>
+<p>The pattern itself is never the risk — the mismatch between the pattern's promise (flexibility for
+future change) and the actual, evidenced likelihood of that change is. The practical review
+heuristic: is there a second, real, near-term case this abstraction needs to serve, or is it
+speculative ("we might need another payment provider someday")? YAGNI-driven code review asks for
+the concrete second case before approving an interface with one implementation, a Factory
+producing one product, or a Strategy with one strategy — not because patterns are bad, but because
+an abstraction paid for before it's needed adds a layer every future reader must first understand
+and then discover was never actually exercised. Conversely, refusing a pattern that clearly
+matches an already-repeating shape (three near-identical <code>if</code> branches doing structurally the same
+thing with different data) just delays the same refactor to when it's more entangled with new
+code.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Over-engineered: speculative abstraction</span>
+<span class="kd">interface</span> <span class="nc">PaymentProvider</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Receipt</span><span class="w"> </span><span class="nf">charge</span><span class="p">(</span><span class="n">Money</span><span class="w"> </span><span class="n">m</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// 1 implementation</span>
+<span class="kd">class</span> <span class="nc">PaymentProviderFactory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w">                    </span><span class="c1">// creates that 1 implementation</span>
+<span class="c1">// Right-sized: the plain class, until a second case exists</span>
+<span class="kd">class</span> <span class="nc">StripeClient</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Receipt</span><span class="w"> </span><span class="nf">charge</span><span class="p">(</span><span class="n">Money</span><span class="w"> </span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// extract the interface when provider #2 is real</span>
+</code></pre></div>
+<h4 id="gof-creational-structural-patterns-relate">Q23. How do GoF creational/structural patterns relate to DDD tactical patterns like Repository, Factory, and Aggregate?</h4>
+<p>DDD's tactical patterns are largely GoF patterns re-scoped to a specific job in a domain model
+rather than a new set of ideas. A DDD <strong>Factory</strong> is exactly the GoF Factory (Method or Abstract)
+constrained to producing a valid Aggregate — it exists specifically to keep an Aggregate's
+invariants intact at construction time, not just to hide a <code>new</code>. A DDD <strong>Repository</strong> is closer
+to a Facade/Proxy hybrid over persistence — it presents a simple, collection-like interface
+(<code>findById</code>, <code>save</code>) while hiding the actual query/ORM machinery behind it, and can add a
+protection- or caching-proxy-like layer transparently. An <strong>Aggregate</strong> itself isn't a GoF pattern
+at all — it's a consistency-boundary concept — but the objects composing it are frequently built
+using Builder (for complex construction) and Strategy (for pluggable policies inside the
+aggregate, e.g. a pricing strategy). Recognizing this mapping matters practically: a candidate who
+can only recite GoF names by rote, disconnected from where they actually show up in an
+architecture the codebase already uses, hasn't internalized <em>why</em> each pattern exists.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">Order</span><span class="w"> </span><span class="p">{</span><span class="w">                                   </span><span class="c1">// Aggregate root: enforces its own invariants</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">OrderLine</span><span class="o">&gt;</span><span class="w"> </span><span class="n">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">addLine</span><span class="p">(</span><span class="n">Product</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">qty</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">qty</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">();</span><span class="w"> </span><span class="n">lines</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">OrderLine</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">qty</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+<span class="kd">interface</span> <span class="nc">OrderRepository</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">OrderId</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">Order</span><span class="w"> </span><span class="n">o</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// Repository: collection-like facade over persistence</span>
+<span class="kd">class</span> <span class="nc">OrderFactory</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">Order</span><span class="w"> </span><span class="nf">create</span><span class="p">(</span><span class="n">Customer</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">Cart</span><span class="w"> </span><span class="n">cart</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w">                     </span><span class="c1">// Factory: builds a valid Aggregate</span>
+</code></pre></div>
+<h4 id="composite-plus-visitor-tree-shaped">Q24. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?</h4>
+<p>Composite lets leaf and composite nodes share a uniform interface, so client code can treat a
+single item and a group of items identically (<code>node.total()</code> works whether <code>node</code> is a line item
+or a folder of line items). Adding a <em>new operation</em> over that whole tree (serialize to XML,
+compute tax, render for print) can be done two ways: add a new method to every node class
+(simple, but every node class must be touched and recompiled for each new operation — violates
+Open/Closed for operations), or implement <strong>Visitor</strong>, where each node accepts a visitor object
+and the operation's logic lives entirely in the visitor, added without touching any node class at
+all. The trade-off is symmetric with Strategy's Q17/Q9 tension but flipped along a different axis:
+Visitor makes adding a new <em>operation</em> free but adding a new <em>node type</em> expensive (every existing
+visitor must gain a new <code>visit(NewNodeType)</code> overload) — exactly the reverse of the
+methods-on-nodes approach. The right call depends on which axis of the tree changes more often in
+practice: stable node types with frequently added operations favor Visitor; frequently added node
+types with a stable, small set of operations favor keeping the logic on the nodes themselves.</p>
+<p><strong>Example:</strong></p>
+<pre class="mermaid"><code>classDiagram
+  class Node {
+    &lt;&lt;interface&gt;&gt;
+    accept(Visitor)
+  }
+  class LineItem
+  class Group
+  class Visitor {
+    &lt;&lt;interface&gt;&gt;
+    visit(LineItem)
+    visit(Group)
+  }
+  Node &lt;|.. LineItem
+  Node &lt;|.. Group
+  Group o-- Node
+  Visitor &lt;|.. TaxVisitor
+  Visitor &lt;|.. PrintVisitor</code></pre>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span> <span class="nc">TaxVisitor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Visitor</span><span class="w"> </span><span class="p">{</span><span class="w">                         </span><span class="c1">// the operation lives in the visitor; Node classes are untouched</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="n">LineItem</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">total</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">.</span><span class="na">price</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.2</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="n">Group</span><span class="w"> </span><span class="n">g</span><span class="p">)</span><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="n">g</span><span class="p">.</span><span class="na">children</span><span class="p">().</span><span class="na">forEach</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">n</span><span class="p">.</span><span class="na">accept</span><span class="p">(</span><span class="k">this</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="integration-tests-pass-isolation-but">S1. Integration tests pass in isolation but fail intermittently when the full suite runs</h3>
+<ul>
+<li><strong>Symptoms:</strong> A test that asserts on some computed value fails only when run alongside other
+  tests, and only sometimes — rerunning just that test in isolation always passes.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Grep for a hand-rolled Singleton (Q1/Q15) touched by more than one test — a
+  static field retaining state (a cache, a counter, a "current tenant" holder) set by an earlier
+  test and never reset before the next one runs in the same JVM.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">TenantContext</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">INSTANCE</span><span class="p">;</span><span class="w"> </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">tenantId</span><span class="p">;</span><span class="w"> </span><span class="cm">/* set by test A, read by test B */</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>See also:</strong> <a href="../testing/#test-passes-alone-but-fails">Testing S6</a>, the general method for order-dependent tests (random order, bisection).</li>
+<li><strong>Resolution:</strong> Add an explicit reset/teardown for the Singleton's mutable state between tests,
+  or — the more durable fix — replace the Singleton with an injected, per-test-constructible
+  instance so each test naturally gets a fresh one with no shared static state at all.</li>
+<li><strong>Prevention:</strong> Treat any hand-rolled Singleton holding <em>mutable</em> state (not just a stateless
+  service) as a code-review flag; prefer DI-managed instances that tests can trivially construct
+  fresh (Q15).</li>
+</ul>
+</details>
+<h3 id="heap-usage-climbs-steadily-days">S2. Heap usage climbs steadily over days of uptime with no obvious spike</h3>
+<ul>
+<li><strong>Symptoms:</strong> Memory grows roughly linearly with uptime (not with traffic volume specifically),
+  eventually ending in an <code>OutOfMemoryError</code>, with nothing in the logs pointing at a specific
+  request or feature.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> A heap dump's dominator tree shows one Observer/listener list (Q10/Q18) holding
+  thousands of references to objects that should have been short-lived — each one kept alive
+  purely by never having called <code>unsubscribe()</code>.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>Dominator tree: OrderService.listeners -&gt; List&lt;OrderListener&gt; (48,203 entries, 1.2 GB retained)
+</code></pre></div>
+<ul>
+<li><strong>See also:</strong> <a href="../java-core-jvm/#heap-usage-climbs-steadily-never">Java Core S5</a>, same symptom with a different cause (an unbounded <code>static</code> map).</li>
+<li><strong>Resolution:</strong> Add the missing <code>unsubscribe()</code> call at the subscriber's actual end-of-life
+  (request completion, component teardown), or switch to weak references for listeners whose
+  lifecycle genuinely can't be tracked precisely by the subject.</li>
+<li><strong>Prevention:</strong> Pair every <code>subscribe()</code> call site with a corresponding <code>unsubscribe()</code> in
+  review, and add a periodic metric on listener-list size in production so unbounded growth is
+  caught long before it reaches an OOM.</li>
+</ul>
+</details>
+<h3 id="one-line-behavior-change-requires">S3. A one-line behavior change requires touching a five-layer decorator chain, and nobody is confident about the order</h3>
+<ul>
+<li><strong>Symptoms:</strong> A request to "log this before caching, not after" turns into a change nobody wants
+  to review, because the actual runtime order only exists implicitly, at each construction call
+  site, spread across the codebase.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> The decorator chain (Q16) has grown past the point where its composition order
+  is self-evident from reading any single file — the order is a convention nobody wrote down.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AuthDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RetryDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">CachingDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LoggingDecorator</span><span class="p">(</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">MetricsDecorator</span><span class="p">(</span><span class="n">realService</span><span class="p">)))));</span>
+<span class="c1">// which of these five actually needs to run first, and why? not documented anywhere.</span>
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Extract the chain's construction into one named factory method with an inline
+  comment stating the required order and why, or replace the ad hoc nesting with an explicit,
+  ordered pipeline class that makes the sequence a visible list rather than nested constructor
+  calls.</li>
+<li><strong>Prevention:</strong> Cap decorator depth by convention (a review flag past 3-4 layers) and always
+  centralize the composition in one place instead of letting each call site assemble its own
+  ordering.</li>
+</ul>
+</details>
+<h3 id="flexible-plugin-abstraction-has-exactly">S4. A "flexible" plugin abstraction has exactly one implementation a year after it shipped</h3>
+<ul>
+<li><strong>Symptoms:</strong> Code review flags an interface, a Factory, and a Strategy scaffold for "future
+  payment providers" — a year later, only the original provider was ever added.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> The abstraction (Q22) was built for a speculative second case that never
+  materialized; every reader since has had to understand the indirection to make a change that,
+  in practice, only ever affects the one existing implementation.</li>
+<li><strong>Resolution:</strong> Collapse the interface and Factory back into the single concrete
+  implementation, keeping the code that's actually used simple; reintroduce the abstraction if
+  and when a second real case actually shows up, informed by what that second case actually
+  needs (which is often not what the original speculative interface guessed).</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>// Collapsing the speculative layer (before -, after +)
+<span class="gd">- interface PaymentProvider { Receipt charge(Money m); }</span>
+<span class="gd">- class PaymentProviderFactory { static PaymentProvider forName(String n) { return new StripeProvider(); } }</span>
+<span class="gi">+ class StripeProvider { Receipt charge(Money m) { ... } }</span>
+<span class="gd">- PaymentProvider p = PaymentProviderFactory.forName("stripe");</span>
+<span class="gi">+ StripeProvider p = new StripeProvider();</span>
+</code></pre></div>
+<ul>
+<li><strong>Prevention:</strong> Require a concrete, named second use case — not a hypothetical one — before
+  approving an interface with a single implementation in review (Q22).</li>
+</ul>
+</details>
+<h3 id="new-payment-method-requires-editing">S5. A new payment method requires editing a 300-line <code>switch</code> in five places</h3>
+<ul>
+<li><strong>Symptoms:</strong> Each release adds a payment type and every release breaks an unrelated one.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Behaviour that varies by type is scattered across <code>switch</code>/<code>if</code> chains: an open-closed violation. Count the switches on the same type.</li>
+<li><strong>Resolution:</strong> Introduce a <code>PaymentMethod</code> interface (Strategy) with one class per type, selected by a map or Spring bean lookup; move each branch into its class, behind characterization tests first. With sealed types, keep <code>switch</code> only where it is exhaustive.</li>
+<li><strong>Prevention:</strong> Review rule: a second <code>switch</code> on the same type is the signal to extract a strategy.</li>
+</ul>
+</details>
+<h2 id="commonly-asked-questions">🗣️ Commonly asked questions</h2>
+<p>Questions that come up often in interviews on this topic (a typical set, not tied to one specific interview). Each has a short model answer: expand it with the sections above and say it aloud.</p>
+<h4 id="strategy-state">R1. Strategy vs State: what is the difference?</h4>
+<p><strong>Answer:</strong> Both swap behaviour behind an interface. Strategy is chosen by the client and the algorithms are independent (sort order, pricing); State changes by itself as the object moves through its lifecycle, and states know about transitions (order: NEW → PAID → SHIPPED).</p>
+<h4 id="factory-method-abstract-factory-2">R2. Factory Method vs Abstract Factory.</h4>
+<p><strong>Answer:</strong> Factory Method is one creation method that subclasses or a config decide (one product). Abstract Factory creates a family of related products that must go together (e.g. UI widgets for one theme). Do not add either until you have two real variants.</p>
+<h4 id="observer-publish-subscribe">R3. Observer vs publish/subscribe.</h4>
+<p><strong>Answer:</strong> Observer: the subject holds direct references to its observers and calls them in-process, synchronously. Pub/sub: a broker or event bus sits between publishers and subscribers, so they are decoupled in time and location (Spring <code>ApplicationEvent</code>, Kafka). Observer is simpler; pub/sub scales and survives restarts if the broker persists.</p>
+<h2 id="oral-quiz">🎤 Oral quiz</h2>
+<p>Ten questions picked across the levels. Answer each <strong>aloud in 2–3 minutes</strong> without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: <strong>0</strong> blank · <strong>1</strong> definition only · <strong>2</strong> plus an example · <strong>3</strong> plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.</p>
+<ol>
+<li>Q1. What problem does Singleton actually solve, and how do you implement it thread-safely in Java?</li>
+<li>Q7. What specific problem does Facade solve for a complex subsystem?</li>
+<li>Q12. What does Command buy you beyond "just call the method directly," and what are its main use cases?</li>
+<li>Q15. Why do many senior engineers treat Singleton as an anti-pattern despite it being the "easiest" pattern to implement correctly?</li>
+<li>Q17. When does introducing Strategy add more complexity than a plain <code>if</code>/<code>switch</code> would?</li>
+<li>Q20. What's the concurrency trap with a shared, mutable Builder instance?</li>
+<li>Q21. Design a plugin architecture using Strategy, Factory, and a registry — walk through the pieces.</li>
+<li>Q24. Composite plus Visitor over a tree-shaped domain (e.g. nested billing rules or a file system) — what's the actual trade-off against adding methods directly to the tree nodes?</li>
+<li>S1. Integration tests pass in isolation but fail intermittently when the full suite runs</li>
+<li>S4. A "flexible" plugin abstraction has exactly one implementation a year after it shipped</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<h3 id="creational-patterns-how-objects-get-created">Creational patterns (how objects get created)</h3>
+<p><strong>Start here:</strong> Singleton is usually a trap; Builder fixes long constructors; Factory hides which class you create; Prototype copies instead of building.</p>
+<ul>
+<li><strong>Singleton</strong> — one instance of a class with global access. <em>Use the Bill Pugh holder (a static inner class that creates it lazily) or an <code>enum</code> for thread-safety.</em></li>
+<li><strong>Singleton is an anti-pattern for real dependencies or mutable state</strong> — it hides coupling and is hard to test. <em>Prefer a DI-managed scope instead (e.g. a Spring singleton bean).</em></li>
+<li><strong>Factory Method</strong> — one product, created by a method that a subclass decides. <em>E.g. <code>createParser()</code> returns a <code>JsonParser</code> or <code>XmlParser</code> depending on the subclass.</em></li>
+<li><strong>Abstract Factory</strong> — creates a whole <em>family</em> of related products guaranteed to be compatible with each other. <em>E.g. a "dark theme" factory gives you a matching dark Button + dark Checkbox.</em></li>
+<li><strong>Builder</strong> — named, chainable construction with cross-field validation at <code>build()</code>, e.g. <code>new Pizza.Builder().size(12).cheese(true).build()</code>. <em>Earns its keep past ~3-4 optional parameters.</em></li>
+<li><strong>Builder is mutable</strong> — the builder object itself changes as you chain calls. <em>Don't share one between threads (not thread-safe).</em></li>
+<li><strong>Prototype</strong> — clone an expensive-to-build instance instead of calling <code>new</code>. <em>Prefer an explicit copy constructor over <code>Cloneable</code>, whose default is a shallow copy (the copy shares nested objects with the original).</em></li>
+</ul>
+<h3 id="structural-patterns-how-objects-are-wired-together">Structural patterns (how objects are wired together)</h3>
+<p><strong>Start here:</strong> Adapter converts, Facade simplifies, Decorator adds behavior, Proxy controls access — the last two look identical in code, the intent differs.</p>
+<ul>
+<li><strong>Adapter</strong> — reconcile an incompatible interface (a "plug converter"). <em>Use it at a real boundary, usually a third-party library.</em></li>
+<li><strong>Object adapter</strong> — the adapter holds the other object (composition) rather than extending it. <em>Java is always this form, since it has no multiple inheritance of classes.</em></li>
+<li><strong>Decorator</strong> — same interface as the wrapped object, stacking extra behavior at runtime, e.g. <code>new BufferedInputStream(new FileInputStream(f))</code>. <em>Gives linear classes instead of an exponential subclass explosion.</em></li>
+<li><strong>Decorator ordering</strong> — the order of wrapping changes the result (compress-then-encrypt differs from encrypt-then-compress). <em>It's a real constraint that is undocumented by default once you have more than a few layers.</em></li>
+<li><strong>Facade</strong> — one simplified entry point over a complex subsystem. <em>Don't remove direct access to the subsystem for callers who need it.</em></li>
+<li><strong>Proxy</strong> — same shape as Decorator, different intent: it controls <em>access</em> (virtual = lazy loading, protection = permission checks, remote = stands in for a distant object, logging). <em>See <code>spring-architecture.md</code> Q11/Q13 for <code>@Transactional</code>'s proxy in practice.</em></li>
+</ul>
+<h3 id="behavioral-patterns-how-objects-collaborate">Behavioral patterns (how objects collaborate)</h3>
+<p><strong>Start here:</strong> Strategy swaps an algorithm, Observer broadcasts events, Template Method fixes a skeleton, Command turns a request into an object.</p>
+<ul>
+<li><strong>Strategy</strong> — interchangeable algorithms behind one interface, swappable at runtime (e.g. several <code>PaymentMethod</code> implementations). <em>Pays off for an open-ended or independently-testable set of variants, not 2-3 stable branches.</em></li>
+<li><strong>Observer</strong> — decoupled publish/subscribe: subscribers get notified when something happens. <em>The trap: a subscriber that never calls <code>unsubscribe()</code> causes a slow, hard-to-attribute memory leak, not an exception.</em></li>
+<li><strong>Template Method</strong> — a fixed algorithm skeleton (marked <code>final</code>) with overridable steps. <em>Subclasses customize behavior but can never reorder or skip the sequence.</em></li>
+<li><strong>Command</strong> — a request wrapped as an object. <em>Earns its cost when something must be queued, logged, retried or undone; ceremony for a simple one-shot call otherwise.</em></li>
+<li><strong>State vs Strategy</strong> — same shape, different driver: Strategy is chosen from outside by the client; State changes with the object's own lifecycle and its states trigger the transitions. <em>An <code>enum</code> + <code>switch</code> is enough for 2-3 trivial states.</em></li>
+<li><strong>Chain of Responsibility</strong> — ordered handlers that may stop the chain (filters, middleware, approval rules). <em>Order is a hidden contract, and a forgotten <code>next</code> call swallows the request.</em></li>
+</ul>
+<h3 id="design-judgment-and-architecture">Design judgment and architecture</h3>
+<p><strong>Start here:</strong> a pattern must earn its place; ask for a concrete second use case before adding an abstraction.</p>
+<ul>
+<li><strong>Over-engineering test</strong> — require a concrete second use case before approving an interface, Factory or Strategy with a single implementation. <em>A hypothetical future one doesn't count.</em></li>
+<li><strong>Anemic domain model</strong> — behavior is stripped out into services while entities (e.g. <code>Order</code>) enforce no rules themselves. <em>Ask "who can put this object into an invalid state?", not "is the logic decoupled?"</em></li>
+<li><strong>Plugin architectures</strong> — Strategy (the contract) + Factory/registry (lookup by key). <em>Decide unknown-key behavior (fail fast vs default) explicitly up front.</em></li>
+<li><strong>DDD tactical patterns</strong> <em>(advanced)</em> — DDD (Domain-Driven Design) has its own building blocks that map onto GoF patterns. Repository ≈ Facade/Proxy over persistence. <em>Factory ≈ GoF Factory, scoped to keeping an Aggregate's invariants (its consistent cluster of objects) valid at construction.</em></li>
+<li><strong>Composite</strong> <em>(advanced)</em> — treat a tree of objects (folder → files) uniformly through one interface.</li>
+<li><strong>Visitor</strong> <em>(advanced)</em> — moves an operation out of the node classes into a separate "visitor" object. <em>Adding operations becomes free but adding node types becomes expensive — the reverse of methods-on-nodes. Pick based on which axis actually changes more often.</em></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

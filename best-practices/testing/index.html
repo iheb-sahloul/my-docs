@@ -1,0 +1,3077 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/best-practices/testing/">
+      
+      
+        <link rel="prev" href="../spring-boot/">
+      
+      
+        <link rel="next" href="../security/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/best-practices/testing/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Testing - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#testing-best-practices" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Testing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/best-practices/testing/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../interviews/" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/kotlin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../interviews/mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔺 Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔺 Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#follow-the-test-pyramid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow the test pyramid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-behavior-not-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test behavior, not implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-a-failing-test-before-fixing-a-bug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write a failing test before fixing a bug
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structure-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Structure &amp; naming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Structure &amp; naming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-arrange-act-assert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Arrange-Act-Assert
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#name-tests-after-the-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Name tests after the behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-one-behavior-per-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test one behavior per test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-parameterized-tests-for-input-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use parameterized tests for input tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-doubles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎭 Test doubles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎭 Test doubles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prefer-fakes-over-mocks-for-collaborators-with-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer fakes over mocks for collaborators with state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-only-what-you-own-or-what-is-slow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock only what you own or what is slow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-mockito-strictly-and-verify-with-intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Mockito strictly and verify with intent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐳 Integration tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐳 Integration tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-testcontainers-not-h2-for-database-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Testcontainers, not H2, for database tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#share-containers-across-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Share containers across tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-test-slices-instead-of-springboottest-everywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use test slices instead of @SpringBootTest everywhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-external-http-calls-with-wiremock-or-mockwebserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test external HTTP calls with WireMock or MockWebServer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assertions-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Assertions &amp; reliability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Assertions &amp; reliability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-assertj-fluent-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use AssertJ fluent assertions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-use-threadsleep-to-wait-for-async-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never use Thread.sleep to wait for async work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make-tests-independent-and-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Make tests independent and deterministic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-test-data-with-builders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build test data with builders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforce-coverage-as-a-signal-not-a-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforce coverage as a signal, not a goal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-tests-in-ci-on-every-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run tests in CI on every pull request
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔺 Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔺 Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#follow-the-test-pyramid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Follow the test pyramid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-behavior-not-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test behavior, not implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#write-a-failing-test-before-fixing-a-bug" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Write a failing test before fixing a bug
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#structure-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧱 Structure &amp; naming
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧱 Structure &amp; naming">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-arrange-act-assert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Arrange-Act-Assert
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#name-tests-after-the-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Name tests after the behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-one-behavior-per-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test one behavior per test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-parameterized-tests-for-input-tables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use parameterized tests for input tables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test-doubles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎭 Test doubles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎭 Test doubles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prefer-fakes-over-mocks-for-collaborators-with-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prefer fakes over mocks for collaborators with state
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mock-only-what-you-own-or-what-is-slow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mock only what you own or what is slow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-mockito-strictly-and-verify-with-intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Mockito strictly and verify with intent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🐳 Integration tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🐳 Integration tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-testcontainers-not-h2-for-database-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Testcontainers, not H2, for database tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#share-containers-across-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Share containers across tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-test-slices-instead-of-springboottest-everywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use test slices instead of @SpringBootTest everywhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-external-http-calls-with-wiremock-or-mockwebserver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test external HTTP calls with WireMock or MockWebServer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assertions-reliability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Assertions &amp; reliability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Assertions &amp; reliability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-assertj-fluent-assertions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use AssertJ fluent assertions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#never-use-threadsleep-to-wait-for-async-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Never use Thread.sleep to wait for async work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#make-tests-independent-and-deterministic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Make tests independent and deterministic
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-test-data-with-builders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build test data with builders
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforce-coverage-as-a-signal-not-a-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforce coverage as a signal, not a goal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-tests-in-ci-on-every-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Run tests in CI on every pull request
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="testing-best-practices">Testing Best Practices</h1>
+<h2 id="strategy">🔺 Strategy</h2>
+<h3 id="follow-the-test-pyramid">Follow the test pyramid</h3>
+<p>Write many fast unit tests, fewer integration tests, and only a handful of end-to-end tests.</p>
+<p><strong>Why it's a best practice:</strong> a unit test runs in milliseconds, an integration test with a database in seconds,
+and a browser test in tens of seconds. A suite of 2,000 end-to-end tests at 20 s each takes 11 hours serial, so
+people stop running it and merge on hope. End-to-end tests also fail for reasons unrelated to your change
+(network, timing, test data), which trains the team to ignore red builds. Push each check to the cheapest level
+that can catch the bug.</p>
+<div class="highlight"><pre><span></span><code>// ⛔ ice-cream cone: everything through the UI
+E2E: 800   Integration: 60   Unit: 40   -&gt; 45 min build, 1 in 10 runs red for no reason
+
+// ✅ pyramid
+Unit: 1500 (&lt; 30 s)   Integration: 200 (~ 3 min)   E2E: 15 critical journeys
+</code></pre></div>
+<h3 id="test-behavior-not-implementation">Test behavior, not implementation</h3>
+<p>Assert on results and observable side effects, not on which private methods or internal calls happened.</p>
+<p><strong>Why it's a best practice:</strong> a test coupled to the implementation breaks on every refactor even though the
+behavior is unchanged, so people stop refactoring or delete the tests. Verifying that <code>repository.save</code> was
+called twice tells you nothing about whether the right data was stored.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ verifies how it works</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">pricing</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="p">(</span><span class="mi">1</span><span class="p">)).</span><span class="na">applyVat</span><span class="p">(</span><span class="n">any</span><span class="p">());</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">pricing</span><span class="p">,</span><span class="w"> </span><span class="n">times</span><span class="p">(</span><span class="mi">1</span><span class="p">)).</span><span class="na">applyDiscount</span><span class="p">(</span><span class="n">any</span><span class="p">());</span>
+
+<span class="c1">// ✅ verifies what it produces</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="n">service</span><span class="p">.</span><span class="na">total</span><span class="p">(</span><span class="n">cart</span><span class="p">)).</span><span class="na">isEqualByComparingTo</span><span class="p">(</span><span class="s">"119.00"</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="write-a-failing-test-before-fixing-a-bug">Write a failing test before fixing a bug</h3>
+<p>Reproduce the bug in a test first, watch it fail, then fix it.</p>
+<p><strong>Why it's a best practice:</strong> a fix without a test is a bug waiting to come back, and you can't prove your test
+would have caught it unless you saw it fail. Regression tests are the most valuable tests you own: each one
+comes from a real production failure.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅ red first: this failed with a NullPointerException before the fix</span>
+<span class="nd">@Test</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">total_isZero_whenCartHasNoItems</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">service</span><span class="p">.</span><span class="na">total</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Cart</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">of</span><span class="p">()))).</span><span class="na">isEqualByComparingTo</span><span class="p">(</span><span class="s">"0"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="structure-naming">🧱 Structure &amp; naming</h2>
+<h3 id="use-arrange-act-assert">Use Arrange-Act-Assert</h3>
+<p>Split each test into setup, one action, and assertions, separated by a blank line.</p>
+<p><strong>Why it's a best practice:</strong> when a test mixes setup and checks in a loop, nobody can tell what is being
+tested or which line failed. One action per test means a failure points to one behavior. Tests with several
+"act" steps hide which call broke.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="nd">@Test</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">test1</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CartService</span><span class="p">();</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">item</span><span class="p">);</span><span class="w"> </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">item</span><span class="p">);</span><span class="w"> </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+<span class="w">    </span><span class="n">s</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span><span class="w">   </span><span class="n">assertEquals</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="p">.</span><span class="na">size</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Test</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">add_increasesSize</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Arrange</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="n">cart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Cart</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// Act</span>
+<span class="w">    </span><span class="n">cart</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">item</span><span class="p">);</span>
+<span class="w">    </span><span class="c1">// Assert</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">cart</span><span class="p">.</span><span class="na">size</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="name-tests-after-the-behavior">Name tests after the behavior</h3>
+<p>Name a test <code>method_expectedResult_whenCondition</code> or use <code>@DisplayName</code> with a full sentence.</p>
+<p><strong>Why it's a best practice:</strong> when CI reports <code>test1 FAILED</code>, you have to open the file to learn what broke.
+<code>withdraw_throws_whenBalanceIsInsufficient FAILED</code> is a bug report on its own. Names also serve as living
+documentation of the rules of the domain.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">testWithdraw</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Test</span>
+<span class="nd">@DisplayName</span><span class="p">(</span><span class="s">"withdraw rejects amounts greater than the balance"</span><span class="p">)</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">withdraw_throws_whenBalanceIsInsufficient</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="test-one-behavior-per-test">Test one behavior per test</h3>
+<p>Each test should have one reason to fail. Several assertions are fine if they describe the same outcome.</p>
+<p><strong>Why it's a best practice:</strong> with ten unrelated assertions in one method, the first failure hides the other
+nine, and the name can't describe them. Small tests fail independently and tell you exactly what is broken.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ create, update and delete in one test</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">userLifecycle</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ one test per behavior</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">create_assignsId</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update_changesEmail</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">delete_removesUser</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="use-parameterized-tests-for-input-tables">Use parameterized tests for input tables</h3>
+<p>Replace copy-pasted tests that differ only by data with <code>@ParameterizedTest</code>.</p>
+<p><strong>Why it's a best practice:</strong> five near-identical tests get out of sync, and boundary cases get skipped because
+adding one means more boilerplate. A table makes missing cases visible, and every row is reported separately.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">blank</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">assertFalse</span><span class="p">(</span><span class="n">validator</span><span class="p">.</span><span class="na">isValid</span><span class="p">(</span><span class="s">""</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">spaces</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">assertFalse</span><span class="p">(</span><span class="n">validator</span><span class="p">.</span><span class="na">isValid</span><span class="p">(</span><span class="s">"  "</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@ParameterizedTest</span>
+<span class="nd">@ValueSource</span><span class="p">(</span><span class="n">strings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">""</span><span class="p">,</span><span class="w"> </span><span class="s">"  "</span><span class="p">,</span><span class="w"> </span><span class="s">"a@"</span><span class="p">,</span><span class="w"> </span><span class="s">"@b.com"</span><span class="p">,</span><span class="w"> </span><span class="s">"a b@c.com"</span><span class="p">})</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">isValid_returnsFalse_forMalformedEmails</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">validator</span><span class="p">.</span><span class="na">isValid</span><span class="p">(</span><span class="n">email</span><span class="p">)).</span><span class="na">isFalse</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<h2 id="test-doubles">🎭 Test doubles</h2>
+<h3 id="prefer-fakes-over-mocks-for-collaborators-with-state">Prefer fakes over mocks for collaborators with state</h3>
+<p>Use an in-memory fake for repositories and gateways. Keep mocks for verifying interactions that matter.</p>
+<p><strong>Why it's a best practice:</strong> stubbing <code>when(repo.findById(1)).thenReturn(...)</code> in 40 tests means 40 places to
+change when the signature changes, and the test only proves the stub returns what you told it. A fake
+(<code>Map</code>-backed) behaves like the real thing: save then find works, so tests read like real usage and survive
+refactoring.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">when</span><span class="p">(</span><span class="n">repo</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="mi">1L</span><span class="p">)).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">Optional</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">user</span><span class="p">));</span>
+<span class="n">when</span><span class="p">(</span><span class="n">repo</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">any</span><span class="p">())).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">class</span> <span class="nc">InMemoryUserRepository</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserRepository</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Long</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">store</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="n">User</span><span class="w"> </span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">store</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="na">id</span><span class="p">(),</span><span class="w"> </span><span class="n">u</span><span class="p">);</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">u</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Optional</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">Optional</span><span class="p">.</span><span class="na">ofNullable</span><span class="p">(</span><span class="n">store</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">id</span><span class="p">));</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="mock-only-what-you-own-or-what-is-slow">Mock only what you own or what is slow</h3>
+<p>Mock the boundary (HTTP client, clock, message broker), not value objects or the class under test.</p>
+<p><strong>Why it's a best practice:</strong> mocking a <code>List</code> or a DTO gives you a test of Mockito, not your code. Mocking
+too deeply (mocks returning mocks) means the test rebuilds the implementation line by line. Inject a
+<code>Clock</code> so time-dependent code is deterministic instead of sleeping.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ real time, real sleep</span>
+<span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">1000</span><span class="p">);</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">token</span><span class="p">.</span><span class="na">isExpired</span><span class="p">());</span>
+
+<span class="c1">// ✅ controlled time</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">clock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Clock</span><span class="p">.</span><span class="na">fixed</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">"2026-01-01T10:00:00Z"</span><span class="p">),</span><span class="w"> </span><span class="n">ZoneOffset</span><span class="p">.</span><span class="na">UTC</span><span class="p">);</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">token</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Token</span><span class="p">(</span><span class="n">Instant</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">"2026-01-01T09:00:00Z"</span><span class="p">),</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="mi">30</span><span class="p">));</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="n">token</span><span class="p">.</span><span class="na">isExpired</span><span class="p">(</span><span class="n">clock</span><span class="p">)).</span><span class="na">isTrue</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="use-mockito-strictly-and-verify-with-intent">Use Mockito strictly and verify with intent</h3>
+<p>Use <code>@ExtendWith(MockitoExtension.class)</code> (strict stubs) and use <code>ArgumentCaptor</code> when you must check what was sent.</p>
+<p><strong>Why it's a best practice:</strong> strict stubs fail the test on unused stubbings, so dead setup gets removed
+instead of accumulating. <code>verify(x).send(any())</code> passes even if the message content is wrong; a captor checks
+the actual payload.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ passes even if the email body is empty</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">mailer</span><span class="p">).</span><span class="na">send</span><span class="p">(</span><span class="n">any</span><span class="p">());</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">captor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ArgumentCaptor</span><span class="p">.</span><span class="na">forClass</span><span class="p">(</span><span class="n">Email</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+<span class="n">verify</span><span class="p">(</span><span class="n">mailer</span><span class="p">).</span><span class="na">send</span><span class="p">(</span><span class="n">captor</span><span class="p">.</span><span class="na">capture</span><span class="p">());</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="n">captor</span><span class="p">.</span><span class="na">getValue</span><span class="p">().</span><span class="na">to</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="s">"ann@example.com"</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="integration-tests">🐳 Integration tests</h2>
+<h3 id="use-testcontainers-not-h2-for-database-tests">Use Testcontainers, not H2, for database tests</h3>
+<p>Run tests against the same database engine you use in production, in a throwaway container.</p>
+<p><strong>Why it's a best practice:</strong> H2 in "PostgreSQL mode" still differs: no <code>jsonb</code>, different locking, different
+<code>ON CONFLICT</code> and window function behavior. Tests pass, production fails at the first native query. Containers
+start in a few seconds, and with <code>@ServiceConnection</code> (Spring Boot 3.1+) there is no manual URL wiring.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ spring.datasource.url=jdbc:h2:mem:test;MODE=PostgreSQL</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Testcontainers</span>
+<span class="nd">@DataJpaTest</span>
+<span class="nd">@AutoConfigureTestDatabase</span><span class="p">(</span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AutoConfigureTestDatabase</span><span class="p">.</span><span class="na">Replace</span><span class="p">.</span><span class="na">NONE</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">OrderRepositoryTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Container</span><span class="w"> </span><span class="nd">@ServiceConnection</span>
+<span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">pg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">"postgres:16"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="share-containers-across-tests">Share containers across tests</h3>
+<p>Declare the container <code>static</code>, or in a shared base or config class, so it starts once per JVM.</p>
+<p><strong>Why it's a best practice:</strong> starting a container per test class costs 3 to 10 s each; 50 classes add up to
+minutes. Reusing the container and the Spring context keeps the suite fast. Isolate data with transactions
+that roll back, or clean tables between tests, not with new containers.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ a new container for every class</span>
+<span class="kd">class</span> <span class="nc">A</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nd">@Container</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">pg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅ one container for the whole suite</span>
+<span class="nd">@TestConfiguration</span><span class="p">(</span><span class="n">proxyBeanMethods</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">ContainersConfig</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Bean</span><span class="w"> </span><span class="nd">@ServiceConnection</span>
+<span class="w">    </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="nf">postgres</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PostgreSQLContainer</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">"postgres:16"</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="use-test-slices-instead-of-springboottest-everywhere">Use test slices instead of <code>@SpringBootTest</code> everywhere</h3>
+<p>Pick <code>@WebMvcTest</code>, <code>@DataJpaTest</code> or <code>@JsonTest</code> for the layer you test. Use <code>@SpringBootTest</code> only for a few full flows.</p>
+<p><strong>Why it's a best practice:</strong> <code>@SpringBootTest</code> loads the whole application: 5 to 15 s startup for a typical
+service, and every different <code>@MockBean</code> set creates a new cached context. A slice loads only the beans of one
+layer and starts in about a second, which is what makes running tests on every save realistic.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ full context to test one controller</span>
+<span class="nd">@SpringBootTest</span><span class="w"> </span><span class="nd">@AutoConfigureMockMvc</span>
+<span class="kd">class</span> <span class="nc">UserControllerTest</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@WebMvcTest</span><span class="p">(</span><span class="n">UserController</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">UserControllerTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@Autowired</span><span class="w"> </span><span class="n">MockMvc</span><span class="w"> </span><span class="n">mvc</span><span class="p">;</span>
+<span class="w">    </span><span class="nd">@MockitoBean</span><span class="w"> </span><span class="n">UserService</span><span class="w"> </span><span class="n">service</span><span class="p">;</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">get_returns404_whenUserIsMissing</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">when</span><span class="p">(</span><span class="n">service</span><span class="p">.</span><span class="na">find</span><span class="p">(</span><span class="mi">9L</span><span class="p">)).</span><span class="na">thenReturn</span><span class="p">(</span><span class="n">Optional</span><span class="p">.</span><span class="na">empty</span><span class="p">());</span>
+<span class="w">        </span><span class="n">mvc</span><span class="p">.</span><span class="na">perform</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/users/9"</span><span class="p">)).</span><span class="na">andExpect</span><span class="p">(</span><span class="n">status</span><span class="p">().</span><span class="na">isNotFound</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="test-external-http-calls-with-wiremock-or-mockwebserver">Test external HTTP calls with WireMock or MockWebServer</h3>
+<p>Stub the remote service at the HTTP level, including failures and slow responses.</p>
+<p><strong>Why it's a best practice:</strong> hitting a real sandbox makes tests slow, flaky and dependent on someone else's
+uptime. Mocking your own <code>PaymentClient</code> skips serialization, headers and error mapping, where most integration
+bugs live. An HTTP stub lets you test a 500, a timeout, or malformed JSON, which a sandbox can't produce on demand.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ✅</span>
+<span class="n">wm</span><span class="p">.</span><span class="na">stubFor</span><span class="p">(</span><span class="n">get</span><span class="p">(</span><span class="s">"/rates/EUR"</span><span class="p">).</span><span class="na">willReturn</span><span class="p">(</span><span class="n">aResponse</span><span class="p">().</span><span class="na">withStatus</span><span class="p">(</span><span class="mi">503</span><span class="p">)));</span>
+<span class="n">assertThatThrownBy</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">rate</span><span class="p">(</span><span class="s">"EUR"</span><span class="p">)).</span><span class="na">isInstanceOf</span><span class="p">(</span><span class="n">RateUnavailableException</span><span class="p">.</span><span class="na">class</span><span class="p">);</span>
+</code></pre></div>
+<h2 id="assertions-reliability">🎯 Assertions &amp; reliability</h2>
+<h3 id="use-assertj-fluent-assertions">Use AssertJ fluent assertions</h3>
+<p>Prefer <code>assertThat(...)</code> over JUnit's <code>assertEquals</code> for collections, objects and exceptions.</p>
+<p><strong>Why it's a best practice:</strong> <code>assertEquals(expected, actual)</code> gets its arguments swapped constantly, giving
+confusing failure messages. AssertJ reads left to right, autocompletes, and prints a useful diff of what
+differed in a list or record.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">assertTrue</span><span class="p">(</span><span class="n">names</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="s">"ann"</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">names</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="n">names</span><span class="p">).</span><span class="na">containsExactlyInAnyOrder</span><span class="p">(</span><span class="s">"ann"</span><span class="p">,</span><span class="w"> </span><span class="s">"bob"</span><span class="p">);</span>
+<span class="n">assertThatThrownBy</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">service</span><span class="p">.</span><span class="na">withdraw</span><span class="p">(</span><span class="n">acc</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">))</span>
+<span class="w">    </span><span class="p">.</span><span class="na">isInstanceOf</span><span class="p">(</span><span class="n">InsufficientFundsException</span><span class="p">.</span><span class="na">class</span><span class="p">)</span>
+<span class="w">    </span><span class="p">.</span><span class="na">hasMessageContaining</span><span class="p">(</span><span class="s">"balance"</span><span class="p">);</span>
+</code></pre></div>
+<h3 id="never-use-threadsleep-to-wait-for-async-work">Never use <code>Thread.sleep</code> to wait for async work</h3>
+<p>Use Awaitility with a timeout, or make the code injectable and synchronous in tests.</p>
+<p><strong>Why it's a best practice:</strong> a fixed sleep is either too short (flaky on a loaded CI machine) or too long
+(each test wastes seconds). Awaitility polls and returns as soon as the condition holds, and fails with a clear
+message on timeout.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="n">publisher</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+<span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="mi">2000</span><span class="p">);</span>
+<span class="n">assertThat</span><span class="p">(</span><span class="n">repo</span><span class="p">.</span><span class="na">count</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="n">publisher</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+<span class="n">await</span><span class="p">().</span><span class="na">atMost</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="mi">5</span><span class="p">)).</span><span class="na">untilAsserted</span><span class="p">(()</span><span class="w"> </span><span class="o">-&gt;</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">repo</span><span class="p">.</span><span class="na">count</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+</code></pre></div>
+<h3 id="make-tests-independent-and-deterministic">Make tests independent and deterministic</h3>
+<p>No shared mutable state, no dependency on execution order, no random data without a seed, no real clock.</p>
+<p><strong>Why it's a best practice:</strong> a test that passes only after another one is a flaky test in waiting: run one
+alone, or JUnit reorders them, and the build turns red. Flaky tests cost more than no tests: a suite that fails
+1 run in 20 gets re-run instead of investigated, and real failures get lost. Quarantine or fix a flaky test the
+day it appears.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ static state leaks between tests</span>
+<span class="kd">static</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span>
+
+<span class="c1">// ✅ fresh state per test</span>
+<span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">users</span><span class="p">;</span>
+<span class="nd">@BeforeEach</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setUp</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h3 id="build-test-data-with-builders">Build test data with builders</h3>
+<p>Use small factory methods or builders with sensible defaults and override only what the test cares about.</p>
+<p><strong>Why it's a best practice:</strong> a 12-argument constructor repeated in 80 tests breaks all 80 when a field is
+added, and hides which value matters. A builder makes the relevant detail stand out.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔</span>
+<span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">(</span><span class="mi">1L</span><span class="p">,</span><span class="w"> </span><span class="s">"ann"</span><span class="p">,</span><span class="w"> </span><span class="s">"ann@x.com"</span><span class="p">,</span><span class="w"> </span><span class="s">"pw"</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s">"FR"</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="c1">// ✅</span>
+<span class="kd">var</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aUser</span><span class="p">().</span><span class="na">withCountry</span><span class="p">(</span><span class="s">"FR"</span><span class="p">).</span><span class="na">build</span><span class="p">();</span>
+</code></pre></div>
+<h3 id="enforce-coverage-as-a-signal-not-a-goal">Enforce coverage as a signal, not a goal</h3>
+<p>Track coverage and fail on drops in changed code, but review test quality as well (mutation testing with PIT).</p>
+<p><strong>Why it's a best practice:</strong> a test with no assertions gives 100% line coverage and zero safety. Chasing 100%
+produces tests for getters. Mutation testing changes your code (<code>&gt;</code> to <code>&gt;=</code>) and checks that a test fails; a
+survivor is a real gap that line coverage can't show. About 80% on business logic with strong assertions beats
+95% with weak ones.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// ⛔ executes the code, proves nothing</span>
+<span class="nd">@Test</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">coverage</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">service</span><span class="p">.</span><span class="na">process</span><span class="p">(</span><span class="n">order</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// ✅</span>
+<span class="nd">@Test</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">process_marksOrderPaid</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">service</span><span class="p">.</span><span class="na">process</span><span class="p">(</span><span class="n">order</span><span class="p">);</span>
+<span class="w">    </span><span class="n">assertThat</span><span class="p">(</span><span class="n">order</span><span class="p">.</span><span class="na">status</span><span class="p">()).</span><span class="na">isEqualTo</span><span class="p">(</span><span class="n">Status</span><span class="p">.</span><span class="na">PAID</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<h3 id="run-tests-in-ci-on-every-pull-request">Run tests in CI on every pull request</h3>
+<p>Run the full suite on every push and block merging on a red build.</p>
+<p><strong>Why it's a best practice:</strong> tests that only run on a developer laptop go stale, and a broken main branch
+blocks the whole team. A 10-minute feedback loop catches the bug while the author still remembers the change;
+a nightly run finds it three commits later. Keep the suite under about 10 minutes, and split slow tests into a
+separate stage if needed.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># ✅ .github/workflows/ci.yml</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./mvnw -B verify</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

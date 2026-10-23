@@ -1,0 +1,3043 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Iheb Sahloul">
+      
+      
+        <link rel="canonical" href="https://iheb-sahloul.github.io/my-docs/interviews/kotlin/">
+      
+      
+        <link rel="prev" href="../java-core-jvm/">
+      
+      
+        <link rel="next" href="../spring-architecture/">
+      
+      
+        
+          <link rel="alternate" href="./" hreflang="en">
+        
+          <link rel="alternate" href="../../fr/interviews/kotlin/" hreflang="fr">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Kotlin - My Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kotlin-for-java-developers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="My Docs" class="md-header__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            My Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Kotlin
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../fr/interviews/kotlin/" hreflang="fr" class="md-select__link">
+              Français
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  Interview
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../notes/git/" class="md-tabs__link">
+          
+  
+  
+  Notes
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../best-practices/git/" class="md-tabs__link">
+          
+  
+  
+  Best Practices
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resources/further-reading/" class="md-tabs__link">
+          
+  
+  
+  Resources
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="My Docs" class="md-nav__button md-logo" aria-label="My Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    My Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/iheb-sahloul/my-docs" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    iheb-sahloul/my-docs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interview
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Interview
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design-patterns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Design Patterns
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../java-core-jvm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java Core & JVM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kotlin
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kotlin-null-safety-platform-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. How does Kotlin null safety work, and what is a platform type?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-class-sealed-class-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. When do you use a data class, a sealed class/interface and a value class?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extension-functions-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. What are extension functions, and what are their limits?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#let-apply-also-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. How do you choose between let, apply, also, run and with?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collections-sequences-assequence-worth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Collections vs sequences: when is asSequence() worth it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coroutines-structured-concurrency-compare-virtual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What are coroutines and structured concurrency, and how do they compare to virtual threads?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispatchers-call-blocking-code-coroutine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What do dispatchers do, and how do you call blocking code from a coroutine?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coroutine-cancellation-traps-runblocking-catch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. How does coroutine cancellation work, and what are the traps (runBlocking, catch (e: Exception))?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#need-know-kotlin-spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. What do you need to know to use Kotlin with Spring Boot and JPA?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breaks-java-kotlin-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. What breaks at the Java/Kotlin boundary?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flow-suspend-functions-reactor-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. Flow, suspend functions or Reactor: how do you choose for an async backend?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inline-reified-class-delegation-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. When do you use inline/reified, class delegation and property delegates?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-coroutine-kotlin-spring-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. How do you test coroutine and Kotlin Spring code?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-moving-endpoint-coroutines-throughput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. After moving an endpoint to coroutines, throughput collapses under load while CPU stays low
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin-service-throws-nullpointerexception-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. A Kotlin service throws NullPointerException on a value typed as non-null
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transactional-ignored-final-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. @Transactional on a Kotlin service has no effect, and partial writes reach the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-class-entity-equals-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A JPA entity written as a data class causes duplicate rows in a Set, StackOverflowError in logs and lazy-loading storms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runblocking-in-request-thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. Under load, a Spring MVC service using coroutines stops answering, with all Tomcat threads stuck
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spring-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring & Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence-sql-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence & SQL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../messaging-rabbitmq-kafka/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fullstack-devops-k8s/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Full Stack & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../caching-redis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Caching & Redis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../leadership-behavioral/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Leadership & Behavioral (STAR)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../claude-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Engineering & Claude Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live Coding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-aws/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud (AWS)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance-load-testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance & Load Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mock-interview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mock Interview Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/maven-gradle/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Maven & Gradle
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/sql/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL Query Tuning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/docker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/kubernetes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/terraform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terraform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Linux
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & RabbitMQ
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/http-curl-jq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP: curl & jq
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../notes/ai/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best Practices
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Best Practices
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/java/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Java
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/spring-boot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spring Boot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/rest-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    REST API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/messaging/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Messaging
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/react-typescript/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    React & TypeScript
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/sql-jpa-postgres/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SQL, JPA & Postgres
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/docker-k8s-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker, K8s & DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ci-cd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../best-practices/ai-prompts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Prompts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Resources
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resources/further-reading/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Further Reading
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟢 Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kotlin-null-safety-platform-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q1. How does Kotlin null safety work, and what is a platform type?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-class-sealed-class-interface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q2. When do you use a data class, a sealed class/interface and a value class?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extension-functions-limits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q3. What are extension functions, and what are their limits?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#let-apply-also-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q4. How do you choose between let, apply, also, run and with?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collections-sequences-assequence-worth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q5. Collections vs sequences: when is asSequence() worth it?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#senior-traps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Senior traps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🟡 Senior traps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#coroutines-structured-concurrency-compare-virtual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q6. What are coroutines and structured concurrency, and how do they compare to virtual threads?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispatchers-call-blocking-code-coroutine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q7. What do dispatchers do, and how do you call blocking code from a coroutine?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coroutine-cancellation-traps-runblocking-catch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q8. How does coroutine cancellation work, and what are the traps (runBlocking, catch (e: Exception))?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#need-know-kotlin-spring-boot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q9. What do you need to know to use Kotlin with Spring Boot and JPA?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breaks-java-kotlin-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q10. What breaks at the Java/Kotlin boundary?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expert-open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Expert / Open
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔴 Expert / Open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#flow-suspend-functions-reactor-async" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q11. Flow, suspend functions or Reactor: how do you choose for an async backend?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inline-reified-class-delegation-property" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q12. When do you use inline/reified, class delegation and property delegates?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-coroutine-kotlin-spring-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Q13. How do you test coroutine and Kotlin Spring code?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Real-world scenarios
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Real-world scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-moving-endpoint-coroutines-throughput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S1. After moving an endpoint to coroutines, throughput collapses under load while CPU stays low
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kotlin-service-throws-nullpointerexception-value" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S2. A Kotlin service throws NullPointerException on a value typed as non-null
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transactional-ignored-final-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S3. @Transactional on a Kotlin service has no effect, and partial writes reach the database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-class-entity-equals-breaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S4. A JPA entity written as a data class causes duplicate rows in a Set, StackOverflowError in logs and lazy-loading storms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runblocking-in-request-thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        S5. Under load, a Spring MVC service using coroutines stops answering, with all Tomcat threads stuck
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#oral-quiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎤 Oral quiz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheat-sheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📌 Cheat-sheet
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="kotlin-for-java-developers">Kotlin for Java Developers</h1>
+<p>Kotlin on the backend (Spring Boot, coroutines) as asked of a senior who comes from Java. JVM internals (GC, memory model, threads) are in <a href="../java-core-jvm/#interface-abstract-class">Java Core &amp; JVM</a>; Spring itself is in <a href="../spring-architecture/#dependency-injection-spring-advantages">Spring &amp; Architecture</a>.</p>
+<h2 id="fundamentals">🟢 Fundamentals</h2>
+<h4 id="kotlin-null-safety-platform-type">Q1. How does Kotlin null safety work, and what is a platform type?</h4>
+<p><strong>Answer:</strong> Nullability is part of the type: <code>String</code> can never be null, <code>String?</code> can. The compiler forces you to handle <code>String?</code> with a safe call <code>?.</code>, the Elvis operator <code>?:</code>, a smart cast after <code>if (x != null)</code>, or <code>!!</code> (assert non-null, throws <code>NullPointerException</code>). Values coming from Java have <strong>platform types</strong> (<code>String!</code>): Kotlin does not know whether they can be null, so it lets you treat them either way and the check moves to runtime. Annotate the Java side (<code>@Nullable</code>/<code>@NonNull</code>, JSpecify) or declare the Kotlin type explicitly at the boundary.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="nf">greeting</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span><span class="p">):</span><span class="w"> </span><span class="kt">String</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="s">"Hello, </span><span class="si">${</span><span class="n">name</span><span class="o">?.</span><span class="na">trim</span><span class="p">()</span><span class="o">?.</span><span class="na">ifEmpty</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="s">"</span><span class="n">patient</span><span class="s">"</span><span class="si">}</span><span class="s">"</span>
+
+<span class="kd">val</span><span class="w"> </span><span class="nv">header</span><span class="p">:</span><span class="w"> </span><span class="kt">String?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getHeader</span><span class="p">(</span><span class="s">"X-Request-Id"</span><span class="p">)</span><span class="w">   </span><span class="c1">// Java API: declare String? explicitly</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">header</span><span class="w"> </span><span class="o">?:</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">()</span>
+</code></pre></div>
+<h4 id="data-class-sealed-class-interface">Q2. When do you use a <code>data class</code>, a <code>sealed</code> class/interface and a <code>value class</code>?</h4>
+<p><strong>Answer:</strong> A <strong>data class</strong> is a value holder: the compiler generates <code>equals</code>/<code>hashCode</code>/<code>toString</code>/<code>copy</code>/<code>componentN</code> from the primary-constructor properties (the Kotlin equivalent of a Java <code>record</code>, but with <code>copy</code>). A <strong>sealed</strong> hierarchy is a closed set of subtypes known at compile time, so <code>when</code> over it is exhaustive without <code>else</code>, which is ideal for domain states and results. A <strong>value class</strong> (<code>@JvmInline value class</code>) wraps one value in a distinct type with no allocation in most cases: <code>PatientId</code> and <code>PractitionerId</code> can no longer be swapped by mistake.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@JvmInline</span><span class="w"> </span><span class="kd">value</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">PractitionerId</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">value</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">)</span>
+
+<span class="kd">sealed</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="nc">BookingResult</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Booked</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">appointmentId</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BookingResult</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="nc">SlotTaken</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BookingResult</span>
+<span class="w">    </span><span class="kd">data</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Rejected</span><span class="p">(</span><span class="kd">val</span><span class="w"> </span><span class="nv">reason</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">BookingResult</span>
+<span class="p">}</span>
+
+<span class="kd">fun</span><span class="w"> </span><span class="nf">toHttp</span><span class="p">(</span><span class="n">r</span><span class="p">:</span><span class="w"> </span><span class="n">BookingResult</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">when</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">            </span><span class="c1">// exhaustive: adding a subtype breaks the build here</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="n">BookingResult</span><span class="p">.</span><span class="na">Booked</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="m">201</span>
+<span class="w">    </span><span class="n">BookingResult</span><span class="p">.</span><span class="na">SlotTaken</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="m">409</span>
+<span class="w">    </span><span class="k">is</span><span class="w"> </span><span class="n">BookingResult</span><span class="p">.</span><span class="na">Rejected</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="m">422</span>
+<span class="p">}</span>
+</code></pre></div>
+<h4 id="extension-functions-limits">Q3. What are extension functions, and what are their limits?</h4>
+<p><strong>Answer:</strong> An extension function <code>fun Type.name()</code> adds a method to an existing type without inheritance. It compiles to a static method that takes the receiver as its first parameter. So it is <strong>resolved statically</strong> (on the declared type, not the runtime type), it cannot access <code>private</code> members, and it cannot override a member function: a member with the same signature always wins. Use extensions for small, local helpers and mapping (<code>Entity.toDto()</code>), not to hide business logic in random files.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">fun</span><span class="w"> </span><span class="n">AppointmentEntity</span><span class="p">.</span><span class="nf">toDto</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AppointmentDto</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">startsAt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">startsAt</span><span class="p">,</span><span class="w"> </span><span class="n">practitioner</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">practitionerName</span><span class="p">)</span>
+
+<span class="kd">open</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Shape</span><span class="p">;</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Circle</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Shape</span><span class="p">()</span>
+<span class="kd">fun</span><span class="w"> </span><span class="n">Shape</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"shape"</span>
+<span class="kd">fun</span><span class="w"> </span><span class="n">Circle</span><span class="p">.</span><span class="nf">name</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"circle"</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">s</span><span class="p">:</span><span class="w"> </span><span class="n">Shape</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Circle</span><span class="p">()</span>
+<span class="n">s</span><span class="p">.</span><span class="na">name</span><span class="p">()</span><span class="w">   </span><span class="c1">// "shape": resolved on the declared type</span>
+</code></pre></div>
+<h4 id="let-apply-also-run">Q4. How do you choose between <code>let</code>, <code>apply</code>, <code>also</code>, <code>run</code> and <code>with</code>?</h4>
+<p><strong>Answer:</strong> They differ on two things: how the object is referenced inside (<code>it</code> or <code>this</code>) and what they return (the lambda result or the object itself). <code>let</code> (it → result): transform a nullable value, <code>x?.let { … }</code>. <code>apply</code> (this → object): configure an object you are building. <code>also</code> (it → object): a side effect such as logging without breaking a chain. <code>run</code> (this → result) and <code>with(x)</code> (this → result): compute something from an object's members. Pick one by its return value, and avoid nesting them: three nested scope functions are unreadable.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HttpClient</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">().</span><span class="na">apply</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">connectTimeout</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="m">2</span><span class="p">))</span><span class="w"> </span><span class="p">}.</span><span class="na">build</span><span class="p">()</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">patient</span><span class="p">.</span><span class="na">email</span><span class="o">?.</span><span class="na">let</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">lowercase</span><span class="p">().</span><span class="na">trim</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<span class="n">repository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">appointment</span><span class="p">).</span><span class="na">also</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">"booked {}"</span><span class="p">,</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<h4 id="collections-sequences-assequence-worth">Q5. Collections vs sequences: when is <code>asSequence()</code> worth it?</h4>
+<p><strong>Answer:</strong> Kotlin collection operators (<code>map</code>, <code>filter</code>) are <strong>eager</strong>: each step creates a full intermediate list. A <code>Sequence</code> is <strong>lazy</strong> and processes elements one by one through the whole chain, stopping early with <code>first</code>/<code>take</code>. Use sequences for long chains on large collections or when you short-circuit. For small lists, eager collections are simpler and often faster. It is the same idea as Java streams, but without parallelism.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">val</span><span class="w"> </span><span class="nv">firstFree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slots</span><span class="p">.</span><span class="na">asSequence</span><span class="p">()</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">start</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">.</span><span class="na">filterNot</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">booked</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">.</span><span class="na">firstOrNull</span><span class="p">()</span><span class="w">          </span><span class="c1">// stops at the first match, no intermediate lists</span>
+</code></pre></div>
+<h2 id="senior-traps">🟡 Senior traps</h2>
+<h4 id="coroutines-structured-concurrency-compare-virtual">Q6. What are coroutines and structured concurrency, and how do they compare to virtual threads?</h4>
+<p><strong>Answer:</strong> A coroutine is a computation that can <strong>suspend</strong> (at a <code>suspend</code> call) without blocking its thread, and resume later, maybe on another thread. <strong>Structured concurrency</strong> means every coroutine runs in a <code>CoroutineScope</code>: a parent waits for its children, a failing child cancels its siblings and its parent (except under <code>supervisorScope</code>), and cancelling the scope cancels everything, so nothing leaks. <code>coroutineScope { async {…}; async {…} }</code> is the standard fan-out. Java 21 virtual threads also give cheap blocking-style concurrency, but with no built-in structured cancellation (<code>StructuredTaskScope</code> is still in preview). Coroutines additionally give <code>Flow</code>, cancellation and explicit dispatchers. In a Spring MVC app on Java 21, virtual threads are often enough. Coroutines shine with WebFlux or with many concurrent calls to fan out.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">practitionerPage</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="n">PractitionerId</span><span class="p">):</span><span class="w"> </span><span class="n">Page</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coroutineScope</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">profile</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">profileClient</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="kd">val</span><span class="w"> </span><span class="nv">slots</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">async</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">availabilityClient</span><span class="p">.</span><span class="na">next</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">days</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="n">Page</span><span class="p">(</span><span class="n">profile</span><span class="p">.</span><span class="na">await</span><span class="p">(),</span><span class="w"> </span><span class="n">slots</span><span class="p">.</span><span class="na">await</span><span class="p">())</span><span class="w">     </span><span class="c1">// if one fails, the other is cancelled</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> <code>GlobalScope.launch</code> (or a hand-made <code>CoroutineScope(Job())</code> that nobody cancels) breaks structured concurrency: the work outlives the request, its errors are lost, and it leaks under load.</p>
+<h4 id="dispatchers-call-blocking-code-coroutine">Q7. What do dispatchers do, and how do you call blocking code from a coroutine?</h4>
+<p><strong>Answer:</strong> A dispatcher decides which threads run a coroutine: <code>Dispatchers.Default</code> (CPU-bound work, about one thread per core), <code>Dispatchers.IO</code> (blocking I/O, a larger elastic pool, 64 threads by default), <code>Dispatchers.Main</code> (UI only). A <code>suspend</code> function is not automatically non-blocking: if it calls JDBC, <code>Thread.sleep</code> or a blocking HTTP client, it blocks its thread. Wrap blocking calls in <code>withContext(Dispatchers.IO) { … }</code>, and use <code>limitedParallelism(n)</code> to cap concurrency against a small resource such as a 10-connection pool.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">db</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dispatchers</span><span class="p">.</span><span class="na">IO</span><span class="p">.</span><span class="na">limitedParallelism</span><span class="p">(</span><span class="m">10</span><span class="p">)</span><span class="w">   </span><span class="c1">// matches the Hikari pool size</span>
+
+<span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">findAppointments</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="n">PractitionerId</span><span class="p">):</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Appointment</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">withContext</span><span class="p">(</span><span class="n">db</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">SQL</span><span class="p">,</span><span class="w"> </span><span class="n">mapper</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">.</span><span class="na">value</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> blocking inside <code>Dispatchers.Default</code> starves every other coroutine (only a few threads exist). Throughput falls apart under load while CPU looks idle. See <a href="./#after-moving-endpoint-coroutines-throughput">S1</a>.</p>
+<h4 id="coroutine-cancellation-traps-runblocking-catch">Q8. How does coroutine cancellation work, and what are the traps (<code>runBlocking</code>, <code>catch (e: Exception)</code>)?</h4>
+<p><strong>Answer:</strong> Cancellation is <strong>cooperative</strong>: a cancelled coroutine throws <code>CancellationException</code> at its next suspension point (<code>delay</code>, <code>yield</code>, a suspending call). A CPU loop with no suspension must check <code>isActive</code> or call <code>ensureActive()</code>. Three traps: (1) <code>catch (e: Exception)</code> also catches <code>CancellationException</code> and swallows the cancellation, so rethrow it or catch narrower exceptions; (2) cleanup in <code>finally</code> that needs to suspend must run in <code>withContext(NonCancellable)</code>; (3) <code>runBlocking</code> blocks the calling thread, so it is for <code>main</code> and tests, never inside a request thread or another coroutine (deadlock risk on a small pool). Use <code>withTimeout</code> to bound remote calls.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">withTimeout</span><span class="p">(</span><span class="m">2.</span><span class="n">seconds</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">smsGateway</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">reminder</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">:</span><span class="w"> </span><span class="n">CancellationException</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="w">                                  </span><span class="c1">// never swallow cancellation (TimeoutCancellationException is one)</span>
+<span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">:</span><span class="w"> </span><span class="n">IOException</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">"sms failed, will retry"</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> a generic <code>catch (e: Exception)</code> around a suspend call makes timeouts and request cancellation silently disappear. The coroutine keeps running after the client has gone.</p>
+<h4 id="need-know-kotlin-spring-boot">Q9. What do you need to know to use Kotlin with Spring Boot and JPA?</h4>
+<p><strong>Answer:</strong> Spring proxies classes (<code>@Transactional</code>, <code>@Configuration</code>), but Kotlin classes are <code>final</code> by default. The <strong><code>kotlin-spring</code></strong> (all-open) compiler plugin opens classes annotated with Spring stereotypes. JPA needs a no-arg constructor and non-final entities: use <strong><code>kotlin-jpa</code></strong> (no-arg) plus all-open for <code>@Entity</code>. Add <strong><code>jackson-module-kotlin</code></strong> so Jackson understands constructors, default values and nullability. Prefer constructor injection (<code>class S(private val repo: Repo)</code>), <code>@ConfigurationProperties</code> on a data class, and Spring's coroutine support (<code>suspend</code> controller methods, <code>CoroutineCrudRepository</code> with R2DBC). Do <strong>not</strong> model JPA entities as data classes: generated <code>equals</code>/<code>hashCode</code> on all fields breaks with lazy loading, mutable ids and <code>Set</code>s, and <code>toString</code> can trigger lazy loads or recursion.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="c1">// build.gradle.kts</span>
+<span class="n">plugins</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">kotlin</span><span class="p">(</span><span class="s">"plugin.spring"</span><span class="p">);</span><span class="w"> </span><span class="n">kotlin</span><span class="p">(</span><span class="s">"plugin.jpa"</span><span class="p">)</span><span class="w"> </span><span class="p">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">Appointment</span><span class="p">(</span>
+<span class="w">    </span><span class="nd">@Id</span><span class="w"> </span><span class="nd">@GeneratedValue</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Long?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="kd">var</span><span class="w"> </span><span class="nv">startsAt</span><span class="p">:</span><span class="w"> </span><span class="n">Instant</span><span class="p">,</span>
+<span class="w">    </span><span class="nd">@ManyToOne</span><span class="p">(</span><span class="n">fetch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FetchType</span><span class="p">.</span><span class="na">LAZY</span><span class="p">)</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">practitioner</span><span class="p">:</span><span class="w"> </span><span class="n">Practitioner</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span><span class="w"> </span><span class="kt">Any?</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">Appointment</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">id</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">javaClass</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> without the all-open plugin, <code>@Transactional</code> on a final class or method is silently ignored (no proxy can be generated). The code compiles and runs, but with no transaction.</p>
+<h4 id="breaks-java-kotlin-boundary">Q10. What breaks at the Java/Kotlin boundary?</h4>
+<p><strong>Answer:</strong> (1) <strong>Platform types</strong> from Java can be null at runtime even when you used them as non-null (see <a href="./#kotlin-null-safety-platform-type">Q1</a>). (2) Kotlin has no checked exceptions, so Java callers of a Kotlin function that throws <code>IOException</code> need <code>@Throws(IOException::class)</code> to be able to catch it. (3) Default arguments are invisible to Java without <code>@JvmOverloads</code>. (4) <code>companion object</code> members need <code>@JvmStatic</code> (methods) or <code>@JvmField</code>/<code>const</code> (fields) to look static from Java. (5) Top-level functions become <code>FileNameKt.fn()</code> unless you add <code>@file:JvmName</code>. (6) Kotlin <code>List</code> is read-only, not immutable: Java can still mutate it if the instance is an <code>ArrayList</code>. (7) <code>suspend</code> functions take an extra <code>Continuation</code> parameter and cannot be called from Java directly; expose a <code>CompletableFuture</code> with <code>future { }</code>.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">SlotService</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nd">@JvmOverloads</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span><span class="n">practitionerId</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">,</span><span class="w"> </span><span class="n">days</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span><span class="p">,</span><span class="w"> </span><span class="n">durationMin</span><span class="p">:</span><span class="w"> </span><span class="kt">Int</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">20</span><span class="p">):</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Slot</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TODO</span><span class="p">()</span>
+
+<span class="w">    </span><span class="kd">companion</span><span class="w"> </span><span class="kd">object</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nd">@JvmStatic</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">create</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SlotService</span><span class="p">()</span>
+<span class="w">        </span><span class="kd">const</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">MAX_DAYS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">28</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> in a mixed codebase migrating from Java, most Kotlin NPEs come from unannotated Java APIs. Teams think "Kotlin has no NPE" and drop the checks at exactly the boundary that needs them.</p>
+<h2 id="expert-open">🔴 Expert / Open</h2>
+<h4 id="flow-suspend-functions-reactor-async">Q11. <code>Flow</code>, <code>suspend</code> functions or Reactor: how do you choose for an async backend?</h4>
+<p><strong>Answer:</strong> A <code>suspend</code> function returns <strong>one</strong> value asynchronously. A <code>Flow</code> is a <strong>cold</strong> asynchronous stream of many values with backpressure by suspension. Operators are sequential and the code reads imperatively (<code>map</code>, <code>filter</code>, <code>buffer</code>, <code>flowOn</code>). <code>StateFlow</code>/<code>SharedFlow</code> are hot, for state and broadcasting. Reactor's <code>Mono</code>/<code>Flux</code> cover the same needs with a larger operator API, but stack traces and debugging are harder. With Spring WebFlux, Kotlin coroutines are a first-class alternative (<code>kotlinx-coroutines-reactor</code> bridges them: <code>awaitSingle()</code>, <code>asFlow()</code>). Decision: plain Spring MVC (with virtual threads) if the service is mostly CRUD on JDBC; coroutines when you need many concurrent remote calls or streaming; keep Reactor only where a library forces it. Do not mix reactive types and coroutines everywhere in the same service.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/practitioners/{id}/slots"</span><span class="p">,</span><span class="w"> </span><span class="n">produces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">MediaType</span><span class="p">.</span><span class="na">TEXT_EVENT_STREAM_VALUE</span><span class="o">]</span><span class="p">)</span>
+<span class="kd">fun</span><span class="w"> </span><span class="nf">liveSlots</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">):</span><span class="w"> </span><span class="n">Flow</span><span class="o">&lt;</span><span class="n">Slot</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">slotEvents</span><span class="p">.</span><span class="na">asFlow</span><span class="p">()</span><span class="w">                                   </span><span class="c1">// Flux -&gt; Flow</span>
+<span class="w">        </span><span class="p">.</span><span class="na">filter</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">practitionerId</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nb">it</span><span class="p">.</span><span class="na">toSlot</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> choosing WebFlux and coroutines "for performance" on a service whose bottleneck is a blocking JDBC pool. You add complexity and get no gain until the database access is non-blocking (R2DBC) or isolated on <code>Dispatchers.IO</code>.</p>
+<h4 id="inline-reified-class-delegation-property">Q12. When do you use <code>inline</code>/<code>reified</code>, class delegation and property delegates?</h4>
+<p><strong>Answer:</strong> <strong><code>inline</code></strong> copies a higher-order function's body and lambdas into the call site. That removes lambda allocation and allows <strong><code>reified</code></strong> type parameters (the type is known at runtime, so <code>T::class</code> works with no <code>Class&lt;T&gt;</code> argument), and non-local <code>return</code>. Keep it for small generic helpers, because it grows bytecode. <strong>Class delegation</strong> (<code>class A(b: B) : B by b</code>) implements an interface by forwarding to an instance: composition with no boilerplate, useful for decorators such as caching or metrics. <strong>Property delegates</strong>: <code>by lazy</code> (thread-safe lazy init by default), <code>Delegates.observable</code>, <code>by map</code>. The question is about restraint: these tools are useful when they remove repetition and harmful when they hide control flow.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">inline</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="o">&lt;</span><span class="k">reified</span><span class="w"> </span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">json</span><span class="p">:</span><span class="w"> </span><span class="kt">String</span><span class="p">):</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readValue</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">::</span><span class="n">class</span><span class="p">.</span><span class="na">java</span><span class="p">)</span>
+<span class="kd">val</span><span class="w"> </span><span class="nv">dto</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapper</span><span class="p">.</span><span class="na">read</span><span class="o">&lt;</span><span class="n">AppointmentDto</span><span class="o">&gt;</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+
+<span class="kd">class</span><span class="w"> </span><span class="nc">CachedAvailability</span><span class="p">(</span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">delegate</span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityPort</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">AvailabilityPort</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">delegate</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">cache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConcurrentHashMap</span><span class="o">&lt;</span><span class="kt">Long</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Slot</span><span class="o">&gt;&gt;</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span><span class="n">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Long</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cache</span><span class="p">.</span><span class="na">getOrPut</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">delegate</span><span class="p">.</span><span class="na">next</span><span class="p">(</span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">}</span><span class="w">   </span><span class="c1">// the rest is forwarded</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> marking big functions <code>inline</code> "for performance" makes bytecode grow at every call site for no measurable gain. The benefit only exists for lambdas and <code>reified</code>.</p>
+<h4 id="test-coroutine-kotlin-spring-code">Q13. How do you test coroutine and Kotlin Spring code?</h4>
+<p><strong>Answer:</strong> Use <code>kotlinx-coroutines-test</code>: <code>runTest { }</code> runs a suspending test on a <code>TestScope</code> with <strong>virtual time</strong>, so <code>delay(10.minutes)</code> completes instantly and <code>advanceTimeBy</code>/<code>advanceUntilIdle</code> control the clock. Inject dispatchers (constructor parameter) instead of hard-coding <code>Dispatchers.IO</code>, so the test can pass a <code>StandardTestDispatcher</code>. For <code>Flow</code>, collect with <code>toList()</code> or use Turbine (<code>flow.test { awaitItem() }</code>). Use <strong>MockK</strong> instead of Mockito: it supports <code>final</code> classes, <code>coEvery</code>/<code>coVerify</code> for suspend functions and <code>object</code> mocking. For integration, use <code>@SpringBootTest</code> plus Testcontainers PostgreSQL (<code>@ServiceConnection</code>) exactly as in Java, and <code>WebTestClient</code> for coroutine controllers.</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kd">class</span><span class="w"> </span><span class="nc">ReminderServiceTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">sms</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mockk</span><span class="o">&lt;</span><span class="n">SmsGateway</span><span class="o">&gt;</span><span class="p">(</span><span class="n">relaxed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">)</span>
+
+<span class="w">    </span><span class="nd">@Test</span>
+<span class="w">    </span><span class="kd">fun</span><span class="w"> </span><span class="nf">`sends reminder 24h before the appointment`</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runTest</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kd">val</span><span class="w"> </span><span class="nv">service</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ReminderService</span><span class="p">(</span><span class="n">sms</span><span class="p">,</span><span class="w"> </span><span class="n">dispatcher</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">StandardTestDispatcher</span><span class="p">(</span><span class="n">testScheduler</span><span class="p">))</span>
+<span class="w">        </span><span class="n">service</span><span class="p">.</span><span class="na">schedule</span><span class="p">(</span><span class="n">appointmentAt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">currentTime</span><span class="p">.</span><span class="na">milliseconds</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">25.</span><span class="n">hours</span><span class="p">)</span>
+
+<span class="w">        </span><span class="n">advanceTimeBy</span><span class="p">(</span><span class="m">1.</span><span class="n">hours</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="m">1.</span><span class="n">seconds</span><span class="p">)</span><span class="w">        </span><span class="c1">// virtual time: no real waiting</span>
+<span class="w">        </span><span class="n">coVerify</span><span class="p">(</span><span class="n">exactly</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sms</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">any</span><span class="p">())</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>Why it's a trap:</strong> testing with <code>runBlocking</code> and real <code>delay</code>s gives slow, flaky tests. Hard-coded dispatchers make the virtual clock useless because the work escapes to real threads.</p>
+<h2 id="real-world-scenarios">🎯 Real-world scenarios</h2>
+<h3 id="after-moving-endpoint-coroutines-throughput">S1. After moving an endpoint to coroutines, throughput collapses under load while CPU stays low</h3>
+<ul>
+<li><strong>Symptoms:</strong> p99 latency jumps from 80 ms to several seconds at modest traffic, CPU around 20%, no errors, and thread dumps show the <code>DefaultDispatcher-worker</code> threads all in <code>RUNNABLE</code>/<code>WAITING</code> inside JDBC calls.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> A <code>suspend</code> function calls the blocking JDBC repository directly, so it runs on <code>Dispatchers.Default</code>, which has only about one thread per core. A few slow queries occupy every worker and all other coroutines wait. Confirm with a thread dump (<code>jcmd &lt;pid&gt; Thread.print</code>) and the coroutine debug agent (<code>-Dkotlinx.coroutines.debug</code>).</li>
+<li><strong>Resolution:</strong> Wrap blocking calls in <code>withContext(Dispatchers.IO.limitedParallelism(poolSize))</code>, or move to R2DBC for a truly non-blocking path. Keep CPU work on <code>Default</code>.</li>
+<li><strong>Prevention:</strong> Code-review rule: a <code>suspend</code> function must not call blocking APIs without changing context. Add BlockHound in tests to fail on blocking calls in non-blocking threads, and run a load test before moving an endpoint to coroutines.</li>
+</ul>
+</details>
+<h3 id="kotlin-service-throws-nullpointerexception-value">S2. A Kotlin service throws <code>NullPointerException</code> on a value typed as non-null</h3>
+<ul>
+<li><strong>Symptoms:</strong> <code>NullPointerException: getHeader(...) must not be null</code> (or a crash inside a data class constructor) in production, on a code path where every Kotlin type is non-null.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> A Java API (servlet header, legacy service, JSON deserialised by Jackson without the Kotlin module) returned <code>null</code> into a platform type that the code used as <code>String</code>. Kotlin inserts a null check at the boundary and fails there. The stack trace points at the first Kotlin line that uses the value.</li>
+<li><strong>Resolution:</strong> Declare the boundary type as nullable (<code>val h: String? = ...</code>) and handle the missing case, register <code>jackson-module-kotlin</code> so missing JSON fields fail clearly or take their default value, and annotate the Java code with <code>@Nullable</code>.</li>
+<li><strong>Prevention:</strong> Treat every Java call as a trust boundary, enable JSpecify/<code>-Xjsr305=strict</code> so annotated Java nullability is enforced, and add a test with the missing field or header.</li>
+</ul>
+</details>
+<h3 id="transactional-ignored-final-class">S3. <code>@Transactional</code> on a Kotlin service has no effect, and partial writes reach the database</h3>
+<ul>
+<li><strong>Symptoms:</strong> An exception halfway through <code>placeOrder()</code> leaves the order row saved without its lines; the same code in Java rolled back.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Kotlin classes and methods are <code>final</code> by default, so Spring's CGLIB proxy can't override them and the annotation is silently ignored. Check the build for the <code>kotlin-spring</code> (all-open) plugin; also check for self-invocation, which fails the same way in Java.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">plugins</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">kotlin</span><span class="p">(</span><span class="s">"plugin.spring"</span><span class="p">)</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="s">"2.0.21"</span><span class="w">   </span><span class="c1">// opens @Component/@Transactional/... classes</span>
+<span class="w">    </span><span class="n">kotlin</span><span class="p">(</span><span class="s">"plugin.jpa"</span><span class="p">)</span><span class="w"> </span><span class="n">version</span><span class="w"> </span><span class="s">"2.0.21"</span><span class="w">      </span><span class="c1">// no-arg constructors for @Entity</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Add the <code>kotlin-spring</code> plugin (start.spring.io does by default), rebuild, and add an integration test that throws midway and asserts nothing was persisted.</li>
+<li><strong>Prevention:</strong> Generate Kotlin projects from the Spring initializr, keep a rollback test per transactional use case, and an ArchUnit/Konsist rule that services are proxyable.</li>
+</ul>
+</details>
+<h3 id="data-class-entity-equals-breaks">S4. A JPA entity written as a <code>data class</code> causes duplicate rows in a <code>Set</code>, <code>StackOverflowError</code> in logs and lazy-loading storms</h3>
+<ul>
+<li><strong>Symptoms:</strong> Adding an entity to a <code>HashSet</code> before save then after save yields two elements; logging an order triggers dozens of SQL queries and sometimes a <code>StackOverflowError</code>.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> <code>data class</code> generates <code>equals</code>/<code>hashCode</code>/<code>toString</code> over all constructor properties: the hash changes when the ID is assigned, <code>toString</code> walks lazy associations (N queries) and bidirectional relations recurse forever.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nd">@Entity</span>
+<span class="kd">class</span><span class="w"> </span><span class="nc">Order</span><span class="p">(</span>
+<span class="w">    </span><span class="nd">@Id</span><span class="w"> </span><span class="nd">@GeneratedValue</span><span class="w"> </span><span class="kd">var</span><span class="w"> </span><span class="nv">id</span><span class="p">:</span><span class="w"> </span><span class="kt">Long?</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">    </span><span class="nd">@OneToMany</span><span class="p">(</span><span class="n">mappedBy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"order"</span><span class="p">)</span><span class="w"> </span><span class="kd">val</span><span class="w"> </span><span class="nv">lines</span><span class="p">:</span><span class="w"> </span><span class="n">MutableList</span><span class="o">&lt;</span><span class="n">OrderLine</span><span class="o">&gt;</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mutableListOf</span><span class="p">(),</span>
+<span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span><span class="w"> </span><span class="kt">Any?</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="k">is</span><span class="w"> </span><span class="n">Order</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">id</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Order</span><span class="o">::</span><span class="n">class</span><span class="p">.</span><span class="na">hashCode</span><span class="p">()</span>
+<span class="w">    </span><span class="kd">override</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">toString</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">"Order(id=</span><span class="si">$</span><span class="n">id</span><span class="s">)"</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Use a regular <code>class</code> for entities with ID-based <code>equals</code>, a constant <code>hashCode</code>, and a <code>toString</code> that doesn't touch associations. Keep <code>data class</code> for DTOs and value objects.</li>
+<li><strong>Prevention:</strong> A static-analysis rule (detekt/Konsist) forbidding <code>data class</code> with <code>@Entity</code>, plus the <code>kotlin-jpa</code> plugin for no-arg constructors.</li>
+</ul>
+</details>
+<h3 id="runblocking-in-request-thread">S5. Under load, a Spring MVC service using coroutines stops answering, with all Tomcat threads stuck</h3>
+<ul>
+<li><strong>Symptoms:</strong> A thread dump shows all 200 <code>http-nio</code> threads parked in <code>BlockingCoroutine.joinBlocking</code>; health checks time out and pods get restarted.</li>
+</ul>
+<blockquote>
+<p>🧠 <strong>Try first:</strong> Before opening the answer, write your first three hypotheses and the command or metric you would check for each.</p>
+</blockquote>
+<details>
+<summary>Show diagnosis, resolution &amp; prevention</summary>
+<ul>
+<li><strong>Diagnosis:</strong> Someone called a <code>suspend</code> function from a blocking controller with <code>runBlocking { ... }</code>. Each request pins a Tomcat thread while waiting, and if the coroutine needs a thread from the same exhausted pool (or <code>Dispatchers.IO</code> limit is hit) it deadlocks.</li>
+<li><strong>Example:</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1">// before: blocks the request thread</span>
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/quote"</span><span class="p">)</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">quote</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">runBlocking</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">pricing</span><span class="p">.</span><span class="na">fetch</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+
+<span class="c1">// after: Spring MVC and WebFlux both support suspend handlers</span>
+<span class="nd">@GetMapping</span><span class="p">(</span><span class="s">"/quote"</span><span class="p">)</span><span class="w"> </span><span class="kd">suspend</span><span class="w"> </span><span class="kd">fun</span><span class="w"> </span><span class="nf">quote</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pricing</span><span class="p">.</span><span class="na">fetch</span><span class="p">()</span>
+</code></pre></div>
+<ul>
+<li><strong>Resolution:</strong> Make the handler <code>suspend</code> (supported by Spring MVC since 6 and by WebFlux) or stay fully blocking with a plain client; never bridge with <code>runBlocking</code> on a request path. On Java 21, virtual threads are a simpler alternative for blocking code.</li>
+<li><strong>Prevention:</strong> A lint rule banning <code>runBlocking</code> outside <code>main</code> and tests, and a load test that checks thread-pool saturation metrics.</li>
+</ul>
+</details>
+<h2 id="oral-quiz">🎤 Oral quiz</h2>
+<p>Answer each question <strong>aloud in 2–3 minutes</strong> without looking: context → options → decision → trade-offs. Then re-read the linked question and score yourself: <strong>0</strong> blank · <strong>1</strong> definition only · <strong>2</strong> plus an example · <strong>3</strong> plus trade-offs and a pitfall.</p>
+<ol>
+<li>Q1. How does Kotlin null safety work, and what is a platform type?</li>
+<li>Q2. When do you use a <code>data class</code>, a <code>sealed</code> class/interface and a <code>value class</code>?</li>
+<li>Q4. How do you choose between <code>let</code>, <code>apply</code>, <code>also</code>, <code>run</code> and <code>with</code>?</li>
+<li>Q6. What are coroutines and structured concurrency, and how do they compare to virtual threads?</li>
+<li>Q7. What do dispatchers do, and how do you call blocking code from a coroutine?</li>
+<li>Q8. How does coroutine cancellation work, and what are the traps?</li>
+<li>Q9. What do you need to know to use Kotlin with Spring Boot and JPA?</li>
+<li>Q10. What breaks at the Java/Kotlin boundary?</li>
+<li>Q11. <code>Flow</code>, <code>suspend</code> functions or Reactor: how do you choose for an async backend?</li>
+<li>S1. After moving an endpoint to coroutines, throughput collapses under load while CPU stays low</li>
+</ol>
+<h2 id="cheat-sheet">📌 Cheat-sheet</h2>
+<ul>
+<li><strong>Null safety</strong> — <code>?.</code>, <code>?:</code>, smart casts; <code>!!</code> is a code smell. <em>Java values are platform types: declare them <code>T?</code>.</em></li>
+<li><strong>Types</strong> — <code>data class</code> for values, <code>sealed</code> for closed states (exhaustive <code>when</code>), <code>value class</code> for typed ids. <em>Never a data class as a JPA entity.</em></li>
+<li><strong>Scope functions</strong> — choose by return value: <code>apply</code>/<code>also</code> return the object, <code>let</code>/<code>run</code>/<code>with</code> the result. <em>No nesting.</em></li>
+<li><strong>Coroutines</strong> — structured concurrency: <code>coroutineScope</code>, <code>async</code>/<code>await</code>, no <code>GlobalScope</code>. <em><code>supervisorScope</code> when siblings must survive a failure.</em></li>
+<li><strong>Dispatchers</strong> — <code>Default</code> for CPU, <code>IO</code> for blocking, <code>limitedParallelism</code> to match a pool. <em>Blocking on <code>Default</code> starves everything.</em></li>
+<li><strong>Cancellation</strong> — cooperative; rethrow <code>CancellationException</code>; <code>withTimeout</code> on remote calls. <em><code>runBlocking</code> only in <code>main</code> and tests.</em></li>
+<li><strong>Spring</strong> — <code>kotlin-spring</code> + <code>kotlin-jpa</code> plugins, <code>jackson-module-kotlin</code>, constructor injection. <em>Without all-open, <code>@Transactional</code> is silently ignored.</em></li>
+<li><strong>Interop</strong> — <code>@JvmOverloads</code>, <code>@JvmStatic</code>, <code>@Throws</code>, <code>@file:JvmName</code>. <em><code>List</code> is read-only, not immutable.</em></li>
+<li><strong>Testing</strong> — <code>runTest</code> + virtual time, inject dispatchers, MockK <code>coEvery</code>, Turbine for <code>Flow</code>. <em>Testcontainers as in Java.</em></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.suggest", "search.highlight", "content.tabs.link", "content.code.annotation", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
