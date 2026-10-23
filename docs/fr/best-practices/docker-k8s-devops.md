@@ -142,7 +142,7 @@ resources:
   limits: { memory: 512Mi }
 ```
 
-### Configurez correctement les probes liveness, readiness et startup
+### Configurez correctement les probes liveness, readiness et startup {#configure-liveness-readiness-and-startup-probes-correctly}
 
 La readiness décide si le pod reçoit du trafic. La liveness décide s'il est redémarré. La startup protège les
 démarrages lents.

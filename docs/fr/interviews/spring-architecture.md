@@ -4,8 +4,7 @@
 
 ### Core & configuration
 
-#### Q1. Qu'est-ce que l'injection de dépendances (Dependency Injection) dans Spring, et quels sont ses avantages ?
-
+#### Q1. Qu'est-ce que l'injection de dépendances (Dependency Injection) dans Spring, et quels sont ses avantages ? {#dependency-injection-spring-advantages}
 La DI signifie qu'une classe déclare ce dont elle a besoin (via le constructeur, un setter ou un champ) et que le
 conteneur Spring fournit (injecte) cette dépendance au lieu que la classe la crée elle-même.
 Avantages : couplage faible entre les classes, tests unitaires bien plus simples (on peut injecter des mocks
@@ -30,8 +29,7 @@ class InvoiceService {
 new InvoiceService(msg -> {});   // test unitaire : ni conteneur, ni SMTP
 ```
 
-#### Q2. Quelle est la différence entre `@Component`, `@Service` et `@Repository` ?
-
+#### Q2. Quelle est la différence entre `@Component`, `@Service` et `@Repository` ? {#component-service-repository}
 Les trois enregistrent une classe comme bean géré par Spring via le component scanning. `@Component` est
 la forme générique ; `@Service` et `@Repository` sont des spécialisations sémantiques — `@Service` marque
 un bean de la couche service (surtout de la documentation/de l'intention), et `@Repository` active en plus
@@ -58,8 +56,7 @@ class UserDao {
 Avec `@Component` à la place, la classe reste un bean mais le proxy de traduction n'est pas appliqué : les
 exceptions JPA/Hibernate brutes remontent. (`JdbcTemplate` et les repositories Spring Data traduisent d'eux-mêmes.)
 
-#### Q3. Quelle est la différence entre une classe `@Configuration` et une classe `@Component` qui déclare des méthodes `@Bean` ?
-
+#### Q3. Quelle est la différence entre une classe `@Configuration` et une classe `@Component` qui déclare des méthodes `@Bean` ? {#configuration-class-component-class-declares}
 Les deux peuvent contenir des méthodes `@Bean` et les deux sont détectées par le component scanning, mais elles se comportent
 différemment quand une méthode `@Bean` en appelle une autre. Une classe `@Configuration` s'exécute en **full
 mode** : Spring la sous-classe avec CGLIB, et cette sous-classe intercepte chaque appel de méthode `@Bean` de sorte que
@@ -91,8 +88,7 @@ class LiteCfg {
 @Bean JdbcTemplate jdbc(DataSource ds) { return new JdbcTemplate(ds); }  // sûr dans les deux modes
 ```
 
-#### Q4. Qu'est-ce que Spring Boot, et en quoi diffère-t-il de Spring « classique » ?
-
+#### Q4. Qu'est-ce que Spring Boot, et en quoi diffère-t-il de Spring « classique » ? {#spring-boot-differ-plain-spring}
 Spring Boot est une couche opinionated par-dessus le Spring Framework qui supprime la plupart de la configuration
 manuelle. Là où Spring classique demande beaucoup de configuration XML ou Java et un serveur provisionné
 séparément, Spring Boot auto-configure les beans en fonction des dépendances présentes dans le
@@ -118,8 +114,7 @@ public class App {
 // ./mvnw package && java -jar target/app.jar  -> Tomcat embarqué sur :8080, pas de WAR, pas de serveur externe
 ```
 
-#### Q5. Que fait réellement `@SpringBootApplication` ?
-
+#### Q5. Que fait réellement `@SpringBootApplication` ? {#springbootapplication}
 C'est une annotation de commodité qui regroupe trois autres annotations sur la classe principale : `@Configuration` (marque
 la classe comme source de définitions de beans), `@EnableAutoConfiguration` (active l'auto-configuration
 basée sur le classpath), et `@ComponentScan` (scanne le package courant et ses
@@ -142,8 +137,7 @@ class App {}
 // Voir ce qui a été appliqué : java -jar app.jar --debug   (affiche le rapport d'évaluation des conditions)
 ```
 
-#### Q6. `@Value` vs `@ConfigurationProperties` — quand utiliser lequel ?
-
+#### Q6. `@Value` vs `@ConfigurationProperties` — quand utiliser lequel ? {#value-configurationproperties}
 `@Value("${app.timeout}")` injecte une propriété dans un champ et convient pour une valeur unique
 isolée ou pour une expression SpEL. Dès qu'on a un *groupe* de paramètres liés,
 `@ConfigurationProperties(prefix = "app.payment")` lié à une classe (ou, mieux, à un `record`
@@ -176,8 +170,7 @@ app.payment:
 
 ### Architecture
 
-#### Q7. Qu'est-ce que l'architecture hexagonale (ports & adapters), et quel problème résout-elle ?
-
+#### Q7. Qu'est-ce que l'architecture hexagonale (ports & adapters), et quel problème résout-elle ? {#hexagonal-ports-adapters-architecture-problem}
 L'architecture hexagonale place la logique métier/domaine au centre, en exposant des **ports**
 (interfaces) qui décrivent ce dont le domaine a besoin ou ce qu'il offre, avec des **adapters** qui implémentent
 ces ports pour des technologies précises — un contrôleur REST et un listener de messages peuvent tous deux être
@@ -209,8 +202,7 @@ class InMemoryOrderRepository implements OrderRepository { /* HashMap, utilisé 
 
 ### Bean container & lifecycle
 
-#### Q8. Pourquoi l'injection par constructeur est-elle généralement préférée à l'injection par champ ?
-
+#### Q8. Pourquoi l'injection par constructeur est-elle généralement préférée à l'injection par champ ? {#constructor-injection-generally-preferred-field}
 **Réponse :** L'injection par constructeur rend les dépendances explicites et immuables (champs `final`),
 rend impossible la construction du bean dans un état invalide, partiellement câblé, et —
 point crucial pour les tests — permet d'instancier directement la classe avec des mocks dans un simple test
@@ -242,8 +234,7 @@ new ReportService(mockRepository); // ça marche tout seul, sans Spring
 c'est la version qui permet à un bean de se retrouver à moitié câblé et qui force chaque futur test de cette classe
 à traîner le poids du conteneur Spring dont il n'avait jamais besoin.
 
-#### Q9. Que sont les scopes de beans Spring, et quelle est l'implication en matière de thread-safety si on se trompe ?
-
+#### Q9. Que sont les scopes de beans Spring, et quelle est l'implication en matière de thread-safety si on se trompe ? {#spring-bean-scopes-thread-safety}
 **Réponse :** `singleton` (par défaut) crée une instance partagée pour tout l'application context ;
 `prototype` crée une nouvelle instance à chaque point d'injection/requête ; `request` et `session`
 sont liés à la requête web/session HTTP. Le piège : un bean de scope `singleton` est partagé entre
@@ -271,8 +262,7 @@ public class ReportService { // singleton par défaut — une seule instance pou
 seule requête à la fois n'entre jamais en concurrence avec elle-même) et ne casse que lorsque deux requêtes se chevauchent réellement
 en production — ce qui le rend aussi exaspérant à reproduire après coup.
 
-#### Q10. Décrivez le cycle de vie d'un bean Spring, et comment Spring résout-il les dépendances circulaires ?
-
+#### Q10. Décrivez le cycle de vie d'un bean Spring, et comment Spring résout-il les dépendances circulaires ? {#spring-bean-lifecycle-spring-resolve}
 **Réponse :** En gros : les définitions de beans sont lues, les instances sont créées (constructeur
 appelé), les propriétés sont injectées (l'injection par setter/champ a lieu ici — *après* la construction),
 les `BeanPostProcessor`s s'exécutent (avant/après l'initialisation, y compris `@PostConstruct`), puis le
@@ -302,19 +292,18 @@ erreur de démarrage bruyante et fail-fast contre un bean utilisable avant d'êt
 symptôme au lieu de corriger le vrai défaut de conception (deux services qui ont besoin l'un de l'autre), et
 refait surface plus tard sous forme de bug plus subtil si l'un des beans fait un vrai travail pendant sa construction.
 
-#### Q11. Que se passe-t-il, étape par étape, au démarrage d'une application Spring Boot ?
-
+#### Q11. Que se passe-t-il, étape par étape, au démarrage d'une application Spring Boot ? {#happens-step-step-spring-boot}
 **Réponse :** `SpringApplication.run()` fait en gros ceci : (1) déduit le type d'application (servlet, réactive, aucune) à
 partir du classpath et charge les `ApplicationContextInitializer` et `ApplicationListener` déclarés dans
 `META-INF/spring.factories` ; (2) prépare l'`Environment` : lit `application.yml`, les profils, les variables
 d'environnement et les arguments de ligne de commande selon leur ordre de priorité (voir
-[Spring Q25](spring-architecture.md)) ; (3) affiche la bannière et crée l'`ApplicationContext` ; (4) **charge les
+[Spring Q25](spring-architecture.md#precedence-order-across-different-ways)) ; (3) affiche la bannière et crée l'`ApplicationContext` ; (4) **charge les
 définitions de beans** : `@ComponentScan` trouve les classes `@Component`/`@Service`/`@Repository`, les classes
 `@Configuration` sont analysées, et les classes d'auto-configuration listées dans
 `META-INF/spring/...AutoConfiguration.imports` sont évaluées selon des règles `@Conditional...` (un bean `DataSource`
 n'apparaît que si un driver est présent et que vous n'en avez pas défini un vous-même) ; (5) les
 `BeanFactoryPostProcessor` s'exécutent, puis les beans sont instanciés, injectés et post-traités (les `BeanPostProcessor`
-créent les proxies `@Transactional`/`@Async`, voir [Spring Q10](spring-architecture.md)) ; (6) pour une application web,
+créent les proxies `@Transactional`/`@Async`, voir [Spring Q10](spring-architecture.md#spring-bean-lifecycle-spring-resolve)) ; (6) pour une application web,
 le Tomcat embarqué est créé et démarré ; (7) les beans `SmartLifecycle` démarrent, `ContextRefreshedEvent` est émis, puis
 les beans `CommandLineRunner`/`ApplicationRunner` s'exécutent et `ApplicationReadyEvent` est publié ; seulement alors la
 sonde de readiness passe à `UP`. L'arrêt est symétrique : cesser d'accepter du trafic, vider les requêtes en cours
@@ -340,11 +329,10 @@ public class App {
 
 **Pourquoi c'est un piège :** mettre des appels distants dans un `@PostConstruct` empêche l'application de démarrer (ou
 de devenir prête) quand une dépendance est en panne, et une sonde liveness Kubernetes qui démarre avant la fin de l'étape 7
-tue le pod en boucle (voir [Full Stack Q19](fullstack-devops-k8s.md)). Utilisez readiness pour « prêt à recevoir du
+tue le pod en boucle (voir [Full Stack Q19](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes)). Utilisez readiness pour « prêt à recevoir du
 trafic », pas liveness.
 
-#### Q12. Quels design patterns apparaissent naturellement dans le fonctionnement de Spring lui-même ?
-
+#### Q12. Quels design patterns apparaissent naturellement dans le fonctionnement de Spring lui-même ? {#design-patterns-show-up-naturally}
 **Réponse :**
 
 - **DI / IoC** : l'injection par constructeur, setter et champ implémentent directement ce pattern.
@@ -383,8 +371,7 @@ nommer un mode de défaillance concret pour au moins l'un d'eux est une réponse
 
 ### Proxies, AOP & transactions
 
-#### Q13. Quelle est la différence pratique entre les proxies dynamiques JDK et les proxies CGLIB dans Spring AOP, et pourquoi est-ce important ?
-
+#### Q13. Quelle est la différence pratique entre les proxies dynamiques JDK et les proxies CGLIB dans Spring AOP, et pourquoi est-ce important ? {#practical-jdk-dynamic-proxies-cglib}
 **Réponse :** Spring utilise des proxies dynamiques JDK (basés sur les interfaces) quand le bean cible implémente au
 moins une interface, et CGLIB (génération de bytecode par sous-classe) quand ce n'est pas le cas, ou quand
 il est explicitement configuré pour toujours utiliser CGLIB. Le piège pratique : un proxy dynamique JDK ne peut
@@ -415,8 +402,7 @@ public final class PricingService { // classe final — CGLIB ne peut pas la sou
 mais la cause racine ici est un modificateur de classe qui n'a rien à voir avec le code transactionnel
 lui-même — un `final` ajouté pour des raisons de « bonnes pratiques » sans rapport désactive silencieusement l'AOP.
 
-#### Q14. Puisque `@Transactional` repose sur le pattern Proxy, que cela vous dit-il sur son utilisation sur une méthode private ?
-
+#### Q14. Puisque `@Transactional` repose sur le pattern Proxy, que cela vous dit-il sur son utilisation sur une méthode private ? {#since-transactional-relies-proxy-pattern}
 **Réponse :** Une méthode private ne peut pas être proxifiée comme une méthode public — le proxy dynamique
 surcharge/enveloppe la méthode depuis l'*extérieur* de la classe, et une méthode private n'est pas visible en dehors de
 la classe pour être surchargée. Donc `@Transactional` sur une méthode private a le même mode de défaillance
@@ -443,8 +429,7 @@ public class OrderService {
 Spring ne valide jamais cela au démarrage, donc une méthode `@Transactional private` est une mine qui
 paraît parfaitement correcte en code review.
 
-#### Q15. Peut-on appeler une méthode `@Transactional` depuis une autre méthode de la même classe ?
-
+#### Q15. Peut-on appeler une méthode `@Transactional` depuis une autre méthode de la même classe ? {#call-transactional-method-another-method}
 **Réponse :** Non — ou plutôt, cela ne fonctionne silencieusement pas comme attendu. Spring implémente
 `@Transactional` via un proxy enveloppant le bean ; un appel depuis l'*extérieur* de la classe passe
 par ce proxy et la logique transactionnelle s'exécute, mais un appel depuis l'*intérieur* de la même classe
@@ -475,8 +460,7 @@ public class OrderService {
 bug n'apparaît que le jour où quelque chose échoue en cours de route dans `save` et où une écriture partielle
 n'est pas annulée, en production, dans des conditions qu'un test manuel du cas nominal n'a jamais exercées.
 
-#### Q16. Comment la propagation de `@Transactional` et les règles de rollback interagissent-elles, et que fait réellement `readOnly = true` ?
-
+#### Q16. Comment la propagation de `@Transactional` et les règles de rollback interagissent-elles, et que fait réellement `readOnly = true` ? {#transactional-propagation-rollback-rules-interact}
 **Réponse :** La propagation par défaut, `REQUIRED`, signifie « rejoindre la transaction de l'appelant s'il y en a une,
 sinon en démarrer une » — donc les méthodes externe et interne partagent **une** transaction physique
 et une seule décision de commit/rollback. Cela a une conséquence brutale : quand la méthode `@Transactional`
@@ -530,18 +514,17 @@ class AuditService {
 et fausse. L'échec apparaît aussi *loin* de la cause (à l'accolade fermante de la méthode externe),
 et `REQUIRES_NEW` ressemble à un correctif gratuit alors qu'il double discrètement l'usage des connexions.
 
-#### Q17. « Mon `@Transactional` ne fonctionne pas » — quelles sont les causes habituelles, dans l'ordre où vous les vérifiez ?
-
+#### Q17. « Mon `@Transactional` ne fonctionne pas » — quelles sont les causes habituelles, dans l'ordre où vous les vérifiez ? {#transactional-doesn-usual-causes-order}
 **Réponse :** Spring implémente `@Transactional` avec un proxy autour du bean, donc presque toute panne est « l'appel n'est
 jamais passé par le proxy » ou « le proxy n'a pas fait ce que vous supposiez ». Liste de contrôle : (1)
 **Auto-invocation** : `this.save()` depuis une autre méthode de la même classe contourne le proxy, donc aucune transaction
-ne démarre (voir [Spring Q15](spring-architecture.md)) ; déplacez la méthode dans un autre bean, ou utilisez
+ne démarre (voir [Spring Q15](spring-architecture.md#call-transactional-method-another-method)) ; déplacez la méthode dans un autre bean, ou utilisez
 `TransactionTemplate`. (2) **Visibilité et `final`** : avec CGLIB la méthode doit être `public` (une méthode `private` est
-ignorée silencieusement, voir [Spring Q14](spring-architecture.md)) et non `final`/`static`. (3) **Pas un bean Spring** :
+ignorée silencieusement, voir [Spring Q14](spring-architecture.md#since-transactional-relies-proxy-pattern)) et non `final`/`static`. (3) **Pas un bean Spring** :
 `new OrderService()` n'a pas de proxy ; la classe doit être scannée et injectée. (4) **Règles de rollback** : par défaut
 seules les exceptions non vérifiées (`RuntimeException`, `Error`) annulent ; une exception vérifiée valide la transaction,
 d'où `rollbackFor = Exception.class` ; et si vous interceptez l'exception dans la méthode, le proxy ne la voit jamais et
-valide (voir [Spring Q16](spring-architecture.md)). (5) **Propagation** : `REQUIRED` rejoint la transaction de l'appelant,
+valide (voir [Spring Q16](spring-architecture.md#transactional-propagation-rollback-rules-interact)). (5) **Propagation** : `REQUIRED` rejoint la transaction de l'appelant,
 donc un échec interne marque *toute* la transaction rollback-only (`UnexpectedRollbackException` au commit), alors que
 `REQUIRES_NEW` la suspend et valide indépendamment, avec sa propre connexion. (6) **Mauvaise annotation** : celle de
 `jakarta.transaction` a d'autres valeurs par défaut, et l'annotation doit se trouver sur l'*implémentation* ou une classe
@@ -571,10 +554,9 @@ class BookingService {
 
 **Pourquoi c'est un piège :** le code compile, les tests sur chemin nominal avec base en mémoire passent, et la panne
 (données à moitié enregistrées, pas de rollback) n'apparaît que sur un chemin d'erreur en production. Écrivez un test qui
-force une exception et vérifie que rien n'a été persisté (voir [Testing Q16](testing.md)).
+force une exception et vérifie que rien n'a été persisté (voir [Testing Q16](testing.md#test-transaction-rolls-back)).
 
-#### Q18. Qu'est-ce que l'Open-in-View (OSIV), pourquoi est-il activé par défaut, et pourquoi beaucoup d'équipes le désactivent-elles ?
-
+#### Q18. Qu'est-ce que l'Open-in-View (OSIV), pourquoi est-il activé par défaut, et pourquoi beaucoup d'équipes le désactivent-elles ? {#open-view-osiv-default-many}
 **Réponse :** Avec `spring.jpa.open-in-view=true` (le défaut de Spring Boot — il journalise un
 avertissement au démarrage à ce sujet), un `OpenEntityManagerInViewInterceptor` lie un `EntityManager` JPA au
 thread de la requête pour *toute la requête HTTP*, du contrôleur jusqu'à la sérialisation JSON. Le
@@ -616,13 +598,11 @@ session ouverte plus longtemps.
 
 ### Data & caching
 
-#### Q19. Qu'est-ce qui cause le problème des requêtes N+1 en JPA, et comment le détecter et le corriger ?
-
-**Réponse :** Traité dans [Persistence Q29](persistence-sql-postgres.md) (causes et correctifs) et [Persistence S2](persistence-sql-postgres.md) (le repérer en production).
+#### Q19. Qu'est-ce qui cause le problème des requêtes N+1 en JPA, et comment le détecter et le corriger ? {#causes-n-1-query-problem}
+**Réponse :** Traité dans [Persistence Q29](persistence-sql-postgres.md#n-1-query-problem-name) (causes et correctifs) et [Persistence S2](persistence-sql-postgres.md#apm-tool-flags-dozens-near) (le repérer en production).
 Angle Spring : le détecter en test avec `spring.jpa.show-sql=true` et les statistiques Hibernate, puis vérifier le nombre de requêtes. Le corriger avec un `JOIN FETCH` ou un `@EntityGraph` propre à la requête, jamais avec un `FetchType.EAGER` global sur le mapping.
 
-#### Q20. Quel est le piège de `@Cacheable` qui retourne un objet mutable ?
-
+#### Q20. Quel est le piège de `@Cacheable` qui retourne un objet mutable ? {#trap-cacheable-returning-mutable-object}
 **Réponse :** `@Cacheable` stocke la référence que la méthode retourne ; si c'est un objet
 mutable (une `List`, une entité/DTO mutable) et qu'un appelant le modifie, chaque cache hit suivant
 distribue ce même objet corrompu — le cache ne clone pas à la lecture, donc « lire depuis le
@@ -648,8 +628,7 @@ products.add(new Product("injected")); // modifie la liste en cache sur place !
 sur un appel ultérieur sans rapport qui se trouve lire la même clé de cache, ce qui donne l'impression
 d'un bug de corruption de données dans un chemin de code totalement différent plutôt que d'une violation du contrat de cache à la source.
 
-#### Q21. Requêtes dérivées Spring Data, `@Query` et projections — quand utiliser chacune ?
-
+#### Q21. Requêtes dérivées Spring Data, `@Query` et projections — quand utiliser chacune ? {#spring-data-derived-queries-query}
 **Réponse :** Les **requêtes dérivées** (`findByStatusAndCreatedAtAfter`) conviennent pour une ou deux conditions
 simples ; au-delà, le nom de méthode devient illisible, passez alors à **`@Query`** (JPQL ou natif) ou aux
 **Specifications/Querydsl** pour les filtres dynamiques. Les **projections** ne renvoient que les colonnes utiles au
@@ -678,8 +657,7 @@ croyant l'avoir.
 
 ### Async & threading
 
-#### Q22. Pourquoi les méthodes `@Async` perdent-elles le contexte Spring Security ?
-
+#### Q22. Pourquoi les méthodes `@Async` perdent-elles le contexte Spring Security ? {#async-methods-lose-spring-security}
 **Réponse :** `@Async` exécute la méthode sur un thread différent issu du pool d'un task executor, et
 par défaut le contexte de Spring Security est conservé dans un `ThreadLocal` lié au thread de la requête *d'origine*
 — donc le nouveau thread async ne l'a tout simplement pas, et tout contrôle de sécurité dans la
@@ -711,8 +689,7 @@ sécurité pour un contrôle d'autorisation peut finir par refuser (ou, pire, au
 l'accès sur la base d'un contexte vide, et le bug n'apparaît que dans le chemin async, jamais dans un
 test synchrone de la même logique.
 
-#### Q23. Quels sont les comportements par défaut des pools de threads de `@Async` et `@Scheduled`, et en quoi sont-ils inadaptés à la production ?
-
+#### Q23. Quels sont les comportements par défaut des pools de threads de `@Async` et `@Scheduled`, et en quoi sont-ils inadaptés à la production ? {#default-thread-pool-behaviours-async}
 **Réponse :** Les deux annotations ressemblent à « exécute ça ailleurs » mais viennent avec des défauts dangereux.
 Les méthodes `@Scheduled` s'exécutent sur un scheduler avec un **seul thread** par défaut
 (`spring.task.scheduling.pool.size=1`) : un job lent — ou un job `fixedRate` qui prend plus de temps
@@ -763,8 +740,7 @@ font mal qu'avec un job lent, un pic de travail ou une panne, c'est-à-dire en p
 (jobs en retard, mémoire qui grossit, exceptions qui disparaissent) éloignent des annotations qui
 les ont causés.
 
-#### Q24. Quel est le modèle d'exécution de WebFlux, et que se passe-t-il si on y appelle du code bloquant ?
-
+#### Q24. Quel est le modèle d'exécution de WebFlux, et que se passe-t-il si on y appelle du code bloquant ? {#webflux-execution-model-happens-call}
 **Réponse :** WebFlux tourne sur un petit nombre de **threads d'event loop** (Netty, environ un par cœur CPU). Une
 requête est un pipeline d'opérateurs `Mono`/`Flux` ; rien ne s'exécute tant que personne ne souscrit, et pendant
 l'attente d'I/O aucun thread n'est occupé. Quelques threads servent ainsi de nombreuses connexions simultanées, avec de
@@ -773,7 +749,7 @@ bloquer un thread d'event loop**. Un appel JDBC, `RestTemplate`, `Thread.sleep` 
 bloque toutes les requêtes partageant cette boucle. Utilisez des drivers réactifs (R2DBC, `WebClient`, Mongo/Redis
 réactifs), ou isolez les appels bloquants inévitables avec `subscribeOn(Schedulers.boundedElastic())`. **BlockHound**
 détecte les appels bloquants en test. Avec les virtual threads, beaucoup d'équipes restent désormais sur Spring MVC ;
-voir [Java Q34](java-core-jvm.md) pour ce compromis.
+voir [Java Q34](java-core-jvm.md#virtual-threads-reactive-stack-webflux) pour ce compromis.
 
 **Exemple :**
 
@@ -790,8 +766,7 @@ explose sur tous les endpoints à la fois parce que quatre threads d'event loop 
 
 ### Configuration & operations
 
-#### Q25. Quel est l'ordre de précédence entre les différentes façons de configurer une application Spring Boot ?
-
+#### Q25. Quel est l'ordre de précédence entre les différentes façons de configurer une application Spring Boot ? {#precedence-order-across-different-ways}
 **Réponse :** De la priorité la plus haute à la plus basse (en gros) : arguments de ligne de commande,
 propriété d'environnement `SPRING_APPLICATION_JSON`, attributs JNDI, propriétés système Java, variables
 d'environnement de l'OS, `application-{profile}.properties/yml` spécifiques au profil, le
@@ -814,8 +789,7 @@ est l'une des plaintes de debug de configuration les plus courantes, et la vraie
 toujours une source de priorité supérieure qui écrase silencieusement le fichier que quelqu'un a édité — la solution est
 de connaître assez bien l'ordre pour vérifier d'abord la bonne couche au lieu de deviner.
 
-#### Q26. Quels endpoints Actuator comptent en production, et lesquels faut-il faire attention à exposer ?
-
+#### Q26. Quels endpoints Actuator comptent en production, et lesquels faut-il faire attention à exposer ? {#actuator-endpoints-matter-production-careful}
 **Réponse :** `/actuator/health` (liveness/readiness pour les orchestrateurs), `/actuator/metrics`
 (alimente Prometheus/le monitoring), `/actuator/info` (métadonnées de build/version), `/actuator/loggers`
 (change les niveaux de log à chaud sans redéploiement — précieux en plein incident), `/actuator/prometheus` si
@@ -844,8 +818,7 @@ management:
 que quelqu'un ajoute `include: "*"` par commodité pendant le debug (et oublie de le retirer),
 `/actuator/env` peut divulguer des mots de passe de base de données et des clés d'API directement sur Internet.
 
-#### Q27. Comment utiliser les profils Spring, et quels sont les mauvais usages courants ?
-
+#### Q27. Comment utiliser les profils Spring, et quels sont les mauvais usages courants ? {#spring-profiles-common-misuses}
 **Réponse :** Les profils changent la **configuration** par environnement ou par capacité : fichiers
 `application-{profile}.yml`, documents `spring.config.activate.on-profile`, et `@Profile` sur des beans pour des
 implémentations réellement différentes (par exemple une fausse passerelle de paiement en `local`). Activez-les avec
@@ -871,8 +844,7 @@ logging.structured.format.console: ecs
 **Pourquoi c'est un piège :** un bean `@Profile("!prod")` qui désactive la sécurité ou injecte des données de test est
 à une variable d'environnement erronée de la production.
 
-#### Q28. Comment instrumenter un service Spring Boot avec Micrometer, et quel est le piège de la cardinalité ?
-
+#### Q28. Comment instrumenter un service Spring Boot avec Micrometer, et quel est le piège de la cardinalité ? {#instrument-spring-boot-service-micrometer}
 **Réponse :** Spring Boot Actuator auto-configure **Micrometer** : temps des serveurs et clients HTTP, métriques JVM,
 pools, caches et Kafka, exportées vers Prometheus, Datadog ou OTLP. Ajoutez des métriques métier avec `Counter`,
 `Timer` et `DistributionSummary` (ou `@Timed`/`@Counted`), et utilisez l'**Observation API** (`@Observed`,
@@ -900,8 +872,7 @@ grandit.
 
 ### Web API
 
-#### Q29. Comment gérer les exceptions globalement dans une API REST Spring Boot ?
-
+#### Q29. Comment gérer les exceptions globalement dans une API REST Spring Boot ? {#handle-exceptions-globally-spring-boot}
 **Réponse :** Avec `@ControllerAdvice` (ou `@RestControllerAdvice`) plus `@ExceptionHandler`,
 en centralisant la gestion des erreurs au lieu de disperser des blocs try/catch dans les contrôleurs.
 
@@ -931,8 +902,7 @@ un nom de classe interne) au client — un handler fourre-tout qui retourne
 `ex.getMessage()` directement à l'appelant est un bug courant de divulgation d'information caché derrière
 ce qui ressemble à une gestion d'erreurs centralisée « propre ».
 
-#### Q30. Comment configurer CORS correctement, et quel est le piège de la combinaison d'une origine wildcard et des credentials ?
-
+#### Q30. Comment configurer CORS correctement, et quel est le piège de la combinaison d'une origine wildcard et des credentials ? {#configure-cors-correctly-trap-combining}
 **Réponse :** Le configurer globalement via un `WebMvcConfigurer`, ou par contrôleur avec
 `@CrossOrigin`. Les navigateurs rejettent (et Spring lui-même rejette à la configuration) la combinaison de
 `allowedOrigins("*")` avec `allowCredentials(true)` — une origine wildcard plus cookies/credentials
@@ -959,10 +929,9 @@ se rabat sur `allowedOrigins("*")` comme correction la plus rapide — ce qui es
 combinaison qui soit échoue net (avec credentials) soit ouvre silencieusement l'API à n'importe quelle
 origine (sans credentials, mais avec des données sensibles retournées quand même).
 
-*Voir aussi :* [Full Stack Q12](fullstack-devops-k8s.md) pour le côté navigateur : preflights, cookies `SameSite`, et pourquoi curl ne voit jamais CORS.
+*Voir aussi :* [Full Stack Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error) pour le côté navigateur : preflights, cookies `SameSite`, et pourquoi curl ne voit jamais CORS.
 
-#### Q31. Pourquoi `@Valid` ne valide-t-il pas automatiquement les objets imbriqués, et quelle est la correction ?
-
+#### Q31. Pourquoi `@Valid` ne valide-t-il pas automatiquement les objets imbriqués, et quelle est la correction ? {#doesn-valid-automatically-validate-nested}
 **Réponse :** `@Valid` sur un paramètre de contrôleur valide les champs propres de cet objet, mais la
 validation ne se propage **pas** automatiquement dans un champ objet imbriqué — un champ imbriqué a aussi
 besoin de sa propre annotation `@Valid`, sinon Bean Validation ignore silencieusement sa validation, en
@@ -1000,8 +969,7 @@ tout intercepté.
 
 ### Design & resilience
 
-#### Q32. Comment structurer concrètement une application Spring Boot hexagonale en packages ?
-
+#### Q32. Comment structurer concrètement une application Spring Boot hexagonale en packages ? {#structure-hexagonal-spring-boot-application}
 **Réponse :** Une organisation courante : un package `domain` en Java pur (pas de Spring, pas d'annotations JPA)
 contenant les entités et les règles métier ; un package `application` avec les classes de use case/service et
 les interfaces de **ports** dont elles dépendent (`OrderRepository`, `PaymentGateway`) ; et un
@@ -1028,8 +996,7 @@ pression de deadline d'importer `jakarta.persistence.Entity` directement dans `d
 « juste cette fois », et sans une règle ArchUnit qui l'attrape en CI, cette exception unique
 devient discrètement la nouvelle norme en quelques sprints.
 
-#### Q33. Concevez la sélection du type de paiement pour un système supportant Carte de crédit, PayPal et Bitcoin, sans que le code client sache quelle classe concrète instancier.
-
+#### Q33. Concevez la sélection du type de paiement pour un système supportant Carte de crédit, PayPal et Bitcoin, sans que le code client sache quelle classe concrète instancier. {#design-payment-type-selection-system}
 **Réponse :** Utiliser le pattern Factory : une `PaymentFactory` avec une méthode comme
 `createPayment(String type)` qui décide en interne quelle sous-classe concrète de `Payment`
 instancier et retourner. Le client demande simplement à la factory « l'implémentation de paiement dont il
@@ -1066,13 +1033,11 @@ registre de beans nommés/typés — la réponse idiomatique Spring remplace une
 maintenir par une `Map` que le conteneur remplit gratuitement, et un recruteur qui demande « comment feriez-vous
 cela spécifiquement dans Spring » vérifie cette reconnaissance.
 
-#### Q34. Quand recourir au pattern Strategy avec des beans Spring plutôt qu'à un simple `if`/`switch` ?
-
-**Réponse :** Le critère au niveau du pattern (l'ensemble des branches grandit-il, et chaque branche est-elle substantielle ?) est traité dans [Design Patterns Q17](design-patterns.md).
+#### Q34. Quand recourir au pattern Strategy avec des beans Spring plutôt qu'à un simple `if`/`switch` ? {#strategy-pattern-spring-beans-simple}
+**Réponse :** Le critère au niveau du pattern (l'ensemble des branches grandit-il, et chaque branche est-elle substantielle ?) est traité dans [Design Patterns Q17](design-patterns.md#introducing-strategy-add-more-complexity).
 Angle Spring : injecter `List<Strategy>` et en choisir une via un prédicat `supports()`, ou injecter `Map<String, Strategy>` indexée par nom de bean (Q33). Un nouveau comportement devient alors un nouveau `@Component`, et le dispatcher ne change jamais.
 
-#### Q35. Qu'est-ce que le pattern circuit breaker, et quand un service en a-t-il réellement besoin ?
-
+#### Q35. Qu'est-ce que le pattern circuit breaker, et quand un service en a-t-il réellement besoin ? {#circuit-breaker-pattern-service-need}
 **Réponse :** Un circuit breaker enveloppe les appels vers une dépendance susceptible d'échouer et suit leur
 taux d'échec ; dès que les échecs dépassent un seuil, il « s'ouvre » et échoue rapidement (sans même
 tenter l'appel) pendant une période de refroidissement, puis autorise un nombre limité d'appels d'essai
@@ -1103,14 +1068,13 @@ justifié — ajouter un circuit breaker autour de chaque appel aval sans consid
 d'impact relève du cargo-culting de la résilience, tandis que l'omettre sur l'unique appel qui peut réellement se propager
 en cascade (un pool de threads partagé, cf. S8) laisse le vrai risque sans réponse.
 
-*Voir aussi :* [System Design Q29](system-design.md) (backpressure, délestage) et [System Design S14](system-design.md) (tempête de retries après une dépendance lente).
+*Voir aussi :* [System Design Q29](system-design.md#backpressure-load-shedding-keep-overloaded) (backpressure, délestage) et [System Design S14](system-design.md#slow-dependency-triggers-full-system) (tempête de retries après une dépendance lente).
 
 ## 🔴 Expert / Ouvert
 
 ### Architecture & extensibility
 
-#### Q36. Comment migreriez-vous un monolithe existant vers une architecture hexagonale de façon incrémentale, sans réécriture big-bang ?
-
+#### Q36. Comment migreriez-vous un monolithe existant vers une architecture hexagonale de façon incrémentale, sans réécriture big-bang ? {#migrate-existing-monolith-hexagonal-architecture}
 Commencer par les coutures qui existent déjà naturellement — choisir un module borné et bien compris
 (souvent celui qui change le plus souvent, puisque c'est là que le bénéfice se cumule le plus vite) et définir
 ses ports en premier : de quoi ce module a-t-il besoin du monde extérieur, et qu'offre-t-il ? Déplacer
@@ -1138,8 +1102,7 @@ interface InvoiceStore { Invoice load(long id); }                 // nouveau por
     .should().dependOnClassesThat().resideInAnyPackage("org.springframework..", "jakarta.persistence..");
 ```
 
-#### Q37. Concevez un système d'extension de type plugin dans Spring afin qu'un nouveau comportement puisse être ajouté sans modifier le code existant.
-
+#### Q37. Concevez un système d'extension de type plugin dans Spring afin qu'un nouveau comportement puisse être ajouté sans modifier le code existant. {#design-plugin-style-extension-system}
 Définir une interface (un port) représentant le point d'extension — par ex. `NotificationChannel` avec
 `send(Notification)` et `supports(ChannelType)`. Laisser le component scanning de Spring collecter chaque
 implémentation automatiquement via `List<NotificationChannel>` injectée dans un bean dispatcher,
@@ -1173,10 +1136,9 @@ class Notifier {
 // Ajouter PushChannel = un nouveau @Component ; Notifier reste inchangé.
 ```
 
-*Voir aussi :* [Design Patterns Q21](design-patterns.md) pour la conception Strategy + Factory + registre, indépendante du framework.
+*Voir aussi :* [Design Patterns Q21](design-patterns.md#design-plugin-architecture-using-strategy) pour la conception Strategy + Factory + registre, indépendante du framework.
 
-#### Q38. Comment décidez-vous entre une préoccupation transverse basée sur l'AOP (comme `@Transactional`, `@Cacheable` ou une annotation personnalisée) et son écriture explicite dans le corps de la méthode ?
-
+#### Q38. Comment décidez-vous entre une préoccupation transverse basée sur l'AOP (comme `@Transactional`, `@Cacheable` ou une annotation personnalisée) et son écriture explicite dans le corps de la méthode ? {#decide-aop-based-cross-cutting}
 L'AOP mérite son coût quand la préoccupation est réellement orthogonale à la logique métier et s'applique
 uniformément à de nombreuses méthodes avec la même règle — transactions, cache et journalisation d'audit sont
 les cas d'école car le « comment » est identique partout où ils sont utilisés et l'annotation rend
@@ -1206,8 +1168,7 @@ BigDecimal price(Order o) {
 // La forme annotée cacherait l'exception VIP dans un SpEL `condition = "!#o.vip"` que peu de gens trouveront.
 ```
 
-#### Q39. Comment utiliser les événements applicatifs dans un monolithe Spring, et quel est le piège de `@TransactionalEventListener` ?
-
+#### Q39. Comment utiliser les événements applicatifs dans un monolithe Spring, et quel est le piège de `@TransactionalEventListener` ? {#application-events-inside-spring-monolith}
 `ApplicationEventPublisher` permet à un service d'annoncer « OrderPlaced » sans savoir qui s'y intéresse
 (email, inventaire, analytics), ce qui découple les modules dans un monolithe et constitue le
 tremplin naturel vers les ports hexagonaux (Q32, Q36) et, plus tard, le messaging. Un simple `@EventListener`
@@ -1221,7 +1182,7 @@ confirmation ne part pour une commande annulée. Son piège est l'image miroir :
 `REQUIRES_NEW` — et si le listener échoue, ou si la JVM meurt entre le commit et la distribution,
 l'événement est **perdu**, car il ne vivait qu'en mémoire. Si l'effet de bord ne doit pas être perdu (facturation,
 événement d'intégration vers un autre service), persister l'intention dans la même transaction et la livrer
-séparément : le **pattern outbox** ([Messaging Q27](messaging-rabbitmq-kafka.md)) — ou, dans un monolithe modulaire, le registre de
+séparément : le **pattern outbox** ([Messaging Q27](messaging-rabbitmq-kafka.md#outbox-pattern-problem-solve)) — ou, dans un monolithe modulaire, le registre de
 publication d'événements de Spring Modulith, qui stocke les événements jusqu'à ce que leurs listeners aient terminé. Ma
 règle : `@EventListener` pour les réactions dans la transaction qui doivent réussir ensemble ; 
 `@TransactionalEventListener(AFTER_COMMIT)` pour les effets de bord best-effort (éviction de cache,
@@ -1254,8 +1215,7 @@ class Mailer {
 
 ### Multi-tenancy & security
 
-#### Q40. Comment concevriez-vous la multi-tenancy dans une application Spring Boot / JPA, et quels sont les pièges ?
-
+#### Q40. Comment concevriez-vous la multi-tenancy dans une application Spring Boot / JPA, et quels sont les pièges ? {#design-multi-tenancy-spring-boot}
 Il existe trois modèles d'isolation, et le choix est une décision métier avant d'être technique.
 **Database-per-tenant** offre l'isolation la plus forte, la sauvegarde/restauration par tenant et le
 contrôle des voisins bruyants, mais coûte un pool de connexions par tenant et une charge opérationnelle qui
@@ -1276,7 +1236,7 @@ exactement comme le `SecurityContext` (Q22) ; un job en arrière-plan doit posit
 dans un `finally`. (2) **Les caches** — les clés `@Cacheable` doivent inclure l'id du tenant sinon le tenant A lit
 la valeur en cache du tenant B (voir Q20 pour le piège apparenté de l'objet en cache). (3) **Le dimensionnement des pools** avec
 des pools par tenant. (4) **Les migrations** doivent être exécutées sur tous les schémas/bases et être rejouables
-(Flyway par tenant, [Persistence Q37](persistence-sql-postgres.md)). (5) **Les tests** : un test automatisé qui demande la même
+(Flyway par tenant, [Persistence Q37](persistence-sql-postgres.md#safe-process-schema-migration-production)). (5) **Les tests** : un test automatisé qui demande la même
 ressource en tant que deux tenants et vérifie l'isolation est le seul filet de régression fiable. Je commencerais
 par le design schéma partagé + RLS sauf si un contrat client exige une isolation physique, et
 je garderais le résolveur de tenant derrière une seule interface afin qu'un gros client puisse plus tard être déplacé vers sa propre
@@ -1306,8 +1266,7 @@ CREATE POLICY tenant_isolation ON invoice USING (tenant_id = current_setting('ap
 -- par transaction : SELECT set_config('app.tenant', 'acme', true);
 ```
 
-#### Q41. L'autorisation doit-elle vivre dans des règles d'URL, dans la method security, ou les deux ?
-
+#### Q41. L'autorisation doit-elle vivre dans des règles d'URL, dans la method security, ou les deux ? {#authorization-live-url-rules-method}
 Les deux, car elles protègent contre des erreurs différentes. Les règles d'URL dans la
 `SecurityFilterChain` (`authorizeHttpRequests`) sont grossières, centralisées et évaluées *avant*
 l'exécution de tout contrôleur : « tout ce qui est sous `/admin/**` requiert `ROLE_ADMIN` », « `/actuator/**` est
@@ -1352,8 +1311,7 @@ class OrderService {
 
 ## 🎯 Scénarios réels
 
-### S1. Un service fonctionne parfaitement en développement local mais échoue immédiatement après le déploiement
-
+### S1. Un service fonctionne parfaitement en développement local mais échoue immédiatement après le déploiement {#service-perfectly-local-development-but}
 - **Symptômes :** Tous les tests locaux et de CI passent ; le même jar échoue au démarrage, ou démarre mais plante à la
   première requête, une fois déployé dans un vrai environnement.
 
@@ -1395,8 +1353,7 @@ class OrderService {
 
 </details>
 
-### S2. Une API REST est lente, mais seulement en production — le même endpoint est rapide en local et en staging
-
+### S2. Une API REST est lente, mais seulement en production — le même endpoint est rapide en local et en staging {#rest-api-slow-but-only}
 - **Symptômes :** La latence p99 en production est bien pire qu'en staging pour un endpoint dont la logique
   n'a pas changé, et elle n'est pas constamment lente — elle varie.
 
@@ -1407,7 +1364,7 @@ class OrderService {
 
 - **Diagnostic :** La production a un volume de données et une concurrence que le staging n'a pas — vérifier si le
   chemin lent implique une requête de base de données dont le plan d'exécution se dégrade avec la taille réelle des données (index
-  manquant qui n'importait pas sur un petit jeu de données de staging), ou s'il s'agit de contention (Q9, [Java S16](java-core-jvm.md)) reproductible uniquement sous la charge concurrente réelle de la production.
+  manquant qui n'importait pas sur un petit jeu de données de staging), ou s'il s'agit de contention (Q9, [Java S16](java-core-jvm.md#throughput-flattens-under-high-concurrency)) reproductible uniquement sous la charge concurrente réelle de la production.
   Le tracing distribué (S15) ou le flame graph d'un outil APM localisera généralement directement
   le span lent.
 - **Exemple :**
@@ -1432,8 +1389,7 @@ class OrderService {
 
 </details>
 
-### S3. Les changements dans `application.properties` ne semblent pas pris en compte après une mise à jour de config
-
+### S3. Les changements dans `application.properties` ne semblent pas pris en compte après une mise à jour de config {#changes-application-properties-don-seem}
 - **Symptômes :** Une valeur de configuration a été changée et redéployée, mais l'application en cours d'exécution
   se comporte toujours selon l'ancienne valeur.
 
@@ -1469,8 +1425,7 @@ class OrderService {
 
 </details>
 
-### S4. Un service Spring Boot plante ou ne répond plus sous forte charge
-
+### S4. Un service Spring Boot plante ou ne répond plus sous forte charge {#spring-boot-service-crashes-becomes}
 - **Symptômes :** Le service gère bien la charge normale mais plante, redémarre ou cesse totalement de répondre
   dès que le trafic franchit un certain seuil.
 
@@ -1479,7 +1434,7 @@ class OrderService {
 <details markdown="1">
 <summary>Afficher diagnostic, résolution & prévention</summary>
 
-- **Diagnostic :** Distinguer l'épuisement de ressources (heap — [Java S1](java-core-jvm.md) ; pool de threads —   [Java Q30](java-core-jvm.md), S7 ci-dessous ; pool de connexions — S7 ci-dessous) d'un vrai bug qui ne se déclenche
+- **Diagnostic :** Distinguer l'épuisement de ressources (heap — [Java S1](java-core-jvm.md#production-service-throws-outofmemoryerror-java) ; pool de threads —   [Java Q30](java-core-jvm.md#using-executorservice-creating-raw-thread), S7 ci-dessous ; pool de connexions — S7 ci-dessous) d'un vrai bug qui ne se déclenche
   que sous concurrence (une race condition, le piège de l'état mutable du singleton de Q9). Les métriques et un
   thread dump pris *pendant* l'incident (pas après le redémarrage, qui fait perdre les preuves) permettent de distinguer
   cela rapidement.
@@ -1502,8 +1457,7 @@ class OrderService {
 
 </details>
 
-### S5. L'application context échoue au démarrage avec une erreur « no unique bean » ou de conflit de beans
-
+### S5. L'application context échoue au démarrage avec une erreur « no unique bean » ou de conflit de beans {#application-context-fails-start-unique}
 - **Symptômes :** Le démarrage échoue avec `NoUniqueBeanDefinitionException` ou similaire, généralement juste
   après l'ajout d'une seconde implémentation d'une interface qui n'en avait qu'une seule auparavant.
 
@@ -1544,8 +1498,7 @@ class OrderService {
 
 </details>
 
-### S6. Un endpoint d'API renvoie par intermittence `401 Unauthorized` pour des requêtes qui devraient être authentifiées
-
+### S6. Un endpoint d'API renvoie par intermittence `401 Unauthorized` pour des requêtes qui devraient être authentifiées {#api-endpoint-intermittently-returns-401}
 - **Symptômes :** Le même client, avec les mêmes credentials, obtient parfois une réponse réussie et
   parfois un `401`, sans schéma évident du côté client.
 
@@ -1582,8 +1535,7 @@ class OrderService {
 
 </details>
 
-### S7. Les requêtes commencent à échouer avec des erreurs d'épuisement du pool de connexions à la base de données sous charge modérée
-
+### S7. Les requêtes commencent à échouer avec des erreurs d'épuisement du pool de connexions à la base de données sous charge modérée {#requests-start-failing-database-connection}
 - **Symptômes :** Des erreurs comme « connection is not available, request timed out » venant du pool de
   connexions (HikariCP par défaut), corrélées à des périodes de volume de requêtes supérieur à la normale mais
   pas extrême.
@@ -1625,12 +1577,11 @@ class OrderService {
   les métriques active/idle/pending du pool de connexions pour que l'épuisement soit visible comme une tendance avant qu'il
   ne devienne une panne.
 
-*Voir aussi :* [Persistence Q34](persistence-sql-postgres.md) (dimensionnement du pool) et [Persistence S4](persistence-sql-postgres.md) (la limite de connexions de la base elle-même).
+*Voir aussi :* [Persistence Q34](persistence-sql-postgres.md#size-hikaricp-connection-pool-common) (dimensionnement du pool) et [Persistence S4](persistence-sql-postgres.md#requests-fail-database-own-too) (la limite de connexions de la base elle-même).
 
 </details>
 
-### S8. Les appels vers un microservice aval échouent occasionnellement, et ces échecs se propagent en cascade jusqu'à faire tomber des parties sans rapport du système
-
+### S8. Les appels vers un microservice aval échouent occasionnellement, et ces échecs se propagent en cascade jusqu'à faire tomber des parties sans rapport du système {#calls-downstream-microservice-occasionally-fail}
 - **Symptômes :** Une dépendance aval devient lente ou instable, et peu après, des fonctionnalités en apparence
   sans rapport dans le service appelant commencent aussi à échouer ou à expirer.
 
@@ -1640,7 +1591,7 @@ class OrderService {
 <summary>Afficher diagnostic, résolution & prévention</summary>
 
 - **Diagnostic :** C'est le schéma classique de défaillance en cascade — les appelants se bloquent en attendant la
-  dépendance lente, épuisant un pool de threads partagé ([Java Q30](java-core-jvm.md)) dont dépendent aussi d'autres chemins de requête
+  dépendance lente, épuisant un pool de threads partagé ([Java Q30](java-core-jvm.md#using-executorservice-creating-raw-thread)) dont dépendent aussi d'autres chemins de requête
   sains, si bien que la lenteur d'une dépendance fait tomber la capacité de tout le reste.
 - **Exemple :**
 
@@ -1669,8 +1620,7 @@ class OrderService {
 
 </details>
 
-### S9. Des utilisateurs signalent un comportement ancien/périmé pendant un certain temps après le déploiement d'une nouvelle version
-
+### S9. Des utilisateurs signalent un comportement ancien/périmé pendant un certain temps après le déploiement d'une nouvelle version {#users-report-seeing-old-stale}
 - **Symptômes :** Un correctif de bug ou un changement de fonctionnalité est déployé, mais certains utilisateurs signalent que l'ancien comportement
   persiste pendant des minutes à des heures ensuite.
 
@@ -1706,8 +1656,7 @@ class OrderService {
 
 </details>
 
-### S10. Un scanner de secrets (ou une revue de sécurité) signale des credentials de base de données commités dans `application.properties`
-
+### S10. Un scanner de secrets (ou une revue de sécurité) signale des credentials de base de données commités dans `application.properties` {#secrets-scanner-security-review-flags}
 - **Symptômes :** Des mots de passe de base de données, des clés d'API ou d'autres secrets sont trouvés en clair dans un
   fichier properties/YAML versionné.
 
@@ -1744,8 +1693,7 @@ class OrderService {
 
 </details>
 
-### S11. Une méthode `@Transactional` échoue en cours de route — que deviennent réellement les changements déjà effectués ?
-
+### S11. Une méthode `@Transactional` échoue en cours de route — que deviennent réellement les changements déjà effectués ? {#transactional-method-fails-partway-happens}
 - **Symptômes :** Une opération en plusieurs étapes dans une transaction (mise à jour de A, puis mise à jour de B, puis B
   échoue) — la question est dans quel état la base de données se retrouve.
 - **Diagnostic/explication :** Par défaut, Spring annule *toute* la transaction sur une
@@ -1789,8 +1737,7 @@ class OrderService {
 
 </details>
 
-### S12. Pendant un incident, la sortie de logs attendue est absente ou incomplète en production
-
+### S12. Pendant un incident, la sortie de logs attendue est absente ou incomplète en production {#during-incident-expected-log-output}
 - **Symptômes :** Une équipe qui enquête sur un incident constate que les lignes de log précises dont elle a besoin
   (ou même aucun log, sur une fenêtre de temps) ne sont tout simplement pas présentes dans le système d'agrégation de logs.
 
@@ -1829,8 +1776,7 @@ class OrderService {
 
 </details>
 
-### S13. Le temps de démarrage de l'application a considérablement augmenté, ralentissant les déploiements et l'autoscaling
-
+### S13. Le temps de démarrage de l'application a considérablement augmenté, ralentissant les déploiements et l'autoscaling {#application-startup-time-has-crept}
 - **Symptômes :** Un service qui démarrait en quelques secondes prend maintenant 30+ secondes, ce qui
   compte directement pour les déploiements progressifs et pour la réactivité de l'autoscaling lors d'un pic
   de trafic.
@@ -1869,8 +1815,7 @@ class OrderService {
 
 </details>
 
-### S14. Un job de fond de longue durée est parfois tué en pleine exécution pendant un déploiement
-
+### S14. Un job de fond de longue durée est parfois tué en pleine exécution pendant un déploiement {#long-running-background-job-occasionally}
 - **Symptômes :** Un job batch ou une tâche async qui dure des minutes se retrouve parfois dans un
   état à moitié terminé, en corrélation avec les heures de déploiement.
 
@@ -1910,8 +1855,7 @@ class OrderService {
 
 </details>
 
-### S15. Un bug traverse plusieurs microservices, et on ne sait pas quel service de la chaîne est réellement responsable
-
+### S15. Un bug traverse plusieurs microservices, et on ne sait pas quel service de la chaîne est réellement responsable {#bug-spans-multiple-microservices-unclear}
 - **Symptômes :** Une erreur ou un problème de latence visible par l'utilisateur se produit clairement quelque part dans une chaîne de
   requêtes multi-services, mais les logs propres de chaque service paraissent anodins pris isolément.
 
@@ -1951,8 +1895,7 @@ class OrderService {
 
 </details>
 
-### S16. Un déploiement provoque une rafale de requêtes en échec pendant les quelques secondes autour de l'arrêt de l'ancienne instance
-
+### S16. Un déploiement provoque une rafale de requêtes en échec pendant les quelques secondes autour de l'arrêt de l'ancienne instance {#deployment-causes-burst-failed-requests}
 - **Symptômes :** Le taux d'erreurs monte brièvement, spécifiquement pendant chaque déploiement progressif, pour
   les requêtes qui étaient en cours quand une ancienne instance a été terminée.
 
@@ -1981,7 +1924,7 @@ class OrderService {
   se terminer avant la sortie de la JVM, s'assurer que le load balancer/service mesh désenregistre l'instance
   *avant* que le trafic ne soit coupé (pas simultanément), et donner à la période de grâce de terminaison de l'orchestrateur
   assez de marge pour que les deux étapes se terminent réellement (un hook `preStop` ajoutant un court délai
-  avant `SIGTERM` est un correctif courant spécifique à Kubernetes — voir [Full Stack & DevOps S5](fullstack-devops-k8s.md)).
+  avant `SIGTERM` est un correctif courant spécifique à Kubernetes — voir [Full Stack & DevOps S5](fullstack-devops-k8s.md#deployment-causes-burst-errors-specifically)).
 - **Prévention :** Traiter le déploiement sans interruption comme une propriété testée, pas une hypothèse — un
   simple test de charge qui continue d'envoyer du trafic pendant un déploiement et vérifie zéro requête échouée
   attrape immédiatement une régression de graceful shutdown, plutôt qu'elle ne soit découverte comme
@@ -1989,8 +1932,7 @@ class OrderService {
 
 </details>
 
-### S17. `LazyInitializationException` apparaît en production juste après un nettoyage « anodin »
-
+### S17. `LazyInitializationException` apparaît en production juste après un nettoyage « anodin » {#lazyinitializationexception-appears-production-right-after}
 - **Symptômes :** Après une release qui a positionné `spring.jpa.open-in-view=false` (pour corriger un avertissement d'épuisement
   du pool, Q18), plusieurs endpoints se mettent à retourner `500` avec
   `org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role
@@ -2039,8 +1981,7 @@ class OrderService {
 
 </details>
 
-### S18. Chaque job planifié s'exécute une fois par replica, donc les clients reçoivent des emails en double et sont débités deux fois
-
+### S18. Chaque job planifié s'exécute une fois par replica, donc les clients reçoivent des emails en double et sont débités deux fois {#every-scheduled-job-runs-once}
 - **Symptômes :** Après le passage de 1 à 3 pods, le job nocturne « send invoices » envoie chaque
   client trois fois par email ; un job de facturation mensuelle débite certains comptes deux fois. Les logs montrent le même
   job démarrant à la même seconde sur chaque pod.
@@ -2076,7 +2017,7 @@ class OrderService {
   `lockAtLeastFor` empêche un job rapide d'être relancé par un replica dont l'horloge est un peu en retard.
   Rendre aussi le job lui-même **idempotent** (marquer chaque facture `SENT` dans la même transaction, ou
   utiliser une clé unique) puisqu'un timeout de verrou ou un redémarrage de pod peut encore provoquer une double exécution rare
-  ([Messaging Q13](messaging-rabbitmq-kafka.md)). Vérifier en lançant trois replicas en local et en vérifiant une exécution par
+  ([Messaging Q13](messaging-rabbitmq-kafka.md#consumer-idempotent-even-messaging-system)). Vérifier en lançant trois replicas en local et en vérifiant une exécution par
   déclenchement.
 
 - **Prévention :** Traiter « combien d'instances exécutent ceci ? » comme une question obligatoire pour chaque
@@ -2085,8 +2026,7 @@ class OrderService {
 
 </details>
 
-### S19. Des commandes disparaissent alors que le code a « géré » l'exception et retourné un succès
-
+### S19. Des commandes disparaissent alors que le code a « géré » l'exception et retourné un succès {#orders-vanish-although-code-handled}
 - **Symptômes :** Le support signale des clients qui ont obtenu une page de confirmation mais n'ont aucune commande. Les logs
   montrent `WARN audit failed, continuing` suivi quelques millisecondes plus tard par
   `UnexpectedRollbackException: Transaction silently rolled back because it has been marked as
@@ -2127,8 +2067,7 @@ class OrderService {
 
 </details>
 
-### S20. Les threads s'accumulent et le service cesse de répondre parce qu'une dépendance a cessé de répondre
-
+### S20. Les threads s'accumulent et le service cesse de répondre parce qu'une dépendance a cessé de répondre {#threads-pile-up-service-stops}
 - **Symptômes :** Une API d'inventaire aval se met à se bloquer (elle accepte les connexions mais ne
   répond jamais). En une minute tous les threads Tomcat (200 par défaut) sont occupés, `/actuator/health`
   expire, le pod est redémarré par la liveness probe, et le nouveau pod meurt de la même façon.
@@ -2176,8 +2115,7 @@ class OrderService {
 
 </details>
 
-### S21. Un service WebFlux est moins performant que l'ancien service MVC, et la latence explose pour tout le monde en même temps
-
+### S21. Un service WebFlux est moins performant que l'ancien service MVC, et la latence explose pour tout le monde en même temps {#webflux-service-performs-worse-old}
 - **Symptômes :** Après la migration d'un service vers Spring WebFlux « pour la scalabilité », le débit est
   plus bas qu'avant ; sous charge modérée, *toutes* les requêtes se bloquent ensemble pendant des centaines de millisecondes.
   Il n'existe que quelques threads, et ils sont tous occupés.
@@ -2211,15 +2149,14 @@ class OrderService {
   ```
 
   Puis se demander si WebFlux était le bon choix : avec une stack JDBC bloquante, Spring MVC
-  sur virtual threads offre la concurrence sans le modèle de programmation réactive ([Java Q34](java-core-jvm.md)). Vérifier avec un test de charge comparant le p99 avant/après et BlockHound au vert en CI.
+  sur virtual threads offre la concurrence sans le modèle de programmation réactive ([Java Q34](java-core-jvm.md#virtual-threads-reactive-stack-webflux)). Vérifier avec un test de charge comparant le p99 avant/après et BlockHound au vert en CI.
 
 - **Prévention :** Ne choisir le réactif que lorsque *tout* le chemin (driver inclus) est non bloquant ;
   exécuter BlockHound dans la suite de tests d'intégration ; documenter sur quel thread s'exécute chaque couche.
 
 </details>
 
-### S22. Les emails « Welcome » cessent silencieusement d'être envoyés, et la mémoire grimpe, alors que l'API retourne un succès
-
+### S22. Les emails « Welcome » cessent silencieusement d'être envoyés, et la mémoire grimpe, alors que l'API retourne un succès {#welcome-emails-silently-stop-being}
 - **Symptômes :** L'endpoint d'inscription retourne `201` comme toujours, mais une part croissante des nouveaux utilisateurs
   ne reçoit jamais l'email de bienvenue ; rien n'apparaît dans les dashboards ni à l'astreinte. L'usage du heap sur les pods
   grimpe régulièrement sur plusieurs jours.
@@ -2245,7 +2182,7 @@ class OrderService {
 - **Résolution :** Rendre l'échec visible et borné. Utiliser un executor nommé et borné avec une
   politique de rejet ; retourner `CompletableFuture<Void>` et attacher des handlers `exceptionally`, ou (pour
   un email « à envoyer absolument ») ne pas l'envoyer en ligne du tout — écrire une ligne dans une table outbox dans la transaction
-  d'inscription et laisser un worker la livrer avec retry/backoff et un état dead-letter ([Messaging Q23](messaging-rabbitmq-kafka.md), [Messaging Q25](messaging-rabbitmq-kafka.md)). Enregistrer un `AsyncConfigurer#getAsyncUncaughtExceptionHandler` qui incrémente une
+  d'inscription et laisser un worker la livrer avec retry/backoff et un état dead-letter ([Messaging Q23](messaging-rabbitmq-kafka.md#dead-letter-queue-production-system), [Messaging Q25](messaging-rabbitmq-kafka.md#design-retries-backoff-kafka-rabbitmq)). Enregistrer un `AsyncConfigurer#getAsyncUncaughtExceptionHandler` qui incrémente une
   métrique et déclenche une alerte. Vérifier en pointant le client mail vers un stub qui échoue : le compteur d'échecs
   doit alerter, la file doit rester bornée, et aucune requête d'inscription ne doit être affectée.
 - **Prévention :** Des métriques pour chaque frontière asynchrone (en file, en cours, échoué, rejeté) ;
@@ -2260,30 +2197,25 @@ Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une 
 
 ### Spring Boot en production
 
-#### R1. Le temps de démarrage est passé de 15 secondes à 2 minutes. Comment enquêtez-vous ?
-
+#### R1. Le temps de démarrage est passé de 15 secondes à 2 minutes. Comment enquêtez-vous ? {#startup-time-increased-15-seconds}
 **Réponse :** Trouver la cause avant d'optimiser : activer `--debug`/`ApplicationStartup` (Actuator `/startup` avec `BufferingApplicationStartup`) pour voir le temps par bean ; chercher `@PostConstruct` lents, appels BD/HTTP eager, migrations Flyway, gros component scans, nouvelles auto-configurations, timeouts DNS/réseau.
 
 Comparer avec le build précédent via `git bisect`. Corrections : init paresseuse, scans plus ciblés, travail déplacé après le démarrage, CDS/AOT/natif si le démarrage compte.
 
-#### R2. Une erreur de dépendance circulaire apparaît après déploiement. Comment la résoudre ?
-
+#### R2. Une erreur de dépendance circulaire apparaît après déploiement. Comment la résoudre ? {#circular-dependency-error-appears-after}
 **Réponse :** Boot 2.6+ interdit les références circulaires par défaut. La vraie solution est de **conception** : extraire la logique commune dans un troisième bean, inverser la dépendance avec un événement ou une interface, ou sortir l'appel du constructeur. `@Lazy` sur un point d'injection est un correctif pragmatique, et `spring.main.allow-circular-references=true` masque le problème.
 
-#### R3. Une API fonctionne en local mais échoue en production avec `LazyInitializationException`. Quelle peut être la raison ?
-
+#### R3. Une API fonctionne en local mais échoue en production avec `LazyInitializationException`. Quelle peut être la raison ? {#one-api-locally-but-fails}
 **Réponse :** Une association lazy est lue après la fermeture de la session Hibernate.
 
 En local, `open-in-view` ou un autre jeu de données/profil masque le problème ; en production la frontière session/transaction diffère (`spring.jpa.open-in-view=false`, mapping DTO dans un contrôleur, thread asynchrone, sérialisation hors `@Transactional`).
 
 Correction : charger ce qu'il faut dans la transaction (`JOIN FETCH`, `@EntityGraph`) ou mapper vers un DTO dans le service.
 
-#### R4. Une transaction met à jour partiellement les données alors qu'un rollback était attendu. Pourquoi ?
-
+#### R4. Une transaction met à jour partiellement les données alors qu'un rollback était attendu. Pourquoi ? {#transaction-partially-updates-data-although}
 **Réponse :** Causes classiques : exception vérifiée (rollback seulement sur `RuntimeException`/`Error` par défaut) ; auto-invocation ou méthode `private`/`final` qui contourne le proxy ; exception capturée et avalée ; `REQUIRES_NEW`/autre propagation qui commit indépendamment ; ressources non transactionnelles (appel HTTP, message envoyé) ; mauvaise annotation (`javax` au lieu de Spring) ou bean non géré par Spring.
 
-#### R5. L'application lève soudainement `OutOfMemoryError`. Comment déboguer ?
-
+#### R5. L'application lève soudainement `OutOfMemoryError`. Comment déboguer ? {#application-suddenly-throws-outofmemoryerror-debug}
 **Réponse :** Lire le message (heap space, Metaspace, mémoire directe, unable to create native thread).
 
 Capturer un heap dump (`-XX:+HeapDumpOnOutOfMemoryError`) et l'analyser avec Eclipse MAT/VisualVM : dominator tree, suspects de fuite (cache non borné, `ThreadLocal`, collections statiques, gros result sets).
@@ -2292,8 +2224,7 @@ Corréler avec les logs GC et un déploiement/pic de trafic récent. Corriger la
 
 ### Spring MVC
 
-#### R6. Expliquez le flux de Spring MVC de la requête à la réponse.
-
+#### R6. Expliquez le flux de Spring MVC de la requête à la réponse. {#flow-spring-mvc-request-response}
 **Réponse :** Conteneur de servlets → filtres (sécurité, CORS) → `DispatcherServlet` → `HandlerMapping` trouve la méthode du contrôleur → `HandlerAdapter` lie les arguments (`HttpMessageConverter`, validation, `@PathVariable`) et applique les intercepteurs → contrôleur/service → valeur de retour écrite par un converter (JSON) ou résolue en vue → les exceptions passent par `@ControllerAdvice`/`HandlerExceptionResolver` → réponse renvoyée via les filtres.
 
 ## 🎤 Quiz oral
@@ -2301,7 +2232,7 @@ Corréler avec les logs GC et un déploiement/pic de trafic récent. Corriger la
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.
 
 1. Q1. Qu'est-ce que l'injection de dépendances (Dependency Injection) dans Spring, et quels sont ses avantages ?
-2. Q4. Qu'est-ce que Spring Boot, et en quoi diffère-t-il de Spring « classique » ?
+2. Q17. « Mon `@Transactional` ne fonctionne pas » — quelles sont les causes habituelles, dans l'ordre où vous les vérifiez ?
 3. Q7. Qu'est-ce que l'architecture hexagonale (ports & adapters), et quel problème résout-elle ?
 4. Q8. Pourquoi l'injection par constructeur est-elle généralement préférée à l'injection par champ ?
 5. Q20. Quel est le piège de `@Cacheable` qui retourne un objet mutable ?
@@ -2372,3 +2303,4 @@ Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute e
 > **À retenir d'abord :** (1) garder `domain` sans code framework ; (2) les dépendances pointent vers l'intérieur ; (3) imposer les règles par un test.
 
 - **Organisation hexagonale** — `domain` (aucune dépendance framework) → `application` (use cases + ports) → `infrastructure` (adapters). *Imposer avec ArchUnit (tests qui échouent quand une règle de couche est violée).*
+- **`@Transactional` sans effet** — vérifiez dans l'ordre : auto-invocation (contourne le proxy), méthode non publique/`final`, bean non géré par Spring, exception avalée ou vérifiée (pas de rollback par défaut ; ajoutez `rollbackFor`), propagation inadaptée, thread asynchrone. *Débogage : `logging.level.org.springframework.transaction=TRACE`.*

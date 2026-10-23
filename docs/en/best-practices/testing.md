@@ -203,7 +203,7 @@ assertThat(captor.getValue().to()).isEqualTo("ann@example.com");
 
 ## 🐳 Integration tests
 
-### Use Testcontainers, not H2, for database tests
+### Use Testcontainers, not H2, for database tests {#use-testcontainers-not-h2-for-database-tests}
 
 Run tests against the same database engine you use in production, in a throwaway container.
 
@@ -244,7 +244,7 @@ class ContainersConfig {
 }
 ```
 
-### Use test slices instead of `@SpringBootTest` everywhere
+### Use test slices instead of `@SpringBootTest` everywhere {#use-test-slices-instead-of-springboottest-everywhere}
 
 Pick `@WebMvcTest`, `@DataJpaTest` or `@JsonTest` for the layer you test. Use `@SpringBootTest` only for a few full flows.
 

@@ -97,7 +97,7 @@ class RequestContextFilter extends OncePerRequestFilter {
 }
 ```
 
-### Never log secrets or personal data
+### Never log secrets or personal data {#never-log-secrets-or-personal-data}
 
 Mask passwords, tokens, card numbers and personal data, and avoid logging whole request bodies.
 

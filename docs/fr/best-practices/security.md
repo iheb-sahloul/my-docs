@@ -107,7 +107,7 @@ PasswordEncoder passwordEncoder() {
 user.setPassword(passwordEncoder.encode(rawPassword));
 ```
 
-### Gardez les secrets hors du code et de Git
+### Gardez les secrets hors du code et de Git {#keep-secrets-out-of-code-and-git}
 
 Chargez les secrets depuis des variables d'environnement ou un gestionnaire de secrets (Vault, AWS Secrets Manager, secrets Kubernetes), et faites-les tourner.
 
@@ -302,7 +302,7 @@ record UserResponse(long id, String email) {}
 
 Masquez les tokens, mots de passe, numéros de carte et données personnelles avant de les loguer.
 
-**Pourquoi :** traité dans [Ne loguez jamais de secrets ni de données personnelles](observability.md#ne-loguez-jamais-de-secrets-ni-de-donnees-personnelles).
+**Pourquoi :** traité dans [Ne loguez jamais de secrets ni de données personnelles](observability.md#never-log-secrets-or-personal-data).
 
 ```java
 // ⛔

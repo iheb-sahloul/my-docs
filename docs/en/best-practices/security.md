@@ -104,7 +104,7 @@ PasswordEncoder passwordEncoder() {
 user.setPassword(passwordEncoder.encode(rawPassword));
 ```
 
-### Keep secrets out of code and Git
+### Keep secrets out of code and Git {#keep-secrets-out-of-code-and-git}
 
 Load secrets from environment variables, a secret manager (Vault, AWS Secrets Manager, Kubernetes secrets),
 and rotate them.

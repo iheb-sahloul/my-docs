@@ -4,8 +4,7 @@
 
 ### ORM & access choices
 
-#### Q1. What is an ORM, and what problem does it actually solve?
-
+#### Q1. What is an ORM, and what problem does it actually solve? {#orm-problem-solve}
 **Answer:** An ORM (Object-Relational Mapper) bridges the "impedance mismatch" between the relational model
 (tables, rows, foreign keys) and the object model (classes, references, inheritance) — mapping
 rows to objects, foreign keys to object references/collections, and translating object-graph
@@ -31,8 +30,7 @@ order.getItems().size();        // ...but each of these can silently trigger its
 the abstraction is real, but it leaks exactly where performance matters, and the two lines above
 are precisely where the N+1 problem (Q29) is born.
 
-#### Q2. When would you choose JPA/Hibernate, plain JDBC, or MyBatis?
-
+#### Q2. When would you choose JPA/Hibernate, plain JDBC, or MyBatis? {#jpa-hibernate-plain-jdbc-mybatis}
 **Answer:** JPA/Hibernate is the default for typical CRUD-heavy applications: you get object-relational
 mapping, a repository abstraction, derived query methods, and don't hand-write SQL for common
 cases. Plain JDBC (via `JdbcTemplate`) is lower-level but avoids ORM machinery entirely — useful
@@ -67,8 +65,7 @@ part of the answer, not a concession.
 
 ### Relational basics
 
-#### Q3. What's the difference between a primary key, a unique constraint, and an index?
-
+#### Q3. What's the difference between a primary key, a unique constraint, and an index? {#primary-key-unique-constraint-index}
 **Answer:** A primary key uniquely identifies each row, is implicitly `NOT NULL`, and a table has at most
 one; it also implicitly creates an index to enforce and speed up that uniqueness. A unique
 constraint enforces uniqueness on one or more columns but allows `NULL` (and typically allows
@@ -98,8 +95,7 @@ insert into users (id, email) values (2, null); -- also ok — two NULLs don't v
 to be enforced too, a plain unique constraint won't do it; that needs an explicit condition or a
 different modeling choice, not blind reliance on the constraint's default `NULL` semantics.
 
-#### Q4. Walk through normalizing a table from 1NF to 3NF.
-
+#### Q4. Walk through normalizing a table from 1NF to 3NF. {#normalizing-table-1nf-3nf}
 **Answer:** Given a flat `Orders` table with columns `order_id, customer_name, customer_email, product_name,
 product_price, quantity`: **1NF** requires atomic values and no repeating groups — if a column
 stored a comma-separated list of products per order, splitting it into one row per product line
@@ -136,8 +132,7 @@ remove update/insert/delete anomalies, not as a goal in itself; a read-heavy pat
 four-table join on every request because of textbook normalization, when the data barely
 changes, is exactly the case where deliberate denormalization (Q45) is the more senior call.
 
-#### Q5. What do the ACID properties actually guarantee?
-
+#### Q5. What do the ACID properties actually guarantee? {#acid-properties-guarantee}
 **Answer:** **Atomicity**: a transaction's operations all succeed or all roll back together, no partial
 application. **Consistency**: a transaction moves the database from one valid state to another,
 respecting constraints (foreign keys, unique constraints, check constraints). **Isolation**:
@@ -163,8 +158,7 @@ application bug, not something ACID was ever promising to catch.
 
 ### SQL
 
-#### Q6. What's the difference between `INNER JOIN` and `LEFT JOIN`, and why can a `WHERE` clause silently turn a `LEFT JOIN` into an inner one?
-
+#### Q6. What's the difference between `INNER JOIN` and `LEFT JOIN`, and why can a `WHERE` clause silently turn a `LEFT JOIN` into an inner one? {#inner-join-left-join-clause}
 **Answer:** `INNER JOIN` returns only the rows that have a match on both sides. `LEFT JOIN` returns
 *every* row of the left table and fills the right table's columns with `NULL` where no match
 exists — the tool for questions like "all customers, including those with no orders". The subtle
@@ -198,8 +192,7 @@ group by c.id;
 "just" omits customers with zero orders, discovered weeks later when totals don't reconcile.
 Note also `count(o.id)` rather than `count(*)`: `count(*)` would count the `NULL`-padded row as 1.
 
-#### Q7. What's the difference between `UNION` and `UNION ALL`, and which should be your default?
-
+#### Q7. What's the difference between `UNION` and `UNION ALL`, and which should be your default? {#union-union-all-default}
 **Answer:** Both stack the results of two queries with the same number and compatible types of
 columns. `UNION` additionally **removes duplicate rows** from the combined result, which the
 database implements with a sort or a hash aggregate over the *entire* output — extra CPU, memory
@@ -232,8 +225,7 @@ repeated rows (two identical sales lines) that a report meant to add up.
 
 ### SQL semantics
 
-#### Q8. What is the logical execution order of a SQL query's clauses — and why can't you filter on a `SELECT` alias in `WHERE`?
-
+#### Q8. What is the logical execution order of a SQL query's clauses — and why can't you filter on a `SELECT` alias in `WHERE`? {#logical-execution-order-sql-query}
 **Answer:** `FROM`/`JOIN` → `WHERE` → `GROUP BY` → `HAVING` → `SELECT` → `DISTINCT` → `ORDER BY` →
 `LIMIT`/`OFFSET`. This is the logical processing order the engine reasons about, not the order
 you physically type the clauses in. The trap: trying to filter on a column alias defined in
@@ -262,8 +254,7 @@ rule rarely know *why* — and the same underlying order is what makes `HAVING` 
 `WHERE` can't, and why a window function can't appear in `WHERE` either. It's one mental model,
 not three unrelated syntax rules to memorize separately.
 
-#### Q9. Why can you filter on an aggregate function in `HAVING` but not in `WHERE`?
-
+#### Q9. Why can you filter on an aggregate function in `HAVING` but not in `WHERE`? {#filter-aggregate-function-having-but}
 **Answer:** Because `WHERE` is evaluated before grouping/aggregation happens (per Q8's order), so aggregate
 values like `COUNT(*)` or `SUM(x)` don't exist yet at that stage of processing — there's nothing
 to filter on. `HAVING` runs after `GROUP BY`, once aggregates have actually been computed per
@@ -290,8 +281,7 @@ move on — mixing up which clause narrows *rows* versus which narrows *groups* 
 that runs and returns a plausible-looking but silently wrong number, which is a much worse
 production bug than one that fails loudly at query time.
 
-#### Q10. What are the classic `NULL` traps in SQL, and how do you avoid each?
-
+#### Q10. What are the classic `NULL` traps in SQL, and how do you avoid each? {#classic-null-traps-sql-avoid}
 **Answer:** SQL uses three-valued logic: a comparison involving `NULL` is neither true nor false but
 *unknown*, and a `WHERE` clause keeps only rows where the condition is *true*. Consequences:
 (1) `col = NULL` and `col <> NULL` never match anything — use `IS NULL` / `IS NOT NULL`, or
@@ -326,8 +316,7 @@ select * from tickets where status is distinct from 'CLOSED';  -- includes them
 correct on test data that has no `NULL`s — it breaks the day a nullable column gets its first
 `NULL` in production (see S17).
 
-#### Q11. Why does `OFFSET` pagination get slower — and less correct — the deeper you go, and what's the alternative?
-
+#### Q11. Why does `OFFSET` pagination get slower — and less correct — the deeper you go, and what's the alternative? {#offset-pagination-get-slower-less}
 **Answer:** `OFFSET n LIMIT m` cannot jump to row `n`: the database must produce and discard the
 first `n` rows in the requested order, so page 20,000 costs 20,000 × page-size rows of work even
 though only `m` are returned — latency grows linearly with depth and load on the database grows
@@ -383,8 +372,7 @@ logins     (user_id, login_date)
 Say the approach out loud first (which rows, grouped how, ordered how), then write the query, then name
 the edge case (ties, `NULL`s, empty groups). That order is what gets scored.
 
-#### Q12. Explain window functions: `row_number` vs `rank` vs `dense_rank`, running totals, `lag`, and the default frame trap.
-
+#### Q12. Explain window functions: `row_number` vs `rank` vs `dense_rank`, running totals, `lag`, and the default frame trap. {#window-functions-row-number-rank}
 **Answer:** A window function computes a value *per row* over a set of related rows (the window) **without
 collapsing rows** the way `GROUP BY` does. `PARTITION BY` defines the groups, `ORDER BY` the order inside
 each, and the optional frame (`ROWS`/`RANGE BETWEEN …`) the rows used for each calculation. Ranking
@@ -423,8 +411,7 @@ non-unique column jumps by the whole tie group, and `last_value()` returns the c
 last of the partition. Write `rows unbounded preceding` (or `rows between unbounded preceding and unbounded
 following` for `last_value`) explicitly.
 
-#### Q13. Write "the Nth highest salary" and "top 3 earners per department". How do ties change the answer?
-
+#### Q13. Write "the Nth highest salary" and "top 3 earners per department". How do ties change the answer? {#write-nth-highest-salary-top}
 **Answer:** First clarify the **tie semantics** — "second highest *distinct* salary" and "second row in
 salary order" are different questions. For a distinct Nth value, `dense_rank()` in a subquery is the general
 and readable answer; `distinct … order by … offset n-1 limit 1` is a short one that returns *no row* (not
@@ -466,8 +453,7 @@ cross join lateral (
 declaring victory — the first fails on ties and on "fewer than N", the second doesn't generalize to N. And
 `row_number()` for "top 3" silently drops the fourth employee who earns exactly the same as the third.
 
-#### Q14. How do you find and delete duplicate rows, and how do you stop them coming back?
-
+#### Q14. How do you find and delete duplicate rows, and how do you stop them coming back? {#find-delete-duplicate-rows-stop}
 **Answer:** Find them with `GROUP BY … HAVING count(*) > 1`. Delete them by numbering the rows inside each
 duplicate group with `row_number()` and removing every row except the one you decided to keep (oldest,
 newest, most complete) — decide that rule explicitly, it is the business question. If the table has no
@@ -497,8 +483,7 @@ create unique index concurrently uq_customers_email on customers (lower(email));
 with a unique tie-breaker) makes the result arbitrary — and skipping step 3 means the next race condition
 (two simultaneous sign-ups) re-creates the exact mess you just cleaned.
 
-#### Q15. What is a CTE, when is a recursive CTE the right tool, and what changed in PostgreSQL 12?
-
+#### Q15. What is a CTE, when is a recursive CTE the right tool, and what changed in PostgreSQL 12? {#cte-recursive-cte-right-tool}
 **Answer:** A CTE (`WITH name AS (…)`) names a sub-query so a complex query reads top to bottom. Before
 PostgreSQL 12 every CTE was an **optimization fence** — computed once and materialized, with outer filters
 never pushed inside. Since 12, a side-effect-free CTE referenced once is **inlined** like a subquery, and
@@ -535,8 +520,7 @@ insert into orders_archive select * from moved;
 on PostgreSQL 12+ it is usually the opposite. And a recursive CTE over data that contains a cycle (a
 manager who reports to their own report) loops forever — a guard is part of the answer, not an extra.
 
-#### Q16. How do you find consecutive sequences — "users who logged in 3+ days in a row" or the gaps in an id column ("gaps and islands")?
-
+#### Q16. How do you find consecutive sequences — "users who logged in 3+ days in a row" or the gaps in an id column ("gaps and islands")? {#find-consecutive-sequences-users-logged}
 **Answer:** The island trick: within each partition, subtract a `row_number()` from the value. For
 consecutive values the difference is **constant**, so it labels each island; group by that label to get
 start, end and length. Works for dates (`date - integer` gives a date), integers, and timestamps truncated
@@ -570,8 +554,7 @@ where next_id - id > 1;
 streak arithmetic wrong without any error. Also, the "gap" in a generated id column is usually *not* a bug
 (rolled-back inserts consume sequence values — S21).
 
-#### Q17. `EXISTS` vs `IN` vs `JOIN`: how do you write "customers with no orders" and "customers who bought *every* product in a category"?
-
+#### Q17. `EXISTS` vs `IN` vs `JOIN`: how do you write "customers with no orders" and "customers who bought *every* product in a category"? {#exists-join-write-customers-orders}
 **Answer:** A **semi-join** ("has at least one matching row") is best written `EXISTS`: it stops at the
 first match and can never multiply rows. An **anti-join** ("has none") is `NOT EXISTS` (or `LEFT JOIN … WHERE
 right.id IS NULL`) — never `NOT IN (subquery)`, which breaks on `NULL` (Q10, S17). A plain `JOIN` used as a
@@ -606,8 +589,7 @@ having count(distinct p.id) = (select count(*) from products where category_id =
 sorts/de-duplicates millions of rows in production; and the division query is wrong if you count rows
 instead of `count(distinct …)` — buying the same product twice would qualify.
 
-#### Q18. How do you build a pivot or a conditional report in one pass — `FILTER`, `CASE`, `ROLLUP`?
-
+#### Q18. How do you build a pivot or a conditional report in one pass — `FILTER`, `CASE`, `ROLLUP`? {#build-pivot-conditional-report-one}
 **Answer:** Instead of running one query per metric (or joining the same table to itself five times),
 aggregate **once** and put the condition *inside* the aggregate: `count(*) FILTER (WHERE status =
 'CANCELLED')` (PostgreSQL syntax; `sum(case when … then … end)` is the portable form). One scan of the table
@@ -638,8 +620,7 @@ group by rollup (c.country, o.status);
 produces numbers read at slightly different moments (Q25, S13); a single conditional aggregate is both faster
 and consistent.
 
-#### Q19. Show self-joins, correlated subqueries and "latest row per group" — and how you'd avoid the per-row re-execution.
-
+#### Q19. Show self-joins, correlated subqueries and "latest row per group" — and how you'd avoid the per-row re-execution. {#show-self-joins-correlated-subqueries}
 **Answer:** A **self-join** compares rows of the same table: "employees who earn more than their manager"
 joins `employees e` to `employees m` on `m.id = e.manager_id`. A **correlated subquery** references the
 outer row and is conceptually re-run for each of them ("above their department's average") — readable, but
@@ -675,8 +656,7 @@ order by customer_id, created_at desc, id desc;
 without a unique tie-breaker (`id desc`) two orders at the same timestamp make the "latest" arbitrary — a
 flaky result that only shows up when data is imported in bulk.
 
-#### Q20. Write an upsert, return the affected row, and explain where `ON CONFLICT` and `MERGE` differ.
-
+#### Q20. Write an upsert, return the affected row, and explain where `ON CONFLICT` and `MERGE` differ. {#write-upsert-return-affected-row}
 **Answer:** `INSERT … ON CONFLICT (cols) DO UPDATE SET …` is PostgreSQL's atomic "insert or update": the
 unique index arbitrates the race, so two concurrent statements cannot both insert (the very bug of S7). Use
 `EXCLUDED.col` to refer to the proposed row, and `RETURNING` to get the final row (or generated id) back
@@ -719,8 +699,7 @@ input contains duplicates), and `DO UPDATE` always writes a new row version even
 
 ### Indexing & query plans
 
-#### Q21. What index types does PostgreSQL offer beyond the default B-tree, and when do you reach for each?
-
+#### Q21. What index types does PostgreSQL offer beyond the default B-tree, and when do you reach for each? {#index-types-postgresql-offer-beyond}
 **Answer:** B-tree (the default) handles equality and range queries (`=`, `<`, `>`, `BETWEEN`, sorting) and
 covers the large majority of cases. GIN (Generalized Inverted Index) indexes composite/multi-
 valued data — full-text search `tsvector` columns, array containment (`@>`), and specifically
@@ -744,8 +723,7 @@ GIN indexes are notably more expensive to maintain on writes than a B-tree — b
 without checking the actual query pattern trades away write throughput for a lookup speed nobody
 asked for on that column.
 
-#### Q22. Why does column order matter in a composite (multi-column) index?
-
+#### Q22. Why does column order matter in a composite (multi-column) index? {#column-order-matter-composite-multi}
 **Answer:** A B-tree composite index on `(a, b)` is physically sorted by `a` first, then `b` within each `a`
 value — so it can efficiently serve a query filtering on `a` alone, or on `a` and `b` together,
 but it's largely useless for a query filtering on `b` alone (the index has no useful ordering by
@@ -773,8 +751,7 @@ checking column order against the actual query shape produces an index that sile
 serve the query it was added for — `EXPLAIN` still shows a `Seq Scan`, and the index just sits
 there paying its write cost for nothing.
 
-#### Q23. When can adding an index make performance worse?
-
+#### Q23. When can adding an index make performance worse? {#adding-index-make-performance-worse}
 **Answer:** An index is a second data structure the database must keep consistent, so it trades **write cost and space for
 read speed**, and the trade is not always worth it. It hurts when: (1) **the table is write-heavy**: every `INSERT`/`UPDATE`/
 `DELETE` must update every index (and an `UPDATE` of an indexed column defeats HOT updates in PostgreSQL), so ten indexes
@@ -787,7 +764,7 @@ so you pay maintenance for nothing; (5) **it is redundant** (`(a)` next to `(a, 
 compete with table data for `shared_buffers`/page cache, evicting useful pages. Fixes: partial indexes
 (`WHERE status = 'PENDING'`), covering `INCLUDE` columns, dropping unused indexes found via
 `pg_stat_user_indexes.idx_scan = 0`, and always validating with `EXPLAIN (ANALYZE, BUFFERS)` before and after (see
-[Persistence Q24](persistence-sql-postgres.md)). Create indexes in production with `CREATE INDEX CONCURRENTLY` to avoid
+[Persistence Q24](persistence-sql-postgres.md#read-analyze-output-diagnose-slow)). Create indexes in production with `CREATE INDEX CONCURRENTLY` to avoid
 blocking writes.
 
 **Example:**
@@ -807,10 +784,9 @@ FROM pg_stat_user_indexes WHERE idx_scan = 0 ORDER BY pg_relation_size(indexreli
 
 **Why it's a trap:** "slow query? add an index" is a reflex, and each extra index silently slows every write and every
 migration. Decide from the query plan and from the read/write ratio, not from habit
-(see also [Persistence Q22](persistence-sql-postgres.md) on composite-index column order).
+(see also [Persistence Q22](persistence-sql-postgres.md#column-order-matter-composite-multi) on composite-index column order).
 
-#### Q24. How do you read `EXPLAIN ANALYZE` output to diagnose a slow query?
-
+#### Q24. How do you read `EXPLAIN ANALYZE` output to diagnose a slow query? {#read-analyze-output-diagnose-slow}
 **Answer:** `EXPLAIN ANALYZE` actually runs the query and shows the real execution plan with actual row
 counts and timing per step, nested innermost-first. The first thing to check: `Seq Scan` (full
 table scan) on a large table where an `Index Scan` was expected — usually means a missing index,
@@ -843,8 +819,7 @@ against production-scale data.
 
 ### Transactions & concurrency
 
-#### Q25. Name the transaction isolation levels and the anomalies each one prevents.
-
+#### Q25. Name the transaction isolation levels and the anomalies each one prevents. {#name-transaction-isolation-levels-anomalies}
 **Answer:** From loosest to strictest: **Read Uncommitted** prevents nothing (dirty reads possible; rarely
 used, PostgreSQL treats it identically to Read Committed). **Read Committed** (PostgreSQL's
 default) prevents dirty reads (never sees another transaction's uncommitted changes) but allows
@@ -878,8 +853,7 @@ throughput cost — defaulting every transaction to `SERIALIZABLE` "to be safe" 
 understood anomaly for a much higher rate of serialization failures that now every code path must
 retry, which is often a worse production outcome than the anomaly it was meant to avoid.
 
-#### Q26. Explain optimistic vs. pessimistic locking in terms of actual contention, not just the definitions.
-
+#### Q26. Explain optimistic vs. pessimistic locking in terms of actual contention, not just the definitions. {#optimistic-pessimistic-locking-terms-contention}
 **Answer:** Pessimistic locking acquires a database-level lock (`SELECT ... FOR UPDATE`) the moment a row is
 read for update, blocking any other transaction from modifying (sometimes even reading) it until
 the first transaction commits or rolls back — correct under high contention on the same rows,
@@ -916,8 +890,7 @@ small set of hot rows (see S9), optimistic locking's retry storm can cost more t
 pessimistic locking would have, and picking one over the other should follow from the actual
 access pattern, not a blanket preference.
 
-#### Q27. How can PostgreSQL itself act as a work queue with `SELECT ... FOR UPDATE SKIP LOCKED`, and what are the limits?
-
+#### Q27. How can PostgreSQL itself act as a work queue with `SELECT ... FOR UPDATE SKIP LOCKED`, and what are the limits? {#postgresql-itself-act-queue-select}
 **Answer:** Several workers polling a `jobs` table would normally either process the same row
 twice or block on each other's row locks. `FOR UPDATE SKIP LOCKED` makes each worker's query
 take the first rows *nobody else currently holds* and silently skip locked ones, so N workers
@@ -927,7 +900,7 @@ claim disjoint batches concurrently with no coordination service. The correct sh
 then mark done. Holding the row lock open for the whole job would pin a connection and a
 transaction (blocking vacuum, S19), so it is not a substitute. Because the claim is committed, a
 crashed worker leaves a row stuck in `RUNNING` — you need a **reaper** that re-queues rows whose
-lease expired, which means jobs run *at least once* and handlers must be idempotent ([Messaging Q13](messaging-rabbitmq-kafka.md)). Other limits: ordering is only approximate under concurrency, there is no built-in retry
+lease expired, which means jobs run *at least once* and handlers must be idempotent ([Messaging Q13](messaging-rabbitmq-kafka.md#consumer-idempotent-even-messaging-system)). Other limits: ordering is only approximate under concurrency, there is no built-in retry
 backoff, dead-letter or fan-out, polling adds latency and load (mitigate with `LISTEN/NOTIFY`), and
 throughput tops out well below a real broker. It is an excellent fit for modest volumes where
 you want the job and its business data in the *same transaction* (a lightweight outbox, module
@@ -961,8 +934,7 @@ interview-worthy points are the claim/lease split, the reaper, and the resulting
 semantics — without them the queue works in a demo and stalls or double-processes after the
 first worker crash.
 
-#### Q28. How do you prevent two concurrent requests from booking the same appointment slot?
-
+#### Q28. How do you prevent two concurrent requests from booking the same appointment slot? {#prevent-two-concurrent-requests-booking}
 **Answer:** The invariant ("one confirmed appointment per doctor and time slot") must be enforced **by the database**, because
 application checks (`if (!exists) insert`) are check-then-act races: two requests both see the slot as free, both insert.
 Options, from strongest and simplest to heaviest: (1) **Unique constraint** on `(doctor_id, slot_start)` (a partial unique
@@ -975,7 +947,7 @@ a hot slot (`FOR UPDATE SKIP LOCKED`, `NOWAIT` help). (3) **Optimistic lock**: a
 loser's `UPDATE ... WHERE version = ?` affects 0 rows and Hibernate throws `OptimisticLockException`, which you map to 409
 or retry. Best when conflicts are rare. (4) **Serializable isolation** with retry on serialization failure: correct but
 costly and needs retry logic everywhere. Pair the database guard with an **idempotency key** so a client retry after a
-timeout returns the same booking instead of a second attempt (see [Full Stack Q10](fullstack-devops-k8s.md)). Cache
+timeout returns the same booking instead of a second attempt (see [Full Stack Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need)). Cache
 availability for browsing if you like, but never use the cache as the source of truth for the booking decision.
 
 **Example:**
@@ -1001,14 +973,13 @@ public Appointment book(BookCommand c) {
 **Why it's a trap:** `saveAndFlush` matters: with a plain `save` the violation only surfaces at commit, outside your
 `try/catch`, and the client gets a 500. Also, `SERIALIZABLE`/`REPEATABLE READ` do not help with an application-level
 `exists` check across two statements unless you retry; the constraint is the reliable answer
-(see [Persistence Q25](persistence-sql-postgres.md) for isolation levels and
-[Persistence Q26](persistence-sql-postgres.md) for optimistic vs pessimistic locking; the end-to-end design is in
-[System Design Q45](system-design.md)).
+(see [Persistence Q25](persistence-sql-postgres.md#name-transaction-isolation-levels-anomalies) for isolation levels and
+[Persistence Q26](persistence-sql-postgres.md#optimistic-pessimistic-locking-terms-contention) for optimistic vs pessimistic locking; the end-to-end design is in
+[System Design Q45](system-design.md#design-ticket-seat-booking-system)).
 
 ### ORM & Hibernate
 
-#### Q29. What's the N+1 query problem, and name two ways to fix it.
-
+#### Q29. What's the N+1 query problem, and name two ways to fix it. {#n-1-query-problem-name}
 **Answer:** Fetching a list of N parent entities, then lazily triggering one additional query *per* parent
 to fetch an associated collection (e.g. loading 50 orders, then triggering 50 separate queries
 to fetch each order's line items) — 1 query becomes N+1, and it scales linearly with result set
@@ -1040,8 +1011,7 @@ entity itself — that resolves this one query, but now *every* other query touc
 eagerly pulls the association too, and stacking two eager collections on the same entity produces
 a cartesian-product join that can be far worse than the N+1 it replaced.
 
-#### Q30. Name the four Hibernate entity states, with a usage example for each.
-
+#### Q30. Name the four Hibernate entity states, with a usage example for each. {#name-four-hibernate-entity-states}
 **Answer:** **Transient**: a plain `new Entity()`, not associated with any persistence context and not
 represented in the database — `new Order()` before `save()`. **Persistent** (managed): attached
 to an active persistence context; changes to it are automatically tracked and flushed to the DB
@@ -1075,8 +1045,7 @@ field values wholesale. If another transaction updated that row after this objec
 `merge()` silently discards that newer write with no conflict detection, unless `@Version` (Q26)
 is also in play to catch it.
 
-#### Q31. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it?
-
+#### Q31. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it? {#orm-generated-inserts-updates-often}
 **Answer:** By default, most ORMs issue one `INSERT`/`UPDATE` statement per entity, in a loop — for a batch
 of 10,000 rows, that's 10,000 round trips (or 10,000 statements even if pipelined), each paying
 per-statement overhead. Fixes: enable Hibernate's batch settings
@@ -1107,8 +1076,7 @@ different entity types are interleaved in the persistence context (e.g. saving a
 `Payment` then another `Order`), so the "batched" insert silently reverts to one-at-a-time
 statements without the missing flag.
 
-#### Q32. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor?
-
+#### Q32. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor? {#mybatis-approach-persistence-differ-jpa}
 **Answer:** JPA/Hibernate is a full ORM: you declare entity mappings and let Hibernate generate SQL, manage
 a persistence context with dirty-checking, and handle caching/lazy-loading transparently — which
 is powerful but means the actual SQL executed is somewhat indirect and can surprise you (N+1,
@@ -1138,8 +1106,7 @@ duplicate query for an entity already loaded in this transaction) is work a MyBa
 codebase has to hand-roll if the use case genuinely needs it. The right choice is about how much
 control over the exact SQL the team needs, not a blanket performance verdict.
 
-#### Q33. What does calling `flush()` on a persistence context actually do, and how does it differ from `commit()`?
-
+#### Q33. What does calling `flush()` on a persistence context actually do, and how does it differ from `commit()`? {#calling-flush-persistence-context-differ}
 **Answer:** `flush()` pushes all pending changes to the database immediately but does **not**
 commit the transaction — it just synchronizes the persistence context (the first-level cache)
 with the database early, which is sometimes necessary before running a query that needs to see
@@ -1169,8 +1136,7 @@ still fully reversible until the transaction actually ends.
 
 ### Connections & topology
 
-#### Q34. How do you size a HikariCP connection pool, and what's the common sizing mistake?
-
+#### Q34. How do you size a HikariCP connection pool, and what's the common sizing mistake? {#size-hikaricp-connection-pool-common}
 **Answer:** The common mistake is sizing the pool far larger than needed, on the intuition that "more
 connections = more throughput" — in reality, past a certain point (roughly tied to the database
 server's own CPU core count and its ability to context-switch between active queries), adding
@@ -1198,8 +1164,7 @@ slow-query-under-load complaint — past the database's actual concurrency sweet
 connections adds context-switching and lock contention on the server, making latency *worse*, not
 better, which is the opposite of what the change was meant to achieve.
 
-#### Q35. How do you configure and safely route to multiple data sources in one Spring application?
-
+#### Q35. How do you configure and safely route to multiple data sources in one Spring application? {#configure-safely-route-multiple-data}
 **Answer:** Define each `DataSource` as its own `@Bean`, mark the default one `@Primary`, bind each to its
 own configuration prefix, and — critically for correctness, not just wiring — configure separate
 `EntityManagerFactory`/`TransactionManager` beans per data source if they're genuinely
@@ -1233,8 +1198,7 @@ the second write leaves the first one committed, and no annotation in this code 
 that; the fix is a design decision (idempotent retries, a saga, or a single source of truth), not
 a missing configuration flag.
 
-#### Q36. What breaks when you naively add a read replica for scaling reads?
-
+#### Q36. What breaks when you naively add a read replica for scaling reads? {#breaks-naively-add-read-replica}
 **Answer:** The obvious failure mode: **read-after-write inconsistency** — a client writes to the primary,
 then immediately reads from a replica that hasn't received (or applied) that write yet due to
 replication lag, and sees stale data, which is especially jarring for a user who just submitted
@@ -1259,12 +1223,11 @@ Order order = orderRepository.findById(orderId); // 404 or stale — replica has
 consistency cost attached — the first production incident from this is almost always exactly the
 create-then-redirect flow above, discovered by a confused user rather than caught in review.
 
-*See also:* [System Design Q21](system-design.md) for read-your-own-writes strategies across the whole architecture.
+*See also:* [System Design Q21](system-design.md#read-own-writes-break-under) for read-your-own-writes strategies across the whole architecture.
 
 ### Schema & modeling
 
-#### Q37. What's the safe process for a schema migration in a production database, and what tools manage this?
-
+#### Q37. What's the safe process for a schema migration in a production database, and what tools manage this? {#safe-process-schema-migration-production}
 **Answer:** Flyway and Liquibase are the standard tools — each migration is a versioned, tracked script
 (SQL or, for Liquibase, also XML/YAML) applied in order and recorded in a migrations-history
 table, so the schema's current state is always derivable and repeatable across environments. The
@@ -1296,8 +1259,7 @@ against production simply because production has orders of magnitude more rows a
 traffic staging never had; the multi-step pattern isn't extra caution, it's the only version that
 scales to production's actual size and concurrency.
 
-#### Q38. When should a column be `JSONB` versus a properly normalized set of tables?
-
+#### Q38. When should a column be `JSONB` versus a properly normalized set of tables? {#column-jsonb-properly-normalized-set}
 **Answer:** `JSONB` is appropriate for genuinely semi-structured, sparse, or schema-varying data — a
 "custom attributes" bag on a product that varies wildly by category, or an audit log's payload
 that isn't queried structurally, only stored and occasionally retrieved whole. It's a poor fit
@@ -1329,8 +1291,7 @@ never revisiting that decision once the field becomes a stable, frequently-filte
 how a GIN index ends up papering over what should have been a normalized column with a real
 foreign key and `NOT NULL` constraint from the start.
 
-#### Q39. Soft deletes vs. hard deletes — what's the actual trade-off?
-
+#### Q39. Soft deletes vs. hard deletes — what's the actual trade-off? {#soft-deletes-hard-deletes-trade}
 **Answer:** Soft deletes (a `deleted_at` timestamp or `is_deleted` flag, with rows never physically removed)
 preserve audit history, support "undo," and avoid foreign-key cascade surprises (see S15) —
 but every single query in the codebase now must remember to filter out soft-deleted rows
@@ -1366,12 +1327,11 @@ scoped to non-deleted rows.
 
 ### Schema & indexing design
 
-#### Q40. Auto-increment `bigint`, random UUID (v4) or time-ordered UUID (v7) for primary keys — how do you choose?
-
+#### Q40. Auto-increment `bigint`, random UUID (v4) or time-ordered UUID (v7) for primary keys — how do you choose? {#auto-increment-bigint-random-uuid}
 **Answer:** Each option optimizes something different. A **`bigint` identity/sequence** is small (8 bytes), the
 index is dense and inserts always go to the right-most B-tree page (excellent locality and cache
 behaviour), and joins are fast; the downsides are that ids are guessable (enumeration attacks
-unless authorization is correct, [Spring Q41](spring-architecture.md)), they leak volume ("we have 4,231 orders"),
+unless authorization is correct, [Spring Q41](spring-architecture.md#authorization-live-url-rules-method)), they leak volume ("we have 4,231 orders"),
 they need a central sequence, and merging data from several databases collides. A **random UUIDv4**
 can be generated anywhere without coordination and is unguessable, but it is 16 bytes and
 *uniformly random*, so every insert lands on a random leaf page of the primary key index: page
@@ -1405,8 +1365,7 @@ create table orders (
 turns every insert into a random page write on a big index — fine at 1M rows, painful at 500M — and
 that the key type is almost impossible to change later.
 
-#### Q41. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows.
-
+#### Q41. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows. {#design-schema-indexing-strategy-high}
 **Answer:** Favor an append-only insert pattern (avoid updates where possible — updates on a huge table
 fight with vacuum and bloat, see S14) and partition the table by time (native PostgreSQL range
 partitioning on a timestamp column) so that queries scoped to a recent time window only touch
@@ -1445,8 +1404,7 @@ mistake, not caution — every additional index is write-amplification paid on e
 and at billions of rows, indexes that were never actually used by a real query pattern are pure
 cost with no offsetting benefit.
 
-#### Q42. Design the indexing for a search screen that filters orders by status and date, looks customers up by e-mail case-insensitively, and supports "contains" text search. Which index features do you use?
-
+#### Q42. Design the indexing for a search screen that filters orders by status and date, looks customers up by e-mail case-insensitively, and supports "contains" text search. Which index features do you use? {#design-indexing-search-screen-filters}
 **Answer:** This is a toolkit question: match each query shape to the smallest index that serves it, since every
 index costs write throughput, disk and vacuum work. (1) **Composite B-tree** for the main
 list — equality columns first, range/sort column last (Q22): `(customer_id, status, created_at desc)`.
@@ -1484,8 +1442,7 @@ create index concurrently idx_x on orders (created_at);                         
 **Why it's a trap:** answering "add an index on every filtered column" — each index taxes every write,
 and the wrong shape (wrong column order, `lower()` mismatch, leading wildcard) is silently ignored by the planner.
 
-#### Q43. When is table partitioning the right answer in PostgreSQL, and what does it cost you?
-
+#### Q43. When is table partitioning the right answer in PostgreSQL, and what does it cost you? {#table-partitioning-right-answer-postgresql}
 **Answer:** Declarative partitioning (`PARTITION BY RANGE (created_at)`, or `LIST`/`HASH`) splits one
 logical table into physical child tables. It pays off in three situations: **retention** (dropping
 or detaching an old partition is an instant metadata operation, whereas `DELETE`-ing 200 million
@@ -1530,8 +1487,7 @@ on the partition key — you pay planning overhead and lose global uniqueness fo
 
 ### Evolution & trade-offs
 
-#### Q44. How do you safely add a `NOT NULL` column to a 50-million-row table with zero downtime?
-
+#### Q44. How do you safely add a `NOT NULL` column to a 50-million-row table with zero downtime? {#safely-add-null-column-50}
 **Answer:** Never add `NOT NULL` directly in one migration on a huge table under concurrent write load — in
 older Postgres versions this would rewrite the entire table under an exclusive lock; even with
 modern Postgres's improvements (adding a column with a constant default no longer rewrites the
@@ -1575,8 +1531,7 @@ full-table validation — the difference only shows up at production's actual sc
 precisely why this has to be a deliberate, tested pattern rather than something discovered the
 hard way during a deploy.
 
-#### Q45. When do you deliberately denormalize, and how do you keep the denormalized copy consistent?
-
+#### Q45. When do you deliberately denormalize, and how do you keep the denormalized copy consistent? {#deliberately-denormalize-keep-denormalized-copy}
 **Answer:** Denormalize when a read pattern is both extremely hot and expensive to compute from normalized
 data on every request — a running total, a frequently-displayed aggregate (comment count on a
 post, follower count on a profile), or data joined so often that the join cost itself is the
@@ -1611,8 +1566,7 @@ follow-up — what happens when an update event is missed, and how would anyone 
 the reconciliation mechanism up front is what separates a senior answer from a plausible-sounding
 one that hasn't been tested against a real failure mode.
 
-#### Q46. Walk me through optimizing a slow, complex query step by step.
-
+#### Q46. Walk me through optimizing a slow, complex query step by step. {#optimizing-slow-complex-query-step}
 **Answer:** Follow a fixed loop and change **one thing at a time**, re-measuring after each: (1) get the real
 plan — `EXPLAIN (ANALYZE, BUFFERS)` on production-sized data (Q24); (2) find the *dominant* node (the one
 with most time, or loops × per-loop cost), not the first suspicious one; (3) check estimates vs actuals —
@@ -1770,8 +1724,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 ## 🎯 Real-world scenarios
 
-### S1. A query that used to be fast has become steadily slower as the table has grown
-
+### S1. A query that used to be fast has become steadily slower as the table has grown {#query-used-fast-has-become}
 - **Symptoms:** A specific query's latency has crept up over months in proportion to table
   growth, well beyond what row-count growth alone should cause.
 
@@ -1803,8 +1756,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S2. An APM tool flags dozens of near-identical queries firing for a single page load
-
+### S2. An APM tool flags dozens of near-identical queries firing for a single page load {#apm-tool-flags-dozens-near}
 - **Symptoms:** A page that lists 50 items triggers 51+ database queries — one for the list, and
   one per item for an associated collection.
 
@@ -1832,8 +1784,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S3. Two concurrent transactions deadlock, and one is aborted by the database
-
+### S3. Two concurrent transactions deadlock, and one is aborted by the database {#two-concurrent-transactions-deadlock-one}
 - **Symptoms:** Postgres logs a `deadlock detected` error, naming the two conflicting processes
   and the locks each held while waiting on the other; one transaction is automatically rolled
   back to break the cycle.
@@ -1868,8 +1819,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S4. Requests fail with the database's own "too many connections" error, independent of the application-level pool size
-
+### S4. Requests fail with the database's own "too many connections" error, independent of the application-level pool size {#requests-fail-database-own-too}
 - **Symptoms:** The application's HikariCP pool isn't exhausted (metrics show headroom), but the
   database itself rejects new connections.
 
@@ -1902,8 +1852,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S5. A schema migration locks a production table and causes a brief outage
-
+### S5. A schema migration locks a production table and causes a brief outage {#schema-migration-locks-production-table}
 - **Symptoms:** A deployment's migration step causes a spike in request latency or outright
   timeouts for the duration the migration ran, on a table under active read/write traffic.
 
@@ -1937,8 +1886,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S6. A user submits a form, is redirected to a confirmation page, and sees their submission is missing
-
+### S6. A user submits a form, is redirected to a confirmation page, and sees their submission is missing {#user-submits-form-redirected-confirmation}
 - **Symptoms:** Intermittent, and specifically tied to write-then-immediate-read flows — the same
   user reloading a moment later sees the data correctly.
 
@@ -1968,8 +1916,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S7. Two near-simultaneous requests both create a row for what should be a unique entity, resulting in duplicates
-
+### S7. Two near-simultaneous requests both create a row for what should be a unique entity, resulting in duplicates {#two-near-simultaneous-requests-both}
 - **Symptoms:** Under concurrent load (e.g. a user double-clicking submit, or a retried request
   racing the original), two rows exist for what the business logic assumed could only ever be
   one (two accounts for one email, two orders for one idempotency key).
@@ -2008,8 +1955,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S8. `SELECT COUNT(*)` on a large table is unexpectedly slow and shows up as a hot query
-
+### S8. `SELECT COUNT(*)` on a large table is unexpectedly slow and shows up as a hot query {#select-count-large-table-unexpectedly}
 - **Symptoms:** A dashboard or pagination feature calling `COUNT(*)` on a multi-million-row table
   takes seconds, disproportionate to how simple the query looks.
 
@@ -2044,8 +1990,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S9. Optimistic-locking failures spike sharply during a specific high-traffic period
-
+### S9. Optimistic-locking failures spike sharply during a specific high-traffic period {#optimistic-locking-failures-spike-sharply}
 - **Symptoms:** `OptimisticLockException` (or equivalent version-conflict error) rates climb
   during a known high-concurrency window (a flash sale, a popular event), causing a wave of
   failed updates that the application surfaces as user-facing errors or silent retries.
@@ -2086,8 +2031,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S10. After an application crash mid-operation, the database is left in an inconsistent state
-
+### S10. After an application crash mid-operation, the database is left in an inconsistent state {#after-application-crash-mid-operation}
 - **Symptoms:** A multi-step business operation (debit account A, credit account B) is found
   partially applied after a crash — one side happened, the other didn't.
 
@@ -2128,8 +2072,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S11. Queries filtering on a `JSONB` column get slower as the table grows, despite the column being indexed
-
+### S11. Queries filtering on a `JSONB` column get slower as the table grows, despite the column being indexed {#queries-filtering-jsonb-column-get}
 - **Symptoms:** A query like `WHERE metadata @> '{"status": "active"}'` on a `JSONB` column
   degrades with table growth even though "there's an index."
 
@@ -2162,8 +2105,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S12. A nightly batch job that updates millions of rows one at a time starts timing out or overwhelming the database
-
+### S12. A nightly batch job that updates millions of rows one at a time starts timing out or overwhelming the database {#nightly-batch-job-updates-millions}
 - **Symptoms:** A batch job that loops through rows and issues one `UPDATE` per row takes
   increasingly long as data volume grows, and during its run other queries against the same
   table slow down noticeably.
@@ -2206,8 +2148,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S13. A report occasionally shows numbers that don't add up, only under concurrent write activity
-
+### S13. A report occasionally shows numbers that don't add up, only under concurrent write activity {#report-occasionally-shows-numbers-don}
 - **Symptoms:** A multi-query report (e.g. sum several tables' values that should reconcile) is
   correct when the system is idle but occasionally inconsistent when generated while writes are
   happening concurrently.
@@ -2252,8 +2193,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S14. Table and index sizes keep growing even though the row count is roughly stable
-
+### S14. Table and index sizes keep growing even though the row count is roughly stable {#table-index-sizes-keep-growing}
 - **Symptoms:** Disk usage for a frequently-updated table climbs steadily, disproportionate to
   its actual (stable or slowly growing) live row count, and query performance degrades alongside
   it.
@@ -2290,8 +2230,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S15. Deleting one row unexpectedly deletes a large number of related rows across several tables
-
+### S15. Deleting one row unexpectedly deletes a large number of related rows across several tables {#deleting-one-row-unexpectedly-deletes}
 - **Symptoms:** Removing what looked like a single, contained entity (e.g. deleting a user)
   cascades into deleting orders, payment records, or audit history that the team assumed would
   be preserved.
@@ -2329,8 +2268,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S16. Immediately after a deployment that includes a schema migration, the application starts throwing errors about a missing or unexpected column
-
+### S16. Immediately after a deployment that includes a schema migration, the application starts throwing errors about a missing or unexpected column {#immediately-after-deployment-includes-schema}
 - **Symptoms:** Errors like "column does not exist" or a mapping failure appear right after
   deploy, but only on some instances, or only briefly.
 
@@ -2366,8 +2304,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S17. A "customers who never ordered" report suddenly returns zero rows
-
+### S17. A "customers who never ordered" report suddenly returns zero rows {#customers-never-ordered-report-suddenly}
 - **Symptoms:** A marketing query that has listed ~12,000 customers with no orders every week
   now returns an empty result. Nobody changed the query and there were no errors; the customer
   and order counts look normal.
@@ -2410,8 +2347,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S18. An infinite-scroll feed and a CSV export get slower each week, and users see repeated or missing rows
-
+### S18. An infinite-scroll feed and a CSV export get slower each week, and users see repeated or missing rows {#infinite-scroll-feed-csv-export}
 - **Symptoms:** The admin "audit events" screen and a nightly export both use paging. Loading
   the last pages now takes 8+ seconds and the database shows periodic CPU spikes whenever a
   crawler or export walks the list. Separately, the export file contains some rows twice and is
@@ -2460,8 +2396,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S19. `ALTER TABLE` hangs, deploys stall and the app slows, with dozens of sessions "idle in transaction"
-
+### S19. `ALTER TABLE` hangs, deploys stall and the app slows, with dozens of sessions "idle in transaction" {#alter-table-hangs-deploys-stall}
 - **Symptoms:** A routine migration waits indefinitely and the whole `orders` table becomes
   unresponsive behind it. `pg_stat_activity` shows connections in state `idle in transaction`,
   some for hours. Connection-pool usage is high although CPU and I/O are low, and table bloat
@@ -2489,7 +2424,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
   Map the oldest `last_query` to code: typically a `@Transactional` method that makes a slow
   HTTP call or waits on user input after its first query, or a connection leaked without
-  `commit`/`rollback` ([Spring Q18](spring-architecture.md) for the OSIV variant).
+  `commit`/`rollback` ([Spring Q18](spring-architecture.md#open-view-osiv-default-many) for the OSIV variant).
 
 - **Example:**
 
@@ -2513,8 +2448,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S20. Two workers process the same queued job, and sometimes one worker sits blocked waiting for the other
-
+### S20. Two workers process the same queued job, and sometimes one worker sits blocked waiting for the other {#two-workers-process-same-queued}
 - **Symptoms:** A `jobs`-table-based worker fleet occasionally sends the same invoice twice.
   After adding more workers, throughput barely improves and some workers show long waits, while
   others process nothing.
@@ -2549,8 +2483,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S21. Inserts start failing with `duplicate key value violates unique constraint "orders_pkey"` after a data import
-
+### S21. Inserts start failing with `duplicate key value violates unique constraint "orders_pkey"` after a data import {#inserts-start-failing-duplicate-key}
 - **Symptoms:** After restoring a subset of production into staging (or loading a legacy CSV),
   the app fails on the first few new orders: `ERROR: duplicate key value violates unique
   constraint "orders_pkey" — Key (id)=(10001) already exists`. It fails intermittently, then
@@ -2591,8 +2524,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S22. A report that took 2 seconds all week takes 20 minutes on Monday morning, with no code change
-
+### S22. A report that took 2 seconds all week takes 20 minutes on Monday morning, with no code change {#report-took-2-seconds-all}
 - **Symptoms:** After the weekend's bulk load (~20 million rows imported into `transactions`),
   the same dashboard query is suddenly 500x slower and saturates CPU. A colleague's `EXPLAIN` a
   few hours later shows a fast plan.
@@ -2630,8 +2562,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S23. A revenue report is suddenly 3× too high after someone "just added one more join"
-
+### S23. A revenue report is suddenly 3× too high after someone "just added one more join" {#revenue-report-suddenly-3-too}
 - **Symptoms:** Finance notices monthly revenue on the dashboard no longer matches the accounting
   export. Order counts also look inflated, but only for orders that have several line items *and*
   several payments. No error, no failing test.
@@ -2671,8 +2602,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S24. Two concurrent checkouts both succeed and the stock goes negative (or a balance loses an update)
-
+### S24. Two concurrent checkouts both succeed and the stock goes negative (or a balance loses an update) {#two-concurrent-checkouts-both-succeed}
 - **Symptoms:** Under load the `inventory` quantity ends at −3, or a wallet balance is lower than the sum of
   its transactions. It never reproduces in a single-user test, and no exception is logged.
 
@@ -2709,8 +2639,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S25. The search box is instant on staging and takes 12 s in production
-
+### S25. The search box is instant on staging and takes 12 s in production {#search-box-instant-staging-takes}
 - **Symptoms:** Searching customers by e-mail or by "contains" text uses 100% of a CPU core and times out.
   There *is* an index on `email`, and `EXPLAIN` still shows a sequential scan.
 
@@ -2747,8 +2676,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S26. A "delete old rows" job runs for hours, the replicas fall behind, and the table doesn't get smaller
-
+### S26. A "delete old rows" job runs for hours, the replicas fall behind, and the table doesn't get smaller {#delete-old-rows-job-runs}
 - **Symptoms:** A retention job executes `delete from events where created_at < now() - interval '90 days'`
   (≈ 150 million rows). Replication lag climbs to minutes, disk usage *grows*, and queries on `events` get
   slower after the job — even though the row count dropped.
@@ -2785,8 +2713,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S27. Hibernate logs `firstResult/maxResults specified with collection fetch; applying in memory`
-
+### S27. Hibernate logs `firstResult/maxResults specified with collection fetch; applying in memory` {#hibernate-logs-firstresult-maxresults-specified}
 - **Symptoms:** A paginated list endpoint (`PageRequest.of(0, 20)`) over orders with their items started
   to use gigabytes of heap and take seconds, though the page only shows 20 rows. The warning
   `HHH90003004: firstResult/maxResults specified with collection fetch; applying in memory` is in the log.
@@ -2828,8 +2755,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S28. The daily report is off by one around midnight, and again twice a year
-
+### S28. The daily report is off by one around midnight, and again twice a year {#daily-report-off-one-around}
 - **Symptoms:** "Orders per day" for yesterday changes when the report is re-run from another server or
   region; a few orders created at 23:30 appear on the next day; counts are wrong on the two days a year the
   clocks change.
@@ -2867,8 +2793,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S29. Long reports on the read replica get cancelled with "conflict with recovery"
-
+### S29. Long reports on the read replica get cancelled with "conflict with recovery" {#long-reports-read-replica-get}
 - **Symptoms:** Analytics queries that run for minutes on the streaming replica sometimes die with
   `ERROR: canceling statement due to conflict with recovery — User query might have needed to see row versions that must be removed`.
   The same query succeeds on the primary or when retried at night.
@@ -2898,8 +2823,7 @@ globally, or stopping at step 6 before checking whether step 2 was enough.
 
 </details>
 
-### S30. The same query takes 5 ms in `psql` but 4 s from the application, only after it has been running a while
-
+### S30. The same query takes 5 ms in `psql` but 4 s from the application, only after it has been running a while {#same-query-takes-5-ms}
 - **Symptoms:** `select * from orders where customer_id = ?` is fast for most customers. After a few
   requests per connection, certain customers (those with millions of orders) become very slow from the Java
   app, while the identical SQL pasted into `psql` stays fast.
@@ -2939,43 +2863,39 @@ Questions reported from real interviews, grouped by topic. Each has a short mode
 
 ### Performance & troubleshooting
 
-#### R1. A query that used to take 50 ms now takes 10 seconds. How do you troubleshoot it?
-
+#### R1. A query that used to take 50 ms now takes 10 seconds. How do you troubleshoot it? {#query-used-take-50-ms}
 **Answer:** `EXPLAIN (ANALYZE, BUFFERS)` and compare with the old plan: seq scan instead of index, bad row estimates, join order change. Check stale statistics (`ANALYZE`), table/index bloat, data growth, a new parameter value (skewed data, generic plan), a dropped/unused index, lock waits (`pg_stat_activity`), or a changed ORM query (N+1, `LIKE '%x'`, function on indexed column). Fix at the root: index, rewrite, statistics, partition.
 
-#### R2. Your database CPU reaches 100% during peak hours. What steps would you take?
-
+#### R2. Your database CPU reaches 100% during peak hours. What steps would you take? {#database-cpu-reaches-100-during}
 **Answer:** Find the top consumers with `pg_stat_statements` (total time, calls) and fix the worst few: missing indexes, N+1, unbounded queries. Check connection storms (pool sizes, pgbouncer) and autovacuum. Then reduce load: cache reads, read replicas, batch writes. Scale up/out only after the queries are healthy.
 
-#### R3. How would you identify and resolve a database bottleneck?
-
+#### R3. How would you identify and resolve a database bottleneck? {#identify-resolve-database-bottleneck}
 **Answer:** Classify it: CPU, I/O, memory (cache hit ratio), locks, or connections. Use metrics plus `pg_stat_statements`, `pg_locks`, slow-query log and `EXPLAIN`. Resolve by the class: indexes/rewrites for CPU and I/O, shorter transactions and consistent lock ordering for locks, pooling for connections, then replicas/partitioning/sharding. Verify with before/after latency percentiles.
 
-#### R4. A table has grown to hundreds of millions of rows. How do you improve performance?
-
+#### R4. A table has grown to hundreds of millions of rows. How do you improve performance? {#table-has-grown-hundreds-millions}
 **Answer:** Index for the actual access patterns (composite, partial, covering), keyset instead of `OFFSET` pagination, **partition** by time/tenant so old partitions are pruned or dropped, archive cold data, keep stats fresh, tune autovacuum, use `BRIN` for append-only time series, pre-aggregate heavy reports, and move analytics to a replica or warehouse.
 
 ### Concurrency
 
-#### R5. Two transactions update the same row simultaneously. How do you handle concurrency?
-
+#### R5. Two transactions update the same row simultaneously. How do you handle concurrency? {#two-transactions-update-same-row}
 **Answer:** The database serialises row writes: the second waits for the first to commit. To avoid *lost updates* on read-modify-write, use an atomic `UPDATE`, `SELECT … FOR UPDATE`, optimistic `@Version`, or `SERIALIZABLE`/`REPEATABLE READ` with retry. Keep transactions short and lock rows in a consistent order to avoid deadlocks.
 
-#### R6. Would you choose optimistic or pessimistic locking for an inventory system? Why?
-
+#### R6. Would you choose optimistic or pessimistic locking for an inventory system? Why? {#optimistic-pessimistic-locking-inventory-system}
 **Answer:** Depends on contention. Low conflict (many different items): **optimistic** (`@Version`, retry), no locks held, scales well. A hot item (flash sale): **pessimistic** (`FOR UPDATE`) or an atomic guarded update `UPDATE stock SET qty = qty - :n WHERE id = :id AND qty >= :n`, which is often the best of both. Never check stock in Java then write.
 
 ### JPA / Hibernate
 
-#### R7. What is the N+1 problem in Hibernate/JPA and how do you solve it?
-
+#### R7. What is the N+1 problem in Hibernate/JPA and how do you solve it? {#n-1-problem-hibernate-jpa}
 **Answer:** One query loads N parents, then one extra query per parent loads a lazy association (1 + N queries). Detect with SQL logging or a query counter in tests. Fix with `JOIN FETCH`, `@EntityGraph`, `@BatchSize`/`default_batch_fetch_size`, or a DTO projection. Beware pagination with collection fetch (use two queries).
+
+#### R8. The appointments table has billions of rows. How do you keep queries and maintenance fast? {#appointments-table-has-billions-rows}
+**Answer:** First check the indexes match the access paths (`(practitioner_id, start_at)` for calendars, `(patient_id, start_at)` for a patient's history). Then **partition**: by range on `start_at` (monthly) when most queries are time-bounded, so old partitions can be detached and archived instead of deleted row by row, and autovacuum works on smaller tables. Partition pruning only happens when the query filters on the partition key. Unique and exclusion constraints on a partitioned table must include the partition key, which conflicts with the no-overlap rule on a time range ([Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)). Options: hash-partition by `practitioner_id` instead (exclusion constraints on partitioned tables need PostgreSQL 17+), or keep a smaller "upcoming appointments" table with the constraint and move past rows to a partitioned history table.
 
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.
 
-1. Q4. Walk through normalizing a table from 1NF to 3NF.
+1. Q23. When can adding an index make performance worse?
 2. Q8. What is the logical execution order of a SQL query's clauses — and why can't you filter on a `SELECT` alias in `WHERE`?
 3. Q29. What's the N+1 query problem, and name two ways to fix it.
 4. Q39. Soft deletes vs. hard deletes — what's the actual trade-off?
@@ -3066,3 +2986,4 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 - **Partitioning** — pays for retention (drop a partition) and pruning (skipping partitions). *PK must include the partition key, queries must filter on it, create partitions ahead; don't partition before it hurts.*
 - **Big deletes** — batch them or drop partitions. *One giant `DELETE` = WAL (write-ahead log) flood, replica lag, bloat.*
 - **Sequences** — explicit ids don't advance the sequence: `setval` after imports. *Id gaps are normal.*
+- **Index that hurts** — every index slows writes and takes space; it can also mislead the planner or be ignored (low selectivity, function on the column, type mismatch). *Check `EXPLAIN (ANALYZE)` and `pg_stat_user_indexes`; drop unused ones.*

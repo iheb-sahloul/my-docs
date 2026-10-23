@@ -18,6 +18,11 @@
 | 12 | [`Sécurité`](security.md) | OAuth2/OIDC, JWT, Spring Security, injection/XSS/CSRF/IDOR/SSRF, supply chain |
 | 13 | [`Live coding`](coding.md) | Méthode, Big-O, patterns clés (hachage, fenêtres, BFS/DFS, tas, DP), pièges Java, take-homes |
 | 14 | [`Cloud (AWS)`](cloud-aws.md) | IAM, VPC, ECS/EKS/Lambda, données & messaging managés, hébergement SPA, HA, coûts |
+| 15 | [`Conception d'API REST`](rest-api.md) | Pagination, PUT vs PATCH, ETag, problem details, cache, évolution |
+| 16 | [`Performance & tests de charge`](performance-load-testing.md) | k6/Gatling, percentiles, coordinated omission, méthode USE, capacité |
+| 17 | [`Observabilité`](observability.md) | RED/USE, corrélation, cardinalité, échantillonnage, alertes de burn rate SLO |
+| 18 | [`Kotlin`](kotlin.md) | Null safety, classes sealed/value, coroutines, plugins Spring + JPA, interop Java |
+| 19 | [`Cache & Redis`](caching-redis.md) | Structures de données Redis, éviction, stampede, pièges de Spring Cache, verrous, Cluster |
 | ✓ | [`Entretien blanc`](mock-interview.md)                      | Checklist de préparation pour la veille                               |
 
 Les liens sélectionnés par sujet se trouvent dans **Ressources › [Pour aller plus loin](../resources/further-reading.md)**.
@@ -74,7 +79,7 @@ Dérouler ce plan à voix haute montre une méthode d'ingénieur plutôt qu'une 
 - **Donnez des exemples concrets tirés de votre expérience.**
 - **Admettez ce que vous ne savez pas**, puis raisonnez.
 - **En system design**, clarifiez les exigences (charge, latence, cohérence) avant de dessiner.
-- **En coding** ([module 14](coding.md)), discutez de la complexité, des cas limites et des tests.
+- **En coding** ([module 13](coding.md)), discutez de la complexité, des cas limites et des tests.
 
 ## Checklist finale
 

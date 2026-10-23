@@ -4,8 +4,7 @@
 
 ### React basics
 
-#### Q1. What is JSX, and what does it actually compile to?
-
+#### Q1. What is JSX, and what does it actually compile to? {#jsx-compile}
 JSX is syntactic sugar that lets you write markup-like syntax in JavaScript;
 `<div className="a">{text}</div>` compiles (via Babel or the TypeScript compiler) to a plain
 function call — historically `React.createElement('div', {className: 'a'}, text)`, or with the
@@ -32,8 +31,7 @@ const el = _jsx(Button, { color: 'blue', children: 'Save' });
 <Button />  // capitalized = reference to the Button variable
 ```
 
-#### Q2. What are hooks, and what problem did they solve versus class components?
-
+#### Q2. What are hooks, and what problem did they solve versus class components? {#hooks-problem-solve-class-components}
 Hooks (`useState`, `useEffect`, etc.) let a function component hold state and trigger side
 effects without being a class — before hooks, stateful logic required class components with
 `this.state`/`this.setState` and lifecycle methods (`componentDidMount`,
@@ -60,8 +58,7 @@ function useChat(id: string, onMsg: (m: string) => void) {
 }
 ```
 
-#### Q3. What's the difference between props and state, and why does data flow "down" only?
-
+#### Q3. What's the difference between props and state, and why does data flow "down" only? {#props-state-data-flow-down}
 Props are the inputs a component *receives* from its parent; state is data a component *owns* and
 can change over time. A component must treat its props as read-only — it never assigns to
 `props.x` — while it updates its own state through the setter (`setX`), which schedules a
@@ -88,8 +85,7 @@ function Child({ count, onInc }: { count: number; onInc: () => void }) {
 }
 ```
 
-#### Q4. `useState` vs `useRef` — when do you reach for each?
-
+#### Q4. `useState` vs `useRef` — when do you reach for each? {#usestate-useref-each}
 `useState` triggers a re-render when its value changes, and its value is the one React renders
 with on the next pass — use it for anything that should appear in the UI. `useRef` gives you a
 mutable container (`.current`) that persists across renders *without* triggering a re-render
@@ -112,8 +108,7 @@ function Stopwatch() {
 }
 ```
 
-#### Q5. What's the difference between a controlled and an uncontrolled form input?
-
+#### Q5. What's the difference between a controlled and an uncontrolled form input? {#controlled-uncontrolled-form-input}
 A controlled input's value is driven entirely by React state — `<input value={value}
 onChange={e => setValue(e.target.value)} />` — React is the single source of truth, and every
 keystroke round-trips through a state update and re-render. An uncontrolled input manages its
@@ -136,8 +131,7 @@ const [email, setEmail] = useState('');
 </form>
 ```
 
-#### Q6. When does logic belong in an event handler and when in `useEffect`?
-
+#### Q6. When does logic belong in an event handler and when in `useEffect`? {#logic-belong-event-handler-useeffect}
 Ask *why* the code runs. If it runs because **the user did something** — clicked, typed,
 submitted — it belongs in the event handler: that is the moment the cause is known, it runs
 exactly once per interaction, and it has access to the event. `useEffect` is for
@@ -167,8 +161,7 @@ function Cart({ items }: { items: Item[] }) {
 }
 ```
 
-#### Q7. How does client-side routing work in a React SPA, and what belongs in the URL?
-
+#### Q7. How does client-side routing work in a React SPA, and what belongs in the URL? {#client-side-routing-react-spa}
 **Answer:** A router (React Router, TanStack Router, or the framework's router in Next.js) maps the URL to a tree of
 components using the History API, without a full page reload. **Nested routes** render layouts with an `<Outlet />`
 for child routes, and **route loaders** fetch data in parallel before rendering instead of waterfalls of `useEffect`.
@@ -191,8 +184,7 @@ const [params, setParams] = useSearchParams();      // filters live in the URL
 
 ### TypeScript
 
-#### Q8. TypeScript `interface` vs `type` — what's the practical difference, and when do you pick one over the other?
-
+#### Q8. TypeScript `interface` vs `type` — what's the practical difference, and when do you pick one over the other? {#typescript-interface-type-practical-pick}
 Both can describe an object's shape, and for that common case they're largely interchangeable.
 The concrete differences: `interface` supports declaration merging (declaring the same interface
 name twice merges the members — occasionally useful for extending third-party library types) and
@@ -219,8 +211,7 @@ type Flags = { [K in Status]: boolean };
 
 ### Hooks & effects
 
-#### Q9. What are the Rules of Hooks, and why can't a hook be called conditionally?
-
+#### Q9. What are the Rules of Hooks, and why can't a hook be called conditionally? {#rules-hooks-hook-called-conditionally}
 **Answer:** Hooks must be called in the same order on every render, and only at the top level of
 a function component or custom hook — never inside a condition, loop, or nested function. This is
 because React doesn't track hooks by name; it tracks them by *call order* within a component
@@ -248,8 +239,7 @@ never actually flips during a given session — the corruption depends on exactl
 condition changes across renders, which is why this is easy to introduce and hard to notice
 until a specific interaction path triggers it in production.
 
-#### Q10. What is a stale closure in `useEffect`, and how does the dependency array relate to it?
-
+#### Q10. What is a stale closure in `useEffect`, and how does the dependency array relate to it? {#stale-closure-useeffect-dependency-array}
 **Answer:** Every render creates a new closure over that render's props/state values; an effect
 function captures whichever values were in scope *when that effect instance was created*. If the
 dependency array is missing a value the effect reads, the effect only gets re-created on the
@@ -282,8 +272,7 @@ that creates this bug — the lint rule is flagging a real captured-value mismat
 positive to suppress, and suppressing it trades a visible warning for an invisible, timing-
 dependent bug.
 
-#### Q11. Why does `useEffect` need a cleanup function, and what happens if you skip it for a subscription?
-
+#### Q11. Why does `useEffect` need a cleanup function, and what happens if you skip it for a subscription? {#useeffect-need-cleanup-function-happens}
 **Answer:** An effect can run many times over a component's life (once per dependency-array
 change) and the component itself will eventually unmount — a cleanup function (the function an
 effect returns) runs before the effect re-runs *and* when the component unmounts, undoing
@@ -310,8 +299,7 @@ as long as whatever it set up keeps running.
 
 ### Rendering & performance
 
-#### Q12. Why does React re-render, and how do keys affect reconciliation of a list?
-
+#### Q12. Why does React re-render, and how do keys affect reconciliation of a list? {#react-re-render-keys-affect}
 **Answer:** A component re-renders when its own state changes, its props change, or its parent
 re-renders (by default, a parent re-render cascades to re-rendering every child, regardless of
 whether that child's own props actually changed, unless the child is memoized — Q13). React's
@@ -339,8 +327,7 @@ wrong item after a reorder (S14).
 is exactly why the bug survives code review — it only surfaces the first time the list actually
 reorders or has an item removed from somewhere other than the end.
 
-#### Q13. When does `React.memo` actually help, and why does it sometimes silently do nothing?
-
+#### Q13. When does `React.memo` actually help, and why does it sometimes silently do nothing? {#react-memo-help-sometimes-silently}
 **Answer:** `React.memo` wraps a component so it skips re-rendering if its props are shallowly
 equal to the previous render's props — it helps for a component that renders expensively (or its
 subtree does) and receives the same props across most of its parent's re-renders. It silently
@@ -370,8 +357,7 @@ function List({ items }) {
 but memoizing only one side of the parent/child relationship does nothing if the parent keeps
 creating new prop references — both sides need to cooperate for the memoization to hold.
 
-#### Q14. What problem do `useMemo` and `useCallback` each solve, and what's the common misuse?
-
+#### Q14. What problem do `useMemo` and `useCallback` each solve, and what's the common misuse? {#problem-usememo-usecallback-each-solve}
 **Answer:** `useMemo` memoizes a computed *value*, recomputing only when its dependencies change
 — useful when a computation is genuinely expensive (filtering/sorting a large array) and would
 otherwise re-run on every render. `useCallback` memoizes a *function reference* itself, so the
@@ -397,8 +383,7 @@ const visible = useMemo(() => items.filter(i => i.active), [items]);
 a targeted fix for a *measured* cost — over-memoizing adds real overhead (the comparison plus the
 cache) for no benefit on cheap computations or components with no memoized children downstream.
 
-#### Q15. What problem does `startTransition` / concurrent rendering solve?
-
+#### Q15. What problem does `startTransition` / concurrent rendering solve? {#problem-starttransition-concurrent-rendering-solve}
 **Answer:** Without it, a state update that triggers an expensive re-render (filtering a large
 list as the user types in a search box) blocks the browser's main thread until that render
 completes, including blocking the very keystroke-driven state update (updating the input's own
@@ -431,8 +416,7 @@ urgent lane; only the expensive, non-critical update should be deferred.
 
 ### State management
 
-#### Q16. What's "prop drilling," and how do you decide between lifting state up versus colocating it?
-
+#### Q16. What's "prop drilling," and how do you decide between lifting state up versus colocating it? {#prop-drilling-decide-lifting-state}
 **Answer:** Prop drilling is passing a value down through several layers of components that
 don't themselves use it, purely so a deeply nested descendant can receive it — each intermediate
 component adds an unused prop just to forward it further. The state-placement decision: keep
@@ -462,8 +446,7 @@ function Sidebar({ user }) {               // ...only this one actually needs it
 needs it someday adds this exact drilling cost for a need that may never materialize —
 colocate first, and only lift once two siblings genuinely need to share the value right now.
 
-#### Q17. Why is copying a prop into local state via `useEffect` considered an anti-pattern?
-
+#### Q17. Why is copying a prop into local state via `useEffect` considered an anti-pattern? {#copying-prop-local-state-via}
 **Answer:** This creates two sources of truth for the same data and a real synchronization bug:
 any intervening render where `props.value` changes but the effect hasn't yet run (effects run
 *after* the render commits, not during it) shows the stale `localValue`; worse, if `localValue`
@@ -493,8 +476,7 @@ introduces a full extra render cycle and a real clobbering risk; the actually-co
 no `useState`/`useEffect` pairing at all, which is the opposite instinct from what this pattern
 reaches for.
 
-#### Q18. When does `useReducer` fit better than `useState`?
-
+#### Q18. When does `useReducer` fit better than `useState`? {#usereducer-fit-better-usestate}
 **Answer:** `useReducer` earns its structure when state updates involve multiple related
 sub-values that change together (so a single dispatched action can update several fields
 atomically and consistently, instead of several separate `setState` calls that could get out of
@@ -520,8 +502,7 @@ dispatch({ type: 'FETCH_START' });
 ceremony — the real signal is "do these fields change together as one logical transition," not
 simply "is there more than one piece of state."
 
-#### Q19. What's the performance pitfall with React Context, and when does it become a real problem?
-
+#### Q19. What's the performance pitfall with React Context, and when does it become a real problem? {#performance-pitfall-react-context-become}
 **Answer:** Every component that consumes a context via `useContext` re-renders whenever that
 context's value changes — with no built-in way to subscribe to only part of the value, unlike a
 fine-grained state management library. For a context holding a large, frequently-changing value
@@ -551,8 +532,7 @@ const value = useMemo(() => ({ user, theme, settings }), [user, theme, settings]
 the provider *itself* creates a brand-new value object every render unless memoized — Context
 isn't the problem, an unmemoized wrapper object handed to it is.
 
-#### Q20. How do query keys work in React Query (TanStack Query), and why is it a classic source of stale or wrong data?
-
+#### Q20. How do query keys work in React Query (TanStack Query), and why is it a classic source of stale or wrong data? {#query-keys-react-query-tanstack}
 **Answer:** The query key is the *cache identity* **and** the dependency array of the fetch: two
 components using the same key share one cached result and one in-flight request, and when the key
 changes the library treats it as a different query, fetching (or serving cache for) the new one. The
@@ -591,8 +571,7 @@ survives review because `queryFn` closes over the variables and "looks right" (a
 
 ### Async UI & React 19
 
-#### Q21. What is `Suspense`, and how does it enable code splitting?
-
+#### Q21. What is `Suspense`, and how does it enable code splitting? {#suspense-enable-code-splitting}
 **Answer:** `Suspense` lets a component tree "wait" for something (most commonly a lazily-loaded
 component module, via `React.lazy(() => import('./HeavyComponent'))`) and render a fallback UI in
 the meantime, without the loading logic being manually threaded through as a boolean state and
@@ -622,8 +601,7 @@ function Page() {
 waiting boundary; the bundle-size win comes entirely from the lazy import, not from the boundary
 itself.
 
-#### Q22. What do React error boundaries actually catch, and what do they explicitly not catch?
-
+#### Q22. What do React error boundaries actually catch, and what do they explicitly not catch? {#react-error-boundaries-catch-explicitly}
 **Answer:** An error boundary (a class component implementing `static getDerivedStateFromError`
 and/or `componentDidCatch`, since there's no hook equivalent) catches errors thrown during
 rendering, in lifecycle methods, and in constructors of the component tree below it, replacing
@@ -653,8 +631,7 @@ uncaught error — event handlers and async callbacks run outside the render pha
 observes, so they need their own `try`/`catch` regardless of how high up the tree a boundary
 sits.
 
-#### Q23. What do React 19's Actions, `useActionState`, `useOptimistic` and `use` change about form and data-fetching code, and where are the traps?
-
+#### Q23. What do React 19's Actions, `useActionState`, `useOptimistic` and `use` change about form and data-fetching code, and where are the traps? {#react-19-actions-useactionstate-useoptimistic}
 **Answer:** React 19 makes the "submit, show pending, show error, update UI" loop a built-in
 primitive instead of hand-written `useState` flags. An **Action** is a function (sync or async)
 passed to `<form action={...}>` or run inside `startTransition`; React tracks its pending state,
@@ -712,8 +689,7 @@ promise for `use` inline and produce an infinite suspend loop. Also note that th
 
 ### TypeScript
 
-#### Q24. Give a practical use case for TypeScript generics in a React codebase.
-
+#### Q24. Give a practical use case for TypeScript generics in a React codebase. {#practical-case-typescript-generics-react}
 **Answer:** A typed data-fetching hook is the canonical example: `function useApi<T>(url: string):
 { data: T | null; loading: boolean; error: Error | null }` lets every call site get full type
 inference for its own specific response shape (`useApi<User>('/api/user')` gives `data` the type
@@ -743,8 +719,7 @@ const { data } = useApi<User>('/api/user'); // data: User | null, fully inferred
 same way at every call site until a caller destructures a field that doesn't exist — the generic
 version catches that mismatch at compile time; `any` catches nothing at all.
 
-#### Q25. Why prefer a discriminated union over several boolean flags for modeling request state?
-
+#### Q25. Why prefer a discriminated union over several boolean flags for modeling request state? {#prefer-discriminated-union-several-boolean}
 **Answer:** With separate booleans (`isLoading`, `isError`, `data`, `error`), the type system
 allows impossible combinations (`isLoading: true, isError: true` simultaneously, or `data`
 present while `isLoading` is also true) — nothing prevents that invalid state from being
@@ -773,8 +748,7 @@ new state seems to need just one more flag — but nothing stops those flags fro
 combinations that should be impossible, and every consumer ends up defensively guarding against
 states the type system should have ruled out entirely.
 
-#### Q26. Why is `unknown` considered safer than `any` in TypeScript?
-
+#### Q26. Why is `unknown` considered safer than `any` in TypeScript? {#unknown-considered-safer-any-typescript}
 **Answer:** `any` opts a value out of type checking entirely — you can call any method, access
 any property, pass it anywhere, and the compiler allows all of it with no error, even nonsensical
 operations, silently reintroducing exactly the class of runtime type error TypeScript exists to
@@ -799,8 +773,7 @@ function handleSafe(x: unknown) {
 it — that silence is exactly the danger; `unknown` carries the same lack of upfront type
 information but forces the narrowing step before any operation is allowed to compile at all.
 
-#### Q27. What do `as const`, `satisfies` and an exhaustive `never` check each buy you in TypeScript?
-
+#### Q27. What do `as const`, `satisfies` and an exhaustive `never` check each buy you in TypeScript? {#const-satisfies-exhaustive-never-check}
 **Answer:** They are three tools for keeping *literal, precise types* without giving up
 checking. **`as const`** freezes a literal: `["draft", "sent"] as const` has the type
 `readonly ["draft", "sent"]` instead of `string[]`, and from it you can derive a union
@@ -849,8 +822,7 @@ compile time only, not frozen at runtime (`Object.freeze` is the runtime tool).
 
 ### Forms & accessibility
 
-#### Q28. How do you build a large form in React without re-render and validation problems?
-
+#### Q28. How do you build a large form in React without re-render and validation problems? {#build-large-form-react-re}
 **Answer:** For anything beyond a few fields, use a form library such as **React Hook Form**: it keeps inputs mostly
 **uncontrolled** and registers them through refs, so typing doesn't re-render the whole form. Define validation once
 as a **schema** (Zod, Yup) and derive both the runtime check and the TypeScript type from it; share the schema with
@@ -872,15 +844,14 @@ const { register, handleSubmit, formState: { errors, isSubmitting } } =
 **Why it's a trap:** controlling every input with `useState` in one big component works for five fields and becomes
 visibly laggy at fifty, and client-only validation is skipped by anyone calling the API directly.
 
-#### Q29. What does accessibility (a11y) mean in practice for a React app?
-
+#### Q29. What does accessibility (a11y) mean in practice for a React app? {#accessibility-a11y-practice-react-app}
 **Answer:** Start with **semantic HTML**: `<button>` for actions and `<a href>` for navigation (not a clickable `<div>`),
 headings in order, `<label>` tied to every input, lists as lists. That gives keyboard support and screen-reader
 semantics for free. Then: everything is **reachable and operable by keyboard** with a visible focus indicator;
 **manage focus** on route changes and when opening or closing modals (trap it inside, return it afterwards); give
 images meaningful `alt` text (empty for decoration); don't rely on colour alone; ensure contrast (WCAG AA: 4.5:1 for
 body text); and announce async updates with `aria-live`. **ARIA is a last resort**: wrong ARIA is worse than none. Check
-with `eslint-plugin-jsx-a11y`, axe in tests and the browser, RTL role queries ([Testing Q7](testing.md)), and a manual keyboard and
+with `eslint-plugin-jsx-a11y`, axe in tests and the browser, RTL role queries ([Testing Q7](testing.md#react-testing-library-philosophy-query)), and a manual keyboard and
 screen-reader pass on key flows.
 
 **Example:**
@@ -901,8 +872,7 @@ from June 2025), and retrofitting it into a design system is far more expensive 
 
 ### Testing
 
-#### Q30. What should you actually test in a React component, per the React Testing Library philosophy?
-
+#### Q30. What should you actually test in a React component, per the React Testing Library philosophy? {#test-react-component-per-react}
 **Answer:** Test behavior as a user would experience it — render the component, interact with it
 the way a user would (click, type, find elements by visible text/role/label, not by CSS class or
 internal implementation), and assert on what's visible or triggered as a result — rather than
@@ -929,14 +899,13 @@ everything's fine, so the difference is invisible until the first valid refactor
 tests that shouldn't have cared — trust erodes, and teams start ignoring red CI, which is worse
 than not having the tests at all.
 
-See also: [Testing Q7, Q17, Q23](testing.md) for MSW and Playwright.
+See also: [Testing Q7, Q17, Q23](testing.md#keep-playwright-cypress-end-end) for MSW and Playwright.
 
 ## 🔴 Expert / Open
 
 ### Performance
 
-#### Q31. A large data table becomes noticeably janky when scrolling or filtering. Walk through diagnosing and fixing it.
-
+#### Q31. A large data table becomes noticeably janky when scrolling or filtering. Walk through diagnosing and fixing it. {#large-data-table-becomes-noticeably}
 Start with the React DevTools Profiler to see what's actually re-rendering and how long it takes
 — don't guess. Common findings, roughly in order of likelihood: every row re-renders on every
 keystroke of a filter input because the row components aren't memoized (`React.memo`) or because
@@ -974,8 +943,7 @@ function Table({ items, query }: { items: Item[]; query: string }) {
 
 ### State & data layer
 
-#### Q32. How do you measure and improve frontend performance in production?
-
+#### Q32. How do you measure and improve frontend performance in production? {#measure-improve-frontend-performance-production}
 **Answer:** Measure what users experience with **Core Web Vitals** from real users (RUM via the `web-vitals` library or
 your monitoring tool), not only Lighthouse on a fast laptop. **LCP** (largest contentful paint, target < 2.5 s) is
 about the critical path: server response, render-blocking CSS/JS, the hero image (preload it, serve modern formats,
@@ -995,8 +963,7 @@ INP: filter input re-renders a 5,000-row table on every keystroke
 → useDeferredValue + virtualization: INP 140 ms
 ```
 
-#### Q33. How do you decide between Context + `useReducer`, and a dedicated state library (Redux, Zustand, React Query)?
-
+#### Q33. How do you decide between Context + `useReducer`, and a dedicated state library (Redux, Zustand, React Query)? {#decide-context-usereducer-dedicated-state}
 Start from what kind of state is actually being managed, since "which library" is the wrong first
 question. **Server state** (data fetched from an API, with caching, revalidation, background
 refetching, and loading/error states as first-class concerns) is a fundamentally different
@@ -1028,8 +995,7 @@ const [cart, dispatch] = useReducer(cartReducer, []);
 const count = useCartStore(s => s.items.length); // re-renders only when length changes
 ```
 
-#### Q34. Design a typed API client / data-fetching layer using TypeScript generics, with proper error handling.
-
+#### Q34. Design a typed API client / data-fetching layer using TypeScript generics, with proper error handling. {#design-typed-api-client-data}
 A generic request function typed on the expected response shape (`function apiRequest<T>(url:
 string, schema: ZodSchema<T>): Promise<T>`) that performs the fetch, checks the HTTP status
 explicitly (a non-2xx response is not automatically a JavaScript exception — `fetch` only rejects
@@ -1069,8 +1035,7 @@ const getUser = (id: string) => apiRequest(`/users/${id}`, userSchema);
 
 ### Typing
 
-#### Q35. How do you type a design-system component that supports an `as` prop (a polymorphic `Button` that can render `<a>`, `<button>` or a router `Link`)?
-
+#### Q35. How do you type a design-system component that supports an `as` prop (a polymorphic `Button` that can render `<a>`, `<button>` or a router `Link`)? {#type-design-system-component-supports}
 The goal is that the component accepts *the props of whatever element it renders* and rejects
 props that element doesn't have (`href` on a `<button>`, `type` on an `<a>`). The naive approach —
 `props: any`, or a hand-written union of every element's props — either loses checking or does not
@@ -1110,8 +1075,7 @@ function Button<C extends ElementType = 'button'>({ as, variant = 'primary', ...
 
 ### Architecture
 
-#### Q36. When would you adopt React Server Components (RSC), and what do they cost you?
-
+#### Q36. When would you adopt React Server Components (RSC), and what do they cost you? {#adopt-react-server-components-rsc}
 RSC render on the server (at request or build time) and send the client a serialized tree instead
 of JavaScript: a Server Component can `await` a database or an API directly, its code and its heavy
 dependencies (a Markdown parser, a date library) **never ship to the browser**, and secrets stay on
@@ -1153,8 +1117,7 @@ export default async function Page() {
 export function AddToCart({ id }: { id: number }) { /* useState, onClick... */ }
 ```
 
-#### Q37. When are micro-frontends a good idea, and what are the alternatives?
-
+#### Q37. When are micro-frontends a good idea, and what are the alternatives? {#micro-frontends-good-idea-alternatives}
 Micro-frontends split one web application into independently built and deployed frontends, composed
 in the browser (Module Federation, web components, iframes) or at the edge/server. The real
 problem they solve is *organizational*: many teams that must ship on their own cadence without
@@ -1185,8 +1148,7 @@ new ModuleFederationPlugin({
 // const Checkout = lazy(() => import('checkout/App'));   // deployed independently by team Checkout
 ```
 
-#### Q38. SPA, SSR, SSG or React Server Components — how do you choose a rendering strategy?
-
+#### Q38. SPA, SSR, SSG or React Server Components — how do you choose a rendering strategy? {#spa-ssr-ssg-react-server}
 **Answer:** Decide per route, based on **SEO needs, data freshness, personalization and infrastructure**. A **SPA**
 (Vite + React, served from a CDN) suits apps behind login, such as back-offices and dashboards: simple hosting and a
 clear API boundary, but a slower first load and weak SEO. **SSG** (pre-render at build time) suits content that rarely
@@ -1196,10 +1158,52 @@ paint with fresh or personalized data, at the cost of running and scaling a Node
 render on the server and send no JS for non-interactive parts (see Q36). For a Java-backend team, a common split is a
 SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
+#### Q39. How do you build an accessible slot picker for booking an appointment? {#build-accessible-slot-picker-booking}
+**Answer:** Use native semantics before ARIA. Each day is a `<fieldset>` with a `<legend>` (the full date as text), and each slot is a radio input with a visible label, so the keyboard, screen readers and form submission work without custom code. Arrow keys move between the radios of a group, and Tab moves between groups. Say the time zone when it can differ from the patient's ("times are in the practice's local time, Paris"). Announce loading, "no availability this week" and errors in an `aria-live="polite"` region. Do not rely on colour alone for selected or unavailable states. When booking fails because the slot was just taken (`409`), keep the user's other choices, refresh the slots, and move focus to the error message. Test with the keyboard only and with a screen reader, and add axe checks in CI ([Q29](react-typescript.md#accessibility-a11y-practice-react-app)).
+
+**Example:**
+
+```tsx
+function DaySlots({ day, slots, selected, onSelect }: Props) {
+  const label = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", timeZone }).format(day);
+  return (
+    <fieldset>
+      <legend>{label}</legend>
+      {slots.length === 0 && <p>No availability</p>}
+      {slots.map((s) => (
+        <label key={s.start}>
+          <input type="radio" name="slot" value={s.start}
+                 checked={selected === s.start} onChange={() => onSelect(s.start)} />
+          {formatTime(s.start, timeZone)}
+        </label>
+      ))}
+    </fieldset>
+  );
+}
+// Elsewhere: <div aria-live="polite">{status}</div> for "loading", "slot taken, please choose another"
+```
+
+**Why it's a trap:** a grid of clickable `<div>`s looks right and works with a mouse only. Health booking is used by elderly patients and people with disabilities, and accessibility is often a legal requirement for this kind of service.
+
+#### Q40. How do you handle translations, dates and time zones in a React app used in several countries? {#handle-translations-dates-time-zones}
+**Answer:** Translations: an i18n library with ICU messages (react-intl or i18next) to handle plurals and variables, no string concatenation, translation bundles lazy-loaded per locale, and a pseudo-locale in tests to spot hard-coded or truncated text. Dates: the API sends **instants** in ISO-8601 UTC plus the practitioner's **IANA time zone** (`Europe/Paris`), because an appointment happens at the practice's local time. Format with `Intl.DateTimeFormat(locale, { timeZone })`, and show the zone when the patient's browser is elsewhere. Never parse `new Date("2026-10-19")`: that date-only string is read as UTC midnight and can display as the previous day. Use a library (date-fns-tz, Luxon) or `Temporal` where supported for time-zone arithmetic. Locale also drives number, currency and address formats, and the first day of the week.
+
+**Example:**
+
+```tsx
+const fmt = new Intl.DateTimeFormat(locale, {
+  weekday: "short", hour: "2-digit", minute: "2-digit", timeZone: appointment.timeZone,
+});
+<FormattedMessage id="booking.slots"
+  defaultMessage="{count, plural, =0 {No slot} one {# slot} other {# slots}} available" values={{ count }} />
+<time dateTime={appointment.start}>{fmt.format(new Date(appointment.start))}</time>
+```
+
+**Why it's a trap:** formatting in the browser's time zone. A patient in Lisbon booking a doctor in Paris sees a time one hour off and arrives late. The bug is invisible to a developer whose laptop is in the practice's zone.
+
 ## 🎯 Real-world scenarios
 
-### S1. A component enters an infinite re-render loop, freezing the tab
-
+### S1. A component enters an infinite re-render loop, freezing the tab {#component-enters-infinite-re-render}
 - **Symptoms:** The browser tab becomes unresponsive, React DevTools (if it loads at all) shows
   an endlessly incrementing render count, and the console may show a "Maximum update depth
   exceeded" error.
@@ -1235,8 +1239,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S2. A counter displayed via `setInterval` inside `useEffect` always shows the same value, never incrementing
-
+### S2. A counter displayed via `setInterval` inside `useEffect` always shows the same value, never incrementing {#counter-displayed-via-setinterval-inside}
 - **Symptoms:** A component sets up `setInterval` in a `useEffect` to log or display a state
   value periodically, but the value shown never changes from what it was on the very first
   render, even though the actual state elsewhere in the app has since updated.
@@ -1270,8 +1273,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S3. The console repeatedly logs "Can't perform a React state update on an unmounted component"
-
+### S3. The console repeatedly logs "Can't perform a React state update on an unmounted component" {#console-repeatedly-logs-perform-react}
 - **Symptoms:** This warning appears, usually after navigating away from a page quickly, or when
   a slow network response returns after the user has already moved on.
 
@@ -1303,8 +1305,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S4. A large table becomes visibly janky (dropped frames, laggy scrolling) once it has a few thousand rows
-
+### S4. A large table becomes visibly janky (dropped frames, laggy scrolling) once it has a few thousand rows {#large-table-becomes-visibly-janky}
 - **Symptoms:** Scroll performance is smooth with a small dataset but degrades sharply as row
   count grows into the thousands, well before the data itself would be considered "large" by
   backend standards.
@@ -1334,8 +1335,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S5. Typing in a text input feels laggy, with visible delay between a keystroke and the character appearing
-
+### S5. Typing in a text input feels laggy, with visible delay between a keystroke and the character appearing {#typing-text-input-feels-laggy}
 - **Symptoms:** A controlled input's perceived responsiveness degrades noticeably, especially in
   a form embedded within a larger, complex page.
 
@@ -1375,8 +1375,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S6. Changing a small piece of app-wide state (e.g. toggling dark mode) causes a noticeable, visible re-render across the entire page
-
+### S6. Changing a small piece of app-wide state (e.g. toggling dark mode) causes a noticeable, visible re-render across the entire page {#changing-small-piece-app-wide}
 - **Symptoms:** A single global setting change (theme, language, feature flag) causes a visible
   flash/re-render across large parts of the UI that have nothing to do with that setting.
 
@@ -1409,8 +1408,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S7. The app crashes in production with a runtime type error, despite the TypeScript build passing cleanly
-
+### S7. The app crashes in production with a runtime type error, despite the TypeScript build passing cleanly {#app-crashes-production-runtime-type}
 - **Symptoms:** `TypeScript compiled with 0 errors`, yet a production error-tracking tool shows a
   `TypeError: cannot read property 'x' of undefined` on a value the type system claimed was
   always present.
@@ -1443,8 +1441,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S8. Search results occasionally show results for a previous, already-abandoned search query
-
+### S8. Search results occasionally show results for a previous, already-abandoned search query {#search-results-occasionally-show-results}
 - **Symptoms:** Typing quickly in a search box sometimes results in the displayed results
   reverting to (or flickering to) results for an earlier, shorter query, even though the input
   itself shows the latest typed text.
@@ -1482,8 +1479,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S9. An API endpoint is called twice for what should be a single component mount
-
+### S9. An API endpoint is called twice for what should be a single component mount {#api-endpoint-called-twice-single}
 - **Symptoms:** Network tab shows the same GET request firing twice in quick succession when a
   component first renders, in development specifically (and the team is confused whether this
   also happens in production).
@@ -1521,8 +1517,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S10. A refactor to pass a new value through five layers of components becomes a large, error-prone diff
-
+### S10. A refactor to pass a new value through five layers of components becomes a large, error-prone diff {#refactor-pass-new-value-five}
 - **Symptoms:** Adding one new piece of data that a deeply nested component needs requires
   touching every intermediate component's props interface along the path to it, for data those
   intermediate components don't otherwise use.
@@ -1559,8 +1554,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S11. An error thrown inside a button's `onClick` handler crashes the whole page instead of being caught by the app's error boundary
-
+### S11. An error thrown inside a button's `onClick` handler crashes the whole page instead of being caught by the app's error boundary {#error-thrown-inside-button-onclick}
 - **Symptoms:** The team added an error boundary wrapping the app specifically to prevent a
   full-page crash on unexpected errors, but a bug in an `onClick` handler still produces a blank
   white screen (or an unhandled console error) instead of the expected fallback UI.
@@ -1592,8 +1586,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S12. Initial page load time is slow, and the network tab shows a very large single JavaScript bundle
-
+### S12. Initial page load time is slow, and the network tab shows a very large single JavaScript bundle {#initial-page-load-time-slow}
 - **Symptoms:** Time-to-interactive is high even on a fast connection, and the bundle analyzer
   shows one large `main.js` containing code for routes/features most users on this initial page
   never visit.
@@ -1625,8 +1618,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S13. A refactor that doesn't change any user-facing behavior breaks a large fraction of the test suite
-
+### S13. A refactor that doesn't change any user-facing behavior breaks a large fraction of the test suite {#refactor-doesn-change-any-user}
 - **Symptoms:** Renaming an internal state variable, converting a component from `useState` to
   `useReducer` internally, or restructuring how a component is composed internally — none of
   which change what the user sees or can do — causes many tests to fail.
@@ -1661,8 +1653,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S14. Items in a reorderable list occasionally show the wrong content, or lose their local input state, after being reordered
-
+### S14. Items in a reorderable list occasionally show the wrong content, or lose their local input state, after being reordered {#items-reorderable-list-occasionally-show}
 - **Symptoms:** A drag-to-reorder list, or a list where items can be inserted/removed from the
   middle, shows a mismatch after reordering — an item's checkbox state, or an input's typed
   value, appears attached to the wrong row after the reorder.
@@ -1697,8 +1688,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S15. A component's displayed value silently drifts out of sync with the prop it was supposed to reflect
-
+### S15. A component's displayed value silently drifts out of sync with the prop it was supposed to reflect {#component-displayed-value-silently-drifts}
 - **Symptoms:** A component that copies an incoming prop into local state (to allow local editing
   before save) sometimes shows stale data after the prop updates elsewhere, or loses a user's
   in-progress local edit when the prop happens to update for an unrelated reason.
@@ -1733,8 +1723,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S16. The TypeScript build is clean, but the app crashes when parsing a third-party API's response
-
+### S16. The TypeScript build is clean, but the app crashes when parsing a third-party API's response {#typescript-build-clean-but-app}
 - **Symptoms:** A recently integrated external API occasionally returns a field as `null` where
   the TypeScript interface declares it as a required `string`, and the app crashes trying to call
   a string method on it — the compiler never flagged this because it has no way to verify an
@@ -1747,7 +1736,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 - **Diagnosis:** The interface describing the API response was written by hand (or generated once
   from a sample response) and asserted onto the parsed JSON, rather than validated — TypeScript
-  types are erased at compile time ([Java Q10](java-core-jvm.md)'s erasure point applies analogously here) and
+  types are erased at compile time ([Java Q10](java-core-jvm.md#type-erasure-break)'s erasure point applies analogously here) and
   provide zero runtime enforcement; a mismatch between the declared type and the actual response
   shape is invisible to the compiler and only manifests when the mismatched data is actually used.
 - **Example:**
@@ -1771,8 +1760,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S17. The console shows "Text content does not match server-rendered HTML" and the page flickers or renders wrongly after load
-
+### S17. The console shows "Text content does not match server-rendered HTML" and the page flickers or renders wrongly after load {#console-shows-text-content-match}
 - **Symptoms:** On a server-rendered (Next.js/Remix) page, the console logs `Hydration failed
   because the server rendered HTML didn't match the client` (or "Text content does not match").
   Users see a flash of the wrong value — the wrong time, a logged-out header for a logged-in
@@ -1813,8 +1801,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S18. Every keystroke in a form field loses focus after one character
-
+### S18. Every keystroke in a form field loses focus after one character {#every-keystroke-form-field-loses}
 - **Symptoms:** In a settings form, typing in an input works for one character and then the cursor
   disappears; the user must click again for each character. Local state inside the field (a
   scroll position, an open dropdown) also resets on every keystroke. The bug appeared after a
@@ -1855,8 +1842,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S19. A "like" button with an optimistic update flickers back and forth and finally shows the wrong count
-
+### S19. A "like" button with an optimistic update flickers back and forth and finally shows the wrong count {#like-button-optimistic-update-flickers}
 - **Symptoms:** Users double-click a like button. The counter jumps up, drops, jumps up again, then
   settles on a value that doesn't match the server after a refresh. On flaky mobile connections the
   UI shows "liked" even though the request failed and nothing was saved.
@@ -1895,8 +1881,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S20. The initial JavaScript bundle doubled after a "harmless" refactor; Lighthouse score dropped
-
+### S20. The initial JavaScript bundle doubled after a "harmless" refactor; Lighthouse score dropped {#initial-javascript-bundle-doubled-after}
 - **Symptoms:** After adding a small utility import, the main bundle grew from ~300 KB to ~900 KB (gzip),
   first-load time on mobile slipped by seconds, and CI's bundle-size check (or Lighthouse) started warning.
   The changed code only imports one icon and one helper function.
@@ -1932,8 +1917,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S21. A long-lived single-page app gets slower and its memory grows steadily until the tab crashes
-
+### S21. A long-lived single-page app gets slower and its memory grows steadily until the tab crashes {#long-lived-single-page-app}
 - **Symptoms:** A dashboard left open on a wall display for a day becomes sluggish and eventually
   crashes ("Aw, Snap"). The Chrome Task Manager shows memory growing with each data refresh or route
   change; resizing or navigating makes handlers fire multiple times.
@@ -1969,8 +1953,7 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
 
 </details>
 
-### S22. After editing a record, the list page still shows the old data until the user reloads
-
+### S22. After editing a record, the list page still shows the old data until the user reloads {#after-editing-record-list-page}
 - **Symptoms:** A user renames a customer in a form and returns to the customer list, which still shows the
   old name. A refresh fixes it. Sometimes the detail page is updated but the list, a dashboard widget and a
   dropdown elsewhere are not.
@@ -2003,6 +1986,19 @@ SPA for the product, plus SSG/SSR in Next.js only for public pages.
   requests"; and make "which queries display this entity?" a checklist item for each mutation.
 
 </details>
+
+## 🗣️ Commonly asked questions
+
+Questions that come up often in interviews on this topic (a typical set, not tied to one specific interview). Each has a short model answer: expand it with the sections above and say it aloud.
+
+#### R1. `useEffect` vs `useLayoutEffect`. {#useeffect-uselayouteffect}
+**Answer:** `useEffect` runs after the browser has painted, so it does not block rendering: use it for data fetching and subscriptions. `useLayoutEffect` runs synchronously after DOM updates but before paint: use it only to measure or adjust layout and avoid a visible flicker. It blocks painting, so keep it short.
+
+#### R2. Controlled vs uncontrolled components. {#controlled-uncontrolled-components}
+**Answer:** Controlled: React state is the source of truth (`value` + `onChange`), which makes validation and conditional UI easy but re-renders on each keystroke. Uncontrolled: the DOM holds the value, read through a `ref` or `FormData` on submit; simpler and cheaper for big forms. Libraries such as React Hook Form use the uncontrolled approach for performance.
+
+#### R3. `type` vs `interface` in TypeScript. {#type-interface-typescript}
+**Answer:** Both describe object shapes. `interface` can be extended and merged (declaration merging) and gives clearer errors; `type` also handles unions, intersections, tuples and mapped types. A common rule: `interface` for public object contracts, `type` for unions and compositions; be consistent in a codebase.
 
 ## 🎤 Oral quiz
 

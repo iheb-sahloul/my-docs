@@ -1,13 +1,12 @@
 # Live Coding & Algorithms
 
-Senior full-stack interviews rarely ask for exotic algorithms. They check that you can turn a problem into clean, tested code while talking, pick the right data structure, and reason about complexity. Java collection internals are in [Java Q6](java-core-jvm.md) and [Java Q18](java-core-jvm.md).
+Senior full-stack interviews rarely ask for exotic algorithms. They check that you can turn a problem into clean, tested code while talking, pick the right data structure, and reason about complexity. Java collection internals are in [Java Q6](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) and [Java Q18](java-core-jvm.md#happens-inside-hashmap-put-get).
 
 ## 🟢 Fundamentals
 
 ### Method
 
-#### Q1. How do you approach a live-coding exercise?
-
+#### Q1. How do you approach a live-coding exercise? {#approach-live-coding-exercise}
 **Answer:** Follow a visible process, because the interviewer grades it as much as the result.
 
 1. **Clarify** (2–3 min): restate the problem, ask about input size, empty or null input, duplicates, negative
@@ -27,8 +26,7 @@ of two numbers summing to target, exactly one answer guaranteed? Brute force is 
 HashMap of value → index I can do it in one pass, O(n) time and O(n) space. Let me code that."
 ```
 
-#### Q2. How do you explain Big-O, and what are the complexities you must know by heart?
-
+#### Q2. How do you explain Big-O, and what are the complexities you must know by heart? {#big-o-complexities-know-heart}
 **Answer:** Big-O describes how time or memory **grows with input size** in the worst case, ignoring constants. The
 ones to know: O(1) hash lookup and array index; O(log n) binary search and balanced-tree operations (`TreeMap`); O(n)
 one pass; O(n log n) comparison sort (`List.sort`, `Arrays.sort` on objects); O(n²) nested loops over the same input;
@@ -44,8 +42,7 @@ O(n log n)  2e7 ops    ✅
 O(n²)       1e12 ops   ⛔ hours
 ```
 
-#### Q3. Which Java data structures do you reach for in coding exercises?
-
+#### Q3. Which Java data structures do you reach for in coding exercises? {#java-data-structures-coding-exercises}
 **Answer:** `HashMap`/`HashSet` for O(1) lookup, counting and deduplication; `ArrayList` for indexed lists;
 `ArrayDeque` as both stack (`push`/`pop`) and queue (`offer`/`poll`); `PriorityQueue` as a min-heap (pass
 `Comparator.reverseOrder()` for a max-heap); `TreeMap`/`TreeSet` for sorted order and floor/ceiling queries;
@@ -65,8 +62,7 @@ groups.computeIfAbsent(key, k -> new ArrayList<>()).add(word);
 
 ### Core patterns
 
-#### Q4. When do you use a hash map to turn O(n²) into O(n)? Solve "two sum".
-
+#### Q4. When do you use a hash map to turn O(n²) into O(n)? Solve "two sum". {#hash-map-turn-o-n2}
 **Answer:** Whenever the brute force is "for each element, search the rest for a partner", store what you've already
 seen in a hash map keyed by what you'll need to look up. For two sum, for each number check whether `target - x` was
 seen, then record `x`. One pass, O(n) time, O(n) space.
@@ -85,8 +81,7 @@ int[] twoSum(int[] nums, int target) {
 }
 ```
 
-#### Q5. Find the duplicate elements in a list.
-
+#### Q5. Find the duplicate elements in a list. {#find-duplicate-elements-list}
 **Answer:** Clarify first: return every value that appears more than once (each once), or just the first duplicate? Keep input
 order? The standard solution is a **`HashSet`**: iterate once, `add` returns `false` when the value was already seen. That is
 O(n) time and O(n) space, against O(n²) for comparing every pair. Use a second set (or a `LinkedHashSet`) for the duplicates so
@@ -111,10 +106,9 @@ static <T> Set<T> duplicates(Collection<T> items) {
 
 **Why it's a trap:** the nested-loop version works on the sample and fails on a million rows, and using a `List.contains`
 inside the loop is the same O(n²) in disguise. Mutable keys with a bad `hashCode` silently break the set (see
-[Java Q19](java-core-jvm.md)).
+[Java Q19](java-core-jvm.md#mutable-object-field-based-hashcode)).
 
-#### Q6. Find the first non-repeating character in a string.
-
+#### Q6. Find the first non-repeating character in a string. {#find-first-non-repeating-character}
 **Answer:** Two passes with a frequency map: pass 1 counts each character, pass 2 returns the first character whose count is
 1. Time O(n), space O(k) where k is the alphabet size (O(1) for ASCII with an `int[256]`, larger for Unicode). A single pass is
 possible with a `LinkedHashMap` that keeps insertion order, then you scan the map for the first count of 1, but the
@@ -144,8 +138,7 @@ static OptionalInt firstUniqueIndex(String s) {
 the input has capitals, digits or accents. Also, returning a magic `' '` or `0` for "not found" is ambiguous when the
 string may contain it.
 
-#### Q7. What are the two-pointer and sliding-window patterns? Solve "longest substring without repeating characters".
-
+#### Q7. What are the two-pointer and sliding-window patterns? Solve "longest substring without repeating characters". {#two-pointer-sliding-window-patterns}
 **Answer:** **Two pointers** move from both ends (sorted arrays, palindromes) or at different speeds (cycle detection).
 A **sliding window** keeps a range `[left, right]` that satisfies a condition: extend `right`, and when the condition
 breaks, move `left` until it holds again. Each index enters and leaves once, so it's O(n). For the longest substring
@@ -167,8 +160,7 @@ int lengthOfLongestSubstring(String s) {
 }
 ```
 
-#### Q8. How do you write a binary search without off-by-one bugs?
-
+#### Q8. How do you write a binary search without off-by-one bugs? {#write-binary-search-off-one}
 **Answer:** Use one consistent template: a half-open or closed interval, a loop condition that matches it, and
 `mid = lo + (hi - lo) / 2` to avoid overflow. The most reusable form searches for the **first index where a condition
 becomes true** (lower bound), which also covers "search insert position", "first bad version" and binary search on
@@ -188,8 +180,7 @@ int lowerBound(int[] a, int target) {
 }
 ```
 
-#### Q9. BFS vs DFS — when do you use each? Solve "number of islands".
-
+#### Q9. BFS vs DFS — when do you use each? Solve "number of islands". {#bfs-dfs-each-solve-number}
 **Answer:** **BFS** (queue) explores level by level, so it finds the **shortest path in an unweighted graph** (minimum
 moves, degrees of separation). **DFS** (recursion or explicit stack) goes deep first, suited to exploring connected
 components, detecting cycles, topological sort and backtracking. Both are O(V + E). For a grid, each cell is a node
@@ -223,8 +214,7 @@ int numIslands(char[][] grid) {
 }
 ```
 
-#### Q10. When is a heap the right tool? Solve "top K frequent elements".
-
+#### Q10. When is a heap the right tool? Solve "top K frequent elements". {#heap-right-tool-solve-top}
 **Answer:** Use a heap when you repeatedly need the smallest or largest item of a changing set: top K, K-way merge,
 scheduling, Dijkstra. For top K out of n, keep a **min-heap of size K**: push each candidate and pop when the size
 exceeds K. That's O(n log K) time and O(K) heap space, better than sorting everything (O(n log n)) when K is small.
@@ -250,10 +240,9 @@ List<Integer> topKFrequent(int[] nums, int k) {
 
 ### Questions
 
-#### Q11. Which Java pitfalls cost candidates points in live coding?
-
+#### Q11. Which Java pitfalls cost candidates points in live coding? {#java-pitfalls-cost-candidates-points}
 **Answer:** **Integer overflow** (`(lo + hi) / 2`, sums of large ints: use `long`); comparing boxed numbers with
-`==` (`Integer` above 127, see [Java Q9](java-core-jvm.md)); a comparator written as `a - b`, which overflows (use
+`==` (`Integer` above 127, see [Java Q9](java-core-jvm.md#autoboxing-trap-integer)); a comparator written as `a - b`, which overflows (use
 `Integer.compare`); string concatenation in a loop (O(n²); use `StringBuilder`); modifying a collection while iterating
 over it with for-each; `Arrays.asList` returning a fixed-size list; recursion depth on large inputs; forgetting to
 handle empty input; and `char` arithmetic (`c - 'a'` is fine, `c + 1` is an `int`).
@@ -270,8 +259,7 @@ list.sort(Integer::compare);
 **Why it's a trap:** the algorithm is right and the test case passes; the interviewer then asks "what if the values
 are near `Integer.MAX_VALUE`?", and the bug is in the one-liner you didn't think about.
 
-#### Q12. Group appointments by doctor and by date with streams.
-
+#### Q12. Group appointments by doctor and by date with streams. {#group-appointments-doctor-date-streams}
 **Answer:** `Collectors.groupingBy` with a *downstream* collector does it in one pass. For two-level grouping, nest the
 collectors: doctor → date → list. Pick the map type deliberately: `TreeMap` for sorted keys (dates in order), `LinkedHashMap`
 to keep encounter order, and sort the lists inside (`Comparator.comparing(Appointment::start)`) because `groupingBy` keeps
@@ -306,10 +294,9 @@ Map<String, Long> minutes = appointments.stream().filter(a -> !a.cancelled())
 ```
 
 **Why it's a trap:** forgetting the time zone, assuming `groupingBy` returns sorted keys (it returns a `HashMap`), and
-mutating a list from inside the stream. Also see the stream pitfalls in [Java Q14](java-core-jvm.md).
+mutating a list from inside the stream. Also see the stream pitfalls in [Java Q14](java-core-jvm.md#common-ways-stream-pipeline-goes).
 
-#### Q13. Detect overlapping bookings.
-
+#### Q13. Detect overlapping bookings. {#detect-overlapping-bookings}
 **Answer:** Two time ranges overlap exactly when `a.start < b.end && b.start < a.end`. Treat ranges as **half-open**
 `[start, end)` so back-to-back appointments (10:00–10:30 and 10:30–11:00) do *not* conflict; this one decision causes most
 off-by-one bugs, so say it out loud. For one new booking against an existing list, check the condition against each
@@ -318,7 +305,7 @@ existing booking, O(n), or O(log n) if the bookings are kept in a `TreeMap<Insta
 find *all* conflicts in a batch, **sort by start and sweep**: keep the latest end seen so far and report a conflict whenever the
 next start is before it. O(n log n) time, O(1) extra space. Use `Instant` or `ZonedDateTime`, never `LocalDateTime` across
 time zones or DST changes, and validate `start < end`. In production the check must be enforced by the database
-(exclusion constraint, see [Persistence Q28](persistence-sql-postgres.md)), because an in-memory check races with other
+(exclusion constraint, see [Persistence Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)), because an in-memory check races with other
 requests.
 
 **Example:**
@@ -345,8 +332,7 @@ static List<Booking[]> conflicts(List<Booking> bookings) {
 long one) is missed by comparing only neighbours, and comparing `LocalDateTime`s ignores time zones. Test the three shapes:
 partial overlap, containment and touching ends.
 
-#### Q14. What is dynamic programming, and how do you spot a DP problem?
-
+#### Q14. What is dynamic programming, and how do you spot a DP problem? {#dynamic-programming-spot-dp-problem}
 **Answer:** DP applies when a problem has **overlapping subproblems** and **optimal substructure**: the best answer is
 built from best answers to smaller versions, and the same smaller versions are needed again and again. Signals:
 "number of ways", "minimum cost", "longest/shortest ... subsequence", choices at each step. Method: define the
@@ -373,8 +359,7 @@ int coinChange(int[] coins, int amount) {
 **Why it's a trap:** a greedy "take the biggest coin first" passes on `{1, 5, 10}` and fails on `{1, 3, 4}` for amount
 6 (greedy gives 3 coins, the optimum is 2). Always test greedy ideas against a counter-example.
 
-#### Q15. Implement a thread-safe counter.
-
+#### Q15. Implement a thread-safe counter. {#implement-thread-safe-counter}
 **Answer:** `count++` is three steps (read, add, write), so two threads can both read 5 and both write 6: a lost update. Options,
 from simplest to most scalable: (1) **`synchronized`** methods or a `ReentrantLock`: correct, but threads queue on every call;
 (2) **`AtomicLong`/`AtomicInteger`**: `incrementAndGet()` uses a hardware compare-and-swap, lock-free and the right default
@@ -382,7 +367,7 @@ for a counter that is also read for its value; under very high contention the CA
 spreads updates across internal cells and sums them on `sum()`, much faster under heavy write contention (metrics, request
 counts), but `sum()` is not an atomic snapshot and it does not offer compare-and-set, so it is wrong for "increment *only if*
 below a limit". (4) Not sharing at all: per-thread counters merged at the end. `volatile long` alone is **not** enough: it
-guarantees visibility but not atomicity of `++` (see [Java Q23](java-core-jvm.md)). For a bounded counter (a rate limit, "max 3
+guarantees visibility but not atomicity of `++` (see [Java Q23](java-core-jvm.md#real-synchronized-volatile)). For a bounded counter (a rate limit, "max 3
 bookings"), use a CAS loop with `updateAndGet`/`compareAndSet` so the check and the increment are one atomic step. Test with
 many threads and assert the exact total; a single-threaded test proves nothing.
 
@@ -417,12 +402,11 @@ assertEquals(1_000_000, c.get());
 and are not; use `merge(k, 1, Integer::sum)` or a `LongAdder` value. Also, an atomic counter protects one number, not an
 invariant spanning two fields.
 
-#### Q16. Implement retry logic with a maximum number of attempts.
-
+#### Q16. Implement retry logic with a maximum number of attempts. {#implement-retry-logic-maximum-number}
 **Answer:** A retry helper takes an operation, a maximum number of attempts, a delay policy and a predicate for which failures
 are retryable. Decisions to state: (1) **only retry transient errors** (timeouts, `503`, connection reset, deadlock victim),
 never validation errors or `4xx`, and **only idempotent operations**, or ones protected by an idempotency key, otherwise a
-retry after a lost response duplicates a payment or a booking (see [Full Stack Q10](fullstack-devops-k8s.md)); (2) **bound
+retry after a lost response duplicates a payment or a booking (see [Full Stack Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need)); (2) **bound
 it**: a max attempts (e.g. 3) and an overall deadline; (3) **back off exponentially with jitter** (100 ms, 200 ms, 400 ms,
 randomised) so many clients do not retry in lock-step and hammer a recovering service (*retry storm*); (4) **rethrow the last
 failure with earlier ones attached** (`addSuppressed`) so nothing is lost; (5) **restore the interrupt flag** if the sleep is
@@ -459,15 +443,14 @@ static <T> T retry(int maxAttempts, Duration baseDelay, Predicate<Exception> ret
 
 **Why it's a trap:** retrying non-idempotent calls, retrying forever, no jitter, and swallowing the original exception
 are the four classic mistakes. Also remember a retry is not free: with a slow dependency it keeps threads and connections
-busy longer, so pair it with timeouts and a circuit breaker (see [Spring Q35](spring-architecture.md)).
+busy longer, so pair it with timeouts and a circuit breaker (see [Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need)).
 
-#### Q17. Implement an LRU cache with O(1) `get` and `put`.
-
+#### Q17. Implement an LRU cache with O(1) `get` and `put`. {#implement-lru-cache-o-1}
 **Answer:** You need O(1) lookup (a hash map) and O(1) "move to most recent" and "evict the oldest" (a doubly linked
 list). In Java, `LinkedHashMap` with `accessOrder = true` and an overridden `removeEldestEntry` provides exactly that
 in a few lines. Interviewers often then ask you to build it by hand (map from key to node, plus a doubly linked list
 with sentinel head and tail), so be ready for both. Thread safety and bounded-memory trade-offs are discussed in
-[Java Q21](java-core-jvm.md).
+[Java Q21](java-core-jvm.md#design-thread-safe-bounded-lru).
 
 **Example:**
 
@@ -481,8 +464,7 @@ class LruCache<K, V> extends LinkedHashMap<K, V> {
 
 **Why it's a trap:** using a plain `LinkedList` plus `remove(Object)` to move a key looks right but is O(n) per access.
 
-#### Q18. How do you test your code during the interview?
-
+#### Q18. How do you test your code during the interview? {#test-code-during-interview}
 **Answer:** Don't just say "looks right". Trace one normal example line by line, tracking the variables out loud. Then
 run edge cases: empty input, a single element, all elements equal, the answer at the first or last position,
 negative numbers, and the largest input for performance. If the environment can run code, write a tiny `main` or a
@@ -504,14 +486,13 @@ found in one minute.
 
 ### Questions
 
-#### Q19. Design and code a rate limiter class for a single service instance.
-
+#### Q19. Design and code a rate limiter class for a single service instance. {#design-code-rate-limiter-class}
 **Answer:** Clarify first: per user or global, limit and window, behaviour when limited, and whether it needs to be
 thread-safe. A **token bucket** is the usual answer: each key has a bucket with capacity C refilled at R tokens per
 second; a request takes a token or is rejected. Store per-key state in a `ConcurrentHashMap` and update it atomically
 (`compute`, or synchronize on the bucket). Use a `Clock` or nanoTime supplier so tests can control time. Then discuss
 the limits: memory for many keys (evict idle buckets), and distributed limiting, which needs Redis (see
-[System Design Q15](system-design.md)).
+[System Design Q15](system-design.md#compare-rate-limiting-algorithms-one)).
 
 **Example:**
 
@@ -539,8 +520,7 @@ class TokenBucketLimiter {
 }
 ```
 
-#### Q20. Merge overlapping intervals, and how would the solution change for a stream of intervals?
-
+#### Q20. Merge overlapping intervals, and how would the solution change for a stream of intervals? {#merge-overlapping-intervals-solution-change}
 **Answer:** For a list, **sort by start** (O(n log n)), then scan: if the next interval starts before or at the current
 end, extend the end; otherwise close the current interval and start a new one. For a **stream** (intervals arriving
 one by one, such as calendar bookings), keep the merged intervals in a `TreeMap<start, end>` and on each insert look
@@ -562,11 +542,10 @@ int[][] merge(int[][] intervals) {
 }
 ```
 
-#### Q21. Given a practitioner's working hours and their existing appointments, find the available slots.
-
+#### Q21. Given a practitioner's working hours and their existing appointments, find the available slots. {#given-practitioner-working-hours-existing}
 **Answer:** This is "interval subtraction": start from the free intervals, remove the busy ones, then cut what is left into
 bookable slots. Algorithm: (1) validate and **normalise** the busy list: drop cancelled ones, sort by start, and **merge
-overlapping or touching intervals** (see [Coding Q20](coding.md)) so the sweep is simple; (2) keep a cursor at the start of
+overlapping or touching intervals** (see [Coding Q20](coding.md#merge-overlapping-intervals-solution-change)) so the sweep is simple; (2) keep a cursor at the start of
 the working day; for each busy interval clamped to the working window, if `busy.start > cursor` then `[cursor, busy.start)` is a free
 gap; move the cursor to `max(cursor, busy.end)`; after the loop add the trailing gap `[cursor, dayEnd)`; (3) for each gap,
 emit slots of the requested length (e.g. 20 min) every `step` minutes, as long as `slotEnd <= gap.end`, optionally respecting
@@ -574,7 +553,7 @@ buffers and a minimum notice. Time O(n log n) for the sort plus O(n + s) for the
 state: half-open intervals so back-to-back appointments are fine, **time zones and DST** (compute in the practitioner's
 zone: a spring-forward day has a missing hour, a fall-back day has a repeated one, so use `ZonedDateTime`), lunch breaks as
 extra busy intervals, and behaviour when appointments fall partly outside working hours. Also say how this scales: precompute
-per day and cache briefly, but re-validate at booking time (see [Persistence Q28](persistence-sql-postgres.md)).
+per day and cache briefly, but re-validate at booking time (see [Persistence Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)).
 
 **Example:**
 
@@ -608,15 +587,14 @@ static List<Interval> freeSlots(Interval workDay, List<Interval> busy, Duration 
 off-by-one at the day boundaries, and returning slots that overlap the next appointment because the end check was `<` instead
 of `<=`. Test: no appointments, fully booked, appointment starting before the day or ending after it, back-to-back appointments.
 
-#### Q22. Process a very large stream of events (more than fits in memory) and compute statistics or the top K.
-
+#### Q22. Process a very large stream of events (more than fits in memory) and compute statistics or the top K. {#process-very-large-stream-events}
 **Answer:** The constraint is memory, so the answer is **never load it all**: read incrementally and keep only aggregates.
 State the questions first: what is computed (counts per key, distinct count, top K, percentiles, deduplication)? Is order
 guaranteed? Is it a one-off file or an unbounded live stream? Techniques: (1) **streaming read**: `Files.lines(path)` or a
 `BufferedReader` (lazy, close it with try-with-resources), a Kafka consumer, or a JDBC `ResultSet` with a fetch size / server-side cursor,
 never `readAllLines()`; (2) **running aggregates** in O(1) memory per item: count, sum, min, max, mean/variance
 (Welford); (3) **bounded structures**: top K with a min-heap of size K (O(n log K) time, O(K) memory, see
-[Coding Q10](coding.md)); (4) **cardinality-bound maps**: counting per user is fine if the number of users fits in memory; if
+[Coding Q10](coding.md#heap-right-tool-solve-top)); (4) **cardinality-bound maps**: counting per user is fine if the number of users fits in memory; if
 not, **partition by hash** (external grouping into N files, process each) or use approximate sketches (HyperLogLog for distinct
 counts, Count-Min Sketch for heavy hitters, t-digest for percentiles) trading accuracy for fixed memory; (5) **dedup with an
 unbounded key space** needs a Bloom filter (false positives, no false negatives) or a time window; (6) **parallelise by
@@ -650,8 +628,7 @@ static List<Map.Entry<String, Long>> topK(Path file, int k) throws IOException {
 **Why it's a trap:** `Files.readAllLines`, collecting to a list "just to sort it", or `parallel()` over a shared `HashMap`
 all fail at scale (OOM or wrong counts). Also, a stream from `Files.lines` must be closed, or the file handle leaks.
 
-#### Q23. How do you approach a practical "refactor this code" or "review this pull request" exercise?
-
+#### Q23. How do you approach a practical "refactor this code" or "review this pull request" exercise? {#approach-practical-refactor-code-review}
 **Answer:** Senior loops increasingly replace puzzles with realistic code. Read the whole thing first and state what
 it does. Then rank issues by impact: **correctness** (bugs, race conditions, missing transaction, wrong equality),
 **security** (injection, missing authorization, secrets), **reliability** (resource leaks, unbounded queries, no
@@ -659,10 +636,54 @@ timeouts), then **design and readability** (long methods, mixed concerns, naming
 test that pins the current behaviour, then refactor. For a review, write comments as you would to a colleague:
 the issue, why it matters, and a concrete suggestion, separating "must fix" from "nit".
 
+#### Q24. Compute a practitioner's availabilities for the next 7 days from recurring weekly openings and booked appointments. {#compute-practitioner-availabilities-next-7}
+**Answer:** This is the classic booking-platform kata, often given as a take-home or pair-programming exercise. The input is a list of events: **openings** (one-off, or recurring every week from their start date) and **appointments**. The output is, for each of the 7 days from a start date, the list of free 30-minute slots. Algorithm per day: (1) keep the openings that **occur on that day**: a one-off opening on that date, or a weekly opening with the same weekday whose first occurrence is not after the day; (2) expand each opening into slots `[t, t + 30 min)` while `t + 30 min <= end`; (3) remove every slot that **overlaps** an appointment that day (`slot.start < appt.end && slot.end > appt.start`, half-open intervals); (4) deduplicate and sort. Complexity O(D × (O + S × A)) for D days, O openings, S slots, A appointments. That is fine for one calendar. Mention the faster version (sort appointments and sweep, see [Coding Q21](coding.md#given-practitioner-working-hours-existing)) only if asked. In pair programming, start with the test cases, write the simplest version, then refactor: they watch your method more than the final code.
+
+**Example:**
+
+```java
+enum Kind { OPENING, APPOINTMENT }
+record Event(Kind kind, LocalDateTime start, LocalDateTime end, boolean weeklyRecurring) {}
+record DayAvailability(LocalDate date, List<LocalTime> slots) {}
+
+static boolean occursOn(Event e, LocalDate day) {
+    return e.start().toLocalDate().equals(day) ||
+        (e.weeklyRecurring() && e.start().getDayOfWeek() == day.getDayOfWeek() && !e.start().toLocalDate().isAfter(day));
+}
+
+static List<DayAvailability> availabilities(LocalDate from, List<Event> events, int days, Duration slot) {
+    List<DayAvailability> result = new ArrayList<>();
+    for (int offset = 0; offset < days; offset++) {
+        LocalDate day = from.plusDays(offset);
+        List<Event> booked = events.stream()
+            .filter(e -> e.kind() == Kind.APPOINTMENT && e.start().toLocalDate().equals(day)).toList();
+        TreeSet<LocalDateTime> free = new TreeSet<>();                       // dedup + sort
+        for (Event o : events) {
+            if (o.kind() != Kind.OPENING || !occursOn(o, day)) continue;
+            LocalDateTime end = day.atTime(o.end().toLocalTime());
+            for (LocalDateTime s = day.atTime(o.start().toLocalTime()); !s.plus(slot).isAfter(end); s = s.plus(slot)) {
+                LocalDateTime start = s, stop = s.plus(slot);               // LocalDateTime: no wrap at midnight
+                if (booked.stream().noneMatch(b -> start.isBefore(b.end()) && stop.isAfter(b.start()))) free.add(start);
+            }
+        }
+        result.add(new DayAvailability(day, free.stream().map(LocalDateTime::toLocalTime).toList()));
+    }
+    return result;
+}
+
+// Weekly opening every Monday 09:00-11:00 since 2026-10-05; appointment Monday 2026-10-19 09:30-10:00.
+List<Event> events = List.of(
+    new Event(Kind.OPENING, LocalDateTime.parse("2026-10-05T09:00"), LocalDateTime.parse("2026-10-05T11:00"), true),
+    new Event(Kind.APPOINTMENT, LocalDateTime.parse("2026-10-19T09:30"), LocalDateTime.parse("2026-10-19T10:00"), false));
+assert availabilities(LocalDate.parse("2026-10-19"), events, 7, Duration.ofMinutes(30)).getFirst().slots()
+    .equals(List.of(LocalTime.of(9, 0), LocalTime.of(10, 0), LocalTime.of(10, 30)));
+```
+
+**Why it's a trap:** the usual bugs are applying a recurring opening to dates **before** it started, `<` instead of `<=` so the last slot of the day disappears, ignoring appointments that only partially overlap a slot, and using `LocalTime` arithmetic, which wraps at midnight and makes the loop never end. Say which tests you would write: empty week, opening with no appointment, appointment covering several slots, appointment at the exact end of an opening, recurring opening that starts mid-week, and a DST change (in production, compute in the practitioner's `ZoneId`).
+
 ## 🎯 Real-world scenarios
 
-### S1. You are stuck halfway through the problem, and the interviewer is silent
-
+### S1. You are stuck halfway through the problem, and the interviewer is silent {#stuck-halfway-problem-interviewer-silent}
 - **Symptoms:** Your approach fails on an example, ten minutes are left, and you don't see the fix.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -687,8 +708,7 @@ the issue, why it matters, and a concrete suggestion, separating "must fix" from
 
 </details>
 
-### S2. Your solution passes the examples, but the interviewer says it's too slow for the real input size
-
+### S2. Your solution passes the examples, but the interviewer says it's too slow for the real input size {#solution-passes-examples-but-interviewer}
 - **Symptoms:** The code is correct on small inputs; the interviewer mentions n = 10⁶.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -712,8 +732,7 @@ the issue, why it matters, and a concrete suggestion, separating "must fix" from
 
 </details>
 
-### S3. A take-home assignment: what does a senior submission look like?
-
+### S3. A take-home assignment: what does a senior submission look like? {#take-home-assignment-senior-submission}
 - **Symptoms:** You receive a 4-hour take-home ("build a small REST API with a React page") and want it to stand out
   without over-engineering.
 
@@ -740,12 +759,64 @@ the issue, why it matters, and a concrete suggestion, separating "must fix" from
 
 </details>
 
+### S4. The interviewer changes the requirement after you finished the first version {#interviewer-changes-requirement-after-finished}
+- **Symptoms:** You have 10 minutes left and your solution assumes the original constraints.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** A changed requirement is a test of how you adapt, not a sign you failed. Check which assumption (sorted input, positive values, in-memory) the new constraint breaks, and whether only one function depends on it.
+- **Resolution:** Say the impact out loud, restate the new requirement, adapt the smallest part (e.g. swap a sort for a heap, or process in a stream), and re-run your examples. If time is short, describe the approach and its complexity rather than half-coding it.
+- **Prevention:** Isolate assumptions in small functions from the start and state them when you clarify; changes then touch one place.
+
+</details>
+
+### S5. Your solution works, then the interviewer says: "Now the input is a 200 GB log file" {#input-no-longer-fits-memory}
+- **Symptoms:** Your `HashMap<String, Integer>` word/IP counter passes the examples; the follow-up makes it impossible to load the file or hold every key in memory.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** The interviewer is testing whether you can change the model, not the code: streaming vs loading, bounded memory, and approximate vs exact answers. Ask what the output must be (exact top-10? approximate is fine?) and what hardware is available.
+- **Example:**
+
+  ```java
+  // stream line by line, never load the file
+  try (var lines = Files.lines(path)) {
+      lines.map(l -> l.split(" ")[0]).forEach(ip -> counts.merge(ip, 1, Integer::sum));
+  }
+  // too many distinct keys? hash-partition into N files by ip.hashCode() % N,
+  // count each partition in memory, keep a size-k min-heap across partitions
+  ```
+
+- **Resolution:** Walk the ladder out loud: stream the input (`Files.lines`); if distinct keys still don't fit, partition by hash to disk and process each partition; for top-k keep a bounded min-heap; if approximate is acceptable, mention Count-Min Sketch / HyperLogLog; at larger scale, it's a MapReduce/Spark job.
+- **Prevention:** For every exercise, prepare the three standard follow-ups: bigger input (streaming/partitioning), concurrent access (thread safety), and distributed (sharding, merge step).
+
+</details>
+
+## 🗣️ Commonly asked questions
+
+Questions that come up often in interviews on this topic (a typical set, not tied to one specific interview). Each has a short model answer: expand it with the sections above and say it aloud.
+
+#### R1. Reverse a singly linked list. {#reverse-singly-linked-list}
+**Answer:** Iterate with three pointers: `prev = null`, `cur = head`; in the loop save `next = cur.next`, set `cur.next = prev`, advance `prev = cur`, `cur = next`; return `prev`. O(n) time, O(1) space. The recursive version is O(n) stack, so mention the depth risk.
+
+#### R2. Are the brackets in a string balanced (`()[]{}`)? {#brackets-string-balanced}
+**Answer:** Use a `Deque<Character>` as a stack: push openers; on a closer, the stack must be non-empty and its top must match, else `false`. At the end the stack must be empty. O(n). Edge cases: empty string, only closers, odd length.
+
+#### R3. Is a string a palindrome, ignoring case and non-alphanumeric characters? {#string-palindrome-ignoring-case-non}
+**Answer:** Two pointers `i`, `j` from both ends; skip characters where `!Character.isLetterOrDigit`, compare lower-cased, move inward. O(n) time, O(1) space; do not build a cleaned copy unless asked.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.
 
 1. Q1. How do you approach a live-coding exercise?
-2. Q2. How do you explain Big-O, and what are the complexities you must know by heart?
+2. Q21. Given a practitioner's working hours and their existing appointments, find the available slots.
 3. Q4. When do you use a hash map to turn O(n²) into O(n)? Solve "two sum".
 4. Q7. What are the two-pointer and sliding-window patterns? Solve "longest substring without repeating characters".
 5. Q9. BFS vs DFS — when do you use each? Solve "number of islands".
@@ -784,3 +855,4 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 - **Collections** — `ArrayDeque` (stack/queue), `PriorityQueue`, `TreeMap` (floor/ceiling), `int[]` for counts.
 - **Idioms** — `merge`, `getOrDefault`, `computeIfAbsent`, `Integer.compare`, `StringBuilder`.
 - **Traps** — `int` overflow, `Integer ==`, `a - b` comparators, recursion depth, `Arrays.asList` is fixed-size.
+- **Free slots** — sort bookings by start, sweep from the start of working hours and emit each gap `>=` slot length; clamp to working hours. *O(n log n); ask about time zones, overlaps and adjacency.*

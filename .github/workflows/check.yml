@@ -1,0 +1,21 @@
+name: ✅ Checks
+
+on:
+    pull_request:
+    push:
+        branches-ignore:
+            - main
+
+jobs:
+    check:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v7
+            - uses: actions/setup-python@v7
+              with:
+                  python-version: '3.x'
+            - run: pip install -r requirements.txt
+            - name: EN/FR parity and question references
+              run: python scripts/check_docs.py
+            - name: Build (strict, also checks internal links and anchors)
+              run: mkdocs build --strict

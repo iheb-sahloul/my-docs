@@ -1,13 +1,14 @@
 # Leadership & Behavioral (STAR)
 
 > Technical leadership: feedback, conflict, stakeholders, estimation, team health. Architecture questions live in [System Design](system-design.md). Behavioral ("Tell me about a time…") questions are in the [Behavioral section](#behavioral-star).
+>
+> **Note:** the figures in the STAR answers (percentages, timings, team sizes) are illustrative. Replace them with your own real numbers before using a story.
 
 ## 🟢 Fundamentals
 
 ### Leadership
 
-#### Q1. What makes technical feedback and mentorship actually effective, as opposed to just correct?
-
+#### Q1. What makes technical feedback and mentorship actually effective, as opposed to just correct? {#technical-feedback-mentorship-effective-opposed}
 Effective feedback is specific (points at the actual line/decision, not a general impression),
 timely (given close to when the work happened, not batched into a vague quarterly comment),
 focused on the work and its impact rather than the person, and — critically for mentorship
@@ -30,8 +31,7 @@ Effective:              "Line 42 catches Exception, so the timeout below is swal
 
 ### Leadership
 
-#### Q2. A junior engineer keeps making the same category of mistake despite repeated code review comments. What's your concrete approach?
-
+#### Q2. A junior engineer keeps making the same category of mistake despite repeated code review comments. What's your concrete approach? {#junior-engineer-keeps-making-same}
 **Answer:** First, check whether the feedback so far actually explained the underlying principle
 or just corrected the specific instance each time — repeating "fix this" without the reusable
 "why" behind it teaches pattern-matching to that one review comment, not the generalizable
@@ -56,8 +56,7 @@ PR comment pattern (3 PRs in a row): "missing null check on line 42"
 comments" — the question is specifically testing whether the candidate recognizes that repeated
 correct comments that don't land are a signal the intervention itself needs to change, not repeat.
 
-#### Q3. How do you push back on a technical decision coming from a senior stakeholder or manager that you believe is wrong?
-
+#### Q3. How do you push back on a technical decision coming from a senior stakeholder or manager that you believe is wrong? {#push-back-technical-decision-coming}
 **Answer:** Lead with genuine curiosity about their reasoning before asserting your own — they may
 have context you don't (a business constraint, a prior failed attempt, a timeline pressure that
 changes the calculus). State your concern concretely and specifically (the actual risk or cost,
@@ -81,8 +80,7 @@ Strong pushback: "This approach adds ~2 weeks of migration risk because it touch
 the trap is stopping at raising an objection instead of pairing it with a concrete cost and a
 concrete alternative, which is what actually makes pushback persuasive rather than just noted.
 
-#### Q4. As a tech lead, how do you handle a design review where two senior engineers strongly disagree?
-
+#### Q4. As a tech lead, how do you handle a design review where two senior engineers strongly disagree? {#tech-lead-handle-design-review}
 **Answer:** Separate the disagreement from the individuals first — make sure both people feel
 genuinely heard, then get both positions written down concretely enough to compare on the same
 axes (what does each approach optimize for, what does each cost, under what future scenario would
@@ -106,8 +104,7 @@ Resolvable by a spike? No — it's a genuine priority trade-off (audit depth vs.
 project indefinitely — the trap is treating "get everyone to agree" as the goal instead of "get
 the decision made, explained, and owned," which is what a stalled review actually needs.
 
-#### Q5. How do you scope and estimate a project with genuinely high uncertainty for stakeholders who want a firm date?
-
+#### Q5. How do you scope and estimate a project with genuinely high uncertainty for stakeholders who want a firm date? {#scope-estimate-project-genuinely-high}
 **Answer:** Be explicit that a single point estimate for a highly uncertain project is itself a
 lie dressed up as precision — instead, communicate a range grounded in the actual sources of
 uncertainty (spell out what's unknown: an unfamiliar third-party integration, an unclear
@@ -134,8 +131,7 @@ driving the uncertainty.
 
 ### Leadership & strategy
 
-#### Q6. You inherit a team with low morale and significant technical debt. Describe your approach for the first 90 days as tech lead.
-
+#### Q6. You inherit a team with low morale and significant technical debt. Describe your approach for the first 90 days as tech lead. {#inherit-team-low-morale-significant}
 **Answer:** Resist the urge to immediately start big rewrites or sweeping changes before
 understanding why things got this way — the first weeks are primarily for listening: 1:1s with
 every team member, and reviewing recent incidents/postmortems and the actual state of the codebase
@@ -164,8 +160,7 @@ Day 90:     debt backlog is still long, but every engineer can name what changed
 listening and a small trust-building win first, since a team with low morale won't buy into a big
 plan from someone who hasn't yet earned credibility with them.
 
-#### Q7. How do you decide between building a component yourself and buying (or adopting open source)?
-
+#### Q7. How do you decide between building a component yourself and buying (or adopting open source)? {#decide-building-component-yourself-buying}
 Frame it as **total cost of ownership over the lifetime**, weighed against strategic value. Ask first: is this a **differentiator** — something that gives the product a competitive
 advantage — or **commodity** (authentication, payments, email delivery, observability, search)? Commodity capabilities almost always favor buying or adopting: the vendor
 has already spent thousands of engineer-years on edge cases, compliance (PCI, SOC 2, GDPR) and security patches, and your engineers' scarce time goes to
@@ -187,8 +182,7 @@ Decision: buy; vendor hidden behind EmailSender, templates stored in our repo (e
 Revisit:  2027-03 or if monthly cost > $5k
 ```
 
-#### Q8. How do you run incident command during a major production outage?
-
+#### Q8. How do you run incident command during a major production outage? {#run-incident-command-during-major}
 **Answer:** Separate the roles so nobody both debugs and coordinates: an **incident commander** who owns decisions and does not touch the keyboard, one or more **responders** who investigate, and a **communicator** who keeps stakeholders informed.
 
 Mitigate first (rollback, feature flag, failover), find the root cause later.
@@ -208,8 +202,7 @@ Time-box hypotheses, narrate decisions in one channel, post status updates on a 
 
 **Why it's a trap:** candidates describe heroic debugging; the question tests whether you coordinate, mitigate before diagnosing, and communicate on a cadence.
 
-#### Q9. How do you write an RFC or ADR so a team actually decides, rather than debating forever?
-
+#### Q9. How do you write an RFC or ADR so a team actually decides, rather than debating forever? {#write-rfc-adr-team-decides}
 **Answer:** State the problem and constraints before the solution, list at least two real alternatives with honest costs (including "do nothing"), give a recommendation, and set a decision deadline and a named decider.
 
 Keep it short (1-2 pages), circulate it for async comments first, and use the meeting only for unresolved points. Record the decision and the reasons it could be revisited, so future readers understand it was a judgment call under known assumptions.
@@ -228,8 +221,7 @@ Open points:  session TTL; who is on-call for Redis?
 
 **Why it's a trap:** a long document with one option and no decider is a design announcement, not a decision tool.
 
-#### Q10. How do you structure hiring and interviewing so decisions are consistent and fair?
-
+#### Q10. How do you structure hiring and interviewing so decisions are consistent and fair? {#structure-hiring-interviewing-decisions-consistent}
 **Answer:** Define the level and the signals you need before interviewing (e.g. debugging, design trade-offs, collaboration), give each interviewer one signal to probe, use the same questions and a written rubric for every candidate, and have interviewers submit written feedback *before* the debrief so the loudest voice doesn't anchor the group.
 
 Evidence ("she identified the race condition unprompted") beats impression ("seems smart"). Treat the candidate experience as part of the job: clear schedule, timely answer.
@@ -246,8 +238,7 @@ Debrief: read all forms silently (5 min) -> each states score first -> discuss o
 
 **Why it's a trap:** "I go with my gut" is the answer that signals inconsistency and bias.
 
-#### Q11. How do you delegate well, and how do you say no without damaging the relationship?
-
+#### Q11. How do you delegate well, and how do you say no without damaging the relationship? {#delegate-well-say-damaging-relationship}
 **Answer:** Delegate the outcome, not the steps: state the goal, the constraints, the decision rights, and the checkpoints, then let the person choose the approach. Match the task to a growth edge but keep a safety net (a mid-way review).
 
 When saying no, acknowledge the goal behind the request, give the trade-off in concrete terms (what slips if we say yes), and offer an alternative or a later date. A no with a reason and an option is a negotiation, not a refusal.
@@ -265,8 +256,7 @@ Saying no:   "I can't take the dashboard request this sprint without dropping th
 
 **Why it's a trap:** "I'd just do it myself" (can't delegate) and "I'd say yes and work nights" (can't say no) are both failure modes the interviewer is probing.
 
-#### Q12. How do you onboard a new engineer so they are productive quickly?
-
+#### Q12. How do you onboard a new engineer so they are productive quickly? {#onboard-new-engineer-productive-quickly}
 **Answer:** Prepare before day one: laptop, access, a buddy, a written plan. Aim for a small real change in production within the first week (builds confidence and validates the setup), then widen scope progressively. Provide context, not only tasks: architecture overview, who owns what, why key decisions were made. Hold regular 1:1s, collect feedback on onboarding itself, and fix the docs every time a newcomer stumbles.
 
 **Example:**
@@ -281,8 +271,7 @@ Day 90  retro with manager: what was unclear? -> 3 doc fixes merged by the newco
 
 **Why it's a trap:** "give them the docs and let them read" ignores that the best signal of a healthy team is how fast a newcomer ships something real.
 
-#### Q13. How do you manage up: keeping your manager informed and aligned without surprises?
-
+#### Q13. How do you manage up: keeping your manager informed and aligned without surprises? {#manage-up-keeping-manager-informed}
 **Answer:** Agree on priorities and success criteria explicitly, then communicate proactively: bad news early with a proposed plan, progress on a regular cadence, decisions needed with a deadline. Frame things in terms of outcomes and risk, not activity. Ask what your manager is being measured on so your work maps to it. The goal is that your manager is never surprised by something they could have learned from you.
 
 **Example:**
@@ -298,8 +287,7 @@ Help:    intro to the security team for the pen-test slot
 
 **Why it's a trap:** "I just do good work and they see it" leaves the manager blind; the senior move is to make progress and risk visible.
 
-#### Q14. How do you measure whether your team is delivering well, without turning metrics into targets?
-
+#### Q14. How do you measure whether your team is delivering well, without turning metrics into targets? {#measure-whether-team-delivering-well}
 **Answer:** Use the four **DORA metrics** as a system-level view: deployment frequency, lead time for changes, change failure rate, and time to restore service. They balance speed against stability, so improving one at the cost of the other shows up.
 
 Read them as trends for the team and the delivery system, never per person, and pair them with qualitative signals: developer experience surveys (the SPACE framework), on-call load, and how often the team hits the commitments it made.
@@ -317,8 +305,7 @@ Q2 (actions: review SLA 1 day, feature flags, smaller PRs, canary)
 
 **Why it's a trap:** comparing teams or individuals on DORA numbers rewards gaming and punishes teams with harder systems; the useful comparison is a team against its own past.
 
-#### Q15. How do you prioritise technical debt against product work?
-
+#### Q15. How do you prioritise technical debt against product work? {#prioritise-technical-debt-against-product}
 **Answer:** Make debt visible and costed in business terms, then trade it like any other work.
 
 Keep a short debt register where each item says what it costs today (incidents, slower delivery in that area, onboarding time, security or upgrade risk) and what fixing it would unlock.
@@ -340,8 +327,7 @@ Old admin UI (jQuery)        ugly, but stable                   twice a year  Le
 
 **Why it's a trap:** asking for "a refactoring sprint" without numbers sounds like engineers wanting to polish code, and it loses to any feature; the same work framed as "cut checkout incidents and halve lead time on pricing" usually gets approved.
 
-#### Q16. How do you run a retrospective that leads to change?
-
+#### Q16. How do you run a retrospective that leads to change? {#run-retrospective-leads-change}
 **Answer:** Keep it safe and blameless: the facilitator states the goal (improve how we work, not judge people) and makes sure quiet people are heard, for example with silent writing before discussion.
 
 Start with data: what happened in the sprint or incident, metrics, timeline. Group the topics, vote, and spend most of the time on the one or two that matter, digging into causes.
@@ -362,8 +348,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 ## 🎯 Real-world scenarios
 
-### S1. A design review between two senior engineers stalls a project for weeks with no resolution
-
+### S1. A design review between two senior engineers stalls a project for weeks with no resolution {#design-review-two-senior-engineers}
 - **Symptoms:** Two senior engineers have strongly held, opposing views on a core architectural
   decision, and repeated review meetings fail to converge — the project's timeline is slipping
   while the disagreement continues.
@@ -396,8 +381,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S2. A junior engineer's PRs keep repeating the same category of mistake despite review comments
-
+### S2. A junior engineer's PRs keep repeating the same category of mistake despite review comments {#junior-engineer-prs-keep-repeating}
 - **Symptoms:** Code review comments correctly identify the same class of issue across several
   consecutive PRs from the same engineer, each time fixed individually but recurring in the next
   PR.
@@ -428,8 +412,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S3. Team morale visibly drops after a layoff or reorg, and productivity/trust suffer
-
+### S3. Team morale visibly drops after a layoff or reorg, and productivity/trust suffer {#team-morale-visibly-drops-after}
 - **Symptoms:** Remaining team members show reduced engagement, increased skepticism toward
   leadership communication, and a noticeable slowdown in delivery beyond what headcount reduction
   alone would explain.
@@ -461,8 +444,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S4. A stakeholder demands an unrealistic deadline for a complex feature
-
+### S4. A stakeholder demands an unrealistic deadline for a complex feature {#stakeholder-demands-unrealistic-deadline-complex}
 - **Symptoms:** A stakeholder states a hard deadline for a feature the engineering team assesses
   as requiring meaningfully more time than that, with the deadline apparently non-negotiable from
   the stakeholder's framing.
@@ -494,8 +476,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S5. Two team members are in ongoing conflict over code ownership or technical approach
-
+### S5. Two team members are in ongoing conflict over code ownership or technical approach {#two-team-members-ongoing-conflict}
 - **Symptoms:** Repeated friction in reviews or planning between two specific team members,
   escalating beyond normal technical disagreement into a personal or territorial dynamic that's
   starting to affect the wider team's dynamics.
@@ -527,8 +508,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S6. A production incident traces back to an architectural decision you personally made
-
+### S6. A production incident traces back to an architectural decision you personally made {#production-incident-traces-back-architectural}
 - **Symptoms:** A postmortem investigation identifies the root cause as a specific design choice
   you advocated for and made, not an unrelated bug or an outside factor.
 - **Diagnosis/reflection:** This is a moment where how you handle it matters as much as the
@@ -561,8 +541,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S7. An on-call rotation drowns in non-actionable pages, and the team stops trusting alerts enough to react quickly to a real one
-
+### S7. An on-call rotation drowns in non-actionable pages, and the team stops trusting alerts enough to react quickly to a real one {#call-rotation-drowns-non-actionable}
 - **Symptoms:** The on-call rotation receives dozens of pages a week, the large majority of which
   resolve themselves or require no action; engineers report muting or delaying pages, and a
   genuinely critical incident recently went unacknowledged for 20+ minutes because it looked like
@@ -594,12 +573,11 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
   treat "did this page require a human to actually do something" as the bar for keeping it as a
   page at all, rather than a ticket or a dashboard metric.
 
-*See also:* [Full Stack S22](fullstack-devops-k8s.md) for the technical side: SLO-based, symptom-first alerts.
+*See also:* [Full Stack S22](fullstack-devops-k8s.md#call-phone-rings-dozens-times) for the technical side: SLO-based, symptom-first alerts.
 
 </details>
 
-### S8. A team member consistently responds defensively to code review feedback, regardless of how it's delivered
-
+### S8. A team member consistently responds defensively to code review feedback, regardless of how it's delivered {#team-member-consistently-responds-defensively}
 - **Symptoms:** Reasonable, well-phrased review feedback is repeatedly met with pushback,
   justification, or visible frustration from one specific team member, even when the feedback is
   factually correct and delivered constructively by multiple different reviewers.
@@ -630,8 +608,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S9. A cross-team dependency repeatedly blocks your team's delivery
-
+### S9. A cross-team dependency repeatedly blocks your team's delivery {#cross-team-dependency-repeatedly-blocks}
 - **Symptoms:** Your team's roadmap keeps slipping because a required piece of work from another
   team isn't ready when needed, recurring across multiple projects rather than a one-off
   scheduling miss.
@@ -661,8 +638,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S10. Sunsetting a legacy system that many teams still depend on proves far harder than expected
-
+### S10. Sunsetting a legacy system that many teams still depend on proves far harder than expected {#sunsetting-legacy-system-many-teams}
 - **Symptoms:** A planned deprecation of an old system stalls repeatedly — teams keep having "just
   one more" dependency that isn't ready to migrate, and the sunset date keeps slipping.
 
@@ -692,8 +668,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S11. As an interviewer, you need to evaluate a candidate's system design answer fairly
-
+### S11. As an interviewer, you need to evaluate a candidate's system design answer fairly {#interviewer-need-evaluate-candidate-system}
 - **Symptoms:** A candidate produces a design with a reasonable-looking diagram, but you need to
   assess whether it actually reflects strong system design judgment versus memorized, template
   answers that don't demonstrate real understanding.
@@ -704,7 +679,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 <summary>Show diagnosis, resolution & prevention</summary>
 
 - **Diagnosis:** The strongest signal isn't whether they drew the "right" diagram — it's whether
-  they asked clarifying questions before designing ([System Design Q1](system-design.md)), whether they can articulate the actual
+  they asked clarifying questions before designing ([System Design Q1](system-design.md#steps-follow-system-design-interview)), whether they can articulate the actual
   trade-off behind each significant decision, and whether they can go deep on at least one
   component when pushed.
 - **Example:**
@@ -713,7 +688,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
   Candidate proposes fan-out-on-write for the whole feed design, no mention of celebrity
   accounts. Interviewer: "This account has 50M followers — walk me through what happens
   when they post."
-  Strong candidate: adapts live, proposes the fan-out-on-read special case ([System Design Q42](system-design.md)).
+  Strong candidate: adapts live, proposes the fan-out-on-read special case ([System Design Q42](system-design.md#design-instagram-feed-high-level)).
   Weak candidate: repeats the original design unchanged, doesn't register the new constraint.
   ```
 
@@ -726,8 +701,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S12. Product wants features only; engineering says the tech debt is slowing everyone down — and leadership won't fund cleanup
-
+### S12. Product wants features only; engineering says the tech debt is slowing everyone down — and leadership won't fund cleanup {#product-wants-features-only-engineering}
 - **Symptoms:** Lead time per feature has doubled in a year, incidents recur in the same legacy module, and the best engineers grumble about "the
   billing code". Every request for a "refactoring sprint" is turned down as an unquantified cost with no customer value.
 
@@ -756,8 +730,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-### S13. An engineer's output and quality have dropped over several months, and the team notices
-
+### S13. An engineer's output and quality have dropped over several months, and the team notices {#engineer-output-quality-have-dropped}
 - **Symptoms:** A previously reliable engineer now misses commitments, PRs are late and low-effort, they are quieter in meetings, and colleagues quietly start
   routing around them. No one has raised it directly.
 
@@ -787,7 +760,7 @@ Action: split stories so each is testable in ≤ 2 days; Sam owns the refinement
 
 </details>
 
-## 🗣️ Behavioral (STAR)
+## 🗣️ Behavioral (STAR) {#behavioral-star}
 
 > Behavioral questions ("Tell me about a time when…") test judgment, ownership and communication through *past* behavior. Every model answer below is structured with the **STAR** method. Technical-leadership scenarios live in [Leadership](leadership-behavioral.md).
 
@@ -820,8 +793,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 #### Self-presentation
 
-#### B1. Tell me about yourself.
-
+#### B1. Tell me about yourself. {#yourself}
 **Why they ask:** to see if you can summarize your career into a coherent, relevant narrative.
 
 - **S** — Present: "I'm a senior full-stack engineer with 8 years of experience, mostly Java/Spring Boot backends and React frontends on Kubernetes."
@@ -831,8 +803,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** reciting your CV chronologically for 5 minutes. Use *present → past → future* and stay under 90 seconds.
 
-#### B2. Tell me about an achievement you are particularly proud of.
-
+#### B2. Tell me about an achievement you are particularly proud of. {#achievement-particularly-proud}
 **Why they ask:** what you value, and the scale of impact you operate at.
 
 - **S** — Legacy monolith, nightly batch taking 7 h and regularly failing, blocking the finance team's morning reports.
@@ -842,8 +813,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** picking an achievement with no measurable result, or saying "we" throughout so your own part is invisible.
 
-#### B3. What are your greatest strengths and weaknesses?
-
+#### B3. What are your greatest strengths and weaknesses? {#greatest-strengths-weaknesses}
 **Why they ask:** self-awareness and whether you actively improve.
 
 - **S** — Strength: I break ambiguous problems into shippable increments. Weakness: I used to take on too much myself instead of delegating.
@@ -853,8 +823,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** "I'm a perfectionist" or a weakness that disqualifies you for the role.
 
-#### B4. Why do you want to work here?
-
+#### B4. Why do you want to work here? {#want-here}
 **Why they ask:** motivation, research, and fit.
 
 - **S** — What you found: product, engineering blog, tech stack, scale problems.
@@ -864,8 +833,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** generic praise ("great company") or only talking about salary/remote.
 
-#### B5. Why do you want to work in healthcare (or for a company like Doctolib)?
-
+#### B5. Why do you want to work in healthcare ? {#want-healthcare}
 **Why they ask:** motivation that survives hard days, and whether you understand the domain's stakes (patient data, availability, trust).
 
 - **S** — Your story starts with a concrete, personal link to the mission (a relative who waited weeks for an appointment, a project where your software had real users who depended on it).
@@ -875,14 +843,13 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** generic answers ("great culture", "innovative") or flattery that could apply to any company. Another trap is ignoring the constraints: showing enthusiasm without acknowledging compliance and data sensitivity sounds naive.
 
-*See also:* [Security Q19](security.md) for what protecting health data means technically, and [Behavioral B4](leadership-behavioral.md) for the generic version of this question.
+*See also:* [Security Q19](security.md#design-protection-sensitive-healthcare-data) for what protecting health data means technically, and [Behavioral B4](leadership-behavioral.md#want-here) for the generic version of this question.
 
 ### 🟡 Senior traps
 
 #### Failure and feedback
 
-#### B6. Tell me about a time you made a significant mistake.
-
+#### B6. Tell me about a time you made a significant mistake. {#time-made-significant-mistake}
 **Why they ask:** accountability, honesty, and whether you turn mistakes into systems improvements.
 
 - **S** — I shipped a Flyway migration adding a `NOT NULL` column with a default on a 200M-row table; it locked writes for 9 minutes in production.
@@ -892,8 +859,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** a fake failure ("I worked too hard") or blaming others/tools. Own it in the first sentence.
 
-#### B7. Tell me about a time you received tough feedback. How did you react?
-
+#### B7. Tell me about a time you received tough feedback. How did you react? {#time-received-tough-feedback-react}
 **Why they ask:** coachability and ego.
 
 - **S** — My tech lead told me my PRs were too large and hard to review, slowing the team.
@@ -905,8 +871,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 #### Conflict and influence
 
-#### B8. Describe a conflict with a colleague and how you resolved it.
-
+#### B8. Describe a conflict with a colleague and how you resolved it. {#conflict-colleague-resolved}
 **Why they ask:** emotional intelligence; do you escalate, avoid, or resolve?
 
 - **S** — A backend peer and I disagreed on API versioning: they wanted breaking changes in `v1`, I needed stability for the mobile app.
@@ -916,8 +881,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** a story where you were simply right and the other person wrong. Show empathy and a compromise based on data.
 
-#### B9. Tell me about a time you disagreed with your manager.
-
+#### B9. Tell me about a time you disagreed with your manager. {#time-disagreed-manager}
 **Why they ask:** do you speak up respectfully, and do you commit once the decision is made?
 
 - **S** — My manager wanted to ship a feature without load testing to hit a client demo date.
@@ -927,10 +891,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** "disagree and commit" without showing the disagreement, or the opposite: refusing to commit afterward.
 
-*Method:* [Leadership Q3](leadership-behavioral.md) covers how to push back on a senior stakeholder; this question asks for the story.
+*Method:* [Leadership Q3](leadership-behavioral.md#push-back-technical-decision-coming) covers how to push back on a senior stakeholder; this question asks for the story.
 
-#### B10. Tell me about a time you worked under tight deadline or pressure.
-
+#### B10. Tell me about a time you worked under tight deadline or pressure. {#time-worked-under-tight-deadline}
 **Why they ask:** prioritization and composure.
 
 - **S** — A regulatory change required a new KYC flow live in 3 weeks; the estimate was 6.
@@ -940,8 +903,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** heroics (all-nighters) as the main action. Seniors reduce scope and risk instead.
 
-#### B11. Tell me about a time you had to work with an unclear or changing requirement.
-
+#### B11. Tell me about a time you had to work with an unclear or changing requirement. {#time-had-unclear-changing-requirement}
 **Why they ask:** comfort with ambiguity.
 
 - **S** — Product asked for "a better reporting dashboard" with no definition of "better".
@@ -953,8 +915,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 ### 🔴 Expert / Open
 
-#### B12. Tell me about a time you influenced a decision without having authority.
-
+#### B12. Tell me about a time you influenced a decision without having authority. {#time-influenced-decision-having-authority}
 **Why they ask:** staff-level impact across teams.
 
 - **S** — Four teams used four different logging formats, making cross-service tracing painful during incidents.
@@ -964,10 +925,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** "I convinced them" with no mechanism. Show data, a prototype, and lowered adoption cost.
 
-*Method:* [Leadership Q3](leadership-behavioral.md) covers influence without authority; this question asks for the story.
+*Method:* [Leadership Q3](leadership-behavioral.md#push-back-technical-decision-coming) covers influence without authority; this question asks for the story.
 
-#### B13. Tell me about a time you drove a major technical change.
-
+#### B13. Tell me about a time you drove a major technical change. {#time-drove-major-technical-change}
 **Why they ask:** vision, risk management and execution at scale.
 
 - **S** — A monolith deployed once a month, with 1 release in 4 rolled back.
@@ -977,8 +937,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** a big-bang rewrite story; interviewers look for incremental, reversible steps.
 
-#### B14. Tell me about a time you improved code quality in your team.
-
+#### B14. Tell me about a time you improved code quality in your team. {#time-improved-code-quality-team}
 **Why they ask:** whether you raise the bar through influence and habits rather than lectures or heroics.
 
 - **S** — Our service had flaky tests, 40-minute reviews and a recurring class of regressions around date handling.
@@ -988,10 +947,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** a solo crusade ("I rewrote it all") or a vague answer without numbers. Quality improvements that the team did not adopt are not an achievement.
 
-*See also:* [Testing Q18](testing.md) for quality gates in the pipeline, and [Behavioral B20](leadership-behavioral.md) on quality versus speed.
+*See also:* [Testing Q18](testing.md#load-test-rest-api-gatling) for quality gates in the pipeline, and [Behavioral B20](leadership-behavioral.md#time-had-balance-quality-against) on quality versus speed.
 
-#### B15. Tell me about a time you mentored or helped a struggling teammate.
-
+#### B15. Tell me about a time you mentored or helped a struggling teammate. {#time-mentored-helped-struggling-teammate}
 **Why they ask:** multiplier effect and patience.
 
 - **S** — A junior engineer missed estimates by 2× for two sprints and lost confidence.
@@ -1001,10 +959,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** describing yourself as the hero who fixed everything. The result must be *their* growth.
 
-*Method:* [Leadership Q1](leadership-behavioral.md) and [Leadership S2](leadership-behavioral.md) cover effective mentoring; this question asks for the story.
+*Method:* [Leadership Q1](leadership-behavioral.md#technical-feedback-mentorship-effective-opposed) and [Leadership S2](leadership-behavioral.md#junior-engineer-prs-keep-repeating) cover effective mentoring; this question asks for the story.
 
-#### B16. Tell me about a decision you made with incomplete information.
-
+#### B16. Tell me about a decision you made with incomplete information. {#decision-made-incomplete-information}
 **Why they ask:** judgment under uncertainty and reversibility.
 
 - **S** — We had to pick a message broker in 2 weeks, with unclear throughput forecasts.
@@ -1014,8 +971,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** pretending you were certain. Show how you reduced uncertainty and limited the blast radius.
 
-#### B17. Tell me about a time you made sure your work delivered real value to users.
-
+#### B17. Tell me about a time you made sure your work delivered real value to users. {#time-made-sure-delivered-real}
 **Why they ask:** whether you care about outcomes, not just shipped tickets.
 
 - **S** — We were asked to build a self-service export for clinic admins; the spec described a full reporting module.
@@ -1025,10 +981,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** describing delivery ("we shipped on time") without any evidence of impact. Say how you measured value, and what you chose *not* to build.
 
-*See also:* [Full Stack Q8](fullstack-devops-k8s.md) on measuring what users experience.
+*See also:* [Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average) on measuring what users experience.
 
-#### B18. Tell me about a production incident you investigated.
-
+#### B18. Tell me about a production incident you investigated. {#production-incident-investigated}
 **Why they ask:** calm, method and learning under pressure, plus honesty about your own part.
 
 - **S** — Latency alerts fired on the booking API at 14:10 and error rates climbed to 8%.
@@ -1038,10 +993,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** a hero narrative, blaming a person, or skipping the mitigation-before-diagnosis order. Show the sequence: stabilise, diagnose, prevent.
 
-*See also:* [Leadership S6](leadership-behavioral.md) for an incident caused by your own decision, and [Full Stack Q36](fullstack-devops-k8s.md) for a latency investigation method.
+*See also:* [Leadership S6](leadership-behavioral.md#production-incident-traces-back-architectural) for an incident caused by your own decision, and [Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) for a latency investigation method.
 
-#### B19. Tell me about a time you changed a technical decision after new evidence.
-
+#### B19. Tell me about a time you changed a technical decision after new evidence. {#time-changed-technical-decision-after}
 **Why they ask:** intellectual honesty and the ability to change course without ego.
 
 - **S** — I had proposed caching availability results for 10 minutes to cut database load, and the team agreed.
@@ -1051,10 +1005,9 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** choosing a trivial example, or one where you were "right all along". Show what evidence changed your mind, how you said so publicly, and how you limited the cost of the reversal.
 
-*See also:* [Behavioral B16](leadership-behavioral.md) on deciding with incomplete information.
+*See also:* [Behavioral B16](leadership-behavioral.md#decision-made-incomplete-information) on deciding with incomplete information.
 
-#### B20. Tell me about a time you had to balance quality against speed.
-
+#### B20. Tell me about a time you had to balance quality against speed. {#time-had-balance-quality-against}
 **Why they ask:** pragmatism and integrity.
 
 - **S** — A sales deal depended on a feature in 2 weeks; the clean design needed 5.
@@ -1068,8 +1021,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 These come in the first 20-minute call, usually with a recruiter rather than an engineer. They are not STAR stories: answer in 30–60 seconds, stay positive, and prepare the wording in advance.
 
-#### B21. Why are you leaving your current job?
-
+#### B21. Why are you leaving your current job? {#leaving-current-job}
 **Why they ask:** to detect a conflict, a performance problem, or a pattern of short stays.
 
 - **Frame it as moving towards something:** "I want to own architecture decisions across teams, and that role doesn't exist where I am."
@@ -1078,8 +1030,7 @@ These come in the first 20-minute call, usually with a recruiter rather than an 
 
 **Pitfall:** criticising your manager or company. Even if it's true, the interviewer hears "this person will say the same about us".
 
-#### B22. What are your salary expectations?
-
+#### B22. What are your salary expectations? {#salary-expectations}
 **Why they ask:** to check you fit the budget before investing interview time.
 
 - **Research first:** market data for the role, level and city (salary surveys, peers, levels.fyi).
@@ -1088,8 +1039,7 @@ These come in the first 20-minute call, usually with a recruiter rather than an 
 
 **Pitfall:** naming a number with no research, or your current salary as the anchor. In some places employers aren't allowed to ask about your current pay.
 
-#### B23. Where do you see yourself in three to five years?
-
+#### B23. Where do you see yourself in three to five years? {#see-yourself-three-five-years}
 **Why they ask:** to check ambition and whether it fits the path they can offer.
 
 - **Name a direction, not a title:** "Leading the technical direction of a product area: architecture, mentoring, delivery."
@@ -1098,8 +1048,7 @@ These come in the first 20-minute call, usually with a recruiter rather than an 
 
 **Pitfall:** "in your job" or "running my own startup". Both suggest you'll leave or compete.
 
-#### B24. Walk me through a project you're proud of, in technical depth.
-
+#### B24. Walk me through a project you're proud of, in technical depth. {#project-re-proud-technical-depth}
 **Why they ask:** this is the deep-dive that recruiters for tech-lead roles pass to engineers; they test real ownership and whether you understand the trade-offs behind decisions.
 
 - **Context in 2 sentences:** business problem, scale (users, requests/s, data volume), team size.
@@ -1110,8 +1059,7 @@ These come in the first 20-minute call, usually with a recruiter rather than an 
 
 **Pitfall:** describing what "the team" built without saying which decisions were yours, or being unable to answer "why not X?".
 
-#### B25. Why a tech lead role, and what does a tech lead do in your view?
-
+#### B25. Why a tech lead role, and what does a tech lead do in your view? {#tech-lead-role-tech-lead}
 **Why they ask:** to check you know the job is about multiplying the team, not being the best coder.
 
 - **Definition:** accountable for the technical direction and delivery of a team: architecture decisions, quality bar, unblocking, mentoring, and translating between product and engineering.
@@ -1120,8 +1068,7 @@ These come in the first 20-minute call, usually with a recruiter rather than an 
 
 **Pitfall:** "I want to decide the architecture". The answer should be about the team's outcomes, not your control. See [Leadership](leadership-behavioral.md) for the method questions.
 
-#### B26. Do you have any questions for us?
-
+#### B26. Do you have any questions for us? {#have-any-questions}
 **Why they ask:** to measure your interest and judgement. "No" is a weak signal.
 
 - **About the team:** "How is the team split between product work, maintenance and on-call?"
@@ -1130,6 +1077,26 @@ These come in the first 20-minute call, usually with a recruiter rather than an 
 - **About the process:** "What are the next steps, and is there anything in my profile you'd like me to clarify?"
 
 **Pitfall:** asking only about remote days and benefits in the first call, or questions answered on the careers page.
+
+#### B27. Why our company? {#our-company}
+**Why they ask:** to tell real interest in their product and engineering apart from a generic healthcare answer ([B5](leadership-behavioral.md#want-healthcare)).
+
+- **S** — Start from the product as a user: you or a relative booked through it, or you know how practitioners use the calendar, teleconsultation or document sharing.
+- **T** — Name the engineering problems that attract you: high-traffic booking with zero tolerance for double booking, health-data security and compliance across several countries, and a large codebase that keeps shipping often.
+- **A** — Link them to your experience in one or two concrete examples (a Java/Spring service you scaled, a React feature used by thousands, an incident you led), and mention what you read about their engineering (blog posts, talks, open-source work, stack).
+- **R** — End with the impact you want to have in the team you are interviewing for, in their terms: patients find care faster, practitioners spend less time on admin.
+
+**Pitfall:** reciting the careers page or listing benefits. Check the facts you mention, and if you do not know something about their stack, say what you would like to learn instead of guessing.
+
+#### B28. Tell me about a feature you delivered end to end with product and design. {#feature-delivered-end-end-product}
+**Why they ask:** fullstack product engineers are expected to own a problem, not just tickets: challenge the scope, ship in small steps and measure the result.
+
+- **S** — The user problem and how you knew it was one (data, support tickets, user interviews).
+- **T** — Your role across backend, frontend and rollout, and the constraint (deadline, legacy, compliance).
+- **A** — How you shaped the solution with the PM and designer (what you proposed, cut or simplified), the technical choices (API, data model, feature flag, migration), and how you shipped it gradually (internal users, percentage rollout).
+- **R** — The measured outcome (adoption, conversion, time saved, fewer support tickets) and what you changed after seeing the data.
+
+**Pitfall:** a purely technical story with no user or metric, or "the PM decided everything". Show you influenced the *what*, not only the *how*.
 
 ## 🎤 Oral quiz
 
@@ -1152,13 +1119,13 @@ Q8–Q13 (incident command, RFC/ADR, hiring, delegation, onboarding, managing up
 
 Pick 5 questions, answer each **aloud in under 2 minutes** using S → T → A → R. Score yourself: **0** rambling · **1** story but no result · **2** clear STAR · **3** STAR with metrics and a learning. Below 12/15, rewrite the stories in your story bank.
 
-1. B2. An achievement you are proud of.
+1. B5. Why do you want to work in healthcare ?
 2. B6. A significant mistake.
 3. B8. A conflict with a colleague.
 4. B12. Influencing without authority.
 5. B16. A decision with incomplete information.
 
-## 📌 Cheat-sheet
+## 📌 Cheat-sheet {#cheat-sheet}
 
 ### Everyday leadership
 
@@ -1224,3 +1191,17 @@ Pick 5 questions, answer each **aloud in under 2 minutes** using S → T → A �
 #### Avoid
 
 - **Red flags** — blaming others, no result, all heroics, fake weaknesses, long chronological monologues.
+- **Why healthcare** — one concrete personal or professional reason, tie it to impact on patients/practitioners, and to what you can build there. *Avoid generic "I want to help people".*
+
+### STAR story bank {#star-story-bank}
+
+Prepare six real stories; each answers several questions. Fill Situation, Task, Action, Result (with one number you can defend) for each.
+
+| Story | Typical content | Answers |
+|-------|-----------------|---------|
+| 1. Proud achievement | A delivery with measurable impact | [B2](#achievement-particularly-proud), [B13](#time-drove-major-technical-change), [B17](#time-made-sure-delivered-real), [B24](#project-re-proud-technical-depth) |
+| 2. Mistake or incident | Own the cause, show the fix and the lesson | [B6](#time-made-significant-mistake), [B18](#production-incident-investigated), [B19](#time-changed-technical-decision-after) |
+| 3. Conflict or disagreement | Facts, listening, outcome | [B8](#conflict-colleague-resolved), [B9](#time-disagreed-manager), [B12](#time-influenced-decision-having-authority) |
+| 4. Pressure and trade-offs | Deadline, quality vs speed, incomplete information | [B10](#time-worked-under-tight-deadline), [B16](#decision-made-incomplete-information), [B20](#time-had-balance-quality-against) |
+| 5. Mentoring and quality | Coaching a teammate, improving code quality | [B14](#time-improved-code-quality-team), [B15](#time-mentored-helped-struggling-teammate), [B7](#time-received-tough-feedback-react) |
+| 6. Ambiguity and motivation | Unclear requirements, why this role or healthcare | [B11](#time-had-unclear-changing-requirement), [B4](#want-here), [B5](#want-healthcare), [B25](#tech-lead-role-tech-lead) |

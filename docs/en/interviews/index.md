@@ -18,6 +18,11 @@
 | 12 | [`Security`](security.md) | OAuth2/OIDC, JWT, Spring Security, injection/XSS/CSRF/IDOR/SSRF, supply chain |
 | 13 | [`Live Coding`](coding.md) | Method, Big-O, core patterns (hashing, windows, BFS/DFS, heaps, DP), Java pitfalls, take-homes |
 | 14 | [`Cloud (AWS)`](cloud-aws.md) | IAM, VPC, ECS/EKS/Lambda, managed data & messaging, SPA hosting, HA, cost |
+| 15 | [`REST API Design`](rest-api.md) | Pagination, PUT vs PATCH, ETag, problem details, caching, evolution |
+| 16 | [`Performance & Load Testing`](performance-load-testing.md) | k6/Gatling, percentiles, coordinated omission, USE method, capacity |
+| 17 | [`Observability`](observability.md) | RED/USE, correlation, cardinality, sampling, SLO burn-rate alerts |
+| 18 | [`Kotlin`](kotlin.md) | Null safety, sealed/value classes, coroutines, Spring + JPA plugins, Java interop |
+| 19 | [`Caching & Redis`](caching-redis.md) | Redis data structures, eviction, stampede, Spring Cache pitfalls, locks, Cluster |
 | ✓ | [`Mock Interview`](mock-interview.md)                       | Readiness checklist for the day before                            |
 
 Curated links per topic live under **Resources › [Further Reading](../resources/further-reading.md)**.
@@ -74,7 +79,7 @@ Walking through this outline out loud shows an engineering method rather than a 
 - **Give concrete examples from your experience.**
 - **Admit what you don't know**, then reason through it.
 - **For system design**, clarify requirements (load, latency, consistency) before drawing.
-- **For coding** ([module 14](coding.md)), discuss complexity, edge cases and tests.
+- **For coding** ([module 13](coding.md)), discuss complexity, edge cases and tests.
 
 ## Final checklist
 

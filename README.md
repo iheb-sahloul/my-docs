@@ -35,7 +35,7 @@ Published at: https://iheb-sahloul.github.io/my-docs/
 
 | Section | What it holds |
 |---|---|
-| `interviews/` | 14 interview modules (Q&A by level, real-world scenarios, oral quiz, cheat-sheet) + a readiness checklist (`mock-interview.md`). |
+| `interviews/` | 19 interview modules (Q&A by level, real-world scenarios, oral quiz, cheat-sheet) + a readiness checklist (`mock-interview.md`). |
 | `best-practices/` | Rules with ✅/⛔ examples: Git, Java, Spring Boot, testing, security, observability, REST, messaging, architecture, React, SQL/JPA, Docker/K8s, CI/CD, AI prompts |
 | `resources/` | `further-reading.md`: curated links per topic (EN: English links, FR: French links) |
 | `notes/` | Command-oriented cheat sheets: Git, Java, Maven/Gradle, SQL query tuning, Postgres, Docker, Kubernetes, Terraform, Linux, Kafka/RabbitMQ, curl/jq, AI |

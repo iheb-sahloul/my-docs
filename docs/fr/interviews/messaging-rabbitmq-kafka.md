@@ -4,8 +4,7 @@
 
 ### Pourquoi le messaging
 
-#### Q1. Pourquoi utiliser un message broker plutôt qu'un appel synchrone direct entre services ?
-
+#### Q1. Pourquoi utiliser un message broker plutôt qu'un appel synchrone direct entre services ? {#message-broker-instead-direct-synchronous}
 > **En clair :** Un broker est une boîte aux lettres entre services : l'émetteur dépose le message et continue, même si le destinataire est lent ou en panne.
 
 Un appel direct couple l'appelant à la disponibilité et à la latence de l'appelé en temps réel — si
@@ -27,8 +26,7 @@ billing.charge(order); shipping.schedule(order); analytics.track(order);
 rabbit.convertAndSend("orders.events", "order.placed", new OrderPlaced(order.id()));
 ```
 
-#### Q2. Quand privilégier une requête/réponse synchrone plutôt que du messaging asynchrone ?
-
+#### Q2. Quand privilégier une requête/réponse synchrone plutôt que du messaging asynchrone ? {#synchronous-request-response-instead-async}
 > **En clair :** Appel direct quand on a besoin de la réponse tout de suite (ex. « cette carte est-elle valide ? »). Messagerie quand le travail peut se faire plus tard.
 
 Les appels synchrones (REST/gRPC) conviennent quand l'appelant a réellement besoin du résultat
@@ -52,8 +50,7 @@ PaymentResult r = paymentClient.authorize(order.id(), order.total());   // REST/
 if (r.approved()) events.publish(new OrderConfirmed(order.id()));        // e-mail, analytics, expédition
 ```
 
-#### Q3. Quelle est la différence entre une queue (point-à-point) et un topic (publish/subscribe), et comment s'insèrent les competing consumers ?
-
+#### Q3. Quelle est la différence entre une queue (point-à-point) et un topic (publish/subscribe), et comment s'insèrent les competing consumers ? {#queue-point-point-topic-publish}
 > **En clair :** Une file donne chaque message à un seul worker. Un topic en donne une copie à chaque abonné. Plusieurs workers sur une file se partagent la charge.
 
 Dans une queue **point-à-point**, chaque message est livré à exactement *un* consumer : plusieurs
@@ -85,8 +82,7 @@ shipping-service:  group.id=shipping
 
 ### Modèles de brokers
 
-#### Q4. Décrivez le modèle de base de RabbitMQ : exchange, queue, binding, routing key.
-
+#### Q4. Décrivez le modèle de base de RabbitMQ : exchange, queue, binding, routing key. {#rabbitmq-core-model-exchange-queue}
 > **En clair :** RabbitMQ : le producteur envoie à un exchange, qui utilise les bindings et la routing key pour choisir la file qui reçoit le message.
 
 Un producer ne publie jamais directement dans une queue — il publie dans un **exchange**, qui
@@ -108,8 +104,7 @@ publish(exchange="orders", routingKey="order.eu.created")  # livré à billing E
 publish(exchange="orders", routingKey="order.eu.cancelled")# audit uniquement
 ```
 
-#### Q5. Décrivez le modèle de base de Kafka : topic, partition, offset, consumer group.
-
+#### Q5. Décrivez le modèle de base de Kafka : topic, partition, offset, consumer group. {#kafka-core-model-topic-partition}
 > **En clair :** Kafka : un topic est un journal découpé en partitions. Chaque message a une position (offset). Un consumer group répartit les partitions entre ses membres.
 
 Un **topic** est un log en append-only, découpé en une ou plusieurs **partitions** pour le
@@ -136,8 +131,7 @@ billing  orders  2          140             141             1    c3   # 1 partit
 
 ### Sémantiques de livraison
 
-#### Q6. Quelle est la différence entre livraison at-most-once, at-least-once et exactly-once ?
-
+#### Q6. Quelle est la différence entre livraison at-most-once, at-least-once et exactly-once ? {#most-once-least-once-exactly}
 > **En clair :** At-most-once : peut perdre des messages. At-least-once : peut les dupliquer. Exactly-once : ni perte ni doublon, mais difficile et limité à certains cas.
 
 **At-most-once** : un message est livré zéro ou une fois — si quelque chose échoue après l'envoi,
@@ -163,8 +157,7 @@ process(record); consumer.commitSync();
 // effet exactly-once = at-least-once + process() idempotent (voir Q13, Q29)
 ```
 
-#### Q7. À quoi servent les acknowledgements dans un message broker, et que devient un message dont le consumer plante avant d'acquitter ?
-
+#### Q7. À quoi servent les acknowledgements dans un message broker, et que devient un message dont le consumer plante avant d'acquitter ? {#acknowledgements-message-broker-happens-message}
 > **En clair :** Un ack veut dire « j'ai fini, tu peux l'effacer ». Si le consommateur plante avant l'ack, le broker renvoie le message.
 
 Un acknowledgement, c'est le consumer qui dit au broker « j'ai traité ceci — tu peux l'oublier ».
@@ -200,8 +193,7 @@ void handle(Order o, Channel ch, @Header(AmqpHeaders.DELIVERY_TAG) long tag) thr
 
 ### Comparaison des brokers et rétention
 
-#### Q8. Quelle est la différence architecturale fondamentale entre RabbitMQ et Kafka, et comment guide-t-elle le choix de l'un ou de l'autre ?
-
+#### Q8. Quelle est la différence architecturale fondamentale entre RabbitMQ et Kafka, et comment guide-t-elle le choix de l'un ou de l'autre ? {#core-architectural-rabbitmq-kafka-drive}
 > **En clair :** RabbitMQ pousse les messages aux consommateurs et les supprime une fois traités. Kafka garde un journal que chacun lit à son rythme.
 
 **Réponse :** RabbitMQ est un message broker traditionnel : un modèle « smart broker, simple
@@ -241,8 +233,7 @@ l'intelligence côté broker de RabbitMQ est la vraie réponse) ou choisir Rabbi
 replay/audit-log (que son modèle consume-and-gone ne peut pas fournir) revient à choisir l'outil
 sur sa réputation, et non selon l'architecture dont l'exigence a réellement besoin.
 
-#### Q9. Rétention Kafka vs TTL RabbitMQ — en quoi les modèles mentaux des deux systèmes diffèrent-ils sur la durée de vie d'un message ?
-
+#### Q9. Rétention Kafka vs TTL RabbitMQ — en quoi les modèles mentaux des deux systèmes diffèrent-ils sur la durée de vie d'un message ? {#kafka-retention-rabbitmq-ttl-two}
 > **En clair :** Kafka garde les messages pendant une durée fixée, même après lecture. RabbitMQ les retire une fois consommés ou expirés (TTL).
 
 **Réponse :** Kafka conserve les messages pendant une durée ou une taille configurée
@@ -276,8 +267,7 @@ un message dès qu'il est acquitté avec succès, aussi récemment que cela se s
 
 ### Ordre et partitionnement
 
-#### Q10. Quelles garanties d'ordre Kafka et RabbitMQ fournissent-ils réellement, et qu'est-ce qui les brise couramment ?
-
+#### Q10. Quelles garanties d'ordre Kafka et RabbitMQ fournissent-ils réellement, et qu'est-ce qui les brise couramment ? {#ordering-guarantees-kafka-rabbitmq-provide}
 > **En clair :** Kafka ne garantit l'ordre qu'au sein d'une partition. Les retries, plusieurs consommateurs ou des clés différentes peuvent le brouiller.
 
 **Réponse :** Kafka ne garantit l'ordre que *au sein d'une seule partition* — les messages avec la
@@ -313,8 +303,7 @@ c'est une demi-vérité facile à répéter sans la réserve « au sein d'une pa
 la clé est correcte », et l'écart reste invisible dans des tests à faible trafic où le round-robin
 se trouve, par chance, garder les événements liés proches les uns des autres.
 
-#### Q11. Comment choisir le nombre de partitions d'un topic Kafka, et que se passe-t-il si vous devez le changer plus tard ?
-
+#### Q11. Comment choisir le nombre de partitions d'un topic Kafka, et que se passe-t-il si vous devez le changer plus tard ? {#kafka-topic-partition-count-happens}
 > **En clair :** Plus de partitions = plus de consommateurs en parallèle. On peut en ajouter plus tard, mais le lien clé → partition change.
 
 **Réponse :** Le nombre de partitions fixe le plafond du parallélisme des consumers au sein d'un
@@ -346,8 +335,7 @@ n'est vrai qu'à moitié — on peut en ajouter, mais cela change silencieusemen
 clé→partition pour les nouveaux messages, un vrai risque de correction facile à manquer pour tout
 consumer dépendant de l'ordre, et non un levier de scaling gratuit.
 
-#### Q12. Quels défis posent la priorité des messages ou l'équité (fairness) entre de nombreuses queues/topics ?
-
+#### Q12. Quels défis posent la priorité des messages ou l'équité (fairness) entre de nombreuses queues/topics ? {#challenges-come-up-message-priority}
 > **En clair :** Si tout partage une seule file, un gros job ou un job urgent peut affamer les autres. Séparer les files ou utiliser des priorités.
 
 **Réponse :** RabbitMQ supporte des priority queues explicites (un champ de priorité par message,
@@ -383,8 +371,7 @@ priorité strict par-dessus revient à s'appuyer sur une garantie qui n'a jamais
 
 ### Garanties de livraison et idempotence
 
-#### Q13. Pourquoi un consumer doit-il être idempotent même quand le système de messaging revendique « exactly-once » ou « at-least-once avec dedup » ?
-
+#### Q13. Pourquoi un consumer doit-il être idempotent même quand le système de messaging revendique « exactly-once » ou « at-least-once avec dedup » ? {#consumer-idempotent-even-messaging-system}
 > **En clair :** Un message peut arriver deux fois même avec « exactly-once », donc le consommateur doit donner le même résultat s'il s'exécute deux fois.
 
 **Réponse :** Parce que la frontière que le broker peut garantir (message livré au consumer,
@@ -416,8 +403,7 @@ est le piège — cette garantie, là où elle existe, couvre la comptabilité i
 arbitraire comme un débit de carte, qui vit entièrement en dehors de la frontière transactionnelle
 du broker.
 
-#### Q14. Quelles sont les stratégies d'idempotence courantes pour un consumer de messages ?
-
+#### Q14. Quelles sont les stratégies d'idempotence courantes pour un consumer de messages ? {#common-idempotency-strategies-message-consumer}
 > **En clair :** Méthodes courantes : une clé unique vérifiée en base, un upsert, ou une table des IDs de messages déjà traités.
 
 **Réponse :** (1) Une clé métier unique (order ID, idempotency key du producer) imposée comme
@@ -454,8 +440,7 @@ l'approche par contrainte d'unicité est préférée précisément parce qu'elle
 données l'unique arbitre atomique au lieu de compter sur deux aller-retours séparés qui ne se
 chevaucheraient jamais.
 
-#### Q15. Que garantissent réellement respectivement les transactions Kafka et les publisher confirms de RabbitMQ ?
-
+#### Q15. Que garantissent réellement respectivement les transactions Kafka et les publisher confirms de RabbitMQ ? {#kafka-transactions-rabbitmq-publisher-confirms}
 > **En clair :** Transactions Kafka : plusieurs écritures réussissent ou échouent ensemble. Publisher confirms RabbitMQ : le broker confirme à l'émetteur qu'il a reçu le message.
 
 **Réponse :** Les transactions Kafka permettent à un producer d'écrire atomiquement dans plusieurs
@@ -492,8 +477,7 @@ channel.waitForConfirmsOrDie(5000); // ne dit rien sur le fait qu'un consumer l'
 broker ; ce qu'un consumer fait du message ensuite est entièrement en dehors de l'une ou l'autre
 garantie.
 
-#### Q16. Quels réglages du producer et du broker décident si un message Kafka survit à une panne de broker ?
-
+#### Q16. Quels réglages du producer et du broker décident si un message Kafka survit à une panne de broker ? {#producer-broker-settings-decide-whether}
 > **En clair :** Pour survivre à la panne d'un broker : `acks=all`, facteur de réplication 3, `min.insync.replicas=2`, et pas d'unclean leader election.
 
 **Réponse :** La durabilité est la combinaison de quatre réglages, et elle n'est aussi solide que
@@ -546,8 +530,7 @@ n'échouent que lors d'une vraie panne de broker.
 
 ### Consumers, offsets et rebalancing
 
-#### Q17. Auto-commit vs commit manuel d'offset dans un consumer Kafka — quel est le compromis ?
-
+#### Q17. Auto-commit vs commit manuel d'offset dans un consumer Kafka — quel est le compromis ? {#auto-commit-manual-offset-commit}
 > **En clair :** L'auto-commit est simple mais peut perdre ou répéter des messages. Le commit manuel après traitement est plus sûr et donne le contrôle.
 
 **Réponse :** L'auto-commit commite périodiquement le dernier offset consommé sur un timer,
@@ -583,8 +566,7 @@ production — la fenêtre d'échec est une course contre un plantage à un mome
 rare pour ne jamais apparaître tant que le volume réel de production et l'agitation réelle de
 l'infrastructure ne le rendent inévitable.
 
-#### Q18. Comment les acknowledgments RabbitMQ et le prefetch count interagissent-ils, et pourquoi le prefetch est-il important ?
-
+#### Q18. Comment les acknowledgments RabbitMQ et le prefetch count interagissent-ils, et pourquoi le prefetch est-il important ? {#rabbitmq-acknowledgments-prefetch-count-interact}
 > **En clair :** Le prefetch limite le nombre de messages non acquittés qu'un consommateur détient. Trop haut : un worker accapare ; trop bas : il attend.
 
 **Réponse :** Un consumer acquitte un message une fois qu'il a fini de le traiter ; un message non
@@ -616,8 +598,7 @@ consumers et transforme le plantage d'un seul consumer en un gros requeue thunde
 il faut le dimensionner selon la capacité concurrente réelle par consumer, et non le maximiser
 par défaut.
 
-#### Q19. Que se passe-t-il lors d'un rebalance de consumer group Kafka, et pourquoi peut-il provoquer un traitement en double ?
-
+#### Q19. Que se passe-t-il lors d'un rebalance de consumer group Kafka, et pourquoi peut-il provoquer un traitement en double ? {#happens-during-kafka-consumer-group}
 > **En clair :** Un rebalance déplace les partitions entre consommateurs. Le travail fait mais non commité est retraité par le nouveau propriétaire.
 
 **Réponse :** Un rebalance réassigne les partitions entre les consumers d'un group — déclenché par
@@ -652,8 +633,7 @@ fait de la redelivery en double un événement de routine que l'idempotence (Q13
 inconditionnellement, et non un risque de queue de distribution qu'on balaie d'un haussement
 d'épaules.
 
-#### Q20. Pourquoi un consumer Kafka *lent* — et non planté — peut-il déclencher des rebalances sans fin, et quels réglages le contrôlent ?
-
+#### Q20. Pourquoi un consumer Kafka *lent* — et non planté — peut-il déclencher des rebalances sans fin, et quels réglages le contrôlent ? {#slow-kafka-consumer-crashed-one}
 > **En clair :** Si un consommateur met trop de temps entre deux `poll()`, Kafka le croit mort et rebalance. Régler `max.poll.interval.ms` et `max.poll.records`.
 
 **Réponse :** Un consumer doit rappeler `poll()` dans les **`max.poll.interval.ms`** (5 minutes par
@@ -697,8 +677,7 @@ que le consumer est « vivant » alors qu'il est évincé à répétition ; et l
 augmenter `max.poll.interval.ms` — ne fait que masquer le handler lent jusqu'à ce que la charge
 monte.
 
-#### Q21. Que se passe-t-il quand un consumer n'arrive pas à suivre le rythme d'arrivée des messages, et comment le gérer ?
-
+#### Q21. Que se passe-t-il quand un consumer n'arrive pas à suivre le rythme d'arrivée des messages, et comment le gérer ? {#happens-consumer-keep-up-rate}
 > **En clair :** Les messages s'accumulent (lag). Solution : ajouter des consommateurs (jusqu'au nombre de partitions), accélérer le traitement ou traiter par lots.
 
 **Réponse :** Un backlog se construit — dans Kafka, le consumer lag (l'écart entre le dernier
@@ -727,8 +706,7 @@ nombre de partitions est déjà le plafond (Q11) ou si le temps de traitement pa
 régressé — jeter davantage de consumers sur un problème qui est en réalité limité par les
 partitions ou par la latence ne change rien.
 
-#### Q22. Comment surveiller le lag des consommateurs, et sur quoi alerter ?
-
+#### Q22. Comment surveiller le lag des consommateurs, et sur quoi alerter ? {#monitor-consumer-lag-alert}
 > **En clair :** Le lag mesure le retard des consommateurs. Alerter quand il grandit en continu ou dépasse l'engagement de délai, pas sur un nombre fixe.
 
 **Réponse :** Le lag est l'écart entre le dernier offset de chaque partition et l'offset commité du groupe. Collectez-le
@@ -758,8 +736,7 @@ tandis qu'un consommateur bloqué sur une partition à faible trafic n'atteint j
 
 ### Gestion des échecs
 
-#### Q23. Qu'est-ce qu'une dead-letter queue, et pourquoi un système de production en a-t-il besoin ?
-
+#### Q23. Qu'est-ce qu'une dead-letter queue, et pourquoi un système de production en a-t-il besoin ? {#dead-letter-queue-production-system}
 > **En clair :** Une DLQ est une boîte « messages en échec ». Les mauvais messages y vont pour ne plus bloquer les autres et être examinés plus tard.
 
 **Réponse :** Une dead-letter queue (DLQ) est l'endroit où vont les messages après avoir échoué au
@@ -786,8 +763,7 @@ channel.queueDeclare("orders-queue", true, false, false, args);
 DLQ avec routage de retry mais sans consumer ni alerte pour la surveiller n'est qu'une version plus
 lente et plus discrète de la perte de données exacte qu'elle était censée prévenir (S9).
 
-#### Q24. Qu'est-ce qu'un message « poison pill », et comment en gérer un sans bloquer toute la queue ?
-
+#### Q24. Qu'est-ce qu'un message « poison pill », et comment en gérer un sans bloquer toute la queue ? {#poison-pill-message-handle-one}
 > **En clair :** Un poison pill est un message qui échoue toujours. On réessaie quelques fois puis on l'envoie en DLQ pour que la file continue d'avancer.
 
 **Réponse :** Un poison pill est un message qui ne peut jamais être traité avec succès — données
@@ -817,8 +793,7 @@ défaut, et il est correct pour un échec transitoire (un timeout aval) mais cat
 poison pill — sans compteur borné, il est indiscernable d'une boucle de retry infinie qui ne laisse
 jamais la queue se vider.
 
-#### Q25. Comment concevoir des retries avec backoff pour un consumer Kafka (ou RabbitMQ) sans bloquer le flux ?
-
+#### Q25. Comment concevoir des retries avec backoff pour un consumer Kafka (ou RabbitMQ) sans bloquer le flux ? {#design-retries-backoff-kafka-rabbitmq}
 > **En clair :** Ne pas faire de sleep dans le consommateur. Envoyer le message en échec vers un topic de retry avec un délai croissant pour que le flux principal continue.
 
 **Réponse :** Retenter *sur place* est l'option la plus simple et elle convient pour un court
@@ -864,8 +839,7 @@ retentables, et la retry storm synchronisée qui transforme une petite panne en 
 
 ### Patterns et schémas
 
-#### Q26. Pattern saga — orchestration vs choreography — quelle est la vraie différence et le compromis ?
-
+#### Q26. Pattern saga — orchestration vs choreography — quelle est la vraie différence et le compromis ? {#saga-pattern-orchestration-choreography-trade}
 > **En clair :** Une saga découpe une grosse transaction en petites étapes locales avec des actions d'annulation. Orchestration : un coordinateur. Chorégraphie : les services réagissent aux événements.
 
 **Réponse :** Les deux gèrent une transaction distribuée entre services sans two-phase-commit
@@ -906,8 +880,7 @@ meilleure architecture » ignore que le découplage a un vrai coût — la debug
 senior choisit selon la complexité du flux et le besoin réel de l'équipe en visibilité centralisée,
 et non en faisant du découplage une vertu inconditionnelle.
 
-#### Q27. Qu'est-ce que le pattern outbox, et quel problème résout-il ?
-
+#### Q27. Qu'est-ce que le pattern outbox, et quel problème résout-il ? {#outbox-pattern-problem-solve}
 > **En clair :** L'outbox enregistre l'événement dans la même transaction que les données, puis un processus séparé le publie. Évite « enregistré mais pas envoyé ».
 
 **Réponse :** Le problème : un service qui doit à la fois écrire dans sa propre base *et* publier
@@ -944,8 +917,7 @@ en second ne fait que déplacer *le sens* dans lequel l'échec peut se produire 
 la non-atomicité fondamentale ; seul écrire les deux dans une seule transaction de base de données
 comble réellement l'écart.
 
-#### Q28. Pourquoi l'évolution de schéma compte-t-elle pour les messages, et quels outils la traitent ?
-
+#### Q28. Pourquoi l'évolution de schéma compte-t-elle pour les messages, et quels outils la traitent ? {#schema-evolution-matter-messages-tools}
 > **En clair :** Producteurs et consommateurs se déploient séparément : les formats doivent évoluer sans casser les anciens lecteurs. Utiliser un schema registry et des changements compatibles.
 
 **Réponse :** Un producer et ses consumers sont des services déployés indépendamment — un producer
@@ -985,8 +957,7 @@ souvenant d'un message Slack.
 
 ### Garanties de livraison
 
-#### Q29. Concevez un consumer de paiement à traitement exactly-once sur Kafka. Détaillez toute l'approche.
-
+#### Q29. Concevez un consumer de paiement à traitement exactly-once sur Kafka. Détaillez toute l'approche. {#design-exactly-once-processing-payment}
 > **En clair :** Traiter le paiement en at-least-once, puis rendre le débit idempotent avec un ID de paiement unique pour qu'un rejeu ne fasse rien.
 
 Partez du principe que l'« exactly-once » pour l'effet de bord réel (débiter une carte, créditer
@@ -1017,12 +988,11 @@ void on(ConsumerRecord<String, PaymentRequest> rec, Acknowledgment ack) {
 }   // 1) commit BDD  2) puis commit de l'offset : crash entre les deux -> redélivrance -> absorbée par le test
 ```
 
-*Voir aussi :* [System Design Q41](system-design.md) pour le côté HTTP : clés d'idempotence et timeouts client.
+*Voir aussi :* [System Design Q41](system-design.md#design-payment-flow-never-charge) pour le côté HTTP : clés d'idempotence et timeouts client.
 
 ### Workflows et conception d'événements
 
-#### Q30. Concevez une saga pour commande → paiement → réservation de stock → expédition. Choisissez orchestration ou choreography et expliquez les compensations.
-
+#### Q30. Concevez une saga pour commande → paiement → réservation de stock → expédition. Choisissez orchestration ou choreography et expliquez les compensations. {#design-saga-order-payment-inventory}
 > **En clair :** Choisir l'orchestration pour un flux linéaire : un coordinateur appelle chaque étape et exécute les annulations (compensations) en sens inverse en cas d'échec.
 
 L'orchestration est le meilleur choix ici précisément parce que le flux a une chaîne de
@@ -1050,8 +1020,7 @@ cas nominal:  createOrder(PENDING) -> authorizePayment -> reserveStock -> schedu
            -> order = FAILED               # l'expédition n'est jamais appelée
 ```
 
-#### Q31. Comparez dual writes, outbox par polling et CDC basé sur les logs (Debezium) pour publier des événements de façon fiable. Quand utiliser lequel ?
-
+#### Q31. Comparez dual writes, outbox par polling et CDC basé sur les logs (Debezium) pour publier des événements de façon fiable. Quand utiliser lequel ? {#compare-dual-writes-polling-outbox}
 > **En clair :** Le dual write peut perdre des données. L'outbox par polling est simple. Le CDC sur les logs (Debezium) passe mieux à l'échelle mais demande plus d'exploitation.
 
 Un **dual write** — commiter en base, puis publier vers le broker dans la même méthode — est
@@ -1061,7 +1030,7 @@ retry ne peut dire lequel des deux cas s'est produit. L'**outbox par polling** �
 dans une table `outbox` dans la transaction métier et un relais poll les lignes non publiées :
 simple, sans infrastructure supplémentaire, et facile à raisonner ; ses coûts sont la latence et
 la charge du polling, la concurrence entre plusieurs instances de relais (utiliser
-`FOR UPDATE SKIP LOCKED`, [Persistence Q27](persistence-sql-postgres.md)), le maintien de l'ordre par aggregate, la suppression des
+`FOR UPDATE SKIP LOCKED`, [Persistence Q27](persistence-sql-postgres.md#postgresql-itself-act-queue-select)), le maintien de l'ordre par aggregate, la suppression des
 lignes publiées, et une publication at-least-once (un plantage entre la publication et « marquer
 envoyé » duplique). Le **CDC basé sur les logs** — Debezium lisant le WAL de PostgreSQL via un
 logical replication slot, idéalement avec l'outbox event router — supprime le polling : les
@@ -1091,8 +1060,7 @@ select * from outbox where published_at is null order by id limit 100 for update
 -- publier sur le broker, puis : update outbox set published_at = now() where id = ...
 ```
 
-#### Q32. Un événement doit-il porter les données, ou seulement dire que quelque chose s'est produit ? Comparez notification events, event-carried state transfer et event sourcing.
-
+#### Q32. Un événement doit-il porter les données, ou seulement dire que quelque chose s'est produit ? Comparez notification events, event-carried state transfer et event sourcing. {#event-carry-data-only-say}
 > **En clair :** Notification : « il s'est passé quelque chose ». Transfert d'état : l'événement porte les données. Event sourcing : les événements sont la source de vérité.
 
 Ce sont trois contrats différents, et les confondre est une source fréquente de couplage. Un
@@ -1129,8 +1097,7 @@ nommerais explicitement la cohérence que chaque consumer peut tolérer.
 
 ### Décisions de plateforme
 
-#### Q33. Quand migrer de RabbitMQ vers Kafka est-il réellement justifié, et que coûte cette migration ?
-
+#### Q33. Quand migrer de RabbitMQ vers Kafka est-il réellement justifié, et que coûte cette migration ? {#migrating-rabbitmq-kafka-justified-migration}
 > **En clair :** Migrer vers Kafka seulement pour le rejeu, un très gros débit ou de nombreux lecteurs indépendants. Prévoir refonte, nouvelles compétences et période de migration.
 
 Justifié quand le besoin moteur est devenu l'un de ceux-ci : une capacité de
@@ -1160,8 +1127,7 @@ Passer à Kafka quand: 3 équipes ont besoin du même flux à leur rythme
 Étape de migration: double publication un temps, migration des consommateurs un par un, puis arrêt de RabbitMQ
 ```
 
-#### Q34. Comment répliqueriez-vous des données Kafka entre régions, et à quoi devez-vous renoncer ?
-
+#### Q34. Comment répliqueriez-vous des données Kafka entre régions, et à quoi devez-vous renoncer ? {#replicate-kafka-data-across-regions}
 > **En clair :** Copier les données entre régions avec MirrorMaker ou équivalent. On perd l'ordre strict entre régions et on accepte délai et doublons.
 
 Les clusters Kafka sont conçus pour vivre dans une seule région (liens à faible latence entre
@@ -1169,7 +1135,7 @@ brokers), donc le cross-region se fait via un **replicator** qui consomme depuis
 produit vers le cluster B : MirrorMaker 2 (construit sur Kafka Connect), Confluent Cluster Linking
 ou équivalents. Le principal choix de conception est la topologie. **Active-passive** : la région
 A sert le trafic, B détient une copie et prend le relais en cas de désastre — simple à raisonner,
-mais la réplication est *asynchrone*, donc le recovery point (RPO, [System Design Q31](system-design.md)) est tout ce qui
+mais la réplication est *asynchrone*, donc le recovery point (RPO, [System Design Q31](system-design.md#rto-rpo-disaster-recovery-planning)) est tout ce qui
 n'avait pas encore été mirroré, et le failover implique de repointer producers et consumers et de
 choisir où les consumers reprennent, puisque les offsets dans B ne sont *pas* les mêmes nombres
 que dans A (MM2 traduit les offsets commités, imparfaitement ; l'hypothèse sûre est « reprendre
@@ -1178,7 +1144,7 @@ chaque région produit localement et mirrore vers l'autre, avec des topics préf
 (`us.orders`, `eu.orders`) pour éviter les boucles de réplication ; la latence est excellente, mais
 la même entité peut maintenant être mise à jour dans deux régions à la fois, donc il faut une
 stratégie de conflit (propriété de partition par clé entité/région, last-writer-wins par version,
-ou merge de style CRDT) — le compromis CAP ([System Design Q12](system-design.md)) appliqué à votre flux d'événements.
+ou merge de style CRDT) — le compromis CAP ([System Design Q12](system-design.md#cap-theorem-concrete-distributed-system)) appliqué à votre flux d'événements.
 **Stretch cluster** (un cluster sur 3 régions, `acks=all` avec rack awareness) donne un RPO nul au
 prix d'une latence cross-region sur *chaque* écriture et d'une exigence stricte d'un RTT
 inter-région faible et stable — approprié pour un cœur de paiements, pas pour de la télémétrie à
@@ -1201,8 +1167,7 @@ sync.group.offsets.enabled = true     # traduire les offsets committés (imparfa
 # le topic côté eu s'appelle us.orders  (le préfixe d'origine évite les boucles)
 ```
 
-#### Q35. Quand utiliser Kafka Streams (ou ksqlDB) plutôt qu'un simple consommateur ?
-
+#### Q35. Quand utiliser Kafka Streams (ou ksqlDB) plutôt qu'un simple consommateur ? {#kafka-streams-ksqldb-instead-plain}
 > **En clair :** Un consommateur classique suffit pour « lire, traiter, enregistrer ». Kafka Streams sert quand il faut des jointures, fenêtres ou agrégations sur un flux.
 
 **Réponse :** Un simple `@KafkaListener` suffit pour « consommer, appeler un service, écrire en base ». **Kafka
@@ -1232,10 +1197,47 @@ builder.stream("payments", Consumed.with(Serdes.String(), paymentSerde))
 **Pourquoi c'est un piège :** construire à la main des comptages fenêtrés dans un consommateur avec une map en mémoire
 fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou compté deux fois.
 
+#### Q36. Comment publier les événements du cycle de vie d'un rendez-vous (réservé, déplacé, annulé) pour que les consommateurs les traitent dans l'ordre et une seule fois ? {#publish-appointment-lifecycle-events-booked}
+**Réponse :** Écrivez l'événement dans une table **outbox** dans la même transaction que le changement du rendez-vous ([Q27](messaging-rabbitmq-kafka.md#outbox-pattern-problem-solve)), et laissez un relais ou du CDC le publier dans Kafka. Choisissez la **clé** selon l'ordre dont les consommateurs ont besoin : `appointment_id` garantit l'ordre par rendez-vous (réservé → déplacé → annulé) et répartit bien la charge ; `practitioner_id` donne l'ordre par agenda mais peut créer des partitions chaudes pour les centres très chargés. Chaque événement porte un `event_id` (pour la déduplication) et une `version` par rendez-vous, afin qu'un consommateur puisse écarter les événements périmés ou en double, même après un rejeu ou un changement de clé. Utilisez un schema registry avec une évolution rétrocompatible, car de nombreuses équipes consomment ces événements.
+
+**Exemple :**
+
+```java
+@Transactional
+void cancel(long id) {
+    Appointment appt = appointments.findById(id).orElseThrow();
+    appt.setStatus(CANCELLED);
+    appt.setVersion(appt.getVersion() + 1);
+    outbox.save(new OutboxEvent(id, "AppointmentCancelled", appt.getVersion(),
+        mapper.writeValueAsString(appt.toEvent())));
+}   // un seul commit : le changement d'état et l'événement sont enregistrés ensemble, ou aucun des deux
+
+// Côté consommateur : ignorer tout ce qui est plus ancien que ce qui a déjà été appliqué.
+if (event.version() <= readModel.versionOf(event.appointmentId())) return;
+```
+
+**Pourquoi c'est un piège :** publier dans Kafka dans la transaction (ou après) sans outbox perd des événements ou publie des événements pour des changements annulés par un rollback. Utiliser `patient_id` comme clé « parce que ça semble naturel » casse l'ordre par rendez-vous dont dépendent les consommateurs de rappels et de facturation.
+
+#### Q37. Un consommateur envoie des SMS de rappel de rendez-vous. Comment éviter d'envoyer deux fois le même SMS ? {#consumer-sends-appointment-reminder-sms}
+**Réponse :** Kafka plus un fournisseur SMS externe ne peuvent pas garantir l'exactly-once de bout en bout : la livraison est **au moins une fois**, donc le consommateur doit être **idempotent**. Enregistrez en base une clé unique par effet de bord, `(appointment_id, reminder_type)`, avec un état : insérez `SENDING` (une violation de contrainte d'unicité signifie que c'est déjà traité, donc on saute), appelez le fournisseur avec cette clé comme clé d'idempotence s'il en accepte une, puis marquez `SENT` et commitez l'offset. Si le processus plante entre l'appel au fournisseur et `SENT`, une relance trouve `SENDING` et demande au fournisseur le statut du message au lieu d'envoyer à l'aveugle. Revérifiez aussi que le rendez-vous est toujours actif juste avant l'envoi. La fenêtre de doublon devient minuscule et explicite, au lieu de se produire à chaque rebalance. Voir [S13](messaging-rabbitmq-kafka.md#users-receive-same-notification-email).
+
+**Exemple :**
+
+```java
+void onReminderDue(ReminderDue e) {
+    String key = e.appointmentId() + ":" + e.type();
+    if (!sentLog.tryInsert(key, "SENDING")) return;                    // contrainte d'unicité : déjà traité
+    if (!appointments.isActive(e.appointmentId())) { sentLog.mark(key, "SKIPPED"); return; }
+    sms.send(e.phone(), e.text(), key);                                 // la clé sert aussi de clé d'idempotence chez le fournisseur
+    sentLog.mark(key, "SENT");
+}
+```
+
+**Pourquoi c'est un piège :** « activer l'exactly-once de Kafka » ne couvre que le traitement Kafka-vers-Kafka (transactions), pas le SMS qui sort du système. Le dire explicitement est ce que l'interviewer attend.
+
 ## 🎯 Scénarios réels
 
-### S1. Un client est débité deux fois pour la même commande
-
+### S1. Un client est débité deux fois pour la même commande {#customer-charged-twice-same-order}
 - **Symptômes :** Un consumer de traitement de paiement traite occasionnellement deux fois le même
   message order-placed, entraînant un double débit, signalé par des clients ou détecté par la
   réconciliation.
@@ -1270,8 +1272,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S2. Les messages s'accumulent dans une queue et cessent complètement d'être traités
-
+### S2. Les messages s'accumulent dans une queue et cessent complètement d'être traités {#messages-pile-up-queue-stop}
 - **Symptômes :** La profondeur de la queue grandit régulièrement ; les consumers tournent et
   semblent sains, mais le débit est tombé à zéro ou presque.
 
@@ -1304,8 +1305,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S3. Le consumer lag Kafka grandit régulièrement et ne se résorbe pas, même pendant les périodes de faible trafic
-
+### S3. Le consumer lag Kafka grandit régulièrement et ne se résorbe pas, même pendant les périodes de faible trafic {#kafka-consumer-lag-grows-steadily}
 - **Symptômes :** L'écart entre le dernier offset produit et l'offset commité du consumer group
   continue de s'élargir sur plusieurs jours, y compris pendant les périodes où le volume de
   production de messages est normal, voire faible.
@@ -1344,8 +1344,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S4. RabbitMQ se met à bloquer tous les publishers sur l'ensemble du broker
-
+### S4. RabbitMQ se met à bloquer tous les publishers sur l'ensemble du broker {#rabbitmq-starts-blocking-all-publishers}
 - **Symptômes :** La publication échoue ou se bloque soudainement sur des queues apparemment sans
   rapport, et pas seulement celle qui s'accumulait réellement.
 
@@ -1376,8 +1375,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S5. Un événement « cancel order » est traité avant l'événement « create order » correspondant, laissant la commande active
-
+### S5. Un événement « cancel order » est traité avant l'événement « create order » correspondant, laissant la commande active {#cancel-order-event-processed-before}
 - **Symptômes :** Une commande créée puis immédiatement annulée se retrouve active (create traité
   après cancel) au lieu d'annulée, de façon intermittente, pour une petite fraction des commandes.
 
@@ -1411,8 +1409,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S6. Les consumers retraitent à répétition le même lot de messages pendant une période de redémarrages fréquents
-
+### S6. Les consumers retraitent à répétition le même lot de messages pendant une période de redémarrages fréquents {#consumers-repeatedly-process-same-batch}
 - **Symptômes :** Le traitement en double est corrélé spécifiquement aux fenêtres de déploiement ou
   à une instance de consumer qui flappe (crash-loop, ou un autoscaler agressif ajoutant/retirant
   à répétition des instances).
@@ -1450,8 +1447,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S7. Un enregistrement apparaît comme sauvegardé en base, mais le service aval correspondant n'a jamais reçu l'événement le concernant
-
+### S7. Un enregistrement apparaît comme sauvegardé en base, mais le service aval correspondant n'a jamais reçu l'événement le concernant {#record-shows-saved-database-but}
 - **Symptômes :** Une commande existe en base, mais le service d'expédition n'a jamais reçu
   l'événement `OrderCreated` et n'a aucune trace du besoin de l'expédier — découvert seulement
   quand un client demande où est sa commande.
@@ -1487,8 +1483,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S8. Les consumers se mettent à lever des erreurs de désérialisation juste après le déploiement d'un changement par un producer
-
+### S8. Les consumers se mettent à lever des erreurs de désérialisation juste après le déploiement d'un changement par un producer {#consumers-start-throwing-deserialization-errors}
 - **Symptômes :** Plusieurs consumers d'un topic se mettent à échouer (ou à mal parser
   silencieusement) les messages immédiatement après un déploiement de producer d'apparence sans
   rapport.
@@ -1523,8 +1518,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S9. Une dead-letter queue s'avère, des semaines plus tard, contenir des milliers d'événements métier non traités
-
+### S9. Une dead-letter queue s'avère, des semaines plus tard, contenir des milliers d'événements métier non traités {#dead-letter-queue-discovered-weeks}
 - **Symptômes :** Un audit ou une investigation sans rapport révèle une DLQ qui accumule
   silencieusement des messages en échec depuis des semaines — représentant de vrais événements
   métier (commandes, paiements) qui n'ont jamais été réellement menés à terme.
@@ -1559,8 +1553,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S10. Une instance de consumer traite la plupart des messages tandis que les autres restent presque inactives
-
+### S10. Une instance de consumer traite la plupart des messages tandis que les autres restent presque inactives {#one-consumer-instance-processes-most}
 - **Symptômes :** Charge inégale dans un pool de consumers RabbitMQ — le monitoring montre un ou
   deux consumers systématiquement bien plus occupés que les autres, alors que tous les consumers
   sont configurés à l'identique et tout aussi capables.
@@ -1596,8 +1589,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S11. Un topic Kafka ne peut pas augmenter son débit de consommation, quel que soit le nombre d'instances de consumer ajoutées
-
+### S11. Un topic Kafka ne peut pas augmenter son débit de consommation, quel que soit le nombre d'instances de consumer ajoutées {#kafka-topic-scale-consumer-throughput}
 - **Symptômes :** Ajouter des instances à un consumer group n'a aucun effet sur le débit total
   au-delà d'un certain point, alors que chaque instance a de la capacité disponible.
 
@@ -1630,8 +1622,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S12. Une saga reste bloquée à mi-chemin, certains services ayant terminé leur étape et d'autres non
-
+### S12. Une saga reste bloquée à mi-chemin, certains services ayant terminé leur étape et d'autres non {#saga-gets-stuck-halfway-some}
 - **Symptômes :** Une saga commande-paiement-stock-expédition échoue à l'étape du stock,
   l'orchestrateur déclenche une compensation de remboursement du paiement, mais l'appel de
   remboursement lui-même timeout ou échoue — la saga est maintenant dans un état ambigu : le
@@ -1667,8 +1658,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S13. Des utilisateurs reçoivent plusieurs fois le même email de notification pour un seul événement
-
+### S13. Des utilisateurs reçoivent plusieurs fois le même email de notification pour un seul événement {#users-receive-same-notification-email}
 - **Symptômes :** Un email « votre commande a été expédiée » (ou une notification transactionnelle
   similaire) est envoyé deux ou trois fois au même utilisateur pour la même expédition.
 
@@ -1702,8 +1692,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S14. Pendant une panne du broker, certains services perdent silencieusement des messages tandis que d'autres se bloquent complètement
-
+### S14. Pendant une panne du broker, certains services perdent silencieusement des messages tandis que d'autres se bloquent complètement {#during-broker-outage-some-services}
 - **Symptômes :** Une brève panne du broker provoque des comportements très différents selon les
   services — les appels de publication de certains producers se bloquent jusqu'au timeout, d'autres
   semblent réussir mais le message n'arrive jamais réellement une fois le broker rétabli.
@@ -1739,8 +1728,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S15. Un lot d'événements s'avère avoir simplement disparu, sans aucune erreur nulle part
-
+### S15. Un lot d'événements s'avère avoir simplement disparu, sans aucune erreur nulle part {#batch-events-discovered-have-simply}
 - **Symptômes :** Un trou dans les données aval attendues correspond à une période où le consumer
   responsable était arrêté (un déploiement, un incident) plus longtemps que d'habitude — et une
   fois revenu, ces messages précis n'ont jamais été traités, sans aucune erreur loguée nulle part.
@@ -1775,8 +1763,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S16. Augmenter le nombre de partitions d'un topic pour améliorer le débit casse les hypothèses d'un consumer aval
-
+### S16. Augmenter le nombre de partitions d'un topic pour améliorer le débit casse les hypothèses d'un consumer aval {#increasing-topic-partition-count-improve}
 - **Symptômes :** Peu après l'augmentation du nombre de partitions d'un topic pour aider avec un
   problème de lag (la correction de S11), un autre consumer aval se met à présenter le symptôme de
   violation d'ordre de S5, pour des clés qui n'avaient jamais eu de problème d'ordre auparavant.
@@ -1816,8 +1803,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S17. Un court incident aval se transforme en panne de 40 minutes parce que chaque consumer retente en même temps
-
+### S17. Un court incident aval se transforme en panne de 40 minutes parce que chaque consumer retente en même temps {#short-downstream-blip-turns-40}
 - **Symptômes :** Un fournisseur de paiement renvoie des `503` pendant ~30 secondes. Les consumers
   de traitement des commandes restent au rouge pendant 40 minutes : le consumer lag monte à des
   millions, la page de statut du fournisseur indique un rétablissement, pourtant il continue de nous
@@ -1836,7 +1822,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
   faible, et quand elle se rétablit elle est immédiatement écrasée par le backlog plus les retries —
   une **retry storm**. Comme toutes les instances ont échoué au même instant, leurs tentatives de
   retry sont elles aussi synchronisées. Vérifier : pas de backoff, pas de jitter, pas de plafond de
-  tentatives, requeue avec `requeue=true` à chaque échec, et pas de circuit breaker ([Spring Q35](spring-architecture.md)).
+  tentatives, requeue avec `requeue=true` à chaque échec, et pas de circuit breaker ([Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need)).
 - **Exemple :**
 
   ```java
@@ -1861,12 +1847,11 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
   que des boucles ad hoc par listener ; circuit breaker plus bulkhead par dépendance ; dashboards
   du nombre de retries et du débit sortant ; game-days qui injectent des pannes de dépendances.
 
-*Voir aussi :* [System Design S14](system-design.md) pour le même mode de défaillance entre services synchrones.
+*Voir aussi :* [System Design S14](system-design.md#slow-dependency-triggers-full-system) pour le même mode de défaillance entre services synchrones.
 
 </details>
 
-### S18. Un consumer group rebalance sans cesse, le lag grimpe, et les mêmes messages sont traités encore et encore
-
+### S18. Un consumer group rebalance sans cesse, le lag grimpe, et les mêmes messages sont traités encore et encore {#consumer-group-keeps-rebalancing-lag}
 - **Symptômes :** Après une release qui a ajouté un appel à un service d'enrichissement, un consumer
   group Kafka montre une activité constante mais presque aucune progression : le lag monte
   régulièrement, les logs sont pleins de `Member consumer-billing-3 ... has left the group` /
@@ -1910,8 +1895,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S19. Rejouer la dead-letter queue après un correctif de bug envoie des emails en double aux clients et en débite certains une seconde fois
-
+### S19. Rejouer la dead-letter queue après un correctif de bug envoie des emails en double aux clients et en débite certains une seconde fois {#replaying-dead-letter-queue-after}
 - **Symptômes :** Un bug avait dead-letteré 80 000 événements `OrderShipped` sur trois jours. Après
   le correctif, un ingénieur « shovel » toute la DLQ vers la queue principale. En quelques minutes,
   les clients reçoivent des emails d'expédition en double, l'API partenaire nous rate-limite, et
@@ -1951,8 +1935,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S20. La publication échoue par intermittence avec `RecordTooLargeException` (ou le broker coupe la connexion) pour quelques grosses commandes
-
+### S20. La publication échoue par intermittence avec `RecordTooLargeException` (ou le broker coupe la connexion) pour quelques grosses commandes {#publishing-intermittently-fails-recordtoolargeexception-broker}
 - **Symptômes :** La plupart des commandes circulent normalement, mais un petit pourcentage — celles
   avec des centaines de lignes ou un PDF attaché — n'atteint jamais les services aval. Les logs du
   producer montrent `org.apache.kafka.common.errors.RecordTooLargeException: The message is
@@ -1992,8 +1975,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S21. Après un plantage de broker, des commandes que le producer avait confirmées manquent dans le topic
-
+### S21. Après un plantage de broker, des commandes que le producer avait confirmées manquent dans le topic {#after-broker-crash-orders-producer}
 - **Symptômes :** Un broker d'un cluster Kafka à 3 nœuds a planté puis redémarré. Tout s'est
   rétabli, mais la réconciliation montre ~2 000 commandes dont les événements `OrderCreated`, que le
   producer a loggés comme envoyés avec succès, sont absents du topic ; les systèmes aval ne les ont
@@ -2034,8 +2016,7 @@ fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou 
 
 </details>
 
-### S22. Le disque PostgreSQL se remplit et le primary n'accepte plus d'écritures, des jours après qu'un connecteur CDC « s'est simplement arrêté »
-
+### S22. Le disque PostgreSQL se remplit et le primary n'accepte plus d'écritures, des jours après qu'un connecteur CDC « s'est simplement arrêté » {#postgresql-disk-fills-up-primary}
 - **Symptômes :** Un connecteur Debezium alimentant l'outbox des commandes est tombé en panne un
   week-end et personne ne l'a remarqué. Des jours plus tard, le volume de la base alerte à 90 %,
   puis 100 % : le primary passe en lecture seule ou plante, entraînant toute la plateforme. Les
@@ -2087,50 +2068,41 @@ Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une 
 
 ### Consommateurs Kafka
 
-#### R1. Un consommateur Kafka traite deux fois le même message. Comment le gérer ?
-
+#### R1. Un consommateur Kafka traite deux fois le même message. Comment le gérer ? {#kafka-consumer-processes-same-message}
 **Réponse :** Supposer une livraison at-least-once et rendre le consommateur **idempotent** : dédupliquer par clé de message/métier (contrainte d'unicité ou table des IDs traités), upserts, ou outbox/inbox transactionnel. Commiter les offsets après le traitement, et garder la vérification de doublon et l'effet de bord dans une même transaction. Réduire les doublons en réglant `max.poll.interval.ms` et en évitant les rebalances.
 
-#### R2. Une partition Kafka reçoit bien plus de trafic que les autres. Comment corriger ?
-
+#### R2. Une partition Kafka reçoit bien plus de trafic que les autres. Comment corriger ? {#one-kafka-partition-has-much}
 **Réponse :** C'est une **clé chaude**/un partitionnement déséquilibré. Examiner la distribution des clés ; choisir une clé à plus forte cardinalité, ajouter un sel/suffixe pour répartir la clé chaude (au prix de l'ordre strict pour cette clé), utiliser un partitionneur personnalisé, ou isoler l'entité chaude dans son propre topic. Augmenter les partitions seul n'aide pas (la même clé va toujours dans une partition).
 
-#### R3. Le lag des consommateurs augmente sans cesse. Comment enquêter ?
-
+#### R3. Le lag des consommateurs augmente sans cesse. Comment enquêter ? {#consumer-lag-keeps-increasing-investigate}
 **Réponse :** Comparer le débit de production à celui de consommation (`kafka-consumer-groups --describe`, lag par partition).
 
 Si toutes les partitions retardent : consommateurs trop lents (aval lent, BD, GC, petits lots) : profiler, traiter par lots, monter les consommateurs jusqu'au nombre de partitions. Si une seule partition retarde : clé chaude ou message bloqué.
 
 Vérifier aussi les rebalances fréquents et un message empoisonné qui bloque les reprises.
 
-#### R4. Un message échoue de façon répétée pendant le traitement. Que doit-il se passer ensuite ?
-
+#### R4. Un message échoue de façon répétée pendant le traitement. Que doit-il se passer ensuite ? {#message-fails-repeatedly-during-processing}
 **Réponse :** Réessayer un nombre borné de fois avec backoff (en mémoire ou via des topics de retry), puis router vers un **topic dead-letter** avec l'erreur et les métadonnées pour ne pas bloquer la partition. Alerter sur la taille de la DLQ, et prévoir un outil de rejeu après correction (le consommateur doit être idempotent). Distinguer erreurs transitoires (retry) et messages empoisonnés (DLQ immédiate).
 
-#### R5. Comment garantir l'ordre des messages pour un client ?
-
+#### R5. Comment garantir l'ordre des messages pour un client ? {#guarantee-message-ordering-customer}
 **Réponse :** Kafka n'ordonne qu'**au sein d'une partition** : utiliser l'ID client comme clé pour que tous ses événements aillent dans une partition, avec un consommateur par partition.
 
 Producteur : `enable.idempotence=true` et `max.in.flight.requests.per.connection ≤ 5` (ou `acks=all`) pour conserver l'ordre lors des reprises.
 
 Ne pas changer le nombre de partitions à la légère, et éviter le traitement parallèle dans une partition sauf à réordonner par clé.
 
-#### R6. Comment les partitions Kafka aident-elles pour l'ordre ?
-
+#### R6. Comment les partitions Kafka aident-elles pour l'ordre ? {#kafka-partitions-help-ordering}
 **Réponse :** Même clé → même partition → ordre strict pour cette clé ; des clés différentes sont traitées en parallèle sur les partitions. L'ordre par compte et le débit évoluent donc ensemble. Un ordre global exigerait une seule partition, donc renoncer au passage à l'échelle.
 
-#### R7. Comment traiter 100 000 messages par seconde dans Kafka ?
-
+#### R7. Comment traiter 100 000 messages par seconde dans Kafka ? {#process-100-000-messages-per}
 **Réponse :** Assez de partitions (viser ≈ 10–20 Mo/s par partition, et ≥ nombre de consommateurs), batching côté producteur (`linger.ms`, `batch.size`, compression `lz4`/`zstd`), `acks=all` avec réplication 3, consommateurs alignés sur les partitions avec traitement par lots et `max.poll.records`, pas d'E/S synchrone par message, et suivi du lag. Tester en charge pour trouver le vrai goulot, souvent la BD en aval.
 
 ### Communication entre microservices
 
-#### R8. Comment les microservices communiquent-ils entre eux ?
-
+#### R8. Comment les microservices communiquent-ils entre eux ? {#microservices-communicate-each-other}
 **Réponse :** **Synchrone** : REST/gRPC pour les requêtes et commandes qui exigent une réponse immédiate. **Asynchrone** : événements/messages (Kafka, RabbitMQ) pour le découplage, la diffusion et la résilience. À combiner avec timeouts, retries, circuit breakers, idempotence et découverte de services/gateway.
 
-#### R9. Quand utiliser REST vs Kafka ? (et gRPC ?)
-
+#### R9. Quand utiliser REST vs Kafka ? (et gRPC ?) {#rest-kafka-grpc}
 **Réponse :** REST : requête/réponse simple, API publiques, outillage universel. gRPC : interne, faible latence, contrat fortement typé, streaming. Kafka : événements découplés, à fort débit, rejouables, quand l'appelant n'a pas besoin de la réponse tout de suite et que les consommateurs doivent survivre aux pannes. Règle : lecture → sync ; changement d'état auquel d'autres réagissent → événement.
 
 ## 🎤 Quiz oral

@@ -55,7 +55,7 @@ record PaymentProperties(@NotNull URI url, Duration timeout) {}
 Gardez les mots de passe, clés d'API et tokens hors du dépôt. Lisez-les depuis des variables d'environnement, un
 secret monté, ou un vault.
 
-**Pourquoi :** traité dans [Gardez les secrets hors du code et de Git](security.md#gardez-les-secrets-hors-du-code-et-de-git).
+**Pourquoi :** traité dans [Gardez les secrets hors du code et de Git](security.md#keep-secrets-out-of-code-and-git).
 
 ⛔ `spring.datasource.password: s3cr3t`
 ✅ `spring.datasource.password: ${DB_PASSWORD}`
@@ -130,7 +130,7 @@ transaction. Sous charge, les connexions restent occupées pendant le rendu de l
 
 Convertissez les entités en DTO de requête / réponse (records) à la frontière du contrôleur.
 
-**Pourquoi :** traité dans [Exposez des DTO, pas des entités](rest-api.md#exposez-des-dto-pas-des-entites).
+**Pourquoi :** traité dans [Exposez des DTO, pas des entités](rest-api.md#expose-dtos-not-entities).
 
 ⛔ `@GetMapping("/{id}") User get(@PathVariable Long id)`
 ✅ `@GetMapping("/{id}") UserResponse get(@PathVariable Long id)`
@@ -190,7 +190,7 @@ ProblemDetail handle(MethodArgumentNotValidException e) {
 
 Ne renvoyez jamais une liste non bornée. Acceptez un `Pageable` (ou un curseur) et plafonnez la taille de page.
 
-**Pourquoi :** traité dans [Paginez toujours les collections](rest-api.md#paginez-toujours-les-collections).
+**Pourquoi :** traité dans [Paginez toujours les collections](rest-api.md#always-paginate-collections).
 
 ⛔ `List<OrderResponse> list()` → `repository.findAll()`
 ✅ `Page<OrderResponse> list(Pageable pageable)` → `repository.findAll(pageable)`
@@ -239,7 +239,7 @@ comportement par défaut depuis Spring Boot 3.4.)
 Utilisez `@WebMvcTest` pour les contrôleurs, `@DataJpaTest` pour les repositories, et de simples tests unitaires
 pour les services. Gardez `@SpringBootTest` pour quelques tests de bout en bout.
 
-**Pourquoi :** traité dans [Utilisez des tranches de test plutôt que @SpringBootTest partout](testing.md#utilisez-des-tranches-de-test-plutot-que-springboottest-partout).
+**Pourquoi :** traité dans [Utilisez des tranches de test plutôt que @SpringBootTest partout](testing.md#use-test-slices-instead-of-springboottest-everywhere).
 
 ⛔ `@SpringBootTest` pour tester un mapping JSON dans un contrôleur
 ✅ `@WebMvcTest(OrderController.class)` + `MockMvc`
@@ -263,7 +263,7 @@ class OrderControllerTest {
 
 Lancez les tests de repository et d'intégration sur le même moteur de base de données qu'en production, pas H2.
 
-**Pourquoi :** traité dans [Utilisez Testcontainers, pas H2, pour les tests de base de données](testing.md#utilisez-testcontainers-pas-h2-pour-les-tests-de-base-de-donnees).
+**Pourquoi :** traité dans [Utilisez Testcontainers, pas H2, pour les tests de base de données](testing.md#use-testcontainers-not-h2-for-database-tests).
 
 ```java
 // ✅

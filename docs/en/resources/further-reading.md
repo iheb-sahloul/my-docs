@@ -25,6 +25,7 @@
     - [PostgreSQL](#postgresql)
     - [Kafka](#kafka)
     - [RabbitMQ](#rabbitmq)
+    - [Redis](#redis)
 - **APIs**
     - [Rest API](#rest-api)
     - [GraphQL](#graphql)
@@ -45,7 +46,7 @@
 
 ## Roadmap
 
-### Developer Roadmap
+### Developer Roadmap {#developer-roadmap}
 
 | Link |
 |------|
@@ -53,7 +54,7 @@
 
 ## Design & Architecture
 
-### Design Patterns
+### Design Patterns {#design-patterns}
 
 | Link |
 |------|
@@ -74,7 +75,7 @@
 | [CQRS in Production: What I Wish I Knew Earlier](https://medium.com/@kanishks772/cqrs-in-production-what-i-wish-i-knew-earlier-1d0c8b69f440) |
 | [Design Patterns Every Developer Should Know](https://dev.to/mellaithy/design-patterns-every-developer-should-know-junior-senior-1gk9) |
 
-### Clean Code
+### Clean Code {#clean-code}
 
 | Link |
 |------|
@@ -88,7 +89,7 @@
 | [Why I Stopped Using Clean Code (And You Should Too)](https://medium.com/@kanishks772/why-i-stopped-using-clean-code-and-you-should-too-163090c77b21) |
 | [Programming Principles They Don’t Teach You In School](https://medium.com/codex/programming-principles-they-dont-teach-you-in-school-7c14b21cdf64) |
 
-### SOLID
+### SOLID {#solid}
 
 | Link |
 |------|
@@ -103,7 +104,7 @@
 | [SOLID principles: The Definitive Guide (Part I)](https://codersite.dev/solid-principles-the-definitive-guide/) |
 | [Understanding SOLID Principles in Java: A Comprehensive Guide with Examples](https://medium.com/@berrachdim/understanding-solid-principles-in-java-a-comprehensive-guide-with-examples-40a334ebd7b0) |
 
-### Hexagonal
+### Hexagonal {#hexagonal}
 
 | Link |
 |------|
@@ -113,7 +114,7 @@
 | [How to implement hexagonal architecture with your SpringBoot application](https://towardsdev.com/how-to-implement-hexagonal-architecture-with-your-springboot-application-77ffca09ac09) |
 | [Hexagonal Architecture Explained Like You’re Five And Why It’s Genius](https://medium.com/@kanishks772/hexagonal-architecture-explained-like-youre-five-and-why-it-s-genius-5fbad98b55fc) |
 
-### Microservices
+### Microservices {#microservices}
 
 | Link |
 |------|
@@ -122,7 +123,7 @@
 | [The Ugly Truth Behind Microservices: Your Joins Will Die. Here’s How Saga & CQRS Bring Them Back](https://medium.com/@kanishks772/the-ugly-truth-behind-microservices-your-joins-will-die-heres-how-saga-cqrs-bring-them-back-33adc24999d7) |
 | [10 Microservice Best Practices Every Developer Gets Wrong](https://medium.com/@kanishks772/10-microservice-best-practices-every-developer-gets-wrong-9de11e50354b) |
 
-### System Design
+### System Design {#system-design}
 
 | Link |
 |------|
@@ -149,13 +150,13 @@
 
 ## Testing & Version Control
 
-### BDD
+### BDD {#bdd}
 
 | Link |
 |------|
 | [Getting Started with Cucumber Behavior Driven Data -Framework](https://medium.com/@chayathilakumarai/cucumber-behavior-driven-data-framework-68f9773fcef3) |
 
-### Git
+### Git {#git}
 
 | Link |
 |------|
@@ -179,7 +180,7 @@
 | [The guide to Git I never had.](https://dev.to/glasskube/the-guide-to-git-i-never-had-1450) |
 | [Mastering Code Review: A Guide for Reviewers and PR Creators](https://dev.to/tassiofront/mastering-code-review-a-guide-for-reviewers-and-pr-creators-ac6) |
 
-### TDD
+### TDD {#tdd}
 
 | Link |
 |------|
@@ -188,7 +189,7 @@
 
 ## Languages & Frameworks
 
-### Java
+### Java {#java}
 
 | Link |
 |------|
@@ -237,7 +238,7 @@
 | [Java 21 Features: A Practical Guide for Developers to Boost Your Coding Skills](https://javadzone.com/java-21-features-a-practical-guide-for-developers-to-boost-your-coding-skills/) |
 | [Modern Java: An In-Depth Guide from Java 8 to Java 21](https://medium.com/java-and-beyond/modern-java-an-in-depth-guide-from-version-8-to-21-by-akiner-alkan-f89b50e13c72) |
 
-### Spring Boot
+### Spring Boot {#spring-boot}
 
 | Link |
 |------|
@@ -311,7 +312,7 @@
 | [🚀 100+ Spring Boot Tools You Should Know in 2026 (Complete Ecosystem Guide)](https://dev.to/mellaithy/100-spring-boot-tools-you-should-know-in-2026-complete-ecosystem-guide-482n) |
 | [Maven Lifecycle Simplified – Animated Visual Guide](https://dev.to/mellaithy/maven-lifecycle-simplified-animated-visual-guide-575) |
 
-### React
+### React {#react}
 
 | Link |
 |------|
@@ -320,7 +321,7 @@
 | [Understanding Web Storage: LocalStorage, SessionStorage, and Cookies](https://dev.to/abhay1kumar/understanding-web-storage-localstorage-sessionstorage-and-cookies-1384) |
 | [How To Create An NPM Package](https://www.totaltypescript.com/how-to-create-an-npm-package) |
 
-### Angular
+### Angular {#angular}
 
 | Link |
 |------|
@@ -345,7 +346,7 @@
 
 ## Data & Messaging
 
-### SQL
+### SQL {#sql}
 
 | Link |
 |------|
@@ -394,26 +395,26 @@
 | [10 Popular Database Practices That Do More Harm Than Good](https://archive.is/vuV9b) |
 | [Mastering Relational Database Design: A Comprehensive Guide](https://dev.to/louaiboumediene/mastering-relational-database-design-a-comprehensive-guide-3jh8) |
 
-### MongoDB
+### MongoDB {#mongodb}
 
 | Link |
 |------|
 | [All MongoDB commands you need to know](https://dev.to/madhusaini22/all-mongodb-commands-you-need-to-know-35i7) |
 
-### ElasticSearch
+### ElasticSearch {#elasticsearch}
 
 | Link |
 |------|
 | [REST API with Spring Boot and Opensearch](https://archive.is/83P2Z) |
 
-### PostgreSQL
+### PostgreSQL {#postgresql}
 
 | Link |
 |------|
 | [Row-Level Security for Multi-Tenant Applications](https://www.simplyblock.io/blog/underated-postgres-multi-tenancy-with-row-level-security/) |
 | [Exceptions and Commit in PostgreSQL PL/pgSQL vs. Oracle PL/SQL](https://dev.to/aws-heroes/exceptions-and-commit-in-postgresql-plpgsql-vs-oracle-plsql-1nk8) |
 
-### Kafka
+### Kafka {#kafka}
 
 | Link |
 |------|
@@ -422,15 +423,24 @@
 | [Kafka Secrets: The Confluent Engineers Don’t Want You to Know](https://medium.com/@kanishks772/kafka-secrets-the-confluent-engineers-dont-want-you-to-know-7d145c7f8fbc) |
 | [Integrating Kafka in a Spring Boot Application: A Detailed Guide](https://medium.com/@abhishekranjandev/a-comprehensive-guide-to-integrating-kafka-in-a-spring-boot-application-a4b912aee62e) |
 
-### RabbitMQ
+### RabbitMQ {#rabbitmq}
 
 | Link |
 |------|
 | [Best practices to communicate between microservices](https://irfanyusanif.medium.com/how-to-communicate-between-microservices-7956ed68a99a) |
 
+### Redis {#redis}
+
+| Link |
+|------|
+| [Redis documentation: data types](https://redis.io/docs/latest/develop/data-types/) |
+| [Redis: key eviction](https://redis.io/docs/latest/develop/reference/eviction/) |
+| [How to do distributed locking (Martin Kleppmann)](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html) |
+| [Caching best practices (AWS)](https://aws.amazon.com/caching/best-practices/) |
+
 ## APIs
 
-### Rest API
+### Rest API {#rest-api}
 
 | Link |
 |------|
@@ -445,7 +455,7 @@
 | [I Asked Senior Engineers How They Mastered APIs. They All Mentioned These Topics](https://medium.com/@kanishks772/i-asked-senior-engineers-how-they-mastered-apis-they-all-mentioned-these-topics-14175ac62fa0) |
 | [Authentication vs. Authorization](https://dev.to/philip-ainberger/authentication-vs-authorization-olf) |
 
-### GraphQL
+### GraphQL {#graphql}
 
 | Link |
 |------|
@@ -459,7 +469,7 @@
 
 ## DevOps & Cloud
 
-### Docker
+### Docker {#docker}
 
 | Link |
 |------|
@@ -475,7 +485,7 @@
 | [devops-exercises](https://github.com/bregman-arie/devops-exercises) |
 | [Docker Mastery: A Comprehensive Guide for Beginners and Pros](https://dev.to/theyasirr/docker-mastery-a-comprehensive-guide-for-beginners-and-pros-2p18) |
 
-### Kubernetes
+### Kubernetes {#kubernetes}
 
 | Link |
 |------|
@@ -512,7 +522,7 @@
 | [What is Kubernetes? An Unorthodox Guide for Developers](https://www.marcobehler.com/guides/kubernetes) |
 | [The hater’s guide to Kubernetes](https://paulbutler.org/2024/the-haters-guide-to-kubernetes/) |
 
-### CI/CD
+### CI/CD {#cicd}
 
 | Link |
 |------|
@@ -522,19 +532,19 @@
 | [DEVOPS WORLD](https://github.com/ann-afame/DEVOPS-WORLD) |
 | [Building a Bulletproof CI/CD Pipeline: A Comprehensive Guide](https://dev.to/gauri1504/building-a-bulletproof-cicd-pipeline-a-comprehensive-guide-3jg3) |
 
-### IaC
+### IaC {#iac}
 
 | Link |
 |------|
 | [Building a Rock-Solid Foundation with Infrastructure as Code (IaC)](https://dev.to/gauri1504/building-a-rock-solid-foundation-with-infrastructure-as-code-iac-efo) |
 
-### Datadog
+### Datadog {#datadog}
 
 | Link |
 |------|
 | [Application monitoring and alerting using datadog](https://medium.com/@pgulshetty/application-monitoring-and-alerting-using-datadog-f0f08c3f7696) |
 
-### AWS
+### AWS {#aws}
 
 | Link |
 |------|
@@ -546,13 +556,13 @@
 | [How to best prepare for AWS Certified Developer certification : r/AWSCertifications](https://www.reddit.com/r/AWSCertifications/comments/twpa20/how_to_best_prepare_for_aws_certified_developer/) |
 | [Free AWS Developer Associate Practice Test](https://www.knowledgehut.com/practice-tests/aws-certified-developer-associate) |
 
-### Cloud
+### Cloud {#cloud}
 
 | Link |
 |------|
 | [AWS, Azure, GCP Look Different But Under the Hood, They’re Shockingly Similar](https://medium.com/@kanishks772/aws-azure-gcp-look-different-but-under-the-hood-theyre-shockingly-similar-521f47483f55) |
 
-### Linux
+### Linux {#linux}
 
 | Link |
 |------|
@@ -562,7 +572,7 @@
 
 ## Docs & AI Tools
 
-### Documentation
+### Documentation {#documentation}
 
 | Link |
 |------|
@@ -574,7 +584,7 @@
 | [2 Sites to Become a Better Developer](https://dev.to/kochiyama/2-sites-to-become-a-better-developer-2f9j) |
 | [Code Documentation: A Guide for Beginner's](https://dev.to/digvijayjadhav98/code-documentation-a-guide-for-beginners-4cj7) |
 
-### Claude
+### Claude {#claude}
 
 | Link |
 |------|
@@ -618,7 +628,7 @@
 
 ## Interview Prep
 
-### Interview Questions
+### Interview Questions {#interview-questions}
 
 | Link |
 |------|

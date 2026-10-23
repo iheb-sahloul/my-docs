@@ -4,8 +4,7 @@
 
 ### REST
 
-#### Q1. Quels sont les principes fondamentaux d'une bonne conception d'API REST ?
-
+#### Q1. Quels sont les principes fondamentaux d'une bonne conception d'API REST ? {#core-principles-good-rest-api}
 Modélisez les URLs autour de ressources (des noms), pas d'actions — `/orders/123`, et non `/getOrder?id=123` — et
 utilisez les méthodes HTTP pour exprimer l'action : `GET` (lecture, safe et idempotent), `POST` (création, non
 idempotent), `PUT` (remplacement complet, idempotent), `PATCH` (mise à jour partielle), `DELETE` (suppression,
@@ -30,8 +29,7 @@ POST   /orders {"qty": -1}    -> 422 Unprocessable Content
 
 ### Containers
 
-#### Q2. Qu'est-ce qu'un container, et en quoi diffère-t-il fondamentalement d'une machine virtuelle ?
-
+#### Q2. Qu'est-ce qu'un container, et en quoi diffère-t-il fondamentalement d'une machine virtuelle ? {#container-fundamentally-differ-virtual-machine}
 Un container empaquette une application avec ses dépendances et partage le kernel de la machine hôte —
 c'est un processus isolé (via les namespaces Linux pour l'isolation et les cgroups pour les limites de ressources),
 et non un système d'exploitation séparé, ce qui le rend léger (démarre en millisecondes à secondes,
@@ -52,8 +50,7 @@ $ docker exec web uname -r             # affiche la version du noyau de l'HÔTE
 $ cat /sys/fs/cgroup/system.slice/docker-*/memory.max   # limite cgroup : 268435456
 ```
 
-#### Q3. Expliquez comment fonctionnent les layers d'image Docker et le cache de build.
-
+#### Q3. Expliquez comment fonctionnent les layers d'image Docker et le cache de build. {#docker-image-layers-build-caching}
 Chaque instruction d'un Dockerfile (`RUN`, `COPY`, `ADD`) crée un nouveau layer immuable empilé sur
 le précédent, et Docker met chaque layer en cache — si l'instruction d'un layer et ses entrées n'ont pas
 changé depuis le dernier build, Docker réutilise le layer en cache au lieu de le ré-exécuter, et
@@ -79,8 +76,7 @@ CMD ["node", "dist/server.js"]
 # Inversez l'ordre (COPY . . d'abord) et chaque modification relance npm ci
 ```
 
-#### Q4. Volumes Docker vs bind mounts vs layer inscriptible du container — où doivent vivre les données ?
-
+#### Q4. Volumes Docker vs bind mounts vs layer inscriptible du container — où doivent vivre les données ? {#docker-volumes-bind-mounts-container}
 Le filesystem propre d'un container est un mince **layer inscriptible** au-dessus des layers d'image en lecture seule : il
 démarre vite, mais tout ce qu'il contient disparaît quand le container est supprimé, et les écritures lourdes
 via le storage driver en copy-on-write sont plus lentes qu'avec un vrai volume. Tout ce qui doit
@@ -114,8 +110,7 @@ docker run --rm --tmpfs /run/secrets:rw,size=1m my-app
 
 ### Kubernetes
 
-#### Q5. Qu'est-ce qu'un Pod Kubernetes, et pourquoi Kubernetes n'exécute-t-il pas simplement les containers directement ?
-
+#### Q5. Qu'est-ce qu'un Pod Kubernetes, et pourquoi Kubernetes n'exécute-t-il pas simplement les containers directement ? {#kubernetes-pod-doesn-kubernetes-just}
 Un Pod est la plus petite unité déployable dans Kubernetes — un ou plusieurs containers toujours
 schedulés ensemble sur le même node, qui partagent un network namespace (ils peuvent donc se joindre via
 `localhost` et partagent une seule IP), et peuvent partager des volumes de stockage. Kubernetes ne gère pas les containers
@@ -145,8 +140,7 @@ spec:
 # l'app joint le sidecar via localhost ; les deux sont planifiés et scalés comme une seule unité
 ```
 
-#### Q6. Un pod ne fonctionne pas — quelles sont vos premières commandes `kubectl`, dans l'ordre ?
-
+#### Q6. Un pod ne fonctionne pas — quelles sont vos premières commandes `kubectl`, dans l'ordre ? {#pod-isn-working-first-kubectl}
 Allez de « dans quel état est-il ? » à « pourquoi ? » sans deviner. `kubectl get pods -o wide` montre le statut,
 les restarts, le node et l'IP : le statut restreint déjà le champ (`Pending` = problème de scheduling,
 `ImagePullBackOff` = image ou credentials du registry, `CrashLoopBackOff` = le processus démarre et meurt,
@@ -182,8 +176,7 @@ $ kubectl debug -it api-7d9f-x2k --image=busybox --target=app   # pas de shell d
 
 ### Observabilité
 
-#### Q7. Quels sont les trois piliers de l'observabilité, et qu'est-ce que chacun vous apprend réellement ?
-
+#### Q7. Quels sont les trois piliers de l'observabilité, et qu'est-ce que chacun vous apprend réellement ? {#three-pillars-observability-each-one}
 Les **Logs** sont des événements discrets et horodatés — ce qui s'est passé précisément, avec du détail (un message
 d'erreur, les paramètres d'une requête donnée) — idéaux pour creuser une occurrence précise
 quand on sait déjà à peu près où regarder. Les **Metrics** sont des mesures numériques agrégées dans
@@ -211,8 +204,7 @@ log (un événement) : « que s'est-il passé exactement ? »
 {"ts":"14:02:07","level":"error","trace_id":"4bf92f35","msg":"pool timeout after 2000ms"}
 ```
 
-#### Q8. Que disent les latences p50, p95 et p99, et pourquoi la moyenne est-elle trompeuse ?
-
+#### Q8. Que disent les latences p50, p95 et p99, et pourquoi la moyenne est-elle trompeuse ? {#p50-p95-p99-latency-average}
 **Réponse :** Un percentile répond à « sous quelle latence reste *cette fraction* des requêtes ? ». Le **p50** (médiane) est
 la requête typique ; le **p95** signifie qu'une requête sur 20 est plus lente ; le **p99**, une sur 100. La **moyenne**
 cache la forme de la distribution : la latence est presque jamais une cloche mais une distribution à longue queue, donc
@@ -220,14 +212,14 @@ quelques requêtes à 5 secondes bougent à peine une moyenne de 120 ms tout en 
 latence de queue compte plus qu'il n'y paraît à cause du *fan-out et de la répétition* : une page qui appelle 10 services
 ayant chacun 1 % de queue lente est lente pour environ 10 % des chargements, et un utilisateur qui fait 50 requêtes dans une
 session tombera presque sûrement sur une requête p99. Les percentiles pilotent aussi les **SLO** (« 99 % des appels de
-réservation sous 500 ms sur 30 jours ») et les **budgets d'erreur** (voir [Full Stack Q35](fullstack-devops-k8s.md)). Règles
+réservation sous 500 ms sur 30 jours ») et les **budgets d'erreur** (voir [Full Stack Q35](fullstack-devops-k8s.md#slos-error-budgets-drive-release)). Règles
 pratiques : (1) mesurez des **histogrammes côté serveur** (Micrometer `publishPercentileHistogram`, Prometheus
 `histogram_quantile`) et ne moyennez jamais des percentiles entre instances : agrégez les buckets, puis calculez le
 quantile ; (2) regardez p50, p95 et p99 ensemble : p50 en hausse signifie que tout est plus lent (CPU, algorithme), p50 stable
 mais p99 en hausse signifie qu'un sous-ensemble est lent (pauses GC, contention de verrou, cache froid, un réplica
 défaillant, une requête lente sur quelques tenants) ; (3) méfiez-vous de l'**omission coordonnée** dans les tests de charge :
 si l'outil attend les réponses lentes avant d'envoyer la requête suivante, il sous-estime la queue ; utilisez un injecteur en
-modèle ouvert (voir [Testing Q18](testing.md)).
+modèle ouvert (voir [Testing Q18](testing.md#load-test-rest-api-gatling)).
 
 **Exemple :**
 
@@ -250,8 +242,7 @@ cachent les timeouts jamais terminés : suivez erreurs et latence ensemble.
 
 ### Conception d'API & sécurité
 
-#### Q9. Comment versionner une API REST sans casser les clients existants ?
-
+#### Q9. Comment versionner une API REST sans casser les clients existants ? {#version-rest-api-breaking-existing}
 **Réponse :** La discipline de base consiste à distinguer les changements rétrocompatibles (ajout d'un nouveau
 champ optionnel, ajout d'un nouvel endpoint) — qui ne nécessitent pas d'incrément de version, puisque les anciens clients
 ignorent simplement les champs qu'ils ne connaissent pas — des breaking changes (suppression/renommage d'un champ,
@@ -260,7 +251,7 @@ changes, stratégies courantes : versioning par chemin d'URL (`/v1/orders`, `/v2
 visible, facile à router, mais peut conduire à dupliquer la logique d'implémentation entre versions) ;
 versioning par header (`Accept: application/vnd.api.v2+json` — garde des URLs stables, moins
 visible/découvrable) ; ou, de façon plus robuste, traiter le versioning comme un dernier recours et concevoir les changements pour
-qu'ils soient additifs et rétrocompatibles autant que possible (la même discipline que derrière la [Messaging Q28](messaging-rabbitmq-kafka.md) sur l'évolution de schéma), en réservant un vrai incrément de version aux breaking changes réellement
+qu'ils soient additifs et rétrocompatibles autant que possible (la même discipline que derrière la [Messaging Q28](messaging-rabbitmq-kafka.md#schema-evolution-matter-messages-tools) sur l'évolution de schéma), en réservant un vrai incrément de version aux breaking changes réellement
 inévitables, avec une fenêtre de dépréciation claire et une communication aux consommateurs avant que l'ancienne version ne soit
 retirée.
 
@@ -277,13 +268,12 @@ chaque client à migrer explicitement pour quelque chose qui était rétrocompat
 — une réponse senior traite le versioning comme le dernier recours pour les changements réellement cassants, pas comme la
 réponse par défaut à toute modification de schéma.
 
-#### Q10. Que signifie l'idempotence pour une API REST, et pourquoi `POST` nécessite-t-il un traitement spécial ?
-
+#### Q10. Que signifie l'idempotence pour une API REST, et pourquoi `POST` nécessite-t-il un traitement spécial ? {#idempotency-rest-api-post-need}
 **Réponse :** Une opération idempotente produit le même état final quel que soit le nombre de fois où elle est
 appliquée — `GET`, `PUT` et `DELETE` sont idempotents par définition/convention (appeler
 `DELETE /orders/123` cinq fois laisse le même état final que l'appeler une fois), mais `POST`
 (typiquement « créer une nouvelle ressource ») ne l'est pas — rejouer un `POST` à cause d'un timeout ou d'un accroc réseau
-peut créer des ressources en double, exactement le schéma du problème d'idempotence de messagerie ([Messaging Q13](messaging-rabbitmq-kafka.md), [Messaging Q14](messaging-rabbitmq-kafka.md)) mais au niveau HTTP. La solution a la même forme : accepter une clé d'idempotence explicite
+peut créer des ressources en double, exactement le schéma du problème d'idempotence de messagerie ([Messaging Q13](messaging-rabbitmq-kafka.md#consumer-idempotent-even-messaging-system), [Messaging Q14](messaging-rabbitmq-kafka.md#common-idempotency-strategies-message-consumer)) mais au niveau HTTP. La solution a la même forme : accepter une clé d'idempotence explicite
 du client (un UUID généré une fois par opération logique, envoyé dans un header, et renvoyé
 à l'identique à chaque retry), et le serveur vérifie si cette clé a déjà été traitée avant de
 créer une nouvelle ressource — un client qui rejoue une requête en timeout avec la même clé reçoit le
@@ -304,13 +294,11 @@ a déjà été traitée et renvoie le résultat d'origine au lieu de créer un s
 quelle que soit la méthode HTTP — rejouer un `POST` sans clé d'idempotence peut créer silencieusement
 des ressources en double précisément quand le client essaie d'être résilient.
 
-#### Q11. Quels sont les algorithmes courants de rate-limiting d'API, et quel est le compromis entre eux ?
-
-**Réponse :** Traité dans [System Design Q15](system-design.md) (fenêtre fixe/glissante, token et leaky bucket, où stocker les compteurs) et [System Design Q43](system-design.md) (limiteur distribué à l'échelle).
+#### Q11. Quels sont les algorithmes courants de rate-limiting d'API, et quel est le compromis entre eux ? {#common-api-rate-limiting-algorithms}
+**Réponse :** Traité dans [System Design Q15](system-design.md#compare-rate-limiting-algorithms-one) (fenêtre fixe/glissante, token et leaky bucket, où stocker les compteurs) et [System Design Q43](system-design.md#design-rate-limiter-distributed-system) (limiteur distribué à l'échelle).
 Règle pratique : un token bucket pour un trafic d'API naturellement en rafales, et éviter une simple fenêtre fixe, qui laisse passer une rafale ×2 à la frontière de fenêtre.
 
-#### Q12. Pourquoi une requête navigateur échoue-t-elle avec une erreur CORS alors que l'API fonctionne dans curl, et comment les preflights et les cookies (`SameSite`) changent-ils la donne ?
-
+#### Q12. Pourquoi une requête navigateur échoue-t-elle avec une erreur CORS alors que l'API fonctionne dans curl, et comment les preflights et les cookies (`SameSite`) changent-ils la donne ? {#browser-request-fail-cors-error}
 **Réponse :** CORS est appliqué par le **navigateur**, pas par le serveur ni le réseau : `curl` et les appels serveur-à-serveur ne
 le voient jamais. Quand une page sur `https://app.example.com` appelle `https://api.example.com`, le navigateur ne laisse
 JavaScript lire la réponse que si l'API renvoie les headers `Access-Control-Allow-Origin` correspondants. Pour les
@@ -355,8 +343,7 @@ avec credentials permet à n'importe quel site d'appeler l'API en tant qu'utilis
 contrôle de sécurité contre les clients non-navigateurs ni contre le CSRF — il ne fait qu'assouplir la same-origin policy, donc l'authentification et
 les protections CSRF restent nécessaires.
 
-#### Q13. JWT dans `localStorage`, JWT dans un cookie `HttpOnly`, ou session côté serveur — quels compromis et quels pièges ?
-
+#### Q13. JWT dans `localStorage`, JWT dans un cookie `HttpOnly`, ou session côté serveur — quels compromis et quels pièges ? {#jwt-localstorage-jwt-httponly-cookie}
 **Réponse :** Une **session côté serveur** stocke l'état (utilisateur, rôles) sur le serveur et donne au navigateur un id opaque dans un
 cookie : la révocation est triviale (supprimer la session), le client ne détient jamais de claims, mais cela nécessite un
 stockage partagé (Redis) en cas de scale out. Un **JWT** est un token signé et autonome, vérifié sans lookup, ce qui
@@ -385,10 +372,9 @@ Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjIwMjYtMDEifQ...
 que les changements de permissions sont en retard de la durée de vie du token, et que la commodité de `localStorage` transforme chaque XSS en
 prise de contrôle de compte. La bonne réponse nomme le modèle de menace (XSS vs CSRF vs vol) plutôt que de déclarer un mécanisme gagnant.
 
-Voir aussi : [Sécurité Q14](security.md) pour le pattern BFF et [Sécurité Q11](security.md) pour la révocation.
+Voir aussi : [Sécurité Q14](security.md#browser-app-store-tokens-bff) pour le pattern BFF et [Sécurité Q11](security.md#revoke-jwt-refresh-tokens-fit) pour la révocation.
 
-#### Q14. OpenAPI contract-first ou code-first, et comment garder le client React synchronisé avec l'API Spring ?
-
+#### Q14. OpenAPI contract-first ou code-first, et comment garder le client React synchronisé avec l'API Spring ? {#contract-first-code-first-openapi}
 **Réponse :** Le **code-first** génère la spécification OpenAPI depuis les controllers (springdoc-openapi) : c'est
 rapide et la spec ne peut pas dériver du code, mais la conception de l'API est dictée par des annotations Java et
 revue tardivement. Le **contract-first** écrit d'abord la spec, la revoit avec les consommateurs, puis génère les
@@ -396,7 +382,7 @@ interfaces serveur (openapi-generator) et les clients : c'est préférable pour 
 prix de plus d'outillage. Dans les deux cas, **générez le client et les types TypeScript** depuis la spec en CI
 (openapi-typescript, Orval, openapi-generator) au lieu d'écrire à la main les appels `fetch` et les interfaces : un
 champ renommé casse alors le build frontend, pas la production. Ajoutez un **contrôle de diff OpenAPI** dans le
-pipeline backend pour signaler les changements cassants, et utilisez des tests de contrat ([Tests Q19](testing.md))
+pipeline backend pour signaler les changements cassants, et utilisez des tests de contrat ([Tests Q19](testing.md#consumer-driven-contract-testing-worth))
 entre services déployés indépendamment.
 
 **Exemple :**
@@ -411,8 +397,7 @@ CI frontend : npx openapi-typescript openapi.json -o src/api/schema.d.ts && tsc 
 changé la semaine dernière ; la sûreté de typage est une illusion tant que les types ne sont pas générés depuis le vrai
 contrat.
 
-#### Q15. Comment gérer l'upload et le téléchargement de gros fichiers dans une application Spring + React ?
-
+#### Q15. Comment gérer l'upload et le téléchargement de gros fichiers dans une application Spring + React ? {#handle-large-file-uploads-downloads}
 **Réponse :** Évitez autant que possible de faire passer les gros fichiers par les serveurs d'API. Le pattern qui passe
 à l'échelle est le **dépôt direct dans le stockage via des URLs présignées** : le client demande une URL d'upload à
 l'API (qui vérifie l'autorisation, la taille et le type, et enregistre un upload en attente), envoie directement vers
@@ -437,8 +422,7 @@ qu'il traitait.
 
 ### Docker
 
-#### Q16. Pourquoi l'ordre des instructions du Dockerfile compte-t-il à la fois pour l'efficacité du cache et pour la taille finale de l'image, et que résout un build multi-stage ?
-
+#### Q16. Pourquoi l'ordre des instructions du Dockerfile compte-t-il à la fois pour l'efficacité du cache et pour la taille finale de l'image, et que résout un build multi-stage ? {#dockerfile-instruction-order-matter-both}
 **Réponse :** Selon les mécanismes de cache de la Q3, les instructions doivent être ordonnées de la moins fréquemment
 modifiée (installation des dépendances OS/système) à la plus fréquemment modifiée (copie du
 source de l'application), afin que les changements de code courants n'invalident que les derniers layers, pas tout le build.
@@ -471,8 +455,7 @@ Dockerfile single-stage livre silencieusement toute la toolchain de build (et sa
 production, un problème qui semble purement cosmétique (taille de l'image) jusqu'à ce qu'il devienne un vrai problème de sécurité ou de
 coût.
 
-#### Q17. Expliquez comment diagnostiquer un container Docker qui se termine avec le code 137.
-
+#### Q17. Expliquez comment diagnostiquer un container Docker qui se termine avec le code 137. {#diagnosing-docker-container-exits-code}
 **Réponse :** Le code de sortie 137 vaut 128 + 9 (`SIGKILL`, signal 9) — le processus principal du container a été
 terminé de force par une cause externe, et non arrêté proprement par sa propre logique, et les logs sont
 souvent vides précisément parce qu'un `SIGKILL` ne laisse aucune chance au processus de flusher ou de logger quoi que ce soit
@@ -498,8 +481,7 @@ log vide après une sortie 137 est la signature *attendue* d'un `SIGKILL`, pas u
 `OOMKilled` dans `docker inspect` d'abord est plus rapide que de fouiller des logs applicatifs qui
 n'allaient jamais rien contenir.
 
-#### Q18. Pourquoi une application peut-elle échouer uniquement dans un container Docker, mais fonctionner très bien exécutée directement sur l'hôte ?
-
+#### Q18. Pourquoi une application peut-elle échouer uniquement dans un container Docker, mais fonctionner très bien exécutée directement sur l'hôte ? {#might-application-fail-only-inside}
 **Réponse :** Causes courantes : une référence codée en dur à `localhost` qui signifiait « cette même machine » sur
 l'hôte mais qui, dans un container, désigne le network namespace isolé du container lui-même plutôt
 qu'un autre service que le container doit joindre (ce qui nécessite plutôt un nom de service/alias réseau de container,
@@ -525,8 +507,7 @@ même en exécutant exactement le même code applicatif et le même binaire que 
 
 ### Workloads Kubernetes
 
-#### Q19. Quelle est la différence entre les probes liveness, readiness et startup de Kubernetes, et que se passe-t-il quand elles sont mal configurées ?
-
+#### Q19. Quelle est la différence entre les probes liveness, readiness et startup de Kubernetes, et que se passe-t-il quand elles sont mal configurées ? {#kubernetes-liveness-readiness-startup-probes}
 **Réponse :** **Liveness** répond à « ce container est-il vivant, ou doit-il être redémarré » — son échec
 pousse Kubernetes à tuer et redémarrer le container. **Readiness** répond à « ce container peut-il
 actuellement servir du trafic » — son échec retire le pod des endpoints de load-balancing du Service
@@ -558,8 +539,7 @@ readiness traite deux questions différentes — « ceci doit-il être redémarr
 trafic » — comme une seule ; une liveness probe agressive construite comme un check de readiness peut redémarrer un
 pod sain mais occupé, transformant un pic de charge en panne auto-infligée.
 
-#### Q20. Que se passe-t-il si un Pod Kubernetes n'a ni resource requests ni limits ?
-
+#### Q20. Que se passe-t-il si un Pod Kubernetes n'a ni resource requests ni limits ? {#happens-kubernetes-pod-has-resource}
 **Réponse :** Sans **request** (la quantité que le scheduler réserve pour ce pod sur un node), le
 scheduler n'a aucune base réelle pour empiler les pods de façon sensée, et un pod sans requests est traité
 comme de plus basse priorité (classe QoS `BestEffort`) — le premier à être évincé sous pression mémoire du node,
@@ -585,8 +565,7 @@ resources:
 entrée de scheduling obligatoire — « ça marche très bien sans en dev » est vrai jusqu'à ce que la vraie contention
 sur les nodes expose les deux modes de défaillance à la fois (éviction inéquitable, noisy-neighbor).
 
-#### Q21. Comment le Horizontal Pod Autoscaler (HPA) décide-t-il de scaler, et quelle est une mauvaise configuration courante ?
-
+#### Q21. Comment le Horizontal Pod Autoscaler (HPA) décide-t-il de scaler, et quelle est une mauvaise configuration courante ? {#horizontal-pod-autoscaler-hpa-decide}
 **Réponse :** Le HPA compare périodiquement une métrique cible (couramment l'utilisation CPU ou mémoire, ou
 une métrique custom comme la profondeur de file de requêtes) à une valeur cible configurée, et calcule un
 nombre de replicas souhaité à peu près proportionnel à l'écart entre l'usage courant et la cible. Une mauvaise
@@ -614,14 +593,13 @@ l'utilisation — il ne scalera jamais depuis cet état, quelle que soit la char
 CPU sans CPU request défini, ou qui scale sur le CPU pour un service réellement I/O-bound, peut silencieusement
 ne jamais se déclencher, et cet écart reste invisible jusqu'à ce qu'un vrai pic de trafic le révèle.
 
-#### Q22. Expliquez un rolling update Kubernetes et comment `maxSurge`/`maxUnavailable` interagissent avec le graceful shutdown.
-
+#### Q22. Expliquez un rolling update Kubernetes et comment `maxSurge`/`maxUnavailable` interagissent avec le graceful shutdown. {#kubernetes-rolling-update-maxsurge-maxunavailable}
 **Réponse :** Un rolling update remplace les pods de l'ancienne version par des pods de la nouvelle version de façon incrémentale plutôt
 qu'en une seule fois : `maxSurge` contrôle combien de pods supplémentaires au-delà du nombre souhaité peuvent être créés
 temporairement pendant le rollout (plus haut = rollout plus rapide, plus de marge de ressources nécessaire), et
 `maxUnavailable` contrôle combien de pods peuvent être indisponibles en même temps pendant la transition (plus haut =
 rollout plus rapide, plus de réduction de capacité tolérée entre-temps). L'interaction avec le graceful
-shutdown ([Spring S16](spring-architecture.md)) compte au moment où un ancien pod est terminé : Kubernetes envoie
+shutdown ([Spring S16](spring-architecture.md#deployment-causes-burst-failed-requests)) compte au moment où un ancien pod est terminé : Kubernetes envoie
 `SIGTERM`, et le pod dispose de `terminationGracePeriodSeconds` pour terminer les requêtes en cours et s'arrêter
 avant qu'un `SIGKILL` brutal ne suive — mais le pod est aussi retiré des endpoints du Service dans
 le cadre de ce processus, et si ce retrait d'endpoint n'est pas correctement séquencé *avant* que les nouvelles
@@ -643,8 +621,7 @@ terminationGracePeriodSeconds: 30
 délai `preStop`, le pod peut cesser d'accepter les connexions avant que le Service ait fini de le retirer
 de sa liste d'endpoints, provoquant une rafale d'erreurs à chaque déploiement.
 
-#### Q23. Pourquoi l'adresse IP d'un Pod Kubernetes n'est-elle pas une valeur stable sur laquelle s'appuyer, et que fournit un Service à la place ?
-
+#### Q23. Pourquoi l'adresse IP d'un Pod Kubernetes n'est-elle pas une valeur stable sur laquelle s'appuyer, et que fournit un Service à la place ? {#isn-kubernetes-pod-ip-address}
 **Réponse :** Les pods sont éphémères par conception — un Deployment peut recréer un pod (lors d'un crash, d'un rolling
 update, d'une panne de node) à tout moment, et le nouveau pod reçoit une nouvelle adresse IP ; coder en dur ou mettre en cache
 une IP de pod où que ce soit finira forcément par casser. Un **Service** fournit une IP virtuelle stable
@@ -671,8 +648,7 @@ spec:
 tests » — les IPs de pod changent forcément au prochain reschedule, et le code qui suppose le
 contraire fonctionne jusqu'au premier rolling update ou à la première panne de node.
 
-#### Q24. Comment garder un service Kubernetes disponible pendant les node drains et les pannes de zone (PodDisruptionBudget, anti-affinity, topology spread) ?
-
+#### Q24. Comment garder un service Kubernetes disponible pendant les node drains et les pannes de zone (PodDisruptionBudget, anti-affinity, topology spread) ? {#keep-kubernetes-service-available-during}
 **Réponse :** Trois types de pannes différents nécessitent trois outils différents. Les **disruptions volontaires** — un node drain pour
 une mise à jour, un scale-down du cluster autoscaler — évincent des pods délibérément ; un **PodDisruptionBudget** (`minAvailable` ou
 `maxUnavailable`) indique à l'eviction API de refuser une éviction qui ferait passer le service sous le budget, de sorte que
@@ -707,8 +683,7 @@ topologySpreadConstraints:
 ou « durcissent » avec un PDB trop strict qui bloquera plus tard toutes les mises à jour du cluster à 2 h du matin. La haute disponibilité est une propriété de la
 *politique de placement et de disruption*, pas du nombre de replicas.
 
-#### Q25. Quelle est la différence entre un ConfigMap et un Secret Kubernetes, et quelle est l'idée fausse courante sur la sécurité des Secrets ?
-
+#### Q25. Quelle est la différence entre un ConfigMap et un Secret Kubernetes, et quelle est l'idée fausse courante sur la sécurité des Secrets ? {#kubernetes-configmap-secret-common-misunderstanding}
 **Réponse :** Les deux stockent de la configuration clé-valeur injectée dans les pods (en variables d'environnement ou en
 fichiers montés) ; la distinction voulue est qu'un ConfigMap contient de la configuration non sensible et
 un Secret des données sensibles (credentials, tokens, clés). L'idée fausse courante : les valeurs d'un
@@ -732,8 +707,7 @@ SuperSecretPassword123
 sans chiffrement au repos ni RBAC strict, un Secret est à un `kubectl get` du texte en clair pour
 quiconque a un accès en lecture au cluster.
 
-#### Q26. Quel problème Helm résout-il par rapport aux manifests Kubernetes bruts ?
-
+#### Q26. Quel problème Helm résout-il par rapport aux manifests Kubernetes bruts ? {#problem-helm-solve-raw-kubernetes}
 **Réponse :** Les manifests YAML bruts dupliquent du boilerplate entre environnements (dev/staging/prod ayant chacun
 besoin de fichiers Deployment/Service/ConfigMap quasi identiques ne différant que par une poignée de valeurs)
 et n'ont aucune notion intégrée de « release » — pas de moyen simple d'installer, mettre à jour ou rollback un
@@ -759,8 +733,7 @@ même chart est déployé dans plusieurs environnements ou plusieurs fois avec d
 
 ### Delivery & debugging
 
-#### Q27. De quelles étapes un bon pipeline CI/CD a-t-il besoin, et que signifie « fail fast » dans ce contexte ?
-
+#### Q27. De quelles étapes un bon pipeline CI/CD a-t-il besoin, et que signifie « fail fast » dans ce contexte ? {#stages-solid-ci-cd-pipeline}
 **Réponse :** Grosso modo, par ordre croissant de coût/temps : lint/analyse statique et tests unitaires rapides d'abord
 (les moins chers, ils attrapent les erreurs les plus courantes en quelques secondes), puis une étape de build/compilation, puis
 des tests d'intégration (plus lents, ils ont besoin de vraies dépendances comme une base de données), puis le scan de sécurité/dépendances,
@@ -783,8 +756,7 @@ stages: [lint, unit-test, build, integration-test, security-scan, deploy-staging
 leur coût — une étape coûteuse de tests d'intégration exécutée avant un check de lint bon marché gaspille des minutes de CI
 et du temps de feedback développeur à chaque changement dont le lint échoue.
 
-#### Q28. Comparez les stratégies de déploiement blue-green, canary et rolling.
-
+#### Q28. Comparez les stratégies de déploiement blue-green, canary et rolling. {#compare-blue-green-canary-rolling}
 **Réponse :** Le **Rolling** (le défaut de Kubernetes, Q22) remplace incrémentalement les anciens pods par des nouveaux
 — simple, économe en ressources (pas besoin de faire tourner deux environnements complets simultanément), mais le rollback
 consiste à défaire la mise à jour de la même façon incrémentale, et une mauvaise version sert *une partie* du
@@ -813,8 +785,7 @@ sans tenir compte de son coût réel — la double infrastructure et la charge d
 l'exigence de coexistence sûre des deux versions du canary — peut être pire
 qu'un rolling update bien testé pour un système qui n'a pas réellement besoin de cette sécurité supplémentaire.
 
-#### Q29. Comment utiliser `git bisect` pour trouver quel commit a introduit une régression ?
-
+#### Q29. Comment utiliser `git bisect` pour trouver quel commit a introduit une régression ? {#git-bisect-find-commit-introduced}
 **Réponse :** `git bisect start`, puis marquez un commit connu comme mauvais (`git bisect bad <hash>`, souvent simplement
 `HEAD` ou l'état cassé actuel) et un commit connu comme bon (`git bisect good <hash>`, un point
 antérieur à l'existence du bug) — git checkout le commit médian entre les deux, vous le testez et
@@ -841,8 +812,7 @@ processus manuel lent et sujet aux erreurs.
 
 ### Observabilité
 
-#### Q30. Mettez en pratique les trois piliers de l'observabilité — à quoi ressemble concrètement le « bon » pour chacun ?
-
+#### Q30. Mettez en pratique les trois piliers de l'observabilité — à quoi ressemble concrètement le « bon » pour chacun ? {#put-three-pillars-observability-practice}
 **Réponse :** **Structured logging** : émettre les logs sous forme de données structurées (JSON, pas du texte libre) avec
 des champs cohérents (un ID de requête/trace, le nom du service, la sévérité) afin qu'ils soient consultables et
 corrélables entre services, et pas seulement lisibles par un humain un à un. **Metrics** : la méthode RED
@@ -865,16 +835,15 @@ des logs non structurés et intraçables, sans trace ID partagé entre services,
 des timestamps à travers une douzaine de services pendant un incident, exactement le mode de défaillance de
 diagnostic lent que le structured logging plus le tracing existent pour éliminer.
 
-#### Q31. La latence de l'API bondit juste après un déploiement. Que vérifiez-vous, et dans quel ordre ?
-
+#### Q31. La latence de l'API bondit juste après un déploiement. Que vérifiez-vous, et dans quel ordre ? {#api-latency-jumps-right-after}
 **Réponse :** Traitez-le comme un incident : **stabiliser d'abord, diagnostiquer ensuite.** (1) **Confirmer et délimiter** :
 est-ce réel et corrélé au déploiement (superposez les marqueurs de déploiement sur les courbes p50/p95/p99 et de taux
 d'erreur), quels endpoints, quels pods/régions/tenants, depuis quand ? (2) **Réduire le rayon d'impact** : si la corrélation
 est claire et l'impact utilisateur réel, faites un rollback ou arrêtez le canary tout de suite (voir
-[Full Stack Q28](fullstack-devops-k8s.md)) ; l'enquête se poursuit sur la version revenue en arrière et sur la version
+[Full Stack Q28](fullstack-devops-k8s.md#compare-blue-green-canary-rolling)) ; l'enquête se poursuit sur la version revenue en arrière et sur la version
 défaillante gardée en préproduction. (3) **Comparer ce qui a changé** : le diff de code, mais aussi les montées de version
 de dépendances/JVM/image de base, la configuration et les feature flags, une migration de base (nouvelle colonne sans index,
-plan de requête modifié, verrou tenu pendant la migration, voir [Persistence Q37](persistence-sql-postgres.md)) et
+plan de requête modifié, verrou tenu pendant la migration, voir [Persistence Q37](persistence-sql-postgres.md#safe-process-schema-migration-production)) et
 l'infrastructure (nombre de réplicas, limites CPU/mémoire). (4) **Suivre la requête avec les trois piliers** : les métriques
 disent *où* (métriques RED par endpoint, USE par ressource : CPU, tas, pause GC, file du pool de threads, attente du pool de
 connexions, latence BD) ; les traces montrent *quel span* a grossi (un appel SQL lent, un nouveau N+1, un nouvel appel aval,
@@ -905,8 +874,7 @@ lent, un mauvais pod), pas un ralentissement global : la première question est 
 
 ### Delivery
 
-#### Q32. Concevez un pipeline CI/CD et une stratégie de déploiement pour un service de paiement critique qui exige zéro downtime et un rollback rapide.
-
+#### Q32. Concevez un pipeline CI/CD et une stratégie de déploiement pour un service de paiement critique qui exige zéro downtime et un rollback rapide. {#design-ci-cd-pipeline-deployment}
 Pipeline : analyse statique rapide et tests unitaires d'abord (fail fast, Q27), puis tests d'intégration
 contre une vraie base de données (containerisée, éphémère) et les mocks aval critiques, puis un
 scan de sécurité/dépendances (les services de paiement sont une cible naturelle pour les attaques de supply chain, ce qui rend le scan de
@@ -916,7 +884,7 @@ environnement plutôt que reconstruit par environnement (éliminant « buildé d
 classe de défaillance). Stratégie de déploiement : canary (Q28) spécifiquement pour un service critique de paiement,
 en routant d'abord un petit pourcentage du trafic réel et en surveillant le taux d'erreur/la latence par rapport à des seuils de rollback
 stricts et automatisés (pas seulement le jugement humain) avant d'augmenter progressivement le trafic
-— combiné à la discipline de migration additive de la [Persistence Q44](persistence-sql-postgres.md) pour que le schéma de base de données soit
+— combiné à la discipline de migration additive de la [Persistence Q44](persistence-sql-postgres.md#safely-add-null-column-50) pour que le schéma de base de données soit
 compatible avec l'ancienne et la nouvelle version pendant toute la fenêtre du canary. Le rollback doit être une
 commande unique, rapide et testée (rediriger le trafic vers la version précédente, c'est pourquoi les
 pods de la version précédente ne sont souvent pas détruits immédiatement après un rollout, précisément pour rendre le
@@ -945,8 +913,7 @@ jobs:
 # Rollback : kubectl argo rollouts undo pay (ancien ReplicaSet encore actif)
 ```
 
-#### Q33. Comment concevriez-vous la promotion d'environnement (dev → staging → production) pour que ce que vous avez testé soit exactement ce que vous livrez ?
-
+#### Q33. Comment concevriez-vous la promotion d'environnement (dev → staging → production) pour que ce que vous avez testé soit exactement ce que vous livrez ? {#design-environment-promotion-dev-staging}
 Le principe est **build once, promote the same artifact** : le pipeline CI construit une image de container immuable par commit,
 la tague avec le SHA du commit (jamais `latest`), la pousse et la signe ; chaque environnement
 déploie ensuite *ce digest* et ne diffère que par la **configuration** injectée au moment du déploiement (fichiers de values, ConfigMaps, secrets issus d'un
@@ -977,8 +944,7 @@ Même chart, même digest ; seules les values diffèrent. Rollback = git revert 
 
 ### Fiabilité & observabilité
 
-#### Q34. Concevez de zéro la stack d'observabilité d'une nouvelle plateforme de microservices.
-
+#### Q34. Concevez de zéro la stack d'observabilité d'une nouvelle plateforme de microservices. {#design-observability-stack-new-microservices}
 Standardisez l'instrumentation *avant* que les services ne se multiplient — adoptez OpenTelemetry comme standard
 commun à tous les services pour les traces et les metrics dès le premier jour (rétrofiter un tracing cohérent
 sur un parc déjà fragmenté et important coûte bien plus cher que de partir cohérent), avec
@@ -1015,8 +981,7 @@ service:
     logs:    { receivers: [otlp], exporters: [loki] }
 ```
 
-#### Q35. Comment les SLOs et les error budgets peuvent-ils piloter les décisions de release, et que faire quand le budget est épuisé ?
-
+#### Q35. Comment les SLOs et les error budgets peuvent-ils piloter les décisions de release, et que faire quand le budget est épuisé ? {#slos-error-budgets-drive-release}
 Un **SLI** est un indicateur mesuré de la qualité visible par l'utilisateur (la fraction de requêtes qui réussissent et se terminent en moins de 300 ms), un
 **SLO** est la cible associée sur une fenêtre (99,9 % sur 30 jours), et l'**error budget** est la défaillance autorisée restante
 (0,1 % ≈ 43 minutes d'indisponibilité totale par mois). Le budget transforme le débat « livrer plus vite » vs « être plus fiable » en une règle partagée et fondée sur les données :
@@ -1041,23 +1006,22 @@ taux d'erreur 0,1 %  => burn 1x    => le budget dure exactement 30 jours => tick
 Budget épuisé -> gel des releases non critiques jusqu'à récupération
 ```
 
-#### Q36. Racontez-moi comment réduire le p95 d'un endpoint de 9 secondes à 250 ms : comment trouvez-vous le goulot, le corrigez-vous et le prouvez-vous ?
-
+#### Q36. Racontez-moi comment réduire le p95 d'un endpoint de 9 secondes à 250 ms : comment trouvez-vous le goulot, le corrigez-vous et le prouvez-vous ? {#reducing-endpoint-p95-latency-9}
 **Réponse :** C'est l'histoire classique de « le gain de performance » ; structurez-la en **mesurer → faire une hypothèse →
 changer une seule chose → remesurer**, jamais « je l'ai optimisé ». (1) **Définir la cible et la référence** : p95 de 9 s sous
 charge réaliste, SLO 300 ms ; reproduisez-le avec un test de charge sur un jeu de données proche de la production (sinon vous
 optimisez la mauvaise chose). (2) **Trouver le goulot, sans deviner** : le tracing montre que la requête passe 8,4 s à un seul
 endroit ; un flame graph (JFR / async-profiler) et le journal des requêtes lentes / `pg_stat_statements` /
-`EXPLAIN (ANALYZE, BUFFERS)` désignent le coupable (voir [Persistence Q24](persistence-sql-postgres.md) et
-[Java Q40](java-core-jvm.md)). Constats typiques, par fréquence : un **N+1** (1 + 800 requêtes, voir
-[Persistence Q29](persistence-sql-postgres.md)), un **index manquant ou inutilisable** (seq scan sur des millions de lignes),
+`EXPLAIN (ANALYZE, BUFFERS)` désignent le coupable (voir [Persistence Q24](persistence-sql-postgres.md#read-analyze-output-diagnose-slow) et
+[Java Q40](java-core-jvm.md#profile-slow-cpu-hungry-java)). Constats typiques, par fréquence : un **N+1** (1 + 800 requêtes, voir
+[Persistence Q29](persistence-sql-postgres.md#n-1-query-problem-name)), un **index manquant ou inutilisable** (seq scan sur des millions de lignes),
 du chargement et du filtrage **en mémoire** au lieu de SQL, un **énorme payload non paginé**, des **appels aval en série** qui
 pourraient être parallèles ou en cache, une **attente de verrou/pool** (famine du pool de connexions) ou le **coût de
 sérialisation**. (3) **Corriger d'abord la plus grosse tranche** (loi d'Amdahl : retirer 8,4 des 9 s vaut mieux que polir les
 0,6 restantes) : par ex. remplacer le N+1 par un `JOIN FETCH`/chargement par lots (9 s → 1,2 s), ajouter un index composite
 correspondant au filtre et au tri (1,2 s → 300 ms), ne projeter que les colonnes utiles avec un DTO et paginer (300 → 180 ms),
 mettre en cache les données de référence stables (Caffeine, TTL 60 s) et appeler en parallèle deux services indépendants
-(vers ~120 ms). (4) **Valider** : rejouez le même profil de charge (Gatling, voir [Testing Q18](testing.md)) et
+(vers ~120 ms). (4) **Valider** : rejouez le même profil de charge (Gatling, voir [Testing Q18](testing.md#load-test-rest-api-gatling)) et
 comparez p50/p95/p99, débit, taux d'erreur, CPU de la BD et usage des connexions avant et après, avec les mêmes données et le
 même matériel ; vérifiez la justesse avec les tests existants, et assurez-vous d'avoir supprimé le goulot et non seulement
 déplacé. (5) **Énoncer les compromis** : l'index coûte du débit d'écriture et du stockage, le cache ajoute de la péremption et
@@ -1094,12 +1058,11 @@ Requêtes BD  801        3          3           2              1
 de la chance. Les intervieweurs sondent aussi ce que vous n'avez *pas* fait (pas de cache prématuré, pas de réécriture) et ce
 que le correctif a coûté.
 
-#### Q37. Expliquez comment déboguer de bout en bout un problème « ça marche sur ma machine, ça échoue en CI/production ».
-
+#### Q37. Expliquez comment déboguer de bout en bout un problème « ça marche sur ma machine, ça échoue en CI/production ». {#debugging-machine-fails-ci-production}
 Commencez par établir exactement *où* la divergence se produit — reproduisez l'échec directement dans
 l'environnement cible si c'est possible (ne déboguez pas à l'aveugle à partir des seuls logs si vous pouvez obtenir
 un shell dans le container/pod en échec). Comparez systématiquement les deux environnements selon les axes
-qui diffèrent couramment : variables d'environnement et configuration (Q18, [Spring S1](spring-architecture.md), [Spring S3](spring-architecture.md)), versions
+qui diffèrent couramment : variables d'environnement et configuration (Q18, [Spring S1](spring-architecture.md#service-perfectly-local-development-but), [Spring S3](spring-architecture.md#changes-application-properties-don-seem)), versions
 d'image de base/OS/bibliothèques si l'un tourne dans Docker et pas l'autre, permissions de fichiers et
 propriété des volumes montés, et valeurs par défaut de timezone/locale (une différence silencieuse classique entre la locale
 de l'hôte d'un développeur et la locale `C` par défaut d'un container minimal, cassant le parsing de dates ou
@@ -1128,8 +1091,7 @@ git bisect start HEAD v1.8.0 && git bisect run ./ci-repro.sh
 
 ### Sécurité
 
-#### Q38. Comment gérer les secrets applicatifs dans Kubernetes — Kubernetes Secrets, Vault, ou un external secrets operator ?
-
+#### Q38. Comment gérer les secrets applicatifs dans Kubernetes — Kubernetes Secrets, Vault, ou un external secrets operator ? {#application-secrets-managed-kubernetes-kubernetes}
 Partez des menaces : secrets commités dans Git, secrets lisibles par quiconque a accès au cluster, credentials de longue durée qui ne sont jamais renouvelés,
 et absence de piste d'audit. Les objets Kubernetes `Secret` simples sont en base64, pas chiffrés (Q25) : ils nécessitent un chiffrement au repos
 (provider KMS), un RBAC strict (qui peut `get secrets` dans un namespace), et ils doivent quand même *provenir* de quelque part — les commiter
@@ -1162,8 +1124,7 @@ spec:
 
 ### Temps réel
 
-#### Q39. Polling, Server-Sent Events ou WebSockets — comment pousser des mises à jour vers le navigateur, et comment cela passe-t-il à l'échelle ?
-
+#### Q39. Polling, Server-Sent Events ou WebSockets — comment pousser des mises à jour vers le navigateur, et comment cela passe-t-il à l'échelle ? {#polling-server-sent-events-websockets}
 **Réponse :** Le **polling** (ou long polling) est le plus simple et fonctionne partout ; il suffit quand des mises à
 jour toutes les 10–30 s sont acceptables. Les **Server-Sent Events** sont un flux unidirectionnel du serveur vers le
 navigateur en HTTP simple : reconnexion automatique avec `Last-Event-ID`, passage facile des proxies, adaptés aux
@@ -1188,8 +1149,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 ## 🎯 Scénarios réels
 
-### S1. Un container meurt de façon répétée avec le code de sortie 137, et les logs ne montrent rien d'utile
-
+### S1. Un container meurt de façon répétée avec le code de sortie 137, et les logs ne montrent rien d'utile {#container-repeatedly-dies-exit-code}
 - **Symptômes :** `docker ps -a` montre le code de sortie 137 sur un container arrêté brutalement ; aucun
   log applicatif n'a capturé l'arrêt.
 
@@ -1217,8 +1177,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S2. Une application démarre avec succès mais échoue immédiatement à joindre une dépendance, uniquement quand elle tourne dans un container
-
+### S2. Une application démarre avec succès mais échoue immédiatement à joindre une dépendance, uniquement quand elle tourne dans un container {#application-starts-successfully-but-immediately}
 - **Symptômes :** Exactement le même code et la même config fonctionnent en exécution directe sur la machine d'un développeur,
   mais dans un container Docker, un appel vers ce qui devrait être « la même base de données/le même service » n'arrive pas à
   se connecter.
@@ -1255,8 +1214,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S3. Un pod Kubernetes entre de façon répétée en `CrashLoopBackOff`
-
+### S3. Un pod Kubernetes entre de façon répétée en `CrashLoopBackOff` {#kubernetes-pod-repeatedly-enters-crashloopbackoff}
 - **Symptômes :** `kubectl get pods` montre un pod qui redémarre avec un intervalle de backoff croissant, sans jamais
   atteindre un état running stable.
 
@@ -1288,8 +1246,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S4. Pendant un rollout, une rafale d'erreurs `502`/`503` touche les utilisateurs, en corrélation exacte avec l'arrivée de nouveaux pods
-
+### S4. Pendant un rollout, une rafale d'erreurs `502`/`503` touche les utilisateurs, en corrélation exacte avec l'arrivée de nouveaux pods {#during-rollout-burst-502-503}
 - **Symptômes :** Les erreurs explosent spécifiquement pendant les déploiements, pour les requêtes routées vers des pods
   nouvellement créés, et se résorbent une fois le rollout terminé.
 
@@ -1320,8 +1277,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S5. Un déploiement provoque une rafale d'erreurs précisément au moment où les anciens pods sont terminés, pas quand les nouveaux démarrent
-
+### S5. Un déploiement provoque une rafale d'erreurs précisément au moment où les anciens pods sont terminés, pas quand les nouveaux démarrent {#deployment-causes-burst-errors-specifically}
 - **Symptômes :** Distinct de S4 — les erreurs corrèlent avec la *terminaison* des pods pendant le rollout, pas avec
   leur démarrage, et touchent des requêtes qui étaient vraisemblablement déjà en cours ou routées à nouveau juste
   au moment où l'ancien pod s'arrêtait.
@@ -1354,8 +1310,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S6. Le volume excessif de requêtes d'un seul client dégrade les temps de réponse de tous les autres clients d'une API partagée
-
+### S6. Le volume excessif de requêtes d'un seul client dégrade les temps de réponse de tous les autres clients d'une API partagée {#single-client-excessive-request-volume}
 - **Symptômes :** La latence globale de l'API et le taux d'erreur explosent, et l'investigation attribue l'essentiel du
   volume à un client/une clé d'API effectuant bien plus de requêtes que n'importe quel usage normal raisonnable.
 
@@ -1385,8 +1340,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S7. Une régression est signalée, mais on ne sait pas lequel des commits des deux derniers mois l'a introduite
-
+### S7. Une régression est signalée, mais on ne sait pas lequel des commits des deux derniers mois l'a introduite {#regression-reported-but-unclear-last}
 - **Symptômes :** Un bug est confirmé présent maintenant et confirmé absent d'un build d'il y a quelques
   mois, mais l'historique intermédiaire compte des centaines de commits et aucun suspect évident.
 - **Diagnostic/résolution :** `git bisect start`, marquez le commit actuel `bad` et l'ancien commit connu comme bon
@@ -1410,8 +1364,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
   présente-t-il le bug » (une repro automatisée) pour que `git bisect run` puisse automatiser entièrement la recherche au lieu
   d'exiger des tests manuels à chaque étape.
 
-### S8. La CI passe proprement tous les checks, mais la fonctionnalité casse immédiatement en production
-
+### S8. La CI passe proprement tous les checks, mais la fonctionnalité casse immédiatement en production {#ci-passes-cleanly-every-check}
 - **Symptômes :** Tous les tests automatisés et quality gates sont verts, pourtant la fonctionnalité déployée échoue
   pour de vrais utilisateurs d'une façon qu'aucune suite de tests n'a détectée.
 
@@ -1443,8 +1396,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S9. Des credentials de base de données issus d'un Secret Kubernetes se retrouvent postés dans un chat d'équipe ou un ticket, traités comme si c'était sûr
-
+### S9. Des credentials de base de données issus d'un Secret Kubernetes se retrouvent postés dans un chat d'équipe ou un ticket, traités comme si c'était sûr {#database-credentials-kubernetes-secret-end}
 - **Symptômes :** Quelqu'un partage la sortie de `kubectl get secret db-creds -o yaml` (ou la valeur décodée
   du base64) dans un canal de chat ou un ticket de support, apparemment en supposant qu'un « Secret » est
   intrinsèquement protégé.
@@ -1466,7 +1418,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
   ```
 
 - **Résolution :** Renouvelez immédiatement le credential exposé, comme pour tout autre secret divulgué
-  (la [Spring S10](spring-architecture.md) s'applique à l'identique ici), et supprimez/masquez le message partagé quand c'est possible.
+  (la [Spring S10](spring-architecture.md#secrets-scanner-security-review-flags) s'applique à l'identique ici), et supprimez/masquez le message partagé quand c'est possible.
 - **Prévention :** Formez explicitement l'équipe au fait que les Secrets Kubernetes sont des conteneurs à accès contrôlé, pas
   chiffrés par défaut — activez le chiffrement au repos des Secrets dans le cluster, et
   traitez la valeur décodée de tout Secret avec la même discipline que celle d'un mot de passe en clair,
@@ -1474,8 +1426,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S10. L'autoscaling ne se déclenche pas alors que le service est clairement sous forte charge
-
+### S10. L'autoscaling ne se déclenche pas alors que le service est clairement sous forte charge {#autoscaling-doesn-kick-despite-service}
 - **Symptômes :** La latence et le taux d'erreur grimpent sous fort trafic, mais `kubectl get hpa` montre le
   nombre de replicas inchangé, ou un scaling bien plus lent que ce que la charge justifierait.
 
@@ -1508,8 +1459,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S11. Un pod défaillant fait ralentir ou évincer des pods sans rapport sur le même node
-
+### S11. Un pod défaillant fait ralentir ou évincer des pods sans rapport sur le même node {#one-misbehaving-pod-causes-unrelated}
 - **Symptômes :** Une dégradation de performance ou des évictions inattendues touchent des pods qui n'ont rien à
   voir avec un service séparé qui consomme actuellement une mémoire/un CPU anormalement élevés, mais qui sont tous
   colocalisés sur le même node.
@@ -1541,8 +1491,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S12. Une release canary cause des erreurs intermittentes qui ne corrèlent nettement ni avec l'ancienne ni avec la nouvelle version seule
-
+### S12. Une release canary cause des erreurs intermittentes qui ne corrèlent nettement ni avec l'ancienne ni avec la nouvelle version seule {#canary-release-causes-intermittent-errors}
 - **Symptômes :** Pendant un rollout canary, des erreurs apparaissent sans impliquer clairement l'une ou l'autre version
   individuellement — le même type de requête réussit parfois et échoue parfois, apparemment
   selon le pod sur lequel elle est tombée.
@@ -1554,7 +1503,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 - **Diagnostic :** Les versions canary (nouvelle) et stable (ancienne) tournent simultanément et ne sont
   en fait pas compatibles entre elles à une frontière partagée — typiquement un changement de contrat
-  d'API/de schéma, ou un schéma de base de données partagé que seule l'une des deux versions attend (territoire de la [Persistence Q44](persistence-sql-postgres.md), mais révélé par un canary plutôt que par un rolling update) — de sorte que le comportement précis
+  d'API/de schéma, ou un schéma de base de données partagé que seule l'une des deux versions attend (territoire de la [Persistence Q44](persistence-sql-postgres.md#safely-add-null-column-50), mais révélé par un canary plutôt que par un rolling update) — de sorte que le comportement précis
   dépend de la version du pod qui a traité une requête donnée ou de la version dont l'hypothèse
   sur l'état partagé a été violée.
 - **Exemple :**
@@ -1577,8 +1526,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S13. Une panne est diagnostiquée lentement parce qu'on ne sait pas lequel des nombreux services du chemin de requête est réellement responsable
-
+### S13. Une panne est diagnostiquée lentement parce qu'on ne sait pas lequel des nombreux services du chemin de requête est réellement responsable {#outage-diagnosed-slowly-because-unclear}
 - **Symptômes :** Un incident visible par les utilisateurs est confirmé, mais avec une douzaine de microservices dans le
   chemin de requête et chaque équipe ne consultant que les dashboards de son propre service, personne ne peut rapidement
   localiser l'origine réelle de la panne.
@@ -1590,7 +1538,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 - **Diagnostic :** Il n'existe aucune observabilité centralisée et corrélable entre les services — les logs
   vivent uniquement par service sans trace ID partagé les reliant, et il n'y a pas de distributed
-  tracing pour montrer le chemin réel de la requête et où elle a échoué ou ralenti (la [Spring S15](spring-architecture.md) au niveau du
+  tracing pour montrer le chemin réel de la requête et où elle a échoué ou ralenti (la [Spring S15](spring-architecture.md#bug-spans-multiple-microservices-unclear) au niveau du
   code applicatif, mais ici c'est la lacune d'infrastructure à l'échelle de la plateforme qui en est la cause).
 - **Exemple :**
 
@@ -1610,8 +1558,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S14. Les images Docker ont grossi au point de ralentir sensiblement les exécutions du pipeline CI/CD et les déploiements
-
+### S14. Les images Docker ont grossi au point de ralentir sensiblement les exécutions du pipeline CI/CD et les déploiements {#docker-images-have-grown-large}
 - **Symptômes :** Les temps de build, de push et de pull de l'image Docker de l'application ont augmenté
   régulièrement, ajoutant de vraies minutes à chaque exécution CI et à chaque déploiement.
 
@@ -1640,8 +1587,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S15. Après le rollback d'un déploiement blue-green, l'application échoue toujours, car le schéma de base de données qu'elle attend ne correspond pas à ce qui tourne réellement
-
+### S15. Après le rollback d'un déploiement blue-green, l'application échoue toujours, car le schéma de base de données qu'elle attend ne correspond pas à ce qui tourne réellement {#after-blue-green-deployment-rolled}
 - **Symptômes :** Un rollback vers la version applicative précédente (blue) est censé corriger instantanément
   un problème trouvé dans la nouvelle version (green), mais la version restaurée échoue maintenant contre la
   base de données, qui avait déjà été migrée pour les exigences de schéma de la version green.
@@ -1663,7 +1609,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 - **Résolution :** Soit faire aussi un rollback de la migration de base de données (risqué et pas toujours possible si
   des données ont été écrites entre-temps dans la forme du nouveau schéma), soit — l'approche la plus sûre —
-  redessiner la migration pour qu'elle soit additive et rétrocompatible dès le départ (pattern de la [Persistence Q44](persistence-sql-postgres.md)), afin que l'ancienne version de l'application continue de fonctionner correctement contre le schéma
+  redessiner la migration pour qu'elle soit additive et rétrocompatible dès le départ (pattern de la [Persistence Q44](persistence-sql-postgres.md#safely-add-null-column-50)), afin que l'ancienne version de l'application continue de fonctionner correctement contre le schéma
   déjà migré sans nécessiter de rollback au niveau de la base de données.
 - **Prévention :** Traitez « cette migration est-elle sûre pour que la version applicative précédente continue de
   tourner dessus, en cas de rollback » comme une question obligatoire pour toute migration livrée
@@ -1673,8 +1619,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S16. Une bascule de load balancer pendant un cutover blue-green coupe brutalement les connexions client de longue durée
-
+### S16. Une bascule de load balancer pendant un cutover blue-green coupe brutalement les connexions client de longue durée {#load-balancer-switch-during-blue}
 - **Symptômes :** Des clients avec des connexions longues ou sticky (sessions WebSocket, requêtes de long-polling,
   connexions épinglées à un backend précis par session affinity) sont brutalement
   déconnectés au moment exact où le trafic est basculé de blue à green, alors que le
@@ -1709,8 +1654,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S17. La latence pique toutes les quelques secondes et le p99 vaut 10x la médiane, pourtant l'usage CPU semble faible et il n'y a aucune erreur
-
+### S17. La latence pique toutes les quelques secondes et le p99 vaut 10x la médiane, pourtant l'usage CPU semble faible et il n'y a aucune erreur {#latency-spikes-every-few-seconds}
 - **Symptômes :** Le temps de réponse p99 d'une API est de 2 s alors que la médiane est de 80 ms, selon un schéma régulier en dents de scie. Le graphe CPU
   du pod est bien en dessous de la limite (~40 %), la mémoire est correcte, pas de restarts, pas de logs d'erreur. Ajouter des replicas n'aide que très peu.
 
@@ -1740,8 +1684,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S18. Un nouveau déploiement est bloqué en `ImagePullBackOff` / `ErrImagePull` et le rollout ne se termine jamais
-
+### S18. Un nouveau déploiement est bloqué en `ImagePullBackOff` / `ErrImagePull` et le rollout ne se termine jamais {#new-deployment-stuck-imagepullbackoff-errimagepull}
 - **Symptômes :** Après une release, les nouveaux pods restent en `ImagePullBackOff` tandis que les anciens continuent de servir (le rolling
   update se bloque, ce qui est la partie sûre). `kubectl rollout status` expire ; le pipeline rapporte un succès parce que le manifest a été appliqué.
 
@@ -1769,8 +1712,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S19. Les appels vers des hôtes externes prennent ~5 secondes par intermittence, et les appels service-à-service sont lents, mais uniquement à l'intérieur du cluster
-
+### S19. Les appels vers des hôtes externes prennent ~5 secondes par intermittence, et les appels service-à-service sont lents, mais uniquement à l'intérieur du cluster {#calls-external-hosts-take-5}
 - **Symptômes :** Une application qui appelle `api.partner.com` subit des délais aléatoires de 5 secondes ou des erreurs « unknown host » sous charge ; le même
   appel depuis un laptop prend 50 ms. Les dashboards de latence montrent une longue traîne avec un chiffre rond suspect : 5 s (parfois 2,5 s ou 10 s).
 
@@ -1802,8 +1744,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S20. Les utilisateurs reçoivent soudain des avertissements de sécurité du navigateur et les clients d'API échouent avec `x509: certificate has expired`
-
+### S20. Les utilisateurs reçoivent soudain des avertissements de sécurité du navigateur et les clients d'API échouent avec `x509: certificate has expired` {#users-suddenly-get-browser-security}
 - **Symptômes :** À 02:14 un samedi, le site affiche `NET::ERR_CERT_DATE_INVALID`, les intégrations partenaires échouent leurs handshakes TLS,
   et les services internes qui s'appellent en mTLS se mettent à échouer. Aucun déploiement n'a eu lieu ; tout fonctionnait vendredi.
 
@@ -1833,8 +1774,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S21. Une mise à jour de cluster bloque pendant des heures parce qu'un node refuse de se drainer
-
+### S21. Une mise à jour de cluster bloque pendant des heures parce qu'un node refuse de se drainer {#cluster-upgrade-hangs-hours-because}
 - **Symptômes :** Pendant une mise à jour de node pool, `kubectl drain` reste sur `Cannot evict pod as it would violate the pod's disruption budget`
   et se répète indéfiniment. Le rollout du cluster managé expire après la limite du provider, laissant des nodes en versions mixtes.
 
@@ -1867,8 +1807,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 </details>
 
-### S22. Le téléphone d'astreinte sonne des dizaines de fois par nuit pour des alertes qui se résolvent d'elles-mêmes
-
+### S22. Le téléphone d'astreinte sonne des dizaines de fois par nuit pour des alertes qui se résolvent d'elles-mêmes {#call-phone-rings-dozens-times}
 - **Symptômes :** Une alerte « CPU > 80 % pendant 1 minute » se déclenche et se résout 30 fois par nuit ; une autre page dès qu'une seule
   requête échoue. L'ingénieur d'astreinte a commencé à mettre le canal en sourdine, et la semaine dernière un vrai incident est resté sans accusé de réception pendant 25 minutes.
 
@@ -1897,7 +1836,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 - **Prévention :** Passez en revue la qualité des alertes à chaque postmortem et à chaque passation d'astreinte, exigez un lien vers un runbook et un propriétaire pour chaque
   alerte qui page, gardez une cible de « pages par shift », et traitez la fatigue d'alerte comme un risque de fiabilité en soi.
 
-*Voir aussi :* [Leadership S7](leadership-behavioral.md) pour le côté équipe : rétablir la confiance dans les alertes et répartir l'astreinte.
+*Voir aussi :* [Leadership S7](leadership-behavioral.md#call-rotation-drowns-non-actionable) pour le côté équipe : rétablir la confiance dans les alertes et répartir l'astreinte.
 
 </details>
 
@@ -1907,71 +1846,60 @@ Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une 
 
 ### Dépannage
 
-#### R1. Comment déboguer une erreur 404 Not Found ?
-
+#### R1. Comment déboguer une erreur 404 Not Found ? {#debug-404-found-error}
 **Réponse :** 404 = route/ressource introuvable. Vérifier l'URL, la méthode et le chemin (casse, slash final, base path/context path), la version du service déployé, la règle de routage et de réécriture de la gateway/ingress, le DNS vers le bon service, et si la ressource existe vraiment (ou mauvais ID). Tester directement le service (en contournant la gateway) pour localiser la couche, puis lire les access logs à cet endroit.
 
 ### Scénarios de production (ouverts)
 
-#### R2. Un déploiement a réussi, mais le trafic va toujours vers l'ancienne version. Expliquez exactement par où vous commencez.
-
+#### R2. Un déploiement a réussi, mais le trafic va toujours vers l'ancienne version. Expliquez exactement par où vous commencez. {#deployment-succeeded-but-traffic-going}
 **Réponse :** Suivre le chemin de l'utilisateur vers l'intérieur : cache DNS/CDN, cible du load balancer/ingress, **sélecteur et labels du Service** (correspondent-ils encore aux anciens pods ?), état du rollout (`kubectl rollout status`), image réellement exécutée (`describe pod`), readiness des nouveaux pods, poids blue-green/canary ou feature flag bloqué, sessions sticky, cache client/navigateur. `kubectl get endpoints` montre où va réellement le trafic.
 
-#### R3. Une application Kubernetes est saine d'après `kubectl get pods`, mais les utilisateurs signalent des erreurs 504. Décrivez votre démarche.
-
+#### R3. Une application Kubernetes est saine d'après `kubectl get pods`, mais les utilisateurs signalent des erreurs 504. Décrivez votre démarche. {#kubernetes-app-healthy-per-kubectl}
 **Réponse :** `Running` signifie seulement que le conteneur a démarré.
 
 Vérifier la readiness probe et les endpoints, les timeouts ingress/ALB comparés au temps de réponse de l'appli, la latence amont dans les logs et traces, le throttling de ressources (limites CPU), l'épuisement des pools de connexions/threads, une dépendance lente (BD/aval), le retard de l'HPA, le DNS (CoreDNS) et les network policies.
 
 Reproduire avec `curl` depuis le cluster pour isoler la couche.
 
-#### R4. Votre facture AWS a triplé en une nuit. Aucun déploiement. Quelle est votre réponse étape par étape ?
-
+#### R4. Votre facture AWS a triplé en une nuit. Aucun déploiement. Quelle est votre réponse étape par étape ? {#aws-bill-spiked-3x-overnight}
 **Réponse :** 1) Cost Explorer groupé par service/compte/région/type d'usage pour situer le pic. 2) Détailler par tag/ressource (trafic NAT gateway, transferts de données, requêtes S3, autoscaling emballé, instances oubliées, logs CloudWatch). 3) CloudTrail pour savoir qui a créé quoi ; chercher des identifiants compromis (minage de crypto). 4) Stopper l'hémorragie (réduire, supprimer, faire tourner les clés). 5) Ajouter budgets, détection d'anomalies et tagging pour prévenir.
 
-#### R5. Le pipeline CI/CD dure plus de 40 minutes. Le CTO veut moins de 10 sans matériel supplémentaire. Que optimisez-vous ?
-
+#### R5. Le pipeline CI/CD dure plus de 40 minutes. Le CTO veut moins de 10 sans matériel supplémentaire. Que optimisez-vous ? {#ci-cd-pipeline-takes-40}
 **Réponse :** Mesurer d'abord par étape. Puis : caches (dépendances, couches Docker, cache de build), paralléliser les jobs indépendants et les shards de tests, n'exécuter que modules/tests impactés, échouer vite (lint/unitaires d'abord), images Docker légères et builds multi-étapes, sortir e2e/intégration lents du chemin critique (nightly ou post-merge), supprimer les étapes redondantes, builds incrémentaux.
 
-#### R6. Un SRE dit que l'infra est stable, l'équipe dev dit que le système est lent, et le monitoring est tout VERT. Qui croyez-vous, et que vérifiez-vous d'abord ?
-
+#### R6. Un SRE dit que l'infra est stable, l'équipe dev dit que le système est lent, et le monitoring est tout VERT. Qui croyez-vous, et que vérifiez-vous d'abord ? {#sre-says-infra-stable-dev}
 **Réponse :** Croire les utilisateurs : les dashboards mesurent la mauvaise chose. Vérifier ce que le monitoring ne couvre *pas* : percentiles de latence côté utilisateur (p95/p99, pas moyennes), real-user monitoring, un check synthétique de bout en bout, signaux de saturation, latence des dépendances, et traçage d'une requête lente. Combler l'écart (alerting basé sur les SLO) pour que vert veuille dire sain.
 
-#### R7. `terraform apply` échoue à cause d'une dérive, mais l'infra est en service et critique. Comment corriger sans interruption ?
-
+#### R7. `terraform apply` échoue à cause d'une dérive, mais l'infra est en service et critique. Comment corriger sans interruption ? {#terraform-apply-failing-due-drift}
 **Réponse :** Ne pas appliquer à l'aveugle.
 
 Lancer `terraform plan`/`refresh` pour voir la dérive, décider de la source de vérité, puis soit **mettre à jour le code** pour refléter la réalité, soit `terraform import`/`state mv` pour réconcilier l'état, soit annuler la modification manuelle de façon contrôlée.
 
 Tester sur une copie hors production, utiliser `-target` avec parcimonie, protéger les ressources critiques (`prevent_destroy`/lifecycle), sauvegarder le state, et ajouter la détection de dérive en CI.
 
-#### R8. Votre script de rollback échoue pendant une panne en production et il reste 5 minutes avant la violation du SLA. Décrivez votre décision.
-
+#### R8. Votre script de rollback échoue pendant une panne en production et il reste 5 minutes avant la violation du SLA. Décrivez votre décision. {#rollback-script-fails-during-production}
 **Réponse :** S'arrêter et raisonner en récupération sûre la plus rapide.
 
 Déclarer l'incident et attribuer les rôles, puis choisir la meilleure mitigation suivante : rollback manuel vers l'image/ReplicaSet précédent (`kubectl rollout undo`/redéployer la dernière version saine), basculer le feature flag ou le trafic, monter en charge ou basculer en failover, ou activer un mode dégradé.
 
 Communiquer l'état, puis chercher la cause du script cassé et faire du rollback une routine testée.
 
-#### R9. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ?
-
+#### R9. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ? {#secret-was-accidentally-committed-github}
 **Réponse :** Révoquer et faire tourner le secret d'abord, auditer l'usage, nettoyer l'historique, ajouter scan de secrets/push protection et passer à un gestionnaire de secrets. Étapes complètes dans [Sécurité](security.md).
 
-#### R10. Une mise à niveau du cluster Kubernetes fonctionne en staging mais corrompt le DNS (CoreDNS) en production. Comment corriger et rétablir le service ?
-
+#### R10. Une mise à niveau du cluster Kubernetes fonctionne en staging mais corrompt le DNS (CoreDNS) en production. Comment corriger et rétablir le service ? {#kubernetes-cluster-upgrade-staging-but}
 **Réponse :** Rétablir d'abord : revenir à la dernière version saine de la config/du déploiement CoreDNS (`kubectl rollout undo deploy/coredns -n kube-system`) ou restaurer la ConfigMap, vérifier pods/logs et tests DNS via `kubectl exec`, et en palliatif utiliser un cache DNS local au nœud ou des IP directes.
 
 Puis trouver la différence staging/prod (versions d'add-ons, Corefile personnalisé, network policy, node pool). Utiliser des node pools blue-green et répéter les mises à niveau sur un cluster proche de la production.
 
-#### R11. Racontez un cas réel où VOUS avez introduit une panne dans l'infrastructure. Que s'est-il passé, qu'avez-vous appris, qu'est-ce qui a changé ensuite ?
-
-**Réponse :** Question comportementale : utiliser **STAR** et assumer (sans rejeter la faute) : situation, votre erreur, détection et mitigation, leçons concrètes (post-mortem sans blâme) et changement livré (garde-fous, revue, automatisation, runbook). Préparer une vraie histoire ; voir [Comportemental (STAR)](leadership-behavioral.md#comportemental-star).
+#### R11. Racontez un cas réel où VOUS avez introduit une panne dans l'infrastructure. Que s'est-il passé, qu'avez-vous appris, qu'est-ce qui a changé ensuite ? {#real-scenario-introduced-failure-infrastructure}
+**Réponse :** Question comportementale : utiliser **STAR** et assumer (sans rejeter la faute) : situation, votre erreur, détection et mitigation, leçons concrètes (post-mortem sans blâme) et changement livré (garde-fous, revue, automatisation, runbook). Préparer une vraie histoire ; voir [Comportemental (STAR)](leadership-behavioral.md#behavioral-star).
 
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.
 
-1. Q1. Quels sont les principes fondamentaux d'une bonne conception d'API REST ?
+1. Q36. Racontez-moi comment réduire le p95 d'un endpoint de 9 secondes à 250 ms : comment trouvez-vous le goulot, le corrigez-vous et le prouvez-vous ?
 2. Q4. Volumes Docker vs bind mounts vs layer inscriptible du container — où doivent vivre les données ?
 3. Q7. Quels sont les trois piliers de l'observabilité, et qu'est-ce que chacun vous apprend réellement ?
 4. Q9. Comment versionner une API REST sans casser les clients existants ?
@@ -2071,3 +1999,4 @@ Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute e
 - **Vault** — peut émettre des credentials dynamiques (de courte durée). *Mieux que des mots de passe statiques de longue durée.* *(avancé)*
 - **Certificats** — automatisez le renouvellement et alertez à 30/14/7 jours. *Assurez le rechargement ; inventoriez les CA internes et certs mTLS (TLS mutuel).*
 - **Vérifier un cert** — `openssl s_client -connect host:443`. *Montre la chaîne et l'expiration réellement servies.*
+- **p95 de 9 s à 250 ms** — mesurez d'abord (trace par requête), trouvez le span dominant (N+1, index manquant, appels distants en série, pool saturé), corrigez une chose, remesurez sous charge. *Prouvez-le avec p95/p99 avant/après, pas la moyenne.*

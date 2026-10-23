@@ -1,0 +1,7 @@
+# Local only: mkdocs serve -f mkdocs.private.yml,
+# then open /fr/private/doctolib-roadmap/
+INHERIT: mkdocs.yml
+hooks:
+  - scripts/private_pages.py
+watch:
+  - private

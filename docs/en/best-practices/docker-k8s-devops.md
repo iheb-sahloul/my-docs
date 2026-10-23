@@ -134,7 +134,7 @@ resources:
   limits: { memory: 512Mi }
 ```
 
-### Configure liveness, readiness and startup probes correctly
+### Configure liveness, readiness and startup probes correctly {#configure-liveness-readiness-and-startup-probes-correctly}
 
 Readiness decides whether the pod gets traffic. Liveness decides whether it gets restarted. Startup protects slow
 starts.

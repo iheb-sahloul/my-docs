@@ -1,13 +1,12 @@
 # Sécurité
 
-Les règles et checklists de revue sont dans [Bonnes pratiques › Sécurité](../best-practices/security.md) ; ce module est le Q&A d'entretien. Questions liées ailleurs : CORS dans [Full Stack Q12](fullstack-devops-k8s.md), stockage des tokens dans [Full Stack Q13](fullstack-devops-k8s.md), secrets Kubernetes dans [Full Stack Q38](fullstack-devops-k8s.md), OWASP Top 10 au niveau conception dans [System Design Q34](system-design.md), et autorisation par URL vs par méthode dans [Spring Q41](spring-architecture.md).
+Les règles et checklists de revue sont dans [Bonnes pratiques › Sécurité](../best-practices/security.md) ; ce module est le Q&A d'entretien. Questions liées ailleurs : CORS dans [Full Stack Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error), stockage des tokens dans [Full Stack Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie), secrets Kubernetes dans [Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes), OWASP Top 10 au niveau conception dans [System Design Q34](system-design.md#name-several-owasp-top-10), et autorisation par URL vs par méthode dans [Spring Q41](spring-architecture.md#authorization-live-url-rules-method).
 
 ## 🟢 Fondamentaux
 
 ### Identité
 
-#### Q1. Authentification vs autorisation — et où chacune se passe-t-elle dans une app Spring + React typique ?
-
+#### Q1. Authentification vs autorisation — et où chacune se passe-t-elle dans une app Spring + React typique ? {#authentication-authorization-each-spring-react}
 **Réponse :** L'**authentification** répond à « qui êtes-vous ? » (vérifier des identifiants ou un token et établir
 une identité). L'**autorisation** répond à « que pouvez-vous faire ? » (comparer les rôles, scopes ou la propriété de
 cette identité à la ressource). Dans une architecture moderne, l'app React envoie l'utilisateur vers un fournisseur
@@ -17,8 +16,7 @@ niveaux : des règles d'URL grossières dans la filter chain et des contrôles f
 contrôles de propriété). Le frontend peut masquer des boutons, mais c'est de l'UX, pas de la sécurité : chaque
 contrôle doit aussi exister côté serveur.
 
-#### Q2. Comment stocker les mots de passe ?
-
+#### Q2. Comment stocker les mots de passe ? {#passwords-stored}
 **Réponse :** Jamais chiffrés et jamais avec un hash rapide (MD5, SHA-1, SHA-256). Utilisez une **fonction de hachage
 de mots de passe lente, salée et adaptative** : Argon2id, bcrypt ou scrypt (PBKDF2 quand la conformité FIPS l'exige).
 « Salée » signifie que chaque mot de passe reçoit un sel aléatoire, donc deux mots de passe identiques donnent des
@@ -36,8 +34,7 @@ String stored = encoder.encode("s3cret!");   // {bcrypt}$2a$10$...
 encoder.matches("s3cret!", stored);          // true
 ```
 
-#### Q3. Que sont OAuth 2.0 et OpenID Connect, et en quoi diffèrent-ils ?
-
+#### Q3. Que sont OAuth 2.0 et OpenID Connect, et en quoi diffèrent-ils ? {#oauth-2-0-openid-connect}
 **Réponse :** **OAuth 2.0** est un cadre d'**autorisation déléguée** : il permet à un client d'obtenir un **access
 token** pour appeler une API au nom d'un utilisateur (ou en son propre nom), avec des **scopes** limités, sans voir le
 mot de passe de l'utilisateur. Il ne dit rien de standard sur l'identité de l'utilisateur. **OpenID Connect (OIDC)**
@@ -46,8 +43,7 @@ authentifié, destiné au client), un endpoint `userinfo`, la découverte (`/.we
 claims standard. Règle : l'**ID token** sert au client à savoir qui s'est connecté ; l'**access token** sert à l'API.
 Envoyer l'ID token à son API comme bearer token est une erreur courante.
 
-#### Q4. Quel flux OAuth2 utiliser pour quel client ?
-
+#### Q4. Quel flux OAuth2 utiliser pour quel client ? {#oauth2-flow-client}
 **Réponse :**
 
 - **SPA navigateur ou app mobile** (client public, ne peut pas garder de secret) : **Authorization Code + PKCE**. Le
@@ -70,8 +66,7 @@ SPA ──(5) GET /api/orders  Authorization: Bearer <access_token> ────
 
 ### Attaques web
 
-#### Q5. Qu'est-ce que l'injection SQL, et pourquoi « échapper l'entrée » est-il le mauvais correctif ?
-
+#### Q5. Qu'est-ce que l'injection SQL, et pourquoi « échapper l'entrée » est-il le mauvais correctif ? {#sql-injection-escaping-input-wrong}
 **Réponse :** L'injection SQL survient quand une entrée utilisateur est concaténée dans une chaîne SQL : l'entrée
 devient alors du code de la requête (`' OR 1=1 --`). Le correctif est la **requête paramétrée / prepared statement** :
 la structure SQL est envoyée séparément des valeurs, donc une valeur ne peut jamais en modifier la structure. Les
@@ -91,8 +86,7 @@ em.createQuery("select u from User u where u.email = :email").setParameter("emai
 var column = Set.of("createdAt", "total").contains(sort) ? sort : "createdAt";
 ```
 
-#### Q6. Qu'est-ce que le XSS, quels types existent, et comment une app React s'en défend-elle ?
-
+#### Q6. Qu'est-ce que le XSS, quels types existent, et comment une app React s'en défend-elle ? {#xss-kinds-exist-react-app}
 **Réponse :** Le cross-site scripting injecte un script contrôlé par l'attaquant dans une page vue par d'autres
 utilisateurs, qui s'exécute alors avec la session de la victime. Le XSS **stocké** est enregistré en base (un
 commentaire) ; le XSS **réfléchi** rebondit sur un paramètre d'URL ; le XSS **DOM** se produit entièrement dans le
@@ -114,8 +108,7 @@ HTML qu'il rend.
 <a href={profile.website}>site</a>   // vérifier que le schéma est http(s)
 ```
 
-#### Q7. Qu'est-ce que le CSRF, et quand faut-il une protection CSRF ?
-
+#### Q7. Qu'est-ce que le CSRF, et quand faut-il une protection CSRF ? {#csrf-need-csrf-protection}
 **Réponse :** Le cross-site request forgery fait envoyer par le navigateur de la victime une requête modifiant l'état
 vers votre site depuis un autre site, et le navigateur **joint automatiquement les cookies de la victime**. Cela
 compte dès que l'authentification repose sur des cookies (cookie de session, ou JWT dans un cookie). Défenses : cookies
@@ -130,8 +123,7 @@ stocké dans un cookie.
 
 ### Spring Security
 
-#### Q8. Comment la filter chain de Spring Security traite-t-elle une requête ?
-
+#### Q8. Comment la filter chain de Spring Security traite-t-elle une requête ? {#spring-security-filter-chain-process}
 **Réponse :** Un filtre servlet, `DelegatingFilterProxy`, passe la requête à `FilterChainProxy`, qui choisit la
 première `SecurityFilterChain` dont le matcher correspond (on peut en définir plusieurs, par exemple une pour `/api/**`
 avec bearer tokens et une pour `/admin/**` avec form login). Cette chaîne exécute une liste ordonnée de filtres : CORS,
@@ -159,8 +151,7 @@ SecurityFilterChain api(HttpSecurity http) throws Exception {
 }
 ```
 
-#### Q9. Comment configurer une API Spring Boot en resource server OAuth2 ?
-
+#### Q9. Comment configurer une API Spring Boot en resource server OAuth2 ? {#configure-spring-boot-api-oauth2}
 **Réponse :** Ajoutez `spring-boot-starter-oauth2-resource-server` et définissez l'émetteur :
 `spring.security.oauth2.resourceserver.jwt.issuer-uri`. Spring récupère le document de découverte et le JWKS (clés
 publiques) de l'émetteur, vérifie la signature, `exp`/`nbf` et `iss` à chaque requête, et met les clés en cache (il les
@@ -186,8 +177,7 @@ JwtDecoder jwtDecoder(@Value("${spring.security.oauth2.resourceserver.jwt.issuer
 
 ### Questions
 
-#### Q10. Que faut-il exactement valider sur un JWT avant de lui faire confiance ?
-
+#### Q10. Que faut-il exactement valider sur un JWT avant de lui faire confiance ? {#exactly-validate-jwt-before-trusting}
 **Réponse :** La **signature** avec une clé du JWKS de l'émetteur, selon une **liste blanche d'algorithmes** choisie
 par le serveur (ne jamais faire confiance à l'en-tête `alg` du token : les attaques `alg: none` et la confusion
 RS256→HS256 l'exploitent). **`iss`** égal à l'émetteur attendu. **`aud`** contenant cette API. **`exp`** et **`nbf`**
@@ -199,8 +189,7 @@ personnelles sensibles dans les claims.
 ou vérifient la signature mais sautent `aud`, ce qui laisse un token émis pour une autre API du même realm appeler la
 vôtre.
 
-#### Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ?
-
+#### Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ? {#revoke-jwt-refresh-tokens-fit}
 **Réponse :** Un JWT autoportant reste valide jusqu'à `exp` ; l'API ne demande rien à personne. Options, par coût :
 garder des access tokens **courts** (5–15 minutes) et accepter cette fenêtre ; utiliser des **refresh tokens** (plus
 longs, stockés de façon sûre, **renouvelés** à chaque usage avec détection de réutilisation, révocables chez le
@@ -213,8 +202,7 @@ instantanée avec un seul backend.
 **Pourquoi c'est un piège :** une « déconnexion » dans une SPA qui supprime seulement le token localement laisse une
 copie volée utilisable jusqu'à expiration.
 
-#### Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ?
-
+#### Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ? {#idor-broken-object-level-authorization}
 **Réponse :** Insecure Direct Object Reference : l'API vérifie que l'appelant est authentifié, mais pas que **cet**
 objet lui appartient. `GET /api/invoices/1043` fonctionne pour tout utilisateur connecté qui change l'identifiant.
 C'est le premier élément de l'OWASP API Security Top 10. Les scanners et les contrôles de rôle le ratent parce que la
@@ -236,8 +224,7 @@ return invoiceRepo.findByIdAndCustomerId(id, currentUser.customerId()).orElseThr
 **Pourquoi c'est un piège :** un `hasRole("CUSTOMER")` au niveau de l'endpoint paraît complet en revue ; la
 vulnérabilité est dans la requête.
 
-#### Q13. Qu'est-ce que le SSRF, et comment l'empêcher ?
-
+#### Q13. Qu'est-ce que le SSRF, et comment l'empêcher ? {#ssrf-prevent}
 **Réponse :** Server-side request forgery : le serveur récupère une URL contrôlée par l'attaquant (URL de webhook,
 fonctionnalité « importer depuis une URL », proxy d'images, moteur de rendu PDF), et l'attaquant la fait pointer vers
 des cibles internes : l'endpoint de métadonnées cloud `169.254.169.254` (qui peut divulguer des identifiants IAM), des
@@ -251,9 +238,8 @@ SSRF ne peut pas obtenir.
 **Pourquoi c'est un piège :** vérifier que l'URL « commence par https:// » ou n'est pas littéralement `localhost` est
 contourné par `https://127.0.0.1.nip.io`, des IP décimales ou une redirection ouverte.
 
-#### Q14. Où une app navigateur doit-elle stocker les tokens, et qu'est-ce qu'un BFF ?
-
-**Réponse :** Les compromis entre `localStorage`, mémoire et cookies sont traités dans [Full Stack Q13](fullstack-devops-k8s.md).
+#### Q14. Où une app navigateur doit-elle stocker les tokens, et qu'est-ce qu'un BFF ? {#browser-app-store-tokens-bff}
+**Réponse :** Les compromis entre `localStorage`, mémoire et cookies sont traités dans [Full Stack Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie).
 La réponse senior pour une app sensible est le pattern **Backend for Frontend (BFF)** : un petit composant côté serveur
 (Spring Cloud Gateway avec `TokenRelay`, ou un service dédié) joue le rôle de client OAuth confidentiel. Il exécute le
 code flow, garde access et refresh tokens côté serveur, et ne donne au navigateur qu'un **cookie de session
@@ -264,8 +250,7 @@ composant avec état à exploiter.
 **Pourquoi c'est un piège :** « On utilise PKCE, donc les tokens dans la SPA sont sûrs » mélange deux problèmes : PKCE
 protège l'échange du code, pas les tokens posés dans un stockage lisible par JavaScript.
 
-#### Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ?
-
+#### Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ? {#software-supply-chain-security-practice}
 **Réponse :** Votre build tire des centaines de dépendances transitives, d'images de base et d'actions CI, chacune
 pouvant être vulnérable ou malveillante. Pratiques : **épingler les versions** avec des lockfiles
 (`package-lock.json`, verrouillage des dépendances Gradle) et épingler actions CI et images de base par digest ;
@@ -291,8 +276,7 @@ surtout arrivé de façon transitive.
 
 ### Questions
 
-#### Q16. Comment propager l'identité de l'utilisateur entre microservices ?
-
+#### Q16. Comment propager l'identité de l'utilisateur entre microservices ? {#propagate-user-identity-across-microservices}
 **Réponse :** Options : **transmettre l'access token de l'utilisateur** (simple, chaque service le valide et voit le
 vrai utilisateur, mais l'audience du token doit inclure chaque service, et un service compromis peut le rejouer
 ailleurs) ; l'**échange de token** (RFC 8693 : la gateway ou le service échange le token utilisateur contre un nouveau
@@ -303,8 +287,7 @@ l'authentification de service à service, un service mesh avec **mTLS** (Istio, 
 supprime les secrets partagés. Quel que soit le choix, l'autorisation sur les données utilisateur reste dans le
 service qui les possède.
 
-#### Q17. Comment mèneriez-vous une séance de threat modeling pour une nouvelle fonctionnalité ?
-
+#### Q17. Comment mèneriez-vous une séance de threat modeling pour une nouvelle fonctionnalité ? {#run-threat-modeling-session-new}
 **Réponse :** Légère et tôt, dans la revue de conception. Dessinez un **diagramme de flux de données** : acteurs,
 processus, stockages, flux, et **frontières de confiance** (navigateur↔API, API↔tiers, tenant↔tenant). Parcourez chaque
 flux avec **STRIDE** : Spoofing (usurpation), Tampering (altération), Repudiation (répudiation), Information disclosure
@@ -325,8 +308,7 @@ D  — téléversement de 2 Go ?                      → limite de taille à la
 E  — PDF malveillant exploitant le moteur de rendu ? → rendu dans un worker isolé sans réseau
 ```
 
-#### Q18. Comment protéger les données sensibles au repos et dans les logs, et où le chiffrement aide-t-il vraiment ?
-
+#### Q18. Comment protéger les données sensibles au repos et dans les logs, et où le chiffrement aide-t-il vraiment ? {#protect-sensitive-data-rest-logs}
 **Réponse :** Commencez par **minimiser** : ne collectez ni ne conservez ce dont vous n'avez pas besoin, et fixez une
 durée de rétention. Le chiffrement **au repos** (disque, RDS, S3 avec KMS) protège contre le vol de disques et de
 snapshots, pas contre un attaquant qui passe par votre application, car l'app déchiffre de façon transparente. Pour les
@@ -338,15 +320,14 @@ Utilisez la **tokenisation** quand d'autres systèmes ont besoin d'une référen
 personnelles hors des logs avec du logging structuré et du masquage, et rendez l'accès aux données auditable. Le
 chiffrement en transit (TLS partout, y compris dans le cluster) est le socle.
 
-#### Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ?
-
+#### Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ? {#design-protection-sensitive-healthcare-data}
 **Réponse :** Les données de santé sont une catégorie particulière au sens du RGPD (et en France doivent être hébergées chez un
 hébergeur certifié HDS) ; on conçoit donc dès le départ avec **moindre privilège, traçabilité et minimisation**, en couches.
 (1) **Authentification** : authentification forte des praticiens (MFA, et schémas nationaux comme Pro Santé Connect le cas
-échéant), OIDC avec jetons d'accès de courte durée (voir [Security Q9](security.md), [Security Q10](security.md)), expiration
+échéant), OIDC avec jetons d'accès de courte durée (voir [Security Q9](security.md#configure-spring-boot-api-oauth2), [Security Q10](security.md#exactly-validate-jwt-before-trusting)), expiration
 de session et contrôle d'appareil. (2) **Autorisation** : refus par défaut, contrôles par rôle et **par relation** (« ce
 praticien suit ce patient »), contrôles au niveau objet sur chaque endpoint pour éviter l'IDOR (voir
-[Security Q12](security.md)), et une voie **« bris de glace »** pour les urgences, journalisée de façon très visible. (3)
+[Security Q12](security.md#idor-broken-object-level-authorization)), et une voie **« bris de glace »** pour les urgences, journalisée de façon très visible. (3)
 **Minimisation des données et limitation des finalités** : ne collecter et n'exposer que les champs nécessaires au cas
 d'usage ; index de recherche et analytique sur des données pseudonymisées ou agrégées ; séparer données d'identité et données
 cliniques pour qu'une fuite ne révèle pas les deux. (4) **Audit** : un journal en ajout seul, inviolable, de *qui* a consulté
@@ -355,7 +336,7 @@ alertes (volume inhabituel, hors horaires, dossiers « sensibles »). Ne mettez 
 traces applicatifs (masquer les identifiants). (5) **Chiffrement** : TLS 1.2+ partout y compris entre services internes,
 chiffrement au repos (disque et base), **chiffrement au niveau du champ / par enveloppe** pour les colonnes les plus
 sensibles avec des clés dans un KMS/HSM, clés par tenant si nécessaire, rotation des clés et politiques d'accès strictes (voir
-[Security Q18](security.md)). (6) **Secrets** : aucun secret dans le code ou les images ; un coffre ou gestionnaire de secrets
+[Security Q18](security.md#protect-sensitive-data-rest-logs)). (6) **Secrets** : aucun secret dans le code ou les images ; un coffre ou gestionnaire de secrets
 cloud avec rotation et identifiants de base de courte durée. (7) **Conservation et droits** : durées de conservation par
 catégorie de données, suppression ou archivage automatisés, prise en charge des demandes d'accès/rectification/effacement
 (l'effacement face à l'obligation légale de conserver les dossiers médicaux est une décision métier/juridique à faire
@@ -388,10 +369,38 @@ autorisations trop larges, données de santé dans les logs et exports analytiqu
 absence de piste d'audit pour prouver qui a consulté un dossier. Précisez que les points juridiques (HDS, consentement, durées
 de conservation) se confirment auprès du DPO/service juridique plutôt que de s'en remettre à des suppositions.
 
+#### Q20. Comment fonctionne le chiffrement de bout en bout des messages et documents entre patient et praticien, et que coûte-t-il au produit ? {#end-end-encryption-patientpractitioner-messages}
+**Réponse :** Avec le chiffrement **au repos**, le serveur détient les clés (via un KMS) et peut déchiffrer. Avec le chiffrement **de bout en bout**, seuls les participants le peuvent. Chaque utilisateur a une paire de clés générée sur son appareil ; la clé privée ne quitte jamais l'appareil en clair (elle peut être sauvegardée enveloppée par un secret de l'utilisateur ou une clé de récupération). Chaque document ou conversation reçoit une clé symétrique aléatoire (AES-256-GCM) qui chiffre le contenu. Cette clé est ensuite **enveloppée** avec la clé publique de chaque destinataire, et le serveur ne stocke que le texte chiffré et les clés enveloppées. Coûts à énoncer : pas de recherche, d'aperçu, d'analyse antivirus ni d'analytics côté serveur sur le contenu ; la **récupération de clé** en cas de perte d'appareil (codes de récupération, synchronisation des clés entre appareils) ; ajouter un nouveau praticien à un dossier impose de réenvelopper les clés depuis l'appareil d'un participant existant ; le support ne peut pas voir ce qui s'est mal passé. C'est une décision produit autant que de sécurité : appliquez-la aux données les plus sensibles, et utilisez pour le reste un chiffrement par KMS avec contrôle d'accès strict et audit ([Q19](security.md#design-protection-sensitive-healthcare-data)).
+
+**Exemple :**
+
+```java
+// Chiffrer une fois, envelopper la clé de contenu pour chaque destinataire. Le serveur ne stocke que le résultat.
+record Sealed(byte[] iv, byte[] ciphertext, List<byte[]> wrappedKeys) {}
+
+static Sealed seal(byte[] content, List<PublicKey> recipients) throws GeneralSecurityException {
+    KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+    keyGen.init(256);
+    SecretKey contentKey = keyGen.generateKey();
+    byte[] iv = new byte[12];
+    new SecureRandom().nextBytes(iv);
+    Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+    cipher.init(Cipher.ENCRYPT_MODE, contentKey, new GCMParameterSpec(128, iv));
+    List<byte[]> wrapped = new ArrayList<>();
+    for (PublicKey pk : recipients) {
+        Cipher rsa = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+        rsa.init(Cipher.WRAP_MODE, pk);
+        wrapped.add(rsa.wrap(contentKey));
+    }
+    return new Sealed(iv, cipher.doFinal(content), wrapped);
+}
+```
+
+**Pourquoi c'est un piège :** appeler TLS plus chiffrement disque « de bout en bout ». Si le serveur peut déchiffrer, ce n'est pas du bout en bout. Le piège inverse est de proposer le E2E partout sans dire ce que le produit y perd.
+
 ## 🎯 Scénarios réels
 
-### S1. Un client signale qu'il peut voir les factures d'un autre client en changeant l'URL
-
+### S1. Un client signale qu'il peut voir les factures d'un autre client en changeant l'URL {#customer-reports-see-another-customer}
 - **Symptômes :** Le support transmet une capture : `/invoices/18342` affiche la facture d'une autre entreprise. Les
   tests d'intrusion de l'an dernier étaient passés.
 
@@ -421,8 +430,7 @@ de conservation) se confirment auprès du DPO/service juridique plutôt que de s
 
 </details>
 
-### S2. Une clé de signature JWT apparaît dans un dépôt GitHub public
-
+### S2. Une clé de signature JWT apparaît dans un dépôt GitHub public {#jwt-signing-key-appears-public}
 - **Symptômes :** Le secret scanning de GitHub (ou un chercheur externe) signale que le secret HS256 utilisé pour signer
   les tokens a été commité il y a six mois dans une config de test.
 
@@ -451,8 +459,7 @@ de conservation) se confirment auprès du DPO/service juridique plutôt que de s
 
 </details>
 
-### S3. Un scan de sécurité signale une CVE critique dans une dépendance transitive un vendredi après-midi
-
+### S3. Un scan de sécurité signale une CVE critique dans une dépendance transitive un vendredi après-midi {#security-scan-flags-critical-cve}
 - **Symptômes :** Le pipeline échoue désormais sur un CVSS 9.8 dans une bibliothèque qu'aucun code n'importe
   directement ; une release est prévue lundi.
 
@@ -482,8 +489,7 @@ de conservation) se confirment auprès du DPO/service juridique plutôt que de s
 
 </details>
 
-### S4. Après le déplacement du frontend vers un nouveau domaine, des utilisateurs connectés reçoivent des 403 sur chaque POST
-
+### S4. Après le déplacement du frontend vers un nouveau domaine, des utilisateurs connectés reçoivent des 403 sur chaque POST {#after-moving-frontend-new-domain}
 - **Symptômes :** Les GET fonctionnent ; les POST/PUT/DELETE échouent en 403 pour certains utilisateurs seulement. Le
   frontend est passé de `app.example.com` à `example.com/app`, et parle toujours à la même API à session par cookie.
 
@@ -512,26 +518,65 @@ de conservation) se confirment auprès du DPO/service juridique plutôt que de s
 
 </details>
 
+### S5. Un secret a été commité dans Git et poussé sur le dépôt distant {#secret-was-committed-git-pushed}
+- **Symptômes :** Un scanner ou un collègue signale une clé d'API ou un mot de passe de base dans l'historique.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Considérez-le comme compromis dès le push, même si le commit est supprimé : clones, forks et logs CI peuvent le contenir. Vérifiez les journaux d'audit du fournisseur pour tout usage de la clé.
+- **Résolution :** Révoquez et renouvelez d'abord le secret, puis déployez le nouveau depuis un gestionnaire de secrets. Réécrire l'historique (`git filter-repo`) est un nettoyage secondaire, pas la correction. Examinez les journaux d'audit et documentez l'incident.
+- **Prévention :** Scan de secrets en pre-commit et CI (gitleaks), push protection sur le dépôt, identifiants à courte durée de vie, secrets uniquement dans un coffre ou l'environnement.
+
+</details>
+
+### S6. Une fonctionnalité « importer un avatar depuis une URL » sert à lire les credentials de l'instance cloud {#ssrf-image-url-metadata}
+- **Symptômes :** Un pentesteur (ou un rapport de bug bounty) montre qu'en soumettant `http://169.254.169.254/latest/meta-data/iam/security-credentials/` comme URL d'avatar, le message d'erreur renvoie des clés AWS.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Server-side request forgery : le backend récupère n'importe quelle URL fournie, y compris link-local, interne (`10.x`, `localhost:8080/actuator`) et cibles de redirection, et renvoie la réponse ou l'erreur.
+- **Résolution :** Faites tourner immédiatement les credentials du rôle exposé ; imposez IMDSv2 (token obligatoire, hop limit 1) sur toutes les instances ; récupérez les URL utilisateur via un proxy de sortie avec une allowlist de schémas/ports, résolvez l'hôte et rejetez les IP privées/link-local après chaque redirection, plafonnez taille et timeout, et ne renvoyez jamais l'erreur brute de l'amont.
+- **Prévention :** Cas de test SSRF dans la suite de tests de sécurité, IMDSv2 imposé par politique (SCP/règle Config), et network policies pour que les pods applicatifs n'atteignent pas les endpoints d'admin internes.
+
+</details>
+
+### S7. Le compte d'un salarié licencié est désactivé, mais il continue d'utiliser l'API d'admin pendant encore une heure {#jwt-valid-after-logout-role-change}
+- **Symptômes :** Les logs d'audit montrent des appels admin après la désactivation du compte dans l'IdP ; l'API accepte son JWT car il n'a pas atteint son `exp` d'une heure.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** La validation stateless d'un JWT ne vérifie que la signature et l'expiration ; rien ne consulte l'IdP à chaque appel, donc désactiver l'utilisateur ou retirer un rôle n'a aucun effet avant l'expiration. Un refresh token longue durée aggrave le problème.
+- **Résolution :** Révoquez les sessions/refresh tokens de l'utilisateur dans l'IdP, puis raccourcissez la durée des access tokens (5–15 min), faites tourner les refresh tokens en vérifiant le statut de l'utilisateur au refresh, et pour les scopes sensibles utilisez l'introspection ou une petite deny-list (par `jti`/`sub`) vérifiée au niveau de la gateway.
+- **Prévention :** Runbook de départ incluant la révocation des tokens, un test garantissant qu'un utilisateur désactivé est rejeté dans la durée de vie de l'access token, et une ré-authentification renforcée pour les actions d'admin.
+
+</details>
+
 ## 🗣️ Questions posées en entretien
 
 Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une courte réponse type : approfondissez avec les questions et scénarios détaillés ci-dessus, et dites la réponse à voix haute.
 
 ### Tokens & authentification
 
-#### R1. Différence et relation entre OAuth 2.0, JWT et OpenID Connect.
-
+#### R1. Différence et relation entre OAuth 2.0, JWT et OpenID Connect. {#relationship-oauth-2-0-jwt}
 **Réponse :** **OAuth 2.0** est un framework d'autorisation (accès délégué via des access tokens). **OpenID Connect** est une couche d'identité par-dessus (ajoute l'ID token et `/userinfo`, soit *qui est l'utilisateur*). **JWT** n'est qu'un *format* de jeton (JSON signé), utilisé pour les ID tokens OIDC et souvent les access tokens OAuth. OAuth ≠ authentification, JWT ≠ protocole.
 
-#### R2. Expliquez la structure d'un JWT et le flux d'authentification/validation.
-
+#### R2. Expliquez la structure d'un JWT et le flux d'authentification/validation. {#jwt-structure-jwt-authentication-validation}
 **Réponse :** `header.payload.signature`, en base64url : en-tête (`alg`, `kid`), claims (`sub`, `iss`, `aud`, `exp`, rôles), signature.
 
 Flux : l'utilisateur se connecte → le serveur d'auth émet un JWT de courte durée → le client envoie `Authorization: Bearer` → le serveur de ressources vérifie la signature (clé publique JWKS, algorithme imposé), `iss`, `aud`, `exp`/`nbf`, puis autorise d'après les claims.
 
 Courte expiration plus refresh tokens ; jamais de secrets dans le payload (il est seulement signé).
 
-#### R3. Comment déboguer une erreur 401 Unauthorized ?
-
+#### R3. Comment déboguer une erreur 401 Unauthorized ? {#debug-401-unauthorized-error}
 **Réponse :** 401 = *non authentifié*.
 
 Vérifier que la requête porte l'identifiant (en-tête `Authorization` présent, bon schéma), que le jeton n'est pas expiré (`exp`, décalage d'horloge), que signature/`iss`/`aud` correspondent à la config du serveur, le bon environnement/realm/clé (rotation JWKS), qu'un proxy ou une gateway ne retire pas l'en-tête, et les logs serveur en DEBUG pour la raison exacte de l'échec.
@@ -540,8 +585,7 @@ Décoder le JWT (sans lui faire confiance) pour inspecter les claims. Ne pas con
 
 ### Réponse à incident
 
-#### R4. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ?
-
+#### R4. Un secret a été commité par erreur sur GitHub et déjà cloné. Quelles sont vos prochaines étapes exactes ? {#secret-was-accidentally-committed-github}
 **Réponse :** 1) **Révoquer/faire tourner le secret immédiatement** (le considérer compromis ; supprimer le commit ne suffit pas). 2) Examiner logs/CloudTrail pour tout usage depuis le commit. 3) Le retirer de l'historique (`git filter-repo`/BFG) et force-push, sachant que clones et forks le gardent. 4) Émettre le nouveau secret via un gestionnaire de secrets, jamais dans le dépôt. 5) Prévention : scan de secrets en pre-commit/CI (gitleaks), push protection GitHub, et court post-mortem. Voir aussi [Full Stack & DevOps](fullstack-devops-k8s.md).
 
 ## 🎤 Quiz oral
@@ -556,7 +600,7 @@ Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute e
 6. Q11. Comment révoquer un JWT, et quelle place pour les refresh tokens ?
 7. Q12. Qu'est-ce que l'IDOR (broken object-level authorization), et pourquoi les scanners le ratent-ils ?
 8. Q15. Concrètement, qu'est-ce que la sécurité de la chaîne d'approvisionnement logicielle pour un projet Java/Node ?
-9. Q17. Comment mèneriez-vous une séance de threat modeling pour une nouvelle fonctionnalité ?
+9. Q19. Comment concevez-vous la protection de données de santé sensibles (authentification, accès, audit, chiffrement, conservation) ?
 10. S2. Une clé de signature JWT apparaît dans un dépôt GitHub public
 
 ## 📌 Cheat-sheet
@@ -581,6 +625,7 @@ Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute e
 - **CSRF** — compte avec les cookies ; SameSite + token + contrôle d'Origin. *Les API à en-tête bearer ne sont pas exposées.*
 - **IDOR/BOLA** — requêter par identifiant **et** propriétaire/tenant ; renvoyer 404. *Les contrôles de rôle ne l'attrapent pas.*
 - **SSRF** — liste blanche, bloquer les plages privées après DNS, pas de redirections, IMDSv2.
+- **Données de santé** — moindre privilège + contrôles relationnels, bris de glace journalisé, audit append-only incluant les lectures, chiffrement au niveau des champs avec clés KMS, aucune donnée de santé dans les logs ni en dev. *Catégorie spéciale RGPD ; hébergement HDS en France ; notification de violation sous 72 h.*
 
 ### Spring Security
 
@@ -588,7 +633,7 @@ Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute e
 
 - **Resource server** — `issuer-uri`, cache JWKS, ajouter un validateur `aud`, mapper les rôles avec `JwtAuthenticationConverter`.
 - **401 vs 403** — non authentifié vs authentifié mais non autorisé (`ExceptionTranslationFilter`).
-- **Sécurité de méthode** — `@PreAuthorize` pour la propriété et les règles fines ; voir [Spring Q41](spring-architecture.md).
+- **Sécurité de méthode** — `@PreAuthorize` pour la propriété et les règles fines ; voir [Spring Q41](spring-architecture.md#authorization-live-url-rules-method).
 
 ### Plateforme & processus
 

@@ -144,7 +144,7 @@ round trips. A list of field errors lets the UI highlight all of them.
 
 ## 📄 Collections
 
-### Always paginate collections
+### Always paginate collections {#always-paginate-collections}
 
 Every list endpoint takes `page`/`size` or a cursor, with a default and a maximum size.
 
@@ -195,7 +195,7 @@ private static final Set<String> SORTABLE = Set.of("createdAt", "total");
 
 ## 🧬 Payloads
 
-### Expose DTOs, not entities
+### Expose DTOs, not entities {#expose-dtos-not-entities}
 
 Map entities to request and response records at the API boundary.
 

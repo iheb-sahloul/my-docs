@@ -6,8 +6,7 @@ La plupart des offres Java/React mentionnent « AWS, Azure ou GCP ». Ce module 
 
 ### Identité & réseau
 
-#### Q1. Comment fonctionne AWS IAM, et comment un service Spring Boot doit-il obtenir ses identifiants ?
-
+#### Q1. Comment fonctionne AWS IAM, et comment un service Spring Boot doit-il obtenir ses identifiants ? {#aws-iam-spring-boot-service}
 **Réponse :** IAM décide **qui** (un principal : utilisateur, rôle, service) peut faire **quoi** (des actions comme
 `s3:GetObject`) sur **quelle ressource** (un ARN), sous quelles conditions. Les politiques sont des documents JSON
 attachés à des identités ou à des ressources ; un `Deny` explicite l'emporte toujours, et tout ce qui n'est pas
@@ -27,8 +26,7 @@ statiques.
 }
 ```
 
-#### Q2. Qu'est-ce qu'un VPC, et comment s'articulent sous-réseaux publics et privés ?
-
+#### Q2. Qu'est-ce qu'un VPC, et comment s'articulent sous-réseaux publics et privés ? {#vpc-public-private-subnets-fit}
 **Réponse :** Un **VPC** est votre réseau privé dans une région, découpé en **sous-réseaux**, chacun dans une zone de
 disponibilité (AZ). Un **sous-réseau public** a une route vers une **Internet Gateway** ; n'y placez que les load
 balancers et bastions (ou rien). Les **sous-réseaux privés** hébergent les instances applicatives et les bases ; ils
@@ -48,8 +46,7 @@ sortant : une NAT Gateway par AZ ; S3 via un gateway endpoint
 
 ### Compute & données
 
-#### Q3. EC2, ECS, EKS ou Lambda — comment choisir où exécuter un service Java ?
-
+#### Q3. EC2, ECS, EKS ou Lambda — comment choisir où exécuter un service Java ? {#ec2-ecs-eks-lambda-run}
 **Réponse :** **Lambda** convient au travail événementiel, en pics ou à faible trafic (déclencheurs S3, consommateurs
 de file, petites API) : pas de serveurs, paiement à la requête, mais avec des limites de durée (15 min) et de taille de
 payload, et des cold starts JVM (à atténuer avec SnapStart, GraalVM native ou un framework plus léger). **ECS sur
@@ -67,8 +64,7 @@ Génération de miniatures à l'upload S3        -> Lambda
 Batch nocturne de 3 heures                    -> tâche planifiée ECS / AWS Batch (pas Lambda : limite de 15 min)
 ```
 
-#### Q4. Quels services managés de données et de messaging un développeur full-stack doit-il connaître, et quand utiliser chacun ?
-
+#### Q4. Quels services managés de données et de messaging un développeur full-stack doit-il connaître, et quand utiliser chacun ? {#managed-data-messaging-services-full}
 **Réponse :** **RDS / Aurora** pour les données relationnelles (Postgres), avec Multi-AZ pour la disponibilité et des
 read replicas pour la montée en charge en lecture. **DynamoDB** pour l'accès clé-valeur à toute échelle quand vous
 connaissez vos patterns d'accès à l'avance. **S3** pour les fichiers, les sauvegardes et les sites statiques (avec
@@ -86,8 +82,7 @@ OrderPlaced -> topic SNS -> SQS "billing"   -> service de facturation
 chaque file a sa propre DLQ et sa politique de retry
 ```
 
-#### Q5. Comment déployer une SPA React sur AWS ?
-
+#### Q5. Comment déployer une SPA React sur AWS ? {#deploy-react-spa-aws}
 **Réponse :** Construisez les fichiers statiques et déposez-les dans un **bucket S3 privé**, servi par **CloudFront**
 avec Origin Access Control (le bucket n'est pas public). Mettez en cache un an les assets hashés (`main.abc123.js`) et
 `index.html` peu de temps ou pas du tout, pour qu'un déploiement prenne effet immédiatement ; invalidez `index.html` au
@@ -108,8 +103,7 @@ aws cloudfront create-invalidation --distribution-id E123 --paths /index.html
 
 ### Questions
 
-#### Q6. Comment appliquer le moindre privilège dans IAM sans bloquer toutes les équipes ?
-
+#### Q6. Comment appliquer le moindre privilège dans IAM sans bloquer toutes les équipes ? {#apply-least-privilege-iam-blocking}
 **Réponse :** Un rôle par workload avec uniquement les actions et ressources qu'il utilise, limité par ARN et, si
 utile, par conditions (tags, `aws:SourceVpce`, chiffrement obligatoire). Évitez les actions et ressources `*`, et
 n'attachez jamais `AdministratorAccess` à un service. Partez d'**IAM Access Analyzer** (il peut générer une politique à
@@ -129,13 +123,12 @@ Définissez les rôles dans Terraform pour qu'ils soient revus comme du code.
 **Pourquoi c'est un piège :** le rayon d'impact d'un identifiant fuité est la politique qui lui est attachée ; `s3:*`
 sur `*` transforme un bug dans un petit service en fuite de données de tous les buckets du compte.
 
-#### Q7. Où vivent les secrets applicatifs sur AWS, et comment arrivent-ils jusqu'à l'application ?
-
+#### Q7. Où vivent les secrets applicatifs sur AWS, et comment arrivent-ils jusqu'à l'application ? {#application-secrets-live-aws-app}
 **Réponse :** Dans **Secrets Manager** (rotation intégrée, par exemple pour les mots de passe RDS) ou **SSM Parameter
 Store** en SecureString (moins cher, pour la configuration et les secrets sans rotation), chiffrés avec **KMS**. Le
 rôle du workload n'a le droit de lire que ses propres secrets. Ils arrivent à l'application via les `secrets` de la task
 definition ECS, l'External Secrets Operator ou le Secrets Store CSI driver de Kubernetes
-([Full Stack Q38](fullstack-devops-k8s.md)), ou Spring Cloud AWS qui les lit au démarrage. Mieux encore, supprimez le
+([Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes)), ou Spring Cloud AWS qui les lit au démarrage. Mieux encore, supprimez le
 secret : l'**authentification IAM de RDS** utilise le rôle au lieu d'un mot de passe.
 
 **Exemple :**
@@ -150,8 +143,7 @@ secret : l'**authentification IAM de RDS** utilise le rôle au lieu d'un mot de 
 **Pourquoi c'est un piège :** des secrets dans des variables Terraform ou en variables d'environnement en clair dans la
 task definition finissent dans les fichiers de state, la console et les logs de CI.
 
-#### Q8. Qu'est-ce qui fait la facture AWS d'une application web typique, et quelles sont les surprises habituelles ?
-
+#### Q8. Qu'est-ce qui fait la facture AWS d'une application web typique, et quelles sont les surprises habituelles ? {#drives-aws-bill-web-application}
 **Réponse :** Le compute (heures d'instances et de Fargate, requests surdimensionnées), les bases managées (taille
 d'instance, Multi-AZ, IOPS de stockage), et les surprises : le traitement de données de la **NAT Gateway** (tout le
 trafic privé vers S3 ou ECR passant par le NAT au lieu des VPC endpoints), le **transfert de données inter-AZ et vers
@@ -172,15 +164,14 @@ Cost Explorer, principales lignes du mois :
 **Pourquoi c'est un piège :** les schémas d'architecture ne montrent pas le transfert de données, et c'est souvent la
 ligne qui grossit le plus vite.
 
-#### Q9. Que signifie « hautement disponible » sur AWS, et quelle différence entre Multi-AZ et multi-région ?
-
+#### Q9. Que signifie « hautement disponible » sur AWS, et quelle différence entre Multi-AZ et multi-région ? {#highly-available-aws-multi-az}
 **Réponse :** Le **Multi-AZ** (au moins deux zones de disponibilité dans une région) est le minimum en production :
 load balancer réparti sur les AZ, tâches ou pods répartis sur les AZ, RDS Multi-AZ avec bascule automatique (environ une
 minute), et aucune dépendance mono-AZ comme une NAT Gateway unique. Il protège contre la panne d'un datacenter et coûte
 peu. Le **multi-région** protège contre une panne régionale ou répond à des exigences de résidence des données, mais il
 est coûteux et complexe : réplication des données (Aurora Global Database, tables globales DynamoDB), bascule DNS avec
 les health checks Route 53, et les écritures dans deux régions amènent des conflits. Choisissez selon les RTO/RPO dont
-le métier a vraiment besoin ([System Design Q31](system-design.md)) : souvent, des sauvegardes plus une infrastructure
+le métier a vraiment besoin ([System Design Q31](system-design.md#rto-rpo-disaster-recovery-planning)) : souvent, des sauvegardes plus une infrastructure
 as code capable de tout reconstruire dans une autre région (pilot light) suffisent.
 
 **Exemple :**
@@ -197,8 +188,7 @@ tombe comme n'importe quel datacenter, et beaucoup de pannes viennent d'un compo
 
 ### Questions
 
-#### Q10. Comment organiser les comptes AWS et l'infrastructure as code d'une entreprise à plusieurs équipes ?
-
+#### Q10. Comment organiser les comptes AWS et l'infrastructure as code d'une entreprise à plusieurs équipes ? {#organise-aws-accounts-infrastructure-code}
 **Réponse :** Une **landing zone multi-comptes** (Control Tower ou un équivalent Terraform) : comptes de management,
 de sécurité/archive des logs, de réseau partagé, et comptes de workload par environnement (puis par équipe ou domaine
 avec la croissance). CloudTrail, GuardDuty et Config centralisés, SSO pour les humains avec des permission sets,
@@ -207,8 +197,7 @@ de petits modules maintenus par une équipe plateforme, et plan/apply depuis la 
 de clés statiques dans la CI). Les équipes possèdent les stacks de leurs services ; l'équipe plateforme possède la
 voie balisée (VPC, cluster, pipelines, observabilité).
 
-#### Q11. Quand le serverless est-il la bonne architecture pour une équipe Java, et quand fait-il mal ?
-
+#### Q11. Quand le serverless est-il la bonne architecture pour une équipe Java, et quand fait-il mal ? {#serverless-right-architecture-java-team}
 **Réponse :** Le serverless (API Gateway, Lambda, SQS, DynamoDB, Step Functions) est intéressant pour les charges
 événementielles et en pics, les petites équipes sans capacité d'exploitation, et la glue entre services managés : on
 paie à l'usage et on descend à zéro. Il fait mal avec un trafic élevé et régulier (le prix à la requête dépasse celui
@@ -220,8 +209,7 @@ appellent des Lambdas.
 
 ## 🎯 Scénarios réels
 
-### S1. Le service reçoit `AccessDenied` sur S3 juste après un déploiement
-
+### S1. Le service reçoit `AccessDenied` sur S3 juste après un déploiement {#service-gets-accessdenied-s3-right}
 - **Symptômes :** Une nouvelle tâche ECS (ou un pod) loggue `software.amazon.awssdk.services.s3.model.S3Exception:
   Access Denied (Status Code: 403)` en écrivant des factures ; la version précédente fonctionnait.
 
@@ -248,8 +236,7 @@ appellent des Lambdas.
 
 </details>
 
-### S2. La facture AWS a doublé ce mois-ci et personne n'a changé l'architecture
-
+### S2. La facture AWS a doublé ce mois-ci et personne n'a changé l'architecture {#aws-bill-doubled-month-nobody}
 - **Symptômes :** La finance signale une hausse de 2× ; les lignes qui grossissent sont « EC2-Other » et « Data
   Transfer ».
 
@@ -276,8 +263,7 @@ appellent des Lambdas.
 
 </details>
 
-### S3. Une zone de disponibilité a des problèmes, et une partie du trafic échoue
-
+### S3. Une zone de disponibilité a des problèmes, et une partie du trafic échoue {#availability-zone-has-problems-part}
 - **Symptômes :** Le taux d'erreur monte à environ 30 % pendant un incident AWS dans une AZ ; le service tourne sur deux
   AZ.
 
@@ -303,26 +289,60 @@ appellent des Lambdas.
 
 </details>
 
+### S4. Une API à base de Lambda fonctionne en test, puis épuise les connexions RDS pendant la première campagne marketing {#lambda-exhausts-rds-connections}
+- **Symptômes :** `FATAL: remaining connection slots are reserved` côté Postgres ; la concurrence Lambda passe de 20 à 900 en quelques minutes ; p99 des cold starts à 3 s.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Chaque environnement d'exécution Lambda concurrent ouvre sa propre connexion (ou son pool) : les connexions suivent la concurrence, pas la charge supportable par la base. Les cold starts ajoutent le démarrage JVM plus un handshake TLS + auth vers la base.
+- **Résolution :** Placez RDS Proxy devant la base (pool et multiplexage des connexions), fixez une reserved concurrency sur la fonction pour limiter l'éventail, gardez un pool de 1 par environnement, et réduisez les cold starts avec SnapStart (Java) ou de la provisioned concurrency sur le chemin chaud.
+- **Prévention :** Test de charge à la concurrence attendue, alertes sur `DatabaseConnections` et `ConcurrentExecutions` Lambda, et budget de concurrence documenté par fonction.
+
+</details>
+
+### S5. Après un failover RDS Multi-AZ, la base est saine en 60 secondes mais l'application échoue pendant 15 minutes {#rds-failover-stale-dns}
+- **Symptômes :** L'événement AWS indique un failover terminé à 03:12 ; l'application logge des `Connection refused` / erreurs de lecture seule jusqu'au redémarrage des pods à 03:27.
+
+> 🧠 **À essayer d'abord :** Avant d'ouvrir la réponse, écrivez vos trois premières hypothèses et la commande ou la métrique que vous vérifieriez pour chacune.
+
+<details markdown="1">
+<summary>Afficher diagnostic, résolution & prévention</summary>
+
+- **Diagnostic :** Le DNS du endpoint pointe désormais vers le nouveau primaire, mais la JVM a mis en cache l'ancienne IP (`networkaddress.cache.ttl` illimité avec un security manager, ou long par défaut), et le pool continue de distribuer des connexions mortes sans validation ni durée de vie maximale.
+- **Exemple :**
+
+  ```properties
+  # JVM : respecter le TTL DNS court du endpoint
+  networkaddress.cache.ttl=5
+  # HikariCP : recycler les connexions et échouer vite
+  spring.datasource.hikari.max-lifetime=600000
+  spring.datasource.hikari.connection-timeout=3000
+  ```
+
+- **Résolution :** Fixez un TTL DNS court côté JVM, configurez `maxLifetime` et les timeouts du pool, et utilisez l'AWS Advanced JDBC Wrapper (plugin de failover) ou RDS Proxy, qui masque le failover aux clients.
+- **Prévention :** Exercice de failover en staging chaque trimestre (`aws rds failover-db-cluster`) en mesurant le temps de rétablissement de l'application, pas seulement de la base.
+
+</details>
+
 ## 🗣️ Questions posées en entretien
 
 Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une courte réponse type : approfondissez avec les questions et scénarios détaillés ci-dessus, et dites la réponse à voix haute.
 
 ### Accès & services
 
-#### R1. Une instance EC2 doit accéder à S3 en sécurité. Comment configurer sans stocker d'identifiants ?
-
+#### R1. Une instance EC2 doit accéder à S3 en sécurité. Comment configurer sans stocker d'identifiants ? {#ec2-instance-needs-access-s3}
 **Réponse :** Attacher un **rôle IAM** (instance profile) avec une politique de moindre privilège pour le bucket/préfixe précis ; le SDK obtient des identifiants temporaires via le service de métadonnées de l'instance (utiliser IMDSv2). Restreindre en option par une bucket policy, un VPC endpoint et `aws:SourceVpce`. Aucune clé d'accès dans le code, les variables d'environnement ou les AMI.
 
-#### R2. Différence entre EC2, ECS et Lambda.
-
+#### R2. Différence entre EC2, ECS et Lambda. {#ec2-ecs-lambda}
 **Réponse :** **EC2** : machines virtuelles que vous gérez (OS, scaling, patchs) : contrôle maximal. **ECS** : orchestrateur de conteneurs, sur EC2 ou en serverless via **Fargate**. **Lambda** : fonctions déclenchées par événements, mise à l'échelle automatique, facturation à l'invocation, avec limites de temps/mémoire et cold starts. Choisir selon contrôle vs exploitation vs forme de la charge.
 
-#### R3. Comment surveiller des applications dans AWS ?
-
+#### R3. Comment surveiller des applications dans AWS ? {#monitor-applications-aws}
 **Réponse :** **CloudWatch** métriques, logs et alarmes (plus Logs Insights, Container Insights) ; **X-Ray**/OpenTelemetry pour les traces ; CloudTrail pour l'audit des API ; health checks et SNS/PagerDuty pour l'alerte. Alerter sur les SLO (latence, erreurs, saturation), pas seulement le CPU, et avoir un dashboard par service.
 
-#### R4. Avez-vous déployé des microservices sur AWS ? Expliquez le flux de déploiement.
-
+#### R4. Avez-vous déployé des microservices sur AWS ? Expliquez le flux de déploiement. {#have-deployed-microservices-aws-deployment}
 **Réponse :** Flux typique : commit → CI (build, tests, scan) → image Docker → push vers **ECR** → déploiement sur ECS/EKS (Terraform/CloudFormation pour l'infra, ArgoCD/CodeDeploy pour les releases) derrière un **ALB**, en rolling/blue-green/canary → health checks → supervision CloudWatch et rollback automatique. Secrets dans Secrets Manager, rôles IAM par tâche, configuration par environnement.
 
 ## 🎤 Quiz oral

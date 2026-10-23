@@ -22,5 +22,8 @@ jobs:
             - name: Install dependencies
               run: pip install -r requirements.txt
 
+            - name: ✅ Docs checks
+              run: python scripts/check_docs.py
+
             - name: 🚀 Deploy documentation
               run: mkdocs gh-deploy --force --strict

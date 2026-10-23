@@ -149,7 +149,7 @@ l'utilisateur a besoin de 5 allers-retours. Une liste d'erreurs par champ permet
 
 ## 📄 Collections
 
-### Paginez toujours les collections
+### Paginez toujours les collections {#always-paginate-collections}
 
 Chaque endpoint de liste prend `page`/`size` ou un curseur, avec une taille par défaut et une taille maximale.
 
@@ -201,7 +201,7 @@ private static final Set<String> SORTABLE = Set.of("createdAt", "total");
 
 ## 🧬 Payloads
 
-### Exposez des DTO, pas des entités
+### Exposez des DTO, pas des entités {#expose-dtos-not-entities}
 
 Convertissez les entités en records de requête et de réponse à la frontière de l'API.
 

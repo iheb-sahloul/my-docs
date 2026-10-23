@@ -64,6 +64,8 @@ plugins:
             Mock Interview Checklist: Checklist d'entretien blanc
             Best Practices: Bonnes pratiques
             Further Reading: Pour aller plus loin
+            REST API Design: Conception d'API REST
+            Performance & Load Testing: Performance & tests de charge
             Testing: Tests
             Security: Sécurité
             Live Coding: Live coding
@@ -71,6 +73,7 @@ plugins:
             AI Prompts: Prompts IA
             Messaging: Messagerie
             System Design: Conception de systèmes
+            Caching & Redis: Cache & Redis
 
 markdown_extensions:
   - attr_list
@@ -91,18 +94,23 @@ nav:
   - Overview: interviews/index.md
   - Design Patterns: interviews/design-patterns.md
   - Java Core & JVM: interviews/java-core-jvm.md
+  - Kotlin: interviews/kotlin.md
   - Spring & Architecture: interviews/spring-architecture.md
   - Persistence & SQL: interviews/persistence-sql-postgres.md
   - Messaging: interviews/messaging-rabbitmq-kafka.md
   - React & TypeScript: interviews/react-typescript.md
   - Full Stack & DevOps: interviews/fullstack-devops-k8s.md
   - System Design: interviews/system-design.md
+  - Caching & Redis: interviews/caching-redis.md
   - Leadership & Behavioral (STAR): interviews/leadership-behavioral.md
   - AI Engineering & Claude Code: interviews/claude-code.md
   - Testing: interviews/testing.md
   - Security: interviews/security.md
   - Live Coding: interviews/coding.md
   - Cloud (AWS): interviews/cloud-aws.md
+  - REST API Design: interviews/rest-api.md
+  - Performance & Load Testing: interviews/performance-load-testing.md
+  - Observability: interviews/observability.md
   - Mock Interview Checklist: interviews/mock-interview.md
 - Notes:
   - Git: notes/git.md
@@ -134,3 +142,12 @@ nav:
   - AI Prompts: best-practices/ai-prompts.md
 - Resources:
   - Further Reading: resources/further-reading.md
+
+# private/ is symlinked here by scripts/private_pages.py for local reading; never publish it
+exclude_docs: |
+  fr/private/
+  en/private/
+
+validation:
+  anchors: warn
+  unrecognized_links: warn

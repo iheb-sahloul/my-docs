@@ -6,8 +6,7 @@ Rules and code-review checklists live in [Best practices › Testing](../best-pr
 
 ### Strategy
 
-#### Q1. What is the test pyramid, and is it still the right shape?
-
+#### Q1. What is the test pyramid, and is it still the right shape? {#test-pyramid-right-shape}
 **Answer:** The pyramid says: many fast, isolated unit tests at the base, fewer integration tests in the middle,
 and a handful of slow end-to-end tests at the top. The reasoning is cost and feedback speed: a unit test runs in
 milliseconds and points at one class, while an end-to-end test takes seconds to minutes, needs a full environment,
@@ -27,8 +26,7 @@ critical user journeys.
         /--------\    Unit: pricing rules, validators, mappers (thousands, milliseconds)
 ```
 
-#### Q2. Unit, integration, end-to-end — where do you draw the boundaries?
-
+#### Q2. Unit, integration, end-to-end — where do you draw the boundaries? {#unit-integration-end-end-draw}
 **Answer:** Draw them by what is real and what is replaced, not by the tool. A **unit test** exercises one unit of
 behaviour (often one class, sometimes a small cluster) with every I/O dependency replaced: no network, no database,
 no file system, no clock. An **integration test** puts at least one real external piece in the loop: a real
@@ -36,8 +34,7 @@ database, a real broker, the real Spring context, or real HTTP serialization. An
 deployed system the way a user or client would, through its public interface, with everything real. The useful
 question for each test: "if this fails, how many places could the bug be?" The answer should grow as you go up.
 
-#### Q3. Mock, stub, fake, spy — what is the difference, and when do you use each?
-
+#### Q3. Mock, stub, fake, spy — what is the difference, and when do you use each? {#mock-stub-fake-spy-each}
 **Answer:** A **stub** returns canned answers so the code under test can run (`when(repo.findById(1)).thenReturn(...)`);
 you don't assert on it. A **mock** is set up with expectations and you **verify interactions** with it
 (`verify(mailer).send(...)`); use it when the interaction *is* the behaviour, such as "an email is sent". A **fake** is
@@ -60,8 +57,7 @@ class InMemoryOrderRepository implements OrderRepository {
 }
 ```
 
-#### Q4. What makes a unit test good?
-
+#### Q4. What makes a unit test good? {#unit-test-good}
 **Answer:** It tests **one behaviour**, through the public API, and its name says which (`rejectsOrderWhenStockIsEmpty`,
 not `testProcess2`). It follows **Arrange–Act–Assert** with a visible separation. It is **F.I.R.S.T.**: fast,
 independent (no order dependency, no shared mutable state), repeatable (no clock, randomness or network), self-validating
@@ -83,8 +79,7 @@ void appliesTenPercentDiscountAboveThreshold() {
 
 ### Java tooling
 
-#### Q5. Which JUnit 5 features do you rely on beyond `@Test`?
-
+#### Q5. Which JUnit 5 features do you rely on beyond `@Test`? {#junit-5-features-rely-beyond}
 **Answer:** `@ParameterizedTest` with `@CsvSource`/`@MethodSource` to cover a table of cases without copy-pasted tests;
 `@Nested` classes to group cases by context ("when the cart is empty"); `@DisplayName` for readable reports;
 `assertThrows`/`assertAll` for exceptions and grouped assertions; extensions (`@ExtendWith`) for Mockito, Spring
@@ -101,8 +96,7 @@ void discountByTotal(BigDecimal total, BigDecimal expectedDiscount) {
 }
 ```
 
-#### Q6. How do you use Mockito well, and what should you never mock?
-
+#### Q6. How do you use Mockito well, and what should you never mock? {#mockito-well-never-mock}
 **Answer:** Use `@ExtendWith(MockitoExtension.class)` with `@Mock`/`@InjectMocks`, stub only what the test needs
 (strict stubs flag unused stubbing), and use `ArgumentCaptor` when you must inspect what was passed. Don't mock:
 **value objects and DTOs** (just build them), **the class under test**, **types you don't own** (mocking
@@ -125,14 +119,13 @@ void publishesEventWithOrderTotal() {
 
 ### Frontend
 
-#### Q7. What is the React Testing Library philosophy, and how do you query elements?
-
+#### Q7. What is the React Testing Library philosophy, and how do you query elements? {#react-testing-library-philosophy-query}
 **Answer:** "The more your tests resemble the way your software is used, the more confidence they give you." Render
 the component, interact as a user would (`userEvent.click`, `userEvent.type`), and assert on what the user sees, not
 on state or internal methods. Query in priority order: `getByRole` (with an accessible name), `getByLabelText`,
 `getByText`, and only then `getByTestId`. Querying by role doubles as an accessibility check: if you can't find the
 button by role and name, neither can a screen reader. Use `findBy*` for elements that appear asynchronously instead
-of manual waits. Deeper React angle: [React Q30](react-typescript.md).
+of manual waits. Deeper React angle: [React Q30](react-typescript.md#test-react-component-per-react).
 
 **Example:**
 
@@ -152,8 +145,7 @@ test('shows an error when the email is invalid', async () => {
 
 ### Questions
 
-#### Q8. Why not use H2 for repository tests?
-
+#### Q8. Why not use H2 for repository tests? {#h2-repository-tests}
 **Answer:** Because H2 is a different database. Its SQL dialect, type system, locking and constraint behaviour differ
 from PostgreSQL's, even in "PostgreSQL mode". Queries using `jsonb`, `ON CONFLICT`, window functions, partial indexes,
 `citext` or specific date arithmetic either fail on H2 or, worse, pass on H2 and fail in production. Flyway migrations
@@ -177,8 +169,7 @@ class OrderRepositoryTest {
 **Why it's a trap:** H2 makes the suite green and fast, which looks like success. The bugs it hides are exactly the
 database-specific ones that integration tests exist to catch.
 
-#### Q9. Why is a Spring test suite slow, and how do you make it fast again?
-
+#### Q9. Why is a Spring test suite slow, and how do you make it fast again? {#spring-test-suite-slow-make}
 **Answer:** The usual cause is **context churn**. Spring caches application contexts between test classes, keyed by
 their configuration. Every distinct combination of `@MockitoBean` (formerly `@MockBean`), `@TestPropertySource`,
 active profiles or `@DirtiesContext` creates a new context, and each one can take several seconds to start. Fixes:
@@ -197,8 +188,7 @@ After consolidating mocks into one base class: 4 contexts
 **Why it's a trap:** each `@MockitoBean` looks harmless locally. The cost only shows when you count distinct contexts
 across the whole suite.
 
-#### Q10. How do you test a Spring service that calls an external HTTP API?
-
+#### Q10. How do you test a Spring service that calls an external HTTP API? {#test-spring-service-calls-external}
 **Answer:** Test at three levels, and never call the real third party from an automated test. (1) **Unit test with a mock of
 the client interface**: the service depends on a small port (`PatientDirectory.find(id)`), so Mockito returns canned
 results and failures; this covers your branching logic fast. (2) **Component test of the HTTP adapter** against a fake HTTP
@@ -206,7 +196,7 @@ server: **WireMock** (or MockWebServer, or `MockRestServiceServer` for `RestTemp
 responses and assert on the *request* you sent (path, headers, auth, body) and on the behaviour for 404, 500, slow
 responses, malformed JSON, and connection resets, which is where timeouts, retries and the circuit breaker are actually
 verified. (3) **Contract test** (Spring Cloud Contract / Pact) so the stub cannot silently drift from the provider's real
-API (see [Testing Q19](testing.md)); optionally a few smoke tests against the provider's sandbox in a separate non-blocking
+API (see [Testing Q19](testing.md#consumer-driven-contract-testing-worth)); optionally a few smoke tests against the provider's sandbox in a separate non-blocking
 pipeline. Test what matters for resilience: the timeout actually fires, a retry happens only for idempotent calls and
 stops after N attempts, the fallback returns the degraded response, and the error is mapped to your own exception rather
 than leaking the vendor's.
@@ -240,10 +230,9 @@ class PatientDirectoryClientTest {
 
 **Why it's a trap:** a Mockito mock of `RestTemplate` proves nothing about URLs, serialisation or timeouts: it tests that
 you called a method you configured yourself. And stubs only returning `200` leave every failure path untested, which is
-exactly where the external dependency hurts you (see also [Spring Q35](spring-architecture.md) on circuit breakers).
+exactly where the external dependency hurts you (see also [Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need) on circuit breakers).
 
-#### Q11. What is over-mocking, and how do you recognise it?
-
+#### Q11. What is over-mocking, and how do you recognise it? {#mocking-recognise}
 **Answer:** Over-mocking is replacing so many collaborators that the test only checks "method A calls method B with
 these arguments", which is a restatement of the implementation. Symptoms: refactoring without changing behaviour
 breaks many tests; tests pass while the feature is broken because the mocks returned what the author assumed;
@@ -254,8 +243,7 @@ event) rather than on call sequences.
 **Why it's a trap:** high coverage and many green tests suggest safety, yet the suite can't catch an integration
 mistake and actively resists refactoring, the opposite of what tests are for.
 
-#### Q12. How do you test code that depends on the current time?
-
+#### Q12. How do you test code that depends on the current time? {#test-code-depends-current-time}
 **Answer:** Never call `LocalDateTime.now()` or `Instant.now()` directly in business code. Inject a
 `java.time.Clock` (a Spring bean in production, `Clock.fixed(...)` or a mutable test clock in tests) and call
 `LocalDate.now(clock)`. The same applies to randomness (inject a `Supplier<UUID>` or `RandomGenerator`) and to
@@ -277,8 +265,7 @@ assertThat(new SubscriptionService(clock).isExpired(sub)).isFalse();
 **Why it's a trap:** tests that use the real clock pass for months, then fail on 29 February, at midnight UTC, or
 on the CI runner in another time zone.
 
-#### Q13. Is 80% code coverage a good target?
-
+#### Q13. Is 80% code coverage a good target? {#80-code-coverage-good-target}
 **Answer:** Coverage is a useful **floor signal** and a poor **target**. Line coverage only proves code was
 executed, not that its result was checked: a test with no assertion still covers every line. Once coverage becomes
 a goal, people write tests that execute code without verifying it (Goodhart's law). Use it to find untested
@@ -298,8 +285,7 @@ PIT report, PricingService:
 **Why it's a trap:** a team proudly at 90% can still ship an off-by-one at a pricing boundary, because nothing
 asserted on the boundary value.
 
-#### Q14. What makes tests flaky, and how do you deal with flaky tests as a team?
-
+#### Q14. What makes tests flaky, and how do you deal with flaky tests as a team? {#tests-flaky-deal-flaky-tests}
 **Answer:** Common causes: **time** (real clock, time zones, `Thread.sleep` for async work); **order dependency**
 (shared static state, a database not cleaned between tests, test A creating data test B relies on); **concurrency**
 (asserting before an async consumer has run); **external dependencies** (real network, third-party sandboxes);
@@ -323,8 +309,7 @@ await().atMost(Duration.ofSeconds(10))
 **Why it's a trap:** automatic retries make the pipeline green but teach the team to ignore red, and real
 intermittent production bugs (races) hide among the "known flaky" tests.
 
-#### Q15. What is the risk of putting `@Transactional` on integration tests?
-
+#### Q15. What is the risk of putting `@Transactional` on integration tests? {#risk-putting-transactional-integration-tests}
 **Answer:** Spring rolls back a `@Transactional` test at the end, which is convenient for cleanup but changes
 behaviour. The test, the service and the repository share **one transaction**, so: lazy loading works in the test
 even though it throws `LazyInitializationException` in production; constraints and triggers checked at commit
@@ -334,16 +319,15 @@ boundaries, don't annotate the test; clean up explicitly (truncate tables, or a 
 
 **Why it's a trap:** the test passes precisely because it wraps the code in a transaction production doesn't have.
 
-#### Q16. How do you test that a transaction really rolls back?
-
+#### Q16. How do you test that a transaction really rolls back? {#test-transaction-rolls-back}
 **Answer:** You must assert on the *committed* state of the database after a failure, so the test must **not** run inside the
-usual rollback-after-test transaction (see [Testing Q15](testing.md)): that wrapper makes everything look rolled back and also
+usual rollback-after-test transaction (see [Testing Q15](testing.md#risk-putting-transactional-integration-tests)): that wrapper makes everything look rolled back and also
 hides the bug where nothing was transactional. Recipe: (1) call the service method with input that forces a failure
 *after* a first write (a stubbed collaborator throws, or a constraint is violated); (2) assert the expected exception;
 (3) then query through a **fresh transaction/connection** (repository call outside the service, or `JdbcTemplate`) and
 assert the first write is **absent**. Run it against a real PostgreSQL via Testcontainers, as H2 differs on locking and DDL
-(see [Testing Q8](testing.md)). Use `@Transactional(propagation = NOT_SUPPORTED)` or no `@Transactional` on the test, and
-clean data in `@AfterEach`. Cover the rules from [Spring Q16](spring-architecture.md): a checked exception does not roll back
+(see [Testing Q8](testing.md#h2-repository-tests)). Use `@Transactional(propagation = NOT_SUPPORTED)` or no `@Transactional` on the test, and
+clean data in `@AfterEach`. Cover the rules from [Spring Q16](spring-architecture.md#transactional-propagation-rollback-rules-interact): a checked exception does not roll back
 unless `rollbackFor` is set, `REQUIRES_NEW` work commits even if the outer transaction rolls back, and a swallowed exception
 commits. For `@TransactionalEventListener(AFTER_COMMIT)` side effects, assert they are *not* triggered after a rollback.
 
@@ -374,8 +358,7 @@ class BookingRollbackTest {
 (the test's own transaction rolls everything back and the persistence context returns unflushed entities). A rollback test
 that cannot fail is worthless: temporarily remove `@Transactional` from the service and check the test goes red.
 
-#### Q17. How do you mock HTTP calls in frontend tests?
-
+#### Q17. How do you mock HTTP calls in frontend tests? {#mock-http-calls-frontend-tests}
 **Answer:** Mock at the **network boundary**, not the module boundary. Mock Service Worker (MSW) intercepts `fetch`
 and XHR and returns responses from handlers you define, so your component, data-fetching library (React Query,
 SWR) and serialization all run for real. Mocking `fetch` or your API module by hand skips that code and tends to
@@ -395,8 +378,7 @@ expect(await screen.findByText(/no orders yet/i)).toBeInTheDocument();
 **Why it's a trap:** `jest.mock('../api')` tests that the component calls a function, not that it handles the real
 response shape, loading state and errors.
 
-#### Q18. How do you load-test a REST API with Gatling, and how do you read the results?
-
+#### Q18. How do you load-test a REST API with Gatling, and how do you read the results? {#load-test-rest-api-gatling}
 **Answer:** A load test answers "how does latency and error rate behave as concurrent load rises, and where does it break?",
 so it needs a **realistic scenario, realistic data and an explicit goal**. Gatling (a code-first tool: Scala/Java/Kotlin DSL,
 HTML reports) models a user journey (log in, search slots, book, cancel) with feeders for test data (unique patients, tokens),
@@ -404,7 +386,7 @@ checks on each response (status, JSON field, response time) and an **injection p
 **open model** (`constantUsersPerSec`, `rampUsersPerSec`: new users arrive at a fixed rate regardless of how slow the system
 is, as in real life) over a **closed model** (`atOnceUsers`, `constantConcurrentUsers`: a fixed number of users wait for each
 response), because the closed model slows its own arrivals when the server slows down and hides the tail (*coordinated
-omission*, see [Full Stack Q8](fullstack-devops-k8s.md)). Typical test types: **smoke** (1 user, validate the script),
+omission*, see [Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average)). Typical test types: **smoke** (1 user, validate the script),
 **load** (expected peak, steady), **stress** (ramp past the limit to find the breaking point and how it fails), **soak**
 (hours at moderate load to reveal leaks and pool exhaustion), **spike** (sudden 10x). Define **assertions** as pass/fail
 criteria (`p95 < 300 ms`, `failed < 1%`) so the build can fail automatically. Read the report by looking at: response-time
@@ -441,14 +423,13 @@ public class BookingSimulation extends Simulation {
 **Why it's a trap:** a green test against an empty database, with one hot cached record and a closed model, proves nothing
 about production. Test data volume, cache state, and think times change the answer as much as the code does, and the
 numbers from a shared CI runner are only good for *relative* comparison between builds. See
-[Full Stack Q36](fullstack-devops-k8s.md) for how to use the results to fix a bottleneck.
+[Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) for how to use the results to fix a bottleneck.
 
 ## 🔴 Expert / Open
 
 ### Questions
 
-#### Q19. What is consumer-driven contract testing, and when is it worth it?
-
+#### Q19. What is consumer-driven contract testing, and when is it worth it? {#consumer-driven-contract-testing-worth}
 **Answer:** Each **consumer** writes tests that record what it actually needs from a provider's API (request, and the
 fields of the response it reads). That produces a **contract** (Pact file) published to a broker. The **provider**
 verifies every consumer's contract in its own pipeline against the real implementation. If the provider removes a
@@ -467,8 +448,7 @@ Developer removes `total` from the response -> provider CI fails: "order-ui expe
 can-i-deploy order-service --to prod -> ❌ blocked
 ```
 
-#### Q20. Design the testing strategy for a system of ten microservices. What runs where?
-
+#### Q20. Design the testing strategy for a system of ten microservices. What runs where? {#design-testing-strategy-system-ten}
 **Answer:** Per service, on every commit: unit tests and integration tests against real dependencies in containers
 (database, broker), plus **contract tests** for each API it provides or consumes. That gives fast, owner-local
 feedback and catches most bugs. On merge to main, deploy to a shared environment and run a **small smoke suite**
@@ -478,8 +458,7 @@ refund) running on the integrated environment, owned by the teams, not a separat
 breach. What to avoid: a huge shared end-to-end suite that gates every deploy, takes an hour, and fails for reasons
 nobody owns; it recreates the coupling microservices were meant to remove.
 
-#### Q21. When does TDD help, and when do you not use it?
-
+#### Q21. When does TDD help, and when do you not use it? {#tdd-help}
 **Answer:** TDD (red → green → refactor) helps most where behaviour is well defined and logic-heavy: pricing,
 validation, parsing, state machines, bug fixes (write the failing test that reproduces the bug first). It drives a
 testable design with small units and explicit dependencies, and it gives a regression net for free. It helps less
@@ -488,14 +467,13 @@ version), and for thin glue code where an integration test is the meaningful che
 acceptance test and mocks downward (London school); **inside-out** starts from the domain and builds up (Chicago
 school). A senior answer is pragmatic: the goal is fast, trustworthy feedback, and TDD is one way to get it.
 
-#### Q22. How do you test asynchronous messaging (Kafka/RabbitMQ consumers and producers)?
-
+#### Q22. How do you test asynchronous messaging (Kafka/RabbitMQ consumers and producers)? {#test-asynchronous-messaging-kafka-rabbitmq}
 **Answer:** Split it in layers. **Unit-test the handler** as a plain method: given this message, it produces this
 state change or this outgoing event, with no broker. **Integration-test the wiring** with a real broker in
 Testcontainers: publish a message and assert the effect with Awaitility, which checks serialization, topic
 names, consumer group config and error handling. Test the **failure paths** explicitly: a poison message lands in the
 DLQ after the configured retries; a **duplicate delivery** of the same message leaves state unchanged (idempotency,
-see [Messaging Q13](messaging-rabbitmq-kafka.md)); a crash after processing but before commit replays the message
+see [Messaging Q13](messaging-rabbitmq-kafka.md#consumer-idempotent-even-messaging-system)); a crash after processing but before commit replays the message
 safely. For schemas, add a compatibility check (Schema Registry) in CI.
 
 **Example:**
@@ -508,8 +486,7 @@ await().atMost(Duration.ofSeconds(10)).untilAsserted(() ->
     assertThat(paymentRepo.countByOrderId(orderId)).isEqualTo(1));
 ```
 
-#### Q23. How do you keep a Playwright/Cypress end-to-end suite fast and reliable?
-
+#### Q23. How do you keep a Playwright/Cypress end-to-end suite fast and reliable? {#keep-playwright-cypress-end-end}
 **Answer:** Cover only critical user journeys; push everything else down to component and API tests. Make each test
 **independent**: create its own data through the API (not the UI) and don't depend on what another test left behind.
 Use **resilient selectors** (role and accessible name, or `data-testid`), never CSS paths. Rely on the tool's
@@ -530,8 +507,7 @@ test('checkout with a saved card', async ({ page, request }) => {
 
 ## 🎯 Real-world scenarios
 
-### S1. The backend test suite takes 25 minutes, and developers have stopped running it locally
-
+### S1. The backend test suite takes 25 minutes, and developers have stopped running it locally {#backend-test-suite-takes-25}
 - **Symptoms:** CI is the only place tests run; PRs wait half an hour for feedback; people push "fix test" commits in
   a loop.
 
@@ -559,8 +535,7 @@ test('checkout with a saved card', async ({ page, request }) => {
 
 </details>
 
-### S2. A test passes locally and on rerun, but fails on CI about once in ten runs
-
+### S2. A test passes locally and on rerun, but fails on CI about once in ten runs {#test-passes-locally-rerun-but}
 - **Symptoms:** The failure is always the same assertion, never reproducible on a laptop, and "rerun" fixes it.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -585,8 +560,7 @@ test('checkout with a saved card', async ({ page, request }) => {
 
 </details>
 
-### S3. All tests are green, but a query fails in production with a syntax error
-
+### S3. All tests are green, but a query fails in production with a syntax error {#all-tests-green-but-query}
 - **Symptoms:** A new search endpoint returns 500 in production with a PostgreSQL error; the repository test for it
   passes.
 
@@ -612,8 +586,7 @@ test('checkout with a saved card', async ({ page, request }) => {
 
 </details>
 
-### S4. A pure refactoring breaks 200 tests while the application still works
-
+### S4. A pure refactoring breaks 200 tests while the application still works {#pure-refactoring-breaks-200-tests}
 - **Symptoms:** A developer extracts a class and renames two methods; behaviour is unchanged (manual and end-to-end
   checks pass), but hundreds of unit tests fail and the PR stalls.
 
@@ -641,8 +614,7 @@ test('checkout with a saved card', async ({ page, request }) => {
 
 </details>
 
-### S5. The end-to-end suite fails 10% of the time, and the team now ignores its failures
-
+### S5. The end-to-end suite fails 10% of the time, and the team now ignores its failures {#end-end-suite-fails-10}
 - **Symptoms:** Nightly end-to-end runs are red most mornings; reruns usually pass; a real regression shipped last
   week because its failure was dismissed as "flaky again".
 
@@ -670,6 +642,62 @@ test('checkout with a saved card', async ({ page, request }) => {
 
 </details>
 
+### S6. A test passes alone but fails when the whole suite runs, in a different order each time {#test-passes-alone-but-fails}
+- **Symptoms:** Failures change from run to run and disappear when you re-run the one test.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Almost always shared state between tests: a static field or singleton, a database not cleaned, a shared clock or file, or tests that depend on execution order. Run with a fixed random order and bisect.
+- **See also:** [Design Patterns S1](design-patterns.md#integration-tests-pass-isolation-but), the hand-rolled Singleton version of this bug.
+- **Resolution:** Make each test own its data (create in setup, roll back or truncate after), reset static state, inject a `Clock`, remove ordering dependencies. Quarantine, do not delete, the test while fixing.
+- **Prevention:** Run the suite in random order in CI; fail the build on tests that touch shared global state.
+
+</details>
+
+### S7. Every test is green, but the integration with the billing service breaks in production after their deploy {#mocks-green-provider-changed}
+- **Symptoms:** `400 Bad Request: field 'currency' is required` from the billing service; our unit tests mock the client and still pass.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Our mocks encode our assumption of the provider's API, not the real one. The provider added a required field (or renamed one) and nothing on their side knew we depended on its absence.
+- **Resolution:** Hotfix by sending the field; then add consumer-driven contract tests (Pact or Spring Cloud Contract): our tests generate the contract, the provider's pipeline verifies it before deploying, and `can-i-deploy` blocks incompatible releases.
+- **Prevention:** Contract tests for every synchronous cross-team dependency, mocks generated from the provider's published OpenAPI rather than hand-written, and a smoke test in staging against the real service.
+
+</details>
+
+### S8. A visual bug ships even though snapshot tests cover the component, because the snapshot was just updated {#snapshot-tests-rubber-stamped}
+- **Symptoms:** The checkout button disappears on mobile; the PR contained a 900-line `__snapshots__` diff that the reviewer approved with "snapshots updated".
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Large snapshots fail on every change, so the team runs `-u` by reflex. They assert 'nothing changed', not 'the behavior is correct', and nobody reads a 900-line DOM diff.
+- **Resolution:** Replace big component snapshots with behavior assertions (Testing Library: `getByRole('button', { name: /pay/i })` is visible and enabled), keep small inline snapshots only for stable serialized output, and add visual regression screenshots (Playwright) for key pages reviewed as images.
+- **Prevention:** Review rule: a snapshot update must be explained in the PR; lint rule capping snapshot size; CI that fails if snapshots are updated without the `snapshot-update` label.
+
+</details>
+
+## 🗣️ Commonly asked questions
+
+Questions that come up often in interviews on this topic (a typical set, not tied to one specific interview). Each has a short model answer: expand it with the sections above and say it aloud.
+
+#### R1. Unit vs integration vs end-to-end tests. {#unit-integration-end-end-tests}
+**Answer:** Unit: one class in isolation, fast, no I/O. Integration: several real components together (repository + real database via Testcontainers, a Spring slice). End-to-end: the whole system through its public entry point, slowest and most brittle. Keep many unit tests, fewer integration tests, very few E2E (the test pyramid).
+
+#### R2. `@Mock` vs `@MockBean` (`@MockitoBean`). {#mock-mockbean-mockitobean}
+**Answer:** `@Mock` is plain Mockito: a mock for a unit test with no Spring context. `@MockBean` replaces a bean in the Spring context (deprecated in Spring Boot 3.4 in favour of `@MockitoBean`), which dirties the context cache and slows the suite. Prefer constructor injection with `@Mock`, and mock beans only in slice tests.
+
+#### R3. How do you test a private method? {#test-private-method}
+**Answer:** Do not test it directly: test it through the public behaviour that uses it. If the private logic is complex enough to need its own tests, it is probably a separate class with its own public API: extract it. Reflection to call private methods couples tests to the implementation.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.
@@ -681,7 +709,7 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 5. Q13. Is 80% code coverage a good target?
 6. Q14. What makes tests flaky, and how do you deal with flaky tests as a team?
 7. Q19. What is consumer-driven contract testing, and when is it worth it?
-8. Q20. Design the testing strategy for a system of ten microservices. What runs where?
+8. Q18. How do you load-test a REST API with Gatling, and how do you read the results?
 9. S1. The backend test suite takes 25 minutes, and developers have stopped running it locally
 10. S4. A pure refactoring breaks 200 tests while the application still works
 
@@ -724,4 +752,5 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 - **MSW** — mock HTTP at the network layer; reuse handlers in Storybook and dev.
 - **Playwright/Cypress** — few journeys, own data via API, resilient selectors, auto-waiting, max one retry.
 - **Contract tests (Pact)** — consumer records needs, provider verifies in CI, `can-i-deploy` gates release. *Replaces most cross-service E2E.*
+- **Load tests** — open model (arrival rate), realistic data volume and think time, steady-state window, assert on p95/p99 not the average. *409/429 can be expected outcomes; CI numbers are for relative comparison only.*
 - **Messaging tests** — handler as plain unit; wiring with a containerised broker; test duplicates, DLQ and replay.

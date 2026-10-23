@@ -1,13 +1,14 @@
 # Leadership & Comportemental (STAR)
 
-> Leadership technique : feedback, conflits, parties prenantes, estimation, santé d'équipe. Les questions d'architecture sont dans [System Design](system-design.md). Les questions comportementales (« Parlez-moi d'une fois où… ») sont dans la [section Comportemental](#comportemental-star).
+> Leadership technique : feedback, conflits, parties prenantes, estimation, santé d'équipe. Les questions d'architecture sont dans [System Design](system-design.md). Les questions comportementales (« Parlez-moi d'une fois où… ») sont dans la [section Comportemental](#behavioral-star).
+>
+> **Note :** les chiffres des réponses STAR (pourcentages, délais, tailles d'équipe) sont illustratifs. Remplacez-les par vos propres chiffres réels avant d'utiliser une histoire.
 
 ## 🟢 Fondamentaux
 
 ### Leadership
 
-#### Q1. Qu'est-ce qui rend le feedback technique et le mentorat réellement efficaces, et pas seulement corrects ?
-
+#### Q1. Qu'est-ce qui rend le feedback technique et le mentorat réellement efficaces, et pas seulement corrects ? {#technical-feedback-mentorship-effective-opposed}
 Un feedback efficace est spécifique (il pointe la ligne/la décision réelle, pas une impression générale),
 opportun (donné près du moment où le travail a été fait, pas regroupé dans un vague commentaire trimestriel),
 centré sur le travail et son impact plutôt que sur la personne, et — point crucial pour le mentorat
@@ -30,8 +31,7 @@ Efficace :                "La ligne 42 attrape Exception, donc le timeout en des
 
 ### Leadership
 
-#### Q2. Un ingénieur junior commet sans cesse la même catégorie d'erreur malgré des commentaires de code review répétés. Quelle est votre approche concrète ?
-
+#### Q2. Un ingénieur junior commet sans cesse la même catégorie d'erreur malgré des commentaires de code review répétés. Quelle est votre approche concrète ? {#junior-engineer-keeps-making-same}
 **Réponse :** D'abord, vérifier si les retours jusqu'ici ont réellement expliqué le principe sous-jacent
 ou se sont contentés de corriger le cas précis à chaque fois — répéter « corrige ça » sans le « pourquoi »
 réutilisable qui l'accompagne enseigne à reconnaître le motif de ce seul commentaire de review, pas le
@@ -56,8 +56,7 @@ PR comment pattern (3 PRs in a row): "missing null check on line 42"
 clairs » — la question teste précisément si le candidat reconnaît que des commentaires corrects répétés qui ne portent pas
 sont le signe que l'intervention elle-même doit changer, et non se répéter.
 
-#### Q3. Comment contestez-vous une décision technique venant d'une partie prenante senior ou d'un manager que vous jugez erronée ?
-
+#### Q3. Comment contestez-vous une décision technique venant d'une partie prenante senior ou d'un manager que vous jugez erronée ? {#push-back-technical-decision-coming}
 **Réponse :** Commencer par une vraie curiosité sur leur raisonnement avant d'affirmer le vôtre — ils peuvent
 avoir un contexte que vous n'avez pas (une contrainte métier, une tentative échouée antérieure, une pression de calendrier qui
 change le calcul). Énoncer votre préoccupation de façon concrète et précise (le risque ou le coût réel,
@@ -81,8 +80,7 @@ Strong pushback: "This approach adds ~2 weeks of migration risk because it touch
 le piège est de s'arrêter à soulever une objection au lieu de l'associer à un coût concret et à une
 alternative concrète, ce qui rend la contestation persuasive plutôt que simplement notée.
 
-#### Q4. En tant que tech lead, comment gérez-vous une design review où deux ingénieurs seniors sont fortement en désaccord ?
-
+#### Q4. En tant que tech lead, comment gérez-vous une design review où deux ingénieurs seniors sont fortement en désaccord ? {#tech-lead-handle-design-review}
 **Réponse :** Séparer d'abord le désaccord des personnes — s'assurer que les deux se sentent
 réellement écoutés, puis faire écrire les deux positions assez concrètement pour les comparer sur les mêmes
 axes (que optimise chaque approche, que coûte chacune, dans quel scénario futur
@@ -106,8 +104,7 @@ Resolvable by a spike? No — it's a genuine priority trade-off (audit depth vs.
 projet indéfiniment — le piège est de traiter « faire s'accorder tout le monde » comme l'objectif au lieu de « faire
 prendre la décision, l'expliquer et en porter la responsabilité », ce dont une review bloquée a réellement besoin.
 
-#### Q5. Comment cadrez-vous et estimez-vous un projet à très forte incertitude pour des parties prenantes qui veulent une date ferme ?
-
+#### Q5. Comment cadrez-vous et estimez-vous un projet à très forte incertitude pour des parties prenantes qui veulent une date ferme ? {#scope-estimate-project-genuinely-high}
 **Réponse :** Être explicite sur le fait qu'une estimation ponctuelle unique pour un projet très incertain est en soi un
 mensonge déguisé en précision — communiquer plutôt une fourchette fondée sur les sources réelles
 d'incertitude (préciser ce qui est inconnu : une intégration tierce peu familière, une
@@ -134,8 +131,7 @@ génère réellement l'incertitude.
 
 ### Leadership & stratégie
 
-#### Q6. Vous héritez d'une équipe au moral bas et avec une dette technique importante. Décrivez votre approche pour les 90 premiers jours en tant que tech lead.
-
+#### Q6. Vous héritez d'une équipe au moral bas et avec une dette technique importante. Décrivez votre approche pour les 90 premiers jours en tant que tech lead. {#inherit-team-low-morale-significant}
 **Réponse :** Résister à l'envie de lancer immédiatement de grosses réécritures ou des changements radicaux avant de
 comprendre pourquoi les choses en sont arrivées là — les premières semaines servent surtout à écouter : des 1:1 avec
 chaque membre de l'équipe, et examiner les incidents/postmortems récents et l'état réel de la base de code
@@ -164,8 +160,7 @@ Day 90:     debt backlog is still long, but every engineer can name what changed
 l'écoute et une petite victoire qui bâtit la confiance, puisqu'une équipe au moral bas n'adhérera pas à un gros
 plan venant de quelqu'un qui n'a pas encore gagné sa crédibilité auprès d'elle.
 
-#### Q7. Comment décidez-vous entre construire un composant vous-même et l'acheter (ou adopter de l'open source) ?
-
+#### Q7. Comment décidez-vous entre construire un composant vous-même et l'acheter (ou adopter de l'open source) ? {#decide-building-component-yourself-buying}
 Le cadrer comme un **coût total de possession sur la durée de vie**, pesé face à la valeur stratégique. Demander d'abord : est-ce un **différenciateur** — quelque chose qui donne au produit un avantage
 concurrentiel — ou une **commodité** (authentification, paiements, livraison d'emails, observabilité, recherche) ? Les capacités de commodité favorisent presque toujours l'achat ou l'adoption : le fournisseur
 a déjà consacré des milliers d'années-ingénieur aux cas limites, à la conformité (PCI, SOC 2, GDPR) et aux correctifs de sécurité, et le temps rare de vos ingénieurs va à
@@ -187,8 +182,7 @@ Décision :  acheter ; fournisseur masqué derrière EmailSender, templates dans
 Réexamen :  03/2027 ou si coût mensuel > 5 k$
 ```
 
-#### Q8. Comment menez-vous la coordination d'un incident majeur en production ?
-
+#### Q8. Comment menez-vous la coordination d'un incident majeur en production ? {#run-incident-command-during-major}
 **Réponse :** Séparer les rôles pour que personne ne débogue et ne coordonne à la fois : un **incident commander** qui prend les décisions sans toucher au clavier, un ou plusieurs **intervenants** qui investiguent, et un **communicant** qui tient les parties prenantes informées.
 
 Atténuer d'abord (rollback, feature flag, failover), chercher la cause racine ensuite.
@@ -208,8 +202,7 @@ Limiter chaque hypothèse dans le temps, consigner les décisions dans un seul c
 
 **Pourquoi c'est un piège :** les candidats décrivent un débogage héroïque ; la question teste si l'on coordonne, atténue avant de diagnostiquer et communique à cadence régulière.
 
-#### Q9. Comment rédigez-vous une RFC ou un ADR pour qu'une équipe décide vraiment, au lieu de débattre sans fin ?
-
+#### Q9. Comment rédigez-vous une RFC ou un ADR pour qu'une équipe décide vraiment, au lieu de débattre sans fin ? {#write-rfc-adr-team-decides}
 **Réponse :** Poser le problème et les contraintes avant la solution, lister au moins deux vraies alternatives avec leurs coûts honnêtes (y compris « ne rien faire »), donner une recommandation, fixer une date limite de décision et un décideur nommé.
 
 Rester court (1-2 pages), faire circuler d'abord en commentaires asynchrones, et réserver la réunion aux points non résolus.
@@ -230,8 +223,7 @@ Points ouverts : TTL de session ; qui est d'astreinte pour Redis ?
 
 **Pourquoi c'est un piège :** un long document avec une seule option et sans décideur est une annonce de design, pas un outil de décision.
 
-#### Q10. Comment structurez-vous le recrutement et les entretiens pour des décisions cohérentes et équitables ?
-
+#### Q10. Comment structurez-vous le recrutement et les entretiens pour des décisions cohérentes et équitables ? {#structure-hiring-interviewing-decisions-consistent}
 **Réponse :** Définir le niveau et les signaux recherchés avant d'interviewer (ex. débogage, compromis de conception, collaboration), confier un signal à chaque interviewer, utiliser les mêmes questions et une grille écrite pour tous les candidats, et demander les retours écrits *avant* le débrief pour que la voix la plus forte n'ancre pas le groupe.
 
 Les faits (« elle a identifié la race condition sans aide ») valent mieux que l'impression (« a l'air intelligent »). L'expérience candidat fait partie du travail : planning clair, réponse rapide.
@@ -248,8 +240,7 @@ Débrief : lecture silencieuse des fiches (5 min) -> chacun donne sa note d'abor
 
 **Pourquoi c'est un piège :** « je me fie à mon instinct » signale incohérence et biais.
 
-#### Q11. Comment déléguez-vous bien, et comment dites-vous non sans abîmer la relation ?
-
+#### Q11. Comment déléguez-vous bien, et comment dites-vous non sans abîmer la relation ? {#delegate-well-say-damaging-relationship}
 **Réponse :** Déléguer le résultat, pas les étapes : énoncer l'objectif, les contraintes, les droits de décision et les points de contrôle, puis laisser la personne choisir l'approche.
 
 Adapter la tâche à un axe de progression tout en gardant un filet de sécurité (une revue à mi-parcours).
@@ -269,8 +260,7 @@ Dire non :     "Je ne peux pas prendre la demande de dashboard ce sprint sans ab
 
 **Pourquoi c'est un piège :** « je le ferais moi-même » (ne sait pas déléguer) et « je dirais oui et je travaillerais la nuit » (ne sait pas dire non) sont les deux défauts sondés.
 
-#### Q12. Comment intégrez-vous un nouvel ingénieur pour qu'il soit rapidement productif ?
-
+#### Q12. Comment intégrez-vous un nouvel ingénieur pour qu'il soit rapidement productif ? {#onboard-new-engineer-productive-quickly}
 **Réponse :** Préparer avant le jour 1 : laptop, accès, un binôme, un plan écrit. Viser un petit changement réel en production dès la première semaine (donne confiance et valide l'environnement), puis élargir progressivement le périmètre.
 
 Donner du contexte, pas seulement des tâches : vue d'architecture, qui possède quoi, pourquoi les décisions clés ont été prises. Tenir des 1:1 réguliers, recueillir les retours sur l'onboarding lui-même, et corriger la doc chaque fois qu'un arrivant bute.
@@ -287,8 +277,7 @@ Jour 90     rétro avec le manager : qu'est-ce qui était flou ? -> 3 correction
 
 **Pourquoi c'est un piège :** « je lui donne la doc et il lit » ignore que le meilleur signe d'équipe saine est la vitesse à laquelle un arrivant livre quelque chose de réel.
 
-#### Q13. Comment gérez-vous la relation avec votre manager (« manage up ») sans surprises ?
-
+#### Q13. Comment gérez-vous la relation avec votre manager (« manage up ») sans surprises ? {#manage-up-keeping-manager-informed}
 **Réponse :** Convenir explicitement des priorités et des critères de succès, puis communiquer de façon proactive : mauvaises nouvelles tôt avec un plan proposé, avancement à cadence régulière, décisions attendues avec une échéance.
 
 Parler en résultats et en risques, pas en activité. Demander sur quoi le manager est évalué pour que votre travail s'y rattache. Le but : que votre manager ne soit jamais surpris par ce qu'il aurait pu apprendre de vous.
@@ -306,8 +295,7 @@ Aide :      intro à l'équipe sécurité pour le créneau de pentest
 
 **Pourquoi c'est un piège :** « je fais du bon travail et ça se voit » laisse le manager aveugle ; le réflexe senior est de rendre avancement et risques visibles.
 
-#### Q14. Comment mesurer si votre équipe livre bien, sans transformer les métriques en objectifs ?
-
+#### Q14. Comment mesurer si votre équipe livre bien, sans transformer les métriques en objectifs ? {#measure-whether-team-delivering-well}
 **Réponse :** Utilisez les quatre **métriques DORA** comme vue d'ensemble du système : fréquence de déploiement, délai de mise en production des changements, taux d'échec des changements, et temps de rétablissement du service.
 
 Elles équilibrent vitesse et stabilité : améliorer l'une au détriment de l'autre se voit.
@@ -329,8 +317,7 @@ T2 (actions : SLA de revue 1 jour, feature flags, PR plus petites, canary)
 
 **Pourquoi c'est un piège :** comparer des équipes ou des individus sur les chiffres DORA récompense la triche et pénalise les équipes aux systèmes plus difficiles ; la comparaison utile est celle d'une équipe avec son propre passé.
 
-#### Q15. Comment prioriser la dette technique face au travail produit ?
-
+#### Q15. Comment prioriser la dette technique face au travail produit ? {#prioritise-technical-debt-against-product}
 **Réponse :** Rendez la dette visible et chiffrée en termes métier, puis arbitrez-la comme tout autre travail.
 
 Tenez un court registre de dette où chaque élément indique ce qu'il coûte aujourd'hui (incidents, livraison plus lente dans cette zone, temps d'intégration, risque de sécurité ou de montée de version) et ce que sa correction débloquerait.
@@ -352,8 +339,7 @@ Ancien back-office (jQuery)  laid, mais stable                      deux fois pa
 
 **Pourquoi c'est un piège :** demander « un sprint de refactoring » sans chiffres ressemble à des développeurs qui veulent peaufiner leur code, et perd face à n'importe quelle fonctionnalité ; le même travail présenté comme « réduire les incidents du paiement et diviser par deux le délai sur la tarification » est en général accepté.
 
-#### Q16. Comment animer une rétrospective qui débouche sur des changements ?
-
+#### Q16. Comment animer une rétrospective qui débouche sur des changements ? {#run-retrospective-leads-change}
 **Réponse :** Gardez-la sûre et sans recherche de coupable : l'animateur rappelle l'objectif (améliorer notre façon de travailler, pas juger les personnes) et s'assure que les personnes discrètes sont entendues, par exemple avec un temps d'écriture silencieuse avant la discussion.
 
 Partez des données : ce qui s'est passé pendant le sprint ou l'incident, métriques, chronologie. Regroupez les sujets, votez, et consacrez l'essentiel du temps aux un ou deux qui comptent, en creusant les causes.
@@ -374,8 +360,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 ## 🎯 Scénarios réels
 
-### S1. Une design review entre deux ingénieurs seniors bloque un projet pendant des semaines sans résolution
-
+### S1. Une design review entre deux ingénieurs seniors bloque un projet pendant des semaines sans résolution {#design-review-two-senior-engineers}
 - **Symptômes :** Deux ingénieurs seniors ont des positions fermes et opposées sur une décision
   d'architecture centrale, et des réunions de review répétées ne convergent pas — le calendrier du projet glisse
   pendant que le désaccord continue.
@@ -408,8 +393,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S2. Les PR d'un ingénieur junior répètent la même catégorie d'erreur malgré les commentaires de review
-
+### S2. Les PR d'un ingénieur junior répètent la même catégorie d'erreur malgré les commentaires de review {#junior-engineer-prs-keep-repeating}
 - **Symptômes :** Les commentaires de code review identifient correctement la même classe de problème sur plusieurs
   PR consécutives du même ingénieur, corrigée individuellement à chaque fois mais réapparaissant dans la PR
   suivante.
@@ -440,8 +424,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S3. Le moral de l'équipe chute visiblement après un licenciement ou une réorganisation, et la productivité/la confiance en souffrent
-
+### S3. Le moral de l'équipe chute visiblement après un licenciement ou une réorganisation, et la productivité/la confiance en souffrent {#team-morale-visibly-drops-after}
 - **Symptômes :** Les membres restants de l'équipe montrent un engagement réduit, un scepticisme accru envers la
   communication de la direction, et un ralentissement notable de la livraison au-delà de ce que la seule réduction d'effectif
   expliquerait.
@@ -473,8 +456,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S4. Une partie prenante exige une deadline irréaliste pour une fonctionnalité complexe
-
+### S4. Une partie prenante exige une deadline irréaliste pour une fonctionnalité complexe {#stakeholder-demands-unrealistic-deadline-complex}
 - **Symptômes :** Une partie prenante énonce une deadline ferme pour une fonctionnalité que l'équipe d'ingénierie estime
   nécessiter sensiblement plus de temps, la deadline étant apparemment non négociable d'après
   le cadrage de la partie prenante.
@@ -506,8 +488,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S5. Deux membres de l'équipe sont en conflit permanent sur la propriété du code ou l'approche technique
-
+### S5. Deux membres de l'équipe sont en conflit permanent sur la propriété du code ou l'approche technique {#two-team-members-ongoing-conflict}
 - **Symptômes :** Frictions répétées en review ou en planification entre deux membres précis de l'équipe,
   qui dépassent le désaccord technique normal pour devenir une dynamique personnelle ou territoriale qui
   commence à affecter la dynamique de l'équipe élargie.
@@ -539,8 +520,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S6. Un incident de production remonte à une décision d'architecture que vous avez personnellement prise
-
+### S6. Un incident de production remonte à une décision d'architecture que vous avez personnellement prise {#production-incident-traces-back-architectural}
 - **Symptômes :** Une enquête de postmortem identifie la cause racine comme un choix de conception précis
   que vous avez défendu et pris, et non un bug sans rapport ou un facteur extérieur.
 - **Diagnostic/réflexion :** C'est un moment où la façon dont vous le gérez compte autant que le
@@ -573,8 +553,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S7. Une rotation d'astreinte se noie sous des pages non actionnables, et l'équipe cesse de faire assez confiance aux alertes pour réagir vite à une vraie
-
+### S7. Une rotation d'astreinte se noie sous des pages non actionnables, et l'équipe cesse de faire assez confiance aux alertes pour réagir vite à une vraie {#call-rotation-drowns-non-actionable}
 - **Symptômes :** La rotation d'astreinte reçoit des dizaines de pages par semaine, dont la grande majorité
   se résolvent d'elles-mêmes ou ne demandent aucune action ; les ingénieurs signalent qu'ils mettent en sourdine ou retardent les pages, et un
   incident réellement critique est récemment resté non acquitté pendant plus de 20 minutes parce qu'il ressemblait à du
@@ -606,12 +585,11 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
   traiter « cette page a-t-elle exigé qu'un humain fasse réellement quelque chose » comme le critère pour la garder en
   page, plutôt qu'en ticket ou en métrique de dashboard.
 
-*Voir aussi :* [Full Stack S22](fullstack-devops-k8s.md) pour le côté technique : alertes basées sur les SLO et sur les symptômes.
+*Voir aussi :* [Full Stack S22](fullstack-devops-k8s.md#call-phone-rings-dozens-times) pour le côté technique : alertes basées sur les SLO et sur les symptômes.
 
 </details>
 
-### S8. Un membre de l'équipe réagit systématiquement de façon défensive aux retours de code review, quelle que soit la manière dont ils sont formulés
-
+### S8. Un membre de l'équipe réagit systématiquement de façon défensive aux retours de code review, quelle que soit la manière dont ils sont formulés {#team-member-consistently-responds-defensively}
 - **Symptômes :** Des retours de review raisonnables et bien formulés se heurtent de façon répétée à des objections,
   des justifications ou une frustration visible d'un membre précis de l'équipe, même quand le retour est
   factuellement correct et délivré de façon constructive par plusieurs relecteurs différents.
@@ -642,8 +620,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S9. Une dépendance inter-équipes bloque de façon répétée la livraison de votre équipe
-
+### S9. Une dépendance inter-équipes bloque de façon répétée la livraison de votre équipe {#cross-team-dependency-repeatedly-blocks}
 - **Symptômes :** La roadmap de votre équipe continue de glisser parce qu'un travail requis d'une autre
   équipe n'est pas prêt quand il le faut, de façon récurrente sur plusieurs projets et non comme un raté
   ponctuel de planning.
@@ -673,8 +650,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S10. Retirer un système legacy dont dépendent encore de nombreuses équipes s'avère bien plus difficile que prévu
-
+### S10. Retirer un système legacy dont dépendent encore de nombreuses équipes s'avère bien plus difficile que prévu {#sunsetting-legacy-system-many-teams}
 - **Symptômes :** Une dépréciation planifiée d'un ancien système cale à répétition — les équipes ont toujours « encore
   une » dépendance qui n'est pas prête à migrer, et la date de sunset ne cesse de glisser.
 
@@ -704,8 +680,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S11. En tant qu'intervieweur, vous devez évaluer équitablement la réponse d'un candidat en system design
-
+### S11. En tant qu'intervieweur, vous devez évaluer équitablement la réponse d'un candidat en system design {#interviewer-need-evaluate-candidate-system}
 - **Symptômes :** Un candidat produit une conception avec un diagramme d'apparence raisonnable, mais vous devez
   évaluer si elle reflète réellement un solide jugement en system design ou des réponses
   mémorisées, toutes faites, qui ne démontrent pas une vraie compréhension.
@@ -716,7 +691,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 <summary>Afficher diagnostic, résolution & prévention</summary>
 
 - **Diagnostic :** Le signal le plus fort n'est pas de savoir s'il a dessiné le « bon » diagramme — c'est de savoir s'il
-  a posé des questions de clarification avant de concevoir ([System Design Q1](system-design.md)), s'il sait articuler le vrai
+  a posé des questions de clarification avant de concevoir ([System Design Q1](system-design.md#steps-follow-system-design-interview)), s'il sait articuler le vrai
   compromis derrière chaque décision importante, et s'il sait approfondir au moins un
   composant quand on le pousse.
 - **Exemple :**
@@ -725,7 +700,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
   Candidate proposes fan-out-on-write for the whole feed design, no mention of celebrity
   accounts. Interviewer: "This account has 50M followers — walk me through what happens
   when they post."
-  Strong candidate: adapts live, proposes the fan-out-on-read special case ([System Design Q42](system-design.md)).
+  Strong candidate: adapts live, proposes the fan-out-on-read special case ([System Design Q42](system-design.md#design-instagram-feed-high-level)).
   Weak candidate: repeats the original design unchanged, doesn't register the new constraint.
   ```
 
@@ -737,8 +712,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S12. Le produit ne veut que des fonctionnalités ; l'ingénierie dit que la dette technique ralentit tout le monde — et la direction ne finance pas le nettoyage
-
+### S12. Le produit ne veut que des fonctionnalités ; l'ingénierie dit que la dette technique ralentit tout le monde — et la direction ne finance pas le nettoyage {#product-wants-features-only-engineering}
 - **Symptômes :** Le lead time par fonctionnalité a doublé en un an, les incidents se répètent dans le même module legacy, et les meilleurs ingénieurs râlent sur « le code
   de facturation ». Chaque demande de « sprint de refactoring » est refusée comme un coût non chiffré sans valeur client.
 
@@ -767,8 +741,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-### S13. La production et la qualité d'un ingénieur ont baissé sur plusieurs mois, et l'équipe le remarque
-
+### S13. La production et la qualité d'un ingénieur ont baissé sur plusieurs mois, et l'équipe le remarque {#engineer-output-quality-have-dropped}
 - **Symptômes :** Un ingénieur auparavant fiable manque désormais ses engagements, ses PR sont en retard et peu soignées, il est plus silencieux en réunion, et ses collègues commencent discrètement à
   le contourner. Personne ne l'a soulevé directement.
 
@@ -798,7 +771,7 @@ Action : découper les stories pour que chacune soit testable en ≤ 2 jours ; S
 
 </details>
 
-## 🗣️ Comportemental (STAR)
+## 🗣️ Comportemental (STAR) {#behavioral-star}
 
 > Les questions comportementales (« Parlez-moi d'une fois où… ») évaluent le jugement, l'ownership et la communication à partir du comportement *passé*. Chaque réponse modèle ci-dessous suit la méthode **STAR**. Les scénarios de leadership technique sont dans [Leadership](leadership-behavioral.md).
 
@@ -831,8 +804,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 #### Présentation
 
-#### B1. Parlez-moi de vous.
-
+#### B1. Parlez-moi de vous. {#yourself}
 **Pourquoi on la pose :** voir si vous résumez votre parcours en un récit cohérent et pertinent.
 
 - **S** — Présent : « Je suis ingénieur full-stack senior avec 8 ans d'expérience, surtout des backends Java/Spring Boot et des frontends React sur Kubernetes. »
@@ -842,8 +814,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** réciter son CV chronologiquement pendant 5 minutes. Utilisez *présent → passé → futur* en moins de 90 secondes.
 
-#### B2. Parlez-moi d'une réalisation dont vous êtes particulièrement fier.
-
+#### B2. Parlez-moi d'une réalisation dont vous êtes particulièrement fier. {#achievement-particularly-proud}
 **Pourquoi on la pose :** vos valeurs et l'échelle d'impact à laquelle vous opérez.
 
 - **S** — Monolithe legacy, batch de nuit de 7 h qui échouait régulièrement, bloquant les rapports du matin de la finance.
@@ -853,8 +824,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** choisir une réalisation sans résultat mesurable, ou dire « nous » partout et effacer sa propre part.
 
-#### B3. Quels sont vos plus grandes forces et faiblesses ?
-
+#### B3. Quels sont vos plus grandes forces et faiblesses ? {#greatest-strengths-weaknesses}
 **Pourquoi on la pose :** lucidité et capacité à progresser activement.
 
 - **S** — Force : je découpe les problèmes flous en incréments livrables. Faiblesse : je prenais trop de choses en charge au lieu de déléguer.
@@ -864,8 +834,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** « je suis perfectionniste » ou une faiblesse disqualifiante pour le poste.
 
-#### B4. Pourquoi voulez-vous travailler chez nous ?
-
+#### B4. Pourquoi voulez-vous travailler chez nous ? {#want-here}
 **Pourquoi on la pose :** motivation, recherche faite, adéquation.
 
 - **S** — Ce que vous avez trouvé : produit, blog technique, stack, problèmes d'échelle.
@@ -875,8 +844,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** éloges génériques (« belle entreprise ») ou ne parler que de salaire/télétravail.
 
-#### B5. Pourquoi voulez-vous travailler dans la santé (ou pour une entreprise comme Doctolib) ?
-
+#### B5. Pourquoi voulez-vous travailler dans la santé ? {#want-healthcare}
 **Pourquoi on la pose :** une motivation qui résiste aux jours difficiles, et la compréhension des enjeux du domaine (données de patients, disponibilité, confiance).
 
 - **S** — Votre histoire commence par un lien concret et personnel avec la mission (un proche qui a attendu des semaines un rendez-vous, un projet où votre logiciel avait de vrais utilisateurs qui en dépendaient).
@@ -886,14 +854,13 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** des réponses génériques (« belle culture », « innovant ») ou une flatterie valable pour n'importe quelle entreprise. Autre piège : ignorer les contraintes ; montrer de l'enthousiasme sans reconnaître conformité et sensibilité des données paraît naïf.
 
-*Voir aussi :* [Security Q19](security.md) pour ce que protéger des données de santé signifie techniquement, et [Comportemental B4](leadership-behavioral.md) pour la version générique de cette question.
+*Voir aussi :* [Security Q19](security.md#design-protection-sensitive-healthcare-data) pour ce que protéger des données de santé signifie techniquement, et [Comportemental B4](leadership-behavioral.md#want-here) pour la version générique de cette question.
 
 ### 🟡 Pièges seniors
 
 #### Échec et feedback
 
-#### B6. Parlez-moi d'une erreur importante que vous avez commise.
-
+#### B6. Parlez-moi d'une erreur importante que vous avez commise. {#time-made-significant-mistake}
 **Pourquoi on la pose :** responsabilité, honnêteté, et capacité à transformer l'erreur en amélioration systémique.
 
 - **S** — J'ai livré une migration Flyway ajoutant une colonne `NOT NULL` avec valeur par défaut sur une table de 200 M de lignes ; elle a bloqué les écritures 9 minutes en production.
@@ -903,8 +870,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** un faux échec (« je travaille trop ») ou accuser les autres/les outils. Assumez dès la première phrase.
 
-#### B7. Parlez-moi d'un feedback difficile reçu. Comment avez-vous réagi ?
-
+#### B7. Parlez-moi d'un feedback difficile reçu. Comment avez-vous réagi ? {#time-received-tough-feedback-react}
 **Pourquoi on la pose :** réceptivité et ego.
 
 - **S** — Mon tech lead m'a dit que mes PR étaient trop grosses et difficiles à relire, ralentissant l'équipe.
@@ -916,8 +882,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 #### Conflit et influence
 
-#### B8. Décrivez un conflit avec un collègue et comment vous l'avez résolu.
-
+#### B8. Décrivez un conflit avec un collègue et comment vous l'avez résolu. {#conflict-colleague-resolved}
 **Pourquoi on la pose :** intelligence émotionnelle ; escaladez-vous, évitez-vous, ou résolvez-vous ?
 
 - **S** — Un collègue backend et moi divergions sur le versionnement d'API : il voulait des changements cassants en `v1`, j'avais besoin de stabilité pour l'app mobile.
@@ -927,8 +892,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** une histoire où vous aviez simplement raison. Montrez de l'empathie et un compromis fondé sur des données.
 
-#### B9. Parlez-moi d'une fois où vous étiez en désaccord avec votre manager.
-
+#### B9. Parlez-moi d'une fois où vous étiez en désaccord avec votre manager. {#time-disagreed-manager}
 **Pourquoi on la pose :** exprimez-vous votre avis avec respect, et vous engagez-vous une fois la décision prise ?
 
 - **S** — Mon manager voulait livrer une fonctionnalité sans test de charge pour tenir la date d'une démo client.
@@ -938,10 +902,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** « disagree and commit » sans montrer le désaccord, ou à l'inverse refuser de s'engager ensuite.
 
-*Méthode :* [Leadership Q3](leadership-behavioral.md) traite de la façon de contester un interlocuteur senior ; cette question demande l'histoire.
+*Méthode :* [Leadership Q3](leadership-behavioral.md#push-back-technical-decision-coming) traite de la façon de contester un interlocuteur senior ; cette question demande l'histoire.
 
-#### B10. Parlez-moi d'une fois où vous avez travaillé sous forte pression ou avec une deadline serrée.
-
+#### B10. Parlez-moi d'une fois où vous avez travaillé sous forte pression ou avec une deadline serrée. {#time-worked-under-tight-deadline}
 **Pourquoi on la pose :** priorisation et sang-froid.
 
 - **S** — Un changement réglementaire exigeait un nouveau parcours KYC en 3 semaines ; l'estimation était de 6.
@@ -951,8 +914,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** les exploits héroïques (nuits blanches) comme action principale. Un senior réduit le périmètre et le risque.
 
-#### B11. Parlez-moi d'une fois où le besoin était flou ou changeant.
-
+#### B11. Parlez-moi d'une fois où le besoin était flou ou changeant. {#time-had-unclear-changing-requirement}
 **Pourquoi on la pose :** aisance face à l'ambiguïté.
 
 - **S** — Le produit demandait « un meilleur tableau de bord de reporting » sans définir « meilleur ».
@@ -964,8 +926,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 ### 🔴 Expert / Ouvert
 
-#### B12. Parlez-moi d'une fois où vous avez influencé une décision sans autorité hiérarchique.
-
+#### B12. Parlez-moi d'une fois où vous avez influencé une décision sans autorité hiérarchique. {#time-influenced-decision-having-authority}
 **Pourquoi on la pose :** impact de niveau staff, inter-équipes.
 
 - **S** — Quatre équipes utilisaient quatre formats de logs différents, rendant le traçage inter-services pénible en incident.
@@ -975,10 +936,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** « je les ai convaincus » sans mécanisme. Montrez données, prototype et coût d'adoption réduit.
 
-*Méthode :* [Leadership Q3](leadership-behavioral.md) traite de l'influence sans autorité ; cette question demande l'histoire.
+*Méthode :* [Leadership Q3](leadership-behavioral.md#push-back-technical-decision-coming) traite de l'influence sans autorité ; cette question demande l'histoire.
 
-#### B13. Parlez-moi d'un changement technique majeur que vous avez piloté.
-
+#### B13. Parlez-moi d'un changement technique majeur que vous avez piloté. {#time-drove-major-technical-change}
 **Pourquoi on la pose :** vision, gestion du risque et exécution à grande échelle.
 
 - **S** — Un monolithe déployé une fois par mois, avec 1 release sur 4 annulée.
@@ -988,8 +948,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** une histoire de réécriture big-bang ; on attend des étapes incrémentales et réversibles.
 
-#### B14. Parlez-moi d'une fois où vous avez amélioré la qualité du code dans votre équipe.
-
+#### B14. Parlez-moi d'une fois où vous avez amélioré la qualité du code dans votre équipe. {#time-improved-code-quality-team}
 **Pourquoi on la pose :** voir si vous relevez le niveau par l'influence et les habitudes plutôt que par des leçons ou de l'héroïsme.
 
 - **S** — Notre service avait des tests instables, des revues de 40 minutes et une classe de régressions récurrente autour de la gestion des dates.
@@ -999,10 +958,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** une croisade en solo (« j'ai tout réécrit ») ou une réponse vague sans chiffres. Des améliorations que l'équipe n'a pas adoptées ne sont pas une réussite.
 
-*Voir aussi :* [Testing Q18](testing.md) pour les contrôles qualité dans le pipeline, et [Comportemental B20](leadership-behavioral.md) sur qualité contre vitesse.
+*Voir aussi :* [Testing Q18](testing.md#load-test-rest-api-gatling) pour les contrôles qualité dans le pipeline, et [Comportemental B20](leadership-behavioral.md#time-had-balance-quality-against) sur qualité contre vitesse.
 
-#### B15. Parlez-moi d'une fois où vous avez accompagné un collègue en difficulté.
-
+#### B15. Parlez-moi d'une fois où vous avez accompagné un collègue en difficulté. {#time-mentored-helped-struggling-teammate}
 **Pourquoi on la pose :** effet multiplicateur et patience.
 
 - **S** — Un développeur junior dépassait ses estimations d'un facteur 2 depuis deux sprints et perdait confiance.
@@ -1012,10 +970,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** se présenter en héros qui a tout réglé. Le résultat doit être *leur* progression.
 
-*Méthode :* [Leadership Q1](leadership-behavioral.md) et [Leadership S2](leadership-behavioral.md) traitent du mentorat efficace ; cette question demande l'histoire.
+*Méthode :* [Leadership Q1](leadership-behavioral.md#technical-feedback-mentorship-effective-opposed) et [Leadership S2](leadership-behavioral.md#junior-engineer-prs-keep-repeating) traitent du mentorat efficace ; cette question demande l'histoire.
 
-#### B16. Parlez-moi d'une décision prise avec des informations incomplètes.
-
+#### B16. Parlez-moi d'une décision prise avec des informations incomplètes. {#decision-made-incomplete-information}
 **Pourquoi on la pose :** jugement sous incertitude et réversibilité.
 
 - **S** — Il fallait choisir un broker de messages en 2 semaines, avec des prévisions de débit floues.
@@ -1025,8 +982,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** feindre la certitude. Montrez comment vous avez réduit l'incertitude et limité le rayon d'impact.
 
-#### B17. Parlez-moi d'une fois où vous vous êtes assuré que votre travail apportait une vraie valeur aux utilisateurs.
-
+#### B17. Parlez-moi d'une fois où vous vous êtes assuré que votre travail apportait une vraie valeur aux utilisateurs. {#time-made-sure-delivered-real}
 **Pourquoi on la pose :** voir si vous vous souciez des résultats, pas seulement des tickets livrés.
 
 - **S** — On nous a demandé un export en libre-service pour les administrateurs de cabinets ; le cahier des charges décrivait un module de reporting complet.
@@ -1036,10 +992,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** décrire la livraison (« nous avons livré à temps ») sans preuve d'impact. Dites comment vous avez mesuré la valeur, et ce que vous avez choisi de *ne pas* construire.
 
-*Voir aussi :* [Full Stack Q8](fullstack-devops-k8s.md) sur la mesure de ce que vivent les utilisateurs.
+*Voir aussi :* [Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average) sur la mesure de ce que vivent les utilisateurs.
 
-#### B18. Parlez-moi d'un incident de production que vous avez investigué.
-
+#### B18. Parlez-moi d'un incident de production que vous avez investigué. {#production-incident-investigated}
 **Pourquoi on la pose :** calme, méthode et apprentissage sous pression, plus l'honnêteté sur votre part de responsabilité.
 
 - **S** — Des alertes de latence se sont déclenchées sur l'API de réservation à 14h10 et le taux d'erreurs est monté à 8 %.
@@ -1049,10 +1004,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** un récit héroïque, accuser une personne, ou inverser l'ordre atténuation puis diagnostic. Montrez la séquence : stabiliser, diagnostiquer, prévenir.
 
-*Voir aussi :* [Leadership S6](leadership-behavioral.md) pour un incident causé par votre propre décision, et [Full Stack Q36](fullstack-devops-k8s.md) pour une méthode d'investigation de latence.
+*Voir aussi :* [Leadership S6](leadership-behavioral.md#production-incident-traces-back-architectural) pour un incident causé par votre propre décision, et [Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) pour une méthode d'investigation de latence.
 
-#### B19. Parlez-moi d'une fois où vous avez changé une décision technique face à de nouveaux éléments.
-
+#### B19. Parlez-moi d'une fois où vous avez changé une décision technique face à de nouveaux éléments. {#time-changed-technical-decision-after}
 **Pourquoi on la pose :** honnêteté intellectuelle et capacité à changer de cap sans ego.
 
 - **S** — J'avais proposé de mettre en cache les disponibilités pendant 10 minutes pour réduire la charge de la base, et l'équipe avait approuvé.
@@ -1062,10 +1016,9 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** choisir un exemple anodin, ou un cas où vous aviez « raison depuis le début ». Montrez quel élément vous a fait changer d'avis, comment vous l'avez dit publiquement, et comment vous avez limité le coût du revirement.
 
-*Voir aussi :* [Comportemental B16](leadership-behavioral.md) sur la décision avec des informations incomplètes.
+*Voir aussi :* [Comportemental B16](leadership-behavioral.md#decision-made-incomplete-information) sur la décision avec des informations incomplètes.
 
-#### B20. Parlez-moi d'un arbitrage entre qualité et rapidité.
-
+#### B20. Parlez-moi d'un arbitrage entre qualité et rapidité. {#time-had-balance-quality-against}
 **Pourquoi on la pose :** pragmatisme et intégrité.
 
 - **S** — Un contrat commercial dépendait d'une fonctionnalité en 2 semaines ; la conception propre en demandait 5.
@@ -1079,8 +1032,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 Ces questions arrivent lors du premier appel de 20 minutes, en général avec un recruteur plutôt qu'un ingénieur. Ce ne sont pas des histoires STAR : répondez en 30–60 secondes, restez positif, et préparez la formulation à l'avance.
 
-#### B21. Pourquoi quittez-vous votre poste actuel ?
-
+#### B21. Pourquoi quittez-vous votre poste actuel ? {#leaving-current-job}
 **Pourquoi on la pose :** pour détecter un conflit, un problème de performance ou une suite de passages courts.
 
 - **Présentez-le comme un mouvement vers quelque chose :** « Je veux porter des décisions d'architecture entre équipes, et ce rôle n'existe pas là où je suis. »
@@ -1089,8 +1041,7 @@ Ces questions arrivent lors du premier appel de 20 minutes, en général avec un
 
 **Piège :** critiquer votre manager ou votre entreprise. Même si c'est vrai, l'interlocuteur entend « cette personne dira la même chose de nous ».
 
-#### B22. Quelles sont vos prétentions salariales ?
-
+#### B22. Quelles sont vos prétentions salariales ? {#salary-expectations}
 **Pourquoi on la pose :** pour vérifier que vous entrez dans le budget avant d'investir du temps d'entretien.
 
 - **Renseignez-vous d'abord :** données de marché pour le poste, le niveau et la ville (études de salaires, pairs, levels.fyi).
@@ -1099,8 +1050,7 @@ Ces questions arrivent lors du premier appel de 20 minutes, en général avec un
 
 **Piège :** donner un chiffre sans recherche, ou votre salaire actuel comme ancrage. Dans certains pays, l'employeur n'a pas le droit de demander votre salaire actuel.
 
-#### B23. Où vous voyez-vous dans trois à cinq ans ?
-
+#### B23. Où vous voyez-vous dans trois à cinq ans ? {#see-yourself-three-five-years}
 **Pourquoi on la pose :** pour vérifier votre ambition et si elle correspond au parcours qu'ils peuvent offrir.
 
 - **Nommez une direction, pas un titre :** « Porter la direction technique d'un domaine produit : architecture, mentorat, livraison. »
@@ -1109,8 +1059,7 @@ Ces questions arrivent lors du premier appel de 20 minutes, en général avec un
 
 **Piège :** « à votre place » ou « à la tête de ma propre startup ». Les deux suggèrent que vous partirez ou ferez concurrence.
 
-#### B24. Présentez-moi en profondeur technique un projet dont vous êtes fier.
-
+#### B24. Présentez-moi en profondeur technique un projet dont vous êtes fier. {#project-re-proud-technical-depth}
 **Pourquoi on la pose :** c'est l'approfondissement que les recruteurs de postes de tech lead confient aux ingénieurs ; on teste une vraie appropriation et la compréhension des compromis derrière les décisions.
 
 - **Contexte en 2 phrases :** problème métier, échelle (utilisateurs, requêtes/s, volume de données), taille de l'équipe.
@@ -1121,8 +1070,7 @@ Ces questions arrivent lors du premier appel de 20 minutes, en général avec un
 
 **Piège :** décrire ce que « l'équipe » a construit sans dire quelles décisions étaient les vôtres, ou ne pas savoir répondre à « pourquoi pas X ? ».
 
-#### B25. Pourquoi un poste de tech lead, et que fait un tech lead selon vous ?
-
+#### B25. Pourquoi un poste de tech lead, et que fait un tech lead selon vous ? {#tech-lead-role-tech-lead}
 **Pourquoi on la pose :** pour vérifier que vous savez que le poste consiste à démultiplier l'équipe, pas à être le meilleur codeur.
 
 - **Définition :** responsable de la direction technique et de la livraison d'une équipe : décisions d'architecture, niveau d'exigence, déblocage, mentorat, et traduction entre produit et ingénierie.
@@ -1131,8 +1079,7 @@ Ces questions arrivent lors du premier appel de 20 minutes, en général avec un
 
 **Piège :** « Je veux décider de l'architecture ». La réponse doit porter sur les résultats de l'équipe, pas sur votre contrôle. Voir [Leadership](leadership-behavioral.md) pour les questions de méthode.
 
-#### B26. Avez-vous des questions pour nous ?
-
+#### B26. Avez-vous des questions pour nous ? {#have-any-questions}
 **Pourquoi on la pose :** pour mesurer votre intérêt et votre jugement. « Non » est un signal faible.
 
 - **Sur l'équipe :** « Comment l'équipe se répartit-elle entre produit, maintenance et astreinte ? »
@@ -1141,6 +1088,26 @@ Ces questions arrivent lors du premier appel de 20 minutes, en général avec un
 - **Sur le processus :** « Quelles sont les prochaines étapes, et y a-t-il un point de mon profil que vous aimeriez que je clarifie ? »
 
 **Piège :** ne poser que des questions sur le télétravail et les avantages au premier appel, ou des questions dont la réponse est sur la page carrières.
+
+#### B27. Pourquoi notre entreprise ? {#our-company}
+**Pourquoi on la pose :** pour distinguer un intérêt réel pour leur produit et leur ingénierie d'une réponse générique sur la santé ([B5](leadership-behavioral.md#want-healthcare)).
+
+- **S** — Partir du produit en tant qu'utilisateur : vous ou un proche avez réservé avec, ou vous savez comment les praticiens utilisent l'agenda, la téléconsultation ou le partage de documents.
+- **T** — Nommer les problèmes d'ingénierie qui vous attirent : une réservation à fort trafic sans aucune tolérance pour la double réservation, la sécurité et la conformité des données de santé dans plusieurs pays, et une grande base de code qui continue de livrer souvent.
+- **A** — Les relier à votre expérience par un ou deux exemples concrets (un service Java/Spring que vous avez fait passer à l'échelle, une fonctionnalité React utilisée par des milliers de personnes, un incident que vous avez mené), et citer ce que vous avez lu sur leur ingénierie (articles de blog, conférences, open source, stack).
+- **R** — Terminer sur l'impact que vous voulez avoir dans l'équipe pour laquelle vous passez l'entretien, dans leurs termes : les patients trouvent un soin plus vite, les praticiens passent moins de temps sur l'administratif.
+
+**Piège :** réciter la page carrières ou énumérer les avantages. Vérifiez les faits que vous citez, et si vous ne savez pas quelque chose de leur stack, dites ce que vous aimeriez apprendre plutôt que de deviner.
+
+#### B28. Parlez-moi d'une fonctionnalité que vous avez livrée de bout en bout avec le produit et le design. {#feature-delivered-end-end-product}
+**Pourquoi on la pose :** on attend d'un product engineer fullstack qu'il porte un problème, pas seulement des tickets : challenger le périmètre, livrer par petites étapes et mesurer le résultat.
+
+- **S** — Le problème utilisateur et comment vous saviez que c'en était un (données, tickets de support, entretiens utilisateurs).
+- **T** — Votre rôle sur le backend, le frontend et le déploiement, et la contrainte (échéance, legacy, conformité).
+- **A** — Comment vous avez façonné la solution avec le PM et le designer (ce que vous avez proposé, coupé ou simplifié), les choix techniques (API, modèle de données, feature flag, migration), et comment vous l'avez livrée progressivement (utilisateurs internes, déploiement par pourcentage).
+- **R** — Le résultat mesuré (adoption, conversion, temps gagné, moins de tickets de support) et ce que vous avez changé après avoir vu les données.
+
+**Piège :** une histoire purement technique sans utilisateur ni métrique, ou « le PM a tout décidé ». Montrez que vous avez influencé le *quoi*, pas seulement le *comment*.
 
 ## 🎤 Quiz oral
 
@@ -1163,13 +1130,13 @@ Q8–Q13 (coordination d'incident, RFC/ADR, recrutement, délégation, onboardin
 
 Choisissez 5 questions, répondez à chacune **à voix haute en moins de 2 minutes** en suivant S → T → A → R. Notez-vous : **0** digression · **1** histoire sans résultat · **2** STAR clair · **3** STAR avec chiffres et apprentissage. Sous 12/15, réécrivez les histoires de votre banque.
 
-1. B2. Une réalisation dont vous êtes fier.
+1. B5. Pourquoi voulez-vous travailler dans la santé ?
 2. B6. Une erreur importante.
 3. B8. Un conflit avec un collègue.
 4. B12. Influencer sans autorité.
 5. B16. Une décision avec informations incomplètes.
 
-## 📌 Cheat-sheet
+## 📌 Cheat-sheet {#cheat-sheet}
 
 ### Leadership au quotidien
 
@@ -1235,3 +1202,17 @@ Choisissez 5 questions, répondez à chacune **à voix haute en moins de 2 minut
 #### À éviter
 
 - **Signaux d'alerte** — accuser les autres, aucun résultat, tout en héroïsme, fausses faiblesses, longs monologues chronologiques.
+- **Pourquoi la santé** — une raison concrète, personnelle ou professionnelle, reliée à l'impact sur patients/praticiens et à ce que vous pouvez y construire. *Évitez le générique « j'aime aider les gens ».*
+
+### Banque d'histoires STAR {#banque-histoires-star}
+
+Prépare six histoires réelles ; chacune répond à plusieurs questions. Remplis Situation, Tâche, Action, Résultat (avec un chiffre défendable) pour chacune.
+
+| Histoire | Contenu type | Répond à |
+|----------|--------------|----------|
+| 1. Réalisation fière | Une livraison à impact mesurable | [B2](#achievement-particularly-proud), [B13](#time-drove-major-technical-change), [B17](#time-made-sure-delivered-real), [B24](#project-re-proud-technical-depth) |
+| 2. Erreur ou incident | Assumer la cause, montrer la correction et la leçon | [B6](#time-made-significant-mistake), [B18](#production-incident-investigated), [B19](#time-changed-technical-decision-after) |
+| 3. Conflit ou désaccord | Faits, écoute, issue | [B8](#conflict-colleague-resolved), [B9](#time-disagreed-manager), [B12](#time-influenced-decision-having-authority) |
+| 4. Pression et arbitrages | Deadline, qualité vs vitesse, informations incomplètes | [B10](#time-worked-under-tight-deadline), [B16](#decision-made-incomplete-information), [B20](#time-had-balance-quality-against) |
+| 5. Mentorat et qualité | Accompagner un collègue, améliorer la qualité du code | [B14](#time-improved-code-quality-team), [B15](#time-mentored-helped-struggling-teammate), [B7](#time-received-tough-feedback-react) |
+| 6. Ambiguïté et motivation | Besoins flous, pourquoi ce poste ou la santé | [B11](#time-had-unclear-changing-requirement), [B4](#want-here), [B5](#want-healthcare), [B25](#tech-lead-role-tech-lead) |

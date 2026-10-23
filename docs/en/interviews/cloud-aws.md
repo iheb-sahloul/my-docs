@@ -6,8 +6,7 @@ Most Java/React job ads list "AWS, Azure or GCP". This module uses AWS names, bu
 
 ### Identity & network
 
-#### Q1. How does AWS IAM work, and how should a Spring Boot service get its credentials?
-
+#### Q1. How does AWS IAM work, and how should a Spring Boot service get its credentials? {#aws-iam-spring-boot-service}
 **Answer:** IAM decides **who** (a principal: user, role, service) can do **what** (actions such as `s3:GetObject`) on
 **which resource** (an ARN), under which conditions. Policies are JSON documents attached to identities or resources;
 an explicit `Deny` always wins, and everything not allowed is denied. Applications should never use long-lived access
@@ -25,8 +24,7 @@ these up with no code. Humans log in through SSO (IAM Identity Center), not IAM 
 }
 ```
 
-#### Q2. What is a VPC, and how do public and private subnets fit together?
-
+#### Q2. What is a VPC, and how do public and private subnets fit together? {#vpc-public-private-subnets-fit}
 **Answer:** A **VPC** is your private network in a region, split into **subnets**, each in one availability zone (AZ).
 A **public subnet** has a route to an **Internet Gateway**; put only load balancers and bastions (or nothing) there.
 **Private subnets** hold application and database instances; they reach the internet for outbound calls through a
@@ -45,8 +43,7 @@ outbound: NAT Gateway per AZ; S3 via gateway endpoint
 
 ### Compute & data
 
-#### Q3. EC2, ECS, EKS or Lambda — how do you choose where to run a Java service?
-
+#### Q3. EC2, ECS, EKS or Lambda — how do you choose where to run a Java service? {#ec2-ecs-eks-lambda-run}
 **Answer:** **Lambda** suits event-driven, spiky or low-traffic work (S3 triggers, queue consumers, small APIs): no
 servers, pay per request, but there are limits on duration (15 min) and payload, and JVM cold starts (mitigate with
 SnapStart, GraalVM native or a lighter framework). **ECS on Fargate** is the simplest way to run long-running
@@ -63,8 +60,7 @@ Thumbnail generation on S3 upload              -> Lambda
 Nightly 3-hour batch                           -> ECS scheduled task / AWS Batch (not Lambda: 15 min limit)
 ```
 
-#### Q4. Which managed data and messaging services should a full-stack developer know, and when do you use each?
-
+#### Q4. Which managed data and messaging services should a full-stack developer know, and when do you use each? {#managed-data-messaging-services-full}
 **Answer:** **RDS / Aurora** for relational data (Postgres), with Multi-AZ for availability and read replicas for read
 scaling. **DynamoDB** for key-value access at any scale when you know your access patterns upfront. **S3** for files,
 backups and static sites (with CloudFront in front). **ElastiCache** (Redis/Valkey) for caching and sessions. **SQS** for
@@ -81,8 +77,7 @@ OrderPlaced -> SNS topic -> SQS "billing"   -> billing service
 each queue has its own DLQ and retry policy
 ```
 
-#### Q5. How do you deploy a React SPA on AWS?
-
+#### Q5. How do you deploy a React SPA on AWS? {#deploy-react-spa-aws}
 **Answer:** Build static files and upload them to a **private S3 bucket**, served through **CloudFront** with Origin
 Access Control (the bucket isn't public). Cache hashed assets (`main.abc123.js`) for a year and `index.html` for a short
 time or not at all, so a deploy takes effect immediately; invalidate `index.html` on deploy. Return `index.html` for
@@ -103,8 +98,7 @@ aws cloudfront create-invalidation --distribution-id E123 --paths /index.html
 
 ### Questions
 
-#### Q6. How do you apply least privilege in IAM without blocking every team?
-
+#### Q6. How do you apply least privilege in IAM without blocking every team? {#apply-least-privilege-iam-blocking}
 **Answer:** One role per workload with only the actions and resources it uses, scoped by ARN and, where useful,
 conditions (tags, `aws:SourceVpce`, encryption required). Avoid `*` actions and resources, and never attach
 `AdministratorAccess` to a service. Start from **IAM Access Analyzer** (it can generate a policy from CloudTrail
@@ -123,12 +117,11 @@ deny unapproved regions). Define roles in Terraform so they are reviewed like co
 **Why it's a trap:** a leaked credential's blast radius is the policy attached to it; `s3:*` on `*` turns a bug in one
 small service into a data breach of every bucket in the account.
 
-#### Q7. Where do application secrets live on AWS, and how do they reach the app?
-
+#### Q7. Where do application secrets live on AWS, and how do they reach the app? {#application-secrets-live-aws-app}
 **Answer:** In **Secrets Manager** (rotation built in, for example for RDS passwords) or **SSM Parameter Store**
 SecureString (cheaper, for config and secrets without rotation), encrypted with **KMS**. The workload's role is allowed
 to read only its own secrets. They reach the app through ECS task-definition `secrets`, the Kubernetes External Secrets
-Operator or Secrets Store CSI driver ([Full Stack Q38](fullstack-devops-k8s.md)), or Spring Cloud AWS reading them at
+Operator or Secrets Store CSI driver ([Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes)), or Spring Cloud AWS reading them at
 startup. Even better, avoid the secret altogether: **RDS IAM authentication** uses the role instead of a password.
 
 **Example:**
@@ -143,8 +136,7 @@ startup. Even better, avoid the secret altogether: **RDS IAM authentication** us
 **Why it's a trap:** secrets in Terraform variables or plain environment variables in the task definition end up in
 state files, the console and CI logs.
 
-#### Q8. What drives the AWS bill for a typical web application, and what are the usual surprises?
-
+#### Q8. What drives the AWS bill for a typical web application, and what are the usual surprises? {#drives-aws-bill-web-application}
 **Answer:** Compute (instance and Fargate hours, overprovisioned requests), managed databases (instance size,
 Multi-AZ, storage IOPS), and the surprises: **NAT Gateway** data processing (all private traffic to S3 or ECR going
 through NAT instead of VPC endpoints), **cross-AZ and internet data transfer**, **CloudWatch Logs** ingestion of debug
@@ -163,14 +155,13 @@ Cost Explorer, top line items this month:
 
 **Why it's a trap:** architecture diagrams don't show data transfer, and it's often the line that grows fastest.
 
-#### Q9. What does "highly available" mean on AWS, and what's the difference between Multi-AZ and multi-region?
-
+#### Q9. What does "highly available" mean on AWS, and what's the difference between Multi-AZ and multi-region? {#highly-available-aws-multi-az}
 **Answer:** **Multi-AZ** (at least two availability zones in one region) is the baseline for production: load balancer
 across AZs, tasks or pods spread across AZs, RDS Multi-AZ with automatic failover (about a minute), and no single-AZ
 dependency such as one NAT Gateway. It protects against the failure of a data centre and is cheap. **Multi-region**
 protects against a regional outage or meets data-residency rules, but it's expensive and complex: data replication
 (Aurora Global Database, DynamoDB global tables), DNS failover with Route 53 health checks, and writes in two regions
-bring conflicts. Pick it from the RTO/RPO the business really needs ([System Design Q31](system-design.md)): often
+bring conflicts. Pick it from the RTO/RPO the business really needs ([System Design Q31](system-design.md#rto-rpo-disaster-recovery-planning)): often
 backups plus infrastructure as code that can rebuild in another region (pilot light) is enough.
 
 **Example:**
@@ -187,8 +178,7 @@ centre, and many outages come from a forgotten single-AZ component.
 
 ### Questions
 
-#### Q10. How would you organise AWS accounts and infrastructure as code for a company with several teams?
-
+#### Q10. How would you organise AWS accounts and infrastructure as code for a company with several teams? {#organise-aws-accounts-infrastructure-code}
 **Answer:** A **multi-account landing zone** (Control Tower or a Terraform equivalent): management, security/log
 archive, shared networking, and workload accounts per environment (and per team or domain as it grows). Centralised
 CloudTrail, GuardDuty and Config, SSO for humans with permission sets, SCP guardrails. Infrastructure in **Terraform**
@@ -196,8 +186,7 @@ CloudTrail, GuardDuty and Config, SSO for humans with permission sets, SCP guard
 CI with OIDC-federated roles (no static keys in CI). Teams own their service stacks; the platform team owns the paved
 road (VPC, cluster, pipelines, observability).
 
-#### Q11. When is serverless the right architecture for a Java team, and when does it hurt?
-
+#### Q11. When is serverless the right architecture for a Java team, and when does it hurt? {#serverless-right-architecture-java-team}
 **Answer:** Serverless (API Gateway, Lambda, SQS, DynamoDB, Step Functions) is attractive for event-driven and spiky
 workloads, small teams with no ops capacity, and glue between managed services: you pay for use and scale to zero. It
 hurts with steady high traffic (per-request pricing exceeds containers), long or stateful processing, heavy
@@ -208,8 +197,7 @@ Lambdas calling Lambdas.
 
 ## 🎯 Real-world scenarios
 
-### S1. The service gets `AccessDenied` on S3 right after a deployment
-
+### S1. The service gets `AccessDenied` on S3 right after a deployment {#service-gets-accessdenied-s3-right}
 - **Symptoms:** A new ECS task (or pod) logs `software.amazon.awssdk.services.s3.model.S3Exception: Access Denied
   (Status Code: 403)` when writing invoices; the previous version worked.
 
@@ -236,8 +224,7 @@ Lambdas calling Lambdas.
 
 </details>
 
-### S2. The AWS bill doubled this month and nobody changed the architecture
-
+### S2. The AWS bill doubled this month and nobody changed the architecture {#aws-bill-doubled-month-nobody}
 - **Symptoms:** Finance flags a 2× increase; the main growth line is "EC2-Other" and "Data Transfer".
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -262,8 +249,7 @@ Lambdas calling Lambdas.
 
 </details>
 
-### S3. An availability zone has problems, and part of the traffic fails
-
+### S3. An availability zone has problems, and part of the traffic fails {#availability-zone-has-problems-part}
 - **Symptoms:** Error rate rises to about 30% during an AWS incident in one AZ; the service runs in two AZs.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -288,26 +274,60 @@ Lambdas calling Lambdas.
 
 </details>
 
+### S4. A Lambda-based API works in testing, then exhausts RDS connections during the first marketing campaign {#lambda-exhausts-rds-connections}
+- **Symptoms:** `FATAL: remaining connection slots are reserved` from Postgres; Lambda concurrency went from 20 to 900 in minutes; cold-start p99 at 3 s.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Each concurrent Lambda execution environment opens its own connection (or pool), so connections scale with concurrency, not with load on the database. Cold starts add JVM startup plus a TLS + auth handshake to the DB.
+- **Resolution:** Put RDS Proxy in front of the database (pools and multiplexes connections), set reserved concurrency on the function to cap fan-out, keep the pool size at 1 per environment, and reduce cold starts with SnapStart (Java) or provisioned concurrency for the hot path.
+- **Prevention:** Load-test with the expected concurrency, alert on `DatabaseConnections` and Lambda `ConcurrentExecutions`, and document the concurrency budget per function.
+
+</details>
+
+### S5. After an RDS Multi-AZ failover, the database is healthy in 60 seconds but the app keeps failing for 15 minutes {#rds-failover-stale-dns}
+- **Symptoms:** AWS event shows failover completed at 03:12; the application logs `Connection refused` / read-only errors until pods are restarted at 03:27.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** The cluster endpoint DNS now points to the new primary, but the JVM cached the old IP (`networkaddress.cache.ttl` unlimited with a security manager, or long by default), and the pool keeps handing out dead connections without validation or a max lifetime.
+- **Example:**
+
+  ```properties
+  # JVM: respect the endpoint's short DNS TTL
+  networkaddress.cache.ttl=5
+  # HikariCP: recycle connections and fail fast
+  spring.datasource.hikari.max-lifetime=600000
+  spring.datasource.hikari.connection-timeout=3000
+  ```
+
+- **Resolution:** Set a short JVM DNS TTL, configure `maxLifetime` and timeouts in the pool, and use the AWS Advanced JDBC Wrapper (failover plugin) or RDS Proxy, which hides the failover from clients.
+- **Prevention:** Run a failover drill in staging every quarter (`aws rds failover-db-cluster`) and measure time-to-recover for the application, not just for the database.
+
+</details>
+
 ## 🗣️ Reported interview questions
 
 Questions reported from real interviews, grouped by topic. Each has a short model answer: expand it with the detailed questions and scenarios above, and say the answer aloud.
 
 ### Access & services
 
-#### R1. An EC2 instance needs to access S3 securely. How do you configure it without storing credentials?
-
+#### R1. An EC2 instance needs to access S3 securely. How do you configure it without storing credentials? {#ec2-instance-needs-access-s3}
 **Answer:** Attach an **IAM role** (instance profile) with a least-privilege policy for the specific bucket/prefix; the SDK gets temporary credentials from the instance metadata service (use IMDSv2). Optionally restrict with a bucket policy, a VPC endpoint and `aws:SourceVpce`. No access keys in code, env vars or AMIs.
 
-#### R2. Difference between EC2, ECS and Lambda.
-
+#### R2. Difference between EC2, ECS and Lambda. {#ec2-ecs-lambda}
 **Answer:** **EC2**: virtual machines you manage (OS, scaling, patching): maximum control. **ECS**: container orchestrator, on EC2 or serverless **Fargate**. **Lambda**: functions run on events, auto-scaled, pay per invocation, with time and memory limits and cold starts. Choose by control vs operations vs workload shape.
 
-#### R3. How do you monitor applications in AWS?
-
+#### R3. How do you monitor applications in AWS? {#monitor-applications-aws}
 **Answer:** **CloudWatch** metrics, logs and alarms (plus Logs Insights, Container Insights); **X-Ray**/OpenTelemetry for traces; CloudTrail for API audit; health checks and SNS/PagerDuty for alerts. Alert on SLOs (latency, errors, saturation), not just CPU, and use dashboards per service.
 
-#### R4. Have you deployed microservices on AWS? Explain the deployment flow.
-
+#### R4. Have you deployed microservices on AWS? Explain the deployment flow. {#have-deployed-microservices-aws-deployment}
 **Answer:** Typical flow: commit → CI (build, test, scan) → build a Docker image → push to **ECR** → deploy to ECS/EKS (Terraform/CloudFormation for infra, ArgoCD/CodeDeploy for releases) behind an **ALB**, using rolling/blue-green/canary → health checks → CloudWatch monitoring and automatic rollback. Secrets in Secrets Manager, IAM roles per task, config per environment.
 
 ## 🎤 Oral quiz

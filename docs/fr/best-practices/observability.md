@@ -101,7 +101,7 @@ class RequestContextFilter extends OncePerRequestFilter {
 }
 ```
 
-### Ne loguez jamais de secrets ni de données personnelles
+### Ne loguez jamais de secrets ni de données personnelles {#never-log-secrets-or-personal-data}
 
 Masquez les mots de passe, tokens, numéros de carte et données personnelles, et évitez de loguer des corps de requête entiers.
 
@@ -239,7 +239,7 @@ public Quote quote(Cart cart) { ... }
 
 Utilisez `/actuator/health/liveness` et `/actuator/health/readiness`, et branchez-les sur Kubernetes.
 
-**Pourquoi :** traité dans [Configurez correctement les probes liveness, readiness et startup](docker-k8s-devops.md#configurez-correctement-les-probes-liveness-readiness-et-startup).
+**Pourquoi :** traité dans [Configurez correctement les probes liveness, readiness et startup](docker-k8s-devops.md#configure-liveness-readiness-and-startup-probes-correctly).
 
 ```yaml
 # ✅

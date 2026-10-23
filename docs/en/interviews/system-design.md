@@ -1,13 +1,470 @@
 # System Design
 
-> Interview method, numbers, building blocks, consistency, scaling, reliability, security, full design walk-throughs and incident scenarios. People and team topics live in [Leadership](leadership-behavioral.md).
+> Interview method, numbers, building blocks, consistency, scaling, reliability, security, full design walk-throughs and incident scenarios. People and team topics live in [Leadership](leadership-behavioral.md). New to the topic? Start with [the six problems](#p0).
+
+## 🧭 The six problems (start here)
+
+### The map {#p0}
+
+Almost every system design question is one of **six problems**. Name the symptom first, then pick the tool. Do not pick tools first ("let's add Kafka!") — that is how designs get over-engineered.
+
+| Symptom | Problem | Tools |
+|---|---|---|
+| Too many reads? | Scale reads | Caching, read replicas, DB indexing |
+| Too many writes? | Scale writes | Batching, sharding, async writes |
+| Live updates? | Real-time | WebSockets, server-sent events, long polling |
+| Slow jobs? | Background jobs | Message queue, worker pool |
+| Things will fail? | Reliability | Retries + backoff, idempotency, circuit breaker |
+| Reads and writes fighting? | Split them | CQRS |
+
+Rules of thumb for juniors:
+
+- **Measure before you fix.** "Slow" is not a symptom. "The `orders` query takes 2 s and runs 800 times per second" is.
+- **Start with the cheapest tool in each list** (an index before a cache, a cache before a replica, a replica before sharding). The lists above are roughly ordered from cheap to expensive.
+- **Every tool has a price.** Caches go stale, replicas lag, queues duplicate, shards complicate queries. Each section below lists the price (pitfalls) and what to reach for next (upgrades).
+
+Vocabulary used below: **RPS** = requests per second. **TTL** = time-to-live, how long a cache entry lives. **DB** = database. **p99** = the latency that 99% of requests beat.
+
+### P1. Too many reads → scale reads {#p1}
+
+**Symptom.** Your database CPU is high, pages get slow at peak time, and most queries are `SELECT`s. Think of a library with one desk: 1,000 people ask "where is book X?" and the librarian is overwhelmed. The fixes: put the answers on a board (cache), hire more librarians who each hold a copy of the catalogue (replicas), and organise the shelves so nobody has to walk every aisle (indexes).
+
+**Order to try them:** index → cache → replicas. Do not skip the index; it is free and often fixes the whole problem.
+
+#### 1. DB indexing
+
+An index is a sorted lookup structure (usually a B-tree) the database keeps next to the table, like the index at the back of a book. Without it, the database reads every row (a *full table scan*).
+
+```sql
+-- 10M rows, no index on email: scans all rows, ~2 s
+SELECT * FROM users WHERE email = 'ana@example.com';
+
+CREATE INDEX idx_users_email ON users(email);  -- <- now ~1 ms: jumps straight to the row
+
+-- check that it is actually used:
+EXPLAIN ANALYZE SELECT * FROM users WHERE email = 'ana@example.com';  -- look for "Index Scan", not "Seq Scan"
+```
+
+**Pitfalls**
+
+- Every index makes **writes slower** (each `INSERT`/`UPDATE` must also update the index) and uses disk. Don't index every column "just in case".
+- Index only columns you filter, join or sort on. A column with 2 values (`is_active`) is rarely worth an index alone.
+- A *composite* index `(a, b)` helps `WHERE a = ?` and `WHERE a = ? AND b = ?`, but **not** `WHERE b = ?` alone (column order matters).
+- Functions defeat indexes: `WHERE lower(email) = ...` ignores the index on `email`. Create an index on `lower(email)` instead.
+- `LIKE '%term'` (leading wildcard) cannot use a normal index.
+
+**Upgrades:** composite and partial indexes (`WHERE status = 'PENDING'`), covering indexes (include the selected columns so the table isn't touched), full-text search for text (see [Q10](#search-feature-fit-design-just)).
+
+#### 2. Caching
+
+A cache keeps a copy of an expensive answer in fast memory (Redis, in-process) so the next request skips the database. The standard recipe is **cache-aside**: look in the cache, on a miss read the DB and store the result.
+
+```java
+public Product getProduct(long id) {
+    String key = "product:" + id;
+    Product cached = redis.get(key);          // 1. look in the cache first
+    if (cached != null) return cached;        // hit: no DB query at all
+    Product p = repo.findById(id);            // 2. miss: ask the database
+    redis.set(key, p, Duration.ofMinutes(5)); // 3. store it; the TTL bounds how stale it can get
+    return p;
+}
+
+public void updateProduct(Product p) {
+    repo.save(p);                  // write to the DB first
+    redis.delete("product:" + p.id());  // then DELETE the key (don't update it); next read refills
+}
+```
+
+**Pitfalls**
+
+- **Stale data.** The cache can show the old price until the TTL ends or you delete the key. Always set a TTL, and decide how much staleness is acceptable per data type ([Q7](#caching-basic-idea-behind-cache), [Q17](#invalidate-cached-entry-race-hides)).
+- **Cache stampede.** A popular key expires, 5,000 requests miss at the same moment and all hit the DB. Fix with jittered (randomised) TTLs and "only one request refills" locking ([S1](#after-deploy-every-cache-entry), [S7](#cache-expiring-hot-key-causes)).
+- **Caching things that are cheap or rarely repeated** adds complexity for nothing. Cache what is *read often, changes rarely, and is costly to compute*.
+- **Cache as the only copy.** Treat it as disposable. If Redis dies, the app must still work (slower) — see [R17](#redis-cache-crashes-unexpectedly-application).
+
+**Upgrades:** write-through / write-behind strategies ([Q26](#cache-aside-write-write-behind)), a CDN for static or shared content ([Q27](#cdn-solve-help)), a two-level cache (in-process + Redis).
+
+#### 3. Read replicas
+
+A read replica is a copy of the database that receives every change from the primary and serves only reads. Writes still go to the primary.
+
+```text
+            writes                      replication (async)
+  App ───────────────► Primary ─────────────────────────► Replica 1
+   │                                                  └──► Replica 2
+   └─ reads (SELECT) ─────────────────────────────────────► Replica 1 / 2
+```
+
+```java
+@Transactional(readOnly = true)   // <- routed to a replica by a routing DataSource
+public List<Order> history(long userId) { ... }
+```
+
+**Pitfalls**
+
+- **Replication lag.** Replicas are a little behind. A user saves a profile, the page reloads from a replica, and the old value appears ("it didn't save!"). Route the read-after-write to the primary for that user ([Q21](#read-own-writes-break-under), [S10](#user-immediately-re-reads-own)).
+- Replicas only help **reads**. If writes are the problem, replicas change nothing (go to P2).
+- The primary is still a single point of failure for writes unless you set up failover ([Q20](#synchronous-asynchronous-database-replication-each)).
+
+**Upgrades:** automatic failover, per-query routing ("this endpoint tolerates staleness"), then sharding when even the primary cannot keep up (P2).
+
+### P2. Too many writes → scale writes {#p2}
+
+**Symptom.** Inserts and updates queue up, disk I/O is saturated, replication lag grows. Reads can be cached; writes cannot — every write must reach durable storage. Think of a restaurant kitchen: you can't "cache" a meal, so you cook several dishes at once (batching), add more kitchens (sharding), or take the order now and cook later (async).
+
+#### 1. Batching
+
+Group many small writes into one bigger operation. Each round trip and each transaction commit has a fixed cost; paying it once for 500 rows beats paying it 500 times.
+
+```sql
+-- slow: 1,000 round trips, 1,000 commits
+INSERT INTO events(user_id, type) VALUES (1, 'click');   -- x1000
+
+-- fast: 1 round trip, 1 commit
+INSERT INTO events(user_id, type) VALUES (1,'click'), (2,'view'), ... ;  -- 1000 rows
+```
+
+```java
+// Spring JDBC: send rows in chunks of 500
+jdbc.batchUpdate("INSERT INTO events(user_id, type) VALUES (?, ?)", events, 500,
+    (ps, e) -> { ps.setLong(1, e.userId()); ps.setString(2, e.type()); });
+```
+
+**Pitfalls**
+
+- Bigger batches mean **more latency** for the first item (it waits for the batch to fill) and **more loss** if the process crashes before flushing. Flush on *size or time*, whichever first (e.g. 500 rows or 200 ms).
+- One bad row can fail the whole batch. Decide: retry rows one by one, or send bad rows to a dead-letter table.
+- Huge batches hold locks and bloat the transaction log. Keep them moderate (hundreds to a few thousand).
+
+**Upgrades:** `COPY` (Postgres bulk load), write buffers that flush on a timer, then async writes (below).
+
+#### 2. Async writes
+
+Accept the write quickly, put it in a durable queue or log, and let a consumer write it to the database at the pace the database can handle. The user gets a fast response ("received"), not "stored".
+
+```text
+Client ─► API ─► Queue (Kafka/RabbitMQ) ─► Consumer ─► Database
+          └ returns 202 Accepted        (absorbs spikes; the DB sees a steady stream)
+```
+
+**Pitfalls**
+
+- The client can't read its own write right away (the data isn't stored yet). Return an id and let the UI show "pending", or poll for status.
+- Order and duplicates: queues usually deliver *at least once*, so consumers must be idempotent (P5).
+- If the queue is down or full, you've moved the failure, not removed it. Bound the queue and monitor lag (see [Q29](#backpressure-load-shedding-keep-overloaded), [S3](#message-queue-backlog-grows-hours)).
+- Don't use this for writes where the user needs an immediate yes/no (payment authorisation, seat booking).
+
+**Upgrades:** partitioned log (Kafka) for ordering per key, the outbox pattern so "save + publish" can't half-succeed ([Q16](#update-database-publish-event-losing)).
+
+#### 3. Sharding
+
+Split the data across several databases (*shards*), each holding a slice, so writes are spread out. A **shard key** decides where a row lives, e.g. `shard = hash(user_id) % 4`.
+
+```text
+user_id 17 ─ hash ─► Shard B     user_id 18 ─ hash ─► Shard D
+Each shard handles ~1/4 of the writes and holds ~1/4 of the data.
+```
+
+**Pitfalls**
+
+- **Sharding is the last resort**, not the first. It makes joins across shards, transactions across shards and re-balancing hard. Try indexes, batching, bigger hardware and partitioning inside one DB first ([Q23](#horizontal-vertical-scaling-trade-off)).
+- **Bad shard key = hot shard.** Sharding by `country` puts most traffic on one shard; sharding by `created_at` sends all new writes to the newest shard ([Q24](#database-shard-key-happens-bad), [S11](#one-database-shard-consistently-far)).
+- `hash % N` reshuffles almost every row when you change N. Use consistent hashing or a lookup directory ([Q25](#consistent-hashing-used-distributed-caches)).
+- Queries that don't include the shard key must ask **every shard** (scatter-gather) and get slow.
+
+**Upgrades:** consistent hashing, a directory service, per-tenant shards, or a database built for horizontal writes (Cassandra, DynamoDB, CockroachDB) when you know up front you'll need it.
+
+### P3. Live updates → real-time {#p3}
+
+**Symptom.** The user should see changes without refreshing: chat messages, a driver moving on a map, a live score, a notification badge. Plain HTTP only lets the client ask; the server can't speak first. Three ways to get around that:
+
+| | Long polling | Server-sent events (SSE) | WebSocket |
+|---|---|---|---|
+| Direction | server → client (client re-asks) | server → client only | both ways |
+| Connection | repeated HTTP requests, each held open | one long HTTP response | one persistent upgraded TCP connection |
+| Built-in reconnect | you write it | yes (`EventSource`) | you write it |
+| Works through proxies | everywhere | almost everywhere | usually, needs config |
+| Use for | simple, rare updates, legacy | notifications, live feeds, dashboards, progress bars | chat, games, collaborative editing |
+
+**Rule of thumb:** start with the simplest one that fits. If the server only *pushes*, use SSE. Reach for WebSocket only when the client also sends a lot of messages.
+
+#### 1. Long polling
+
+The client asks "anything new?" and the server **holds the request open** until there is news (or ~30 s pass), then answers; the client immediately asks again.
+
+```js
+async function poll() {
+  while (true) {
+    const res = await fetch('/updates?since=' + lastId);  // server waits up to 30 s
+    if (res.status === 200) { render(await res.json()); lastId = ...; }
+    // 204 (nothing new) -> just loop and ask again
+  }
+}
+```
+
+**Pitfalls:** every update costs a full HTTP request/response (headers, auth); a gap between two requests can miss events, so always send "since last id". Many waiting requests tie up threads on blocking servers.
+**Upgrade:** move to SSE or WebSocket when you need lower latency or have many clients.
+
+#### 2. Server-sent events (SSE)
+
+One normal HTTP response that never ends; the server writes `data: ...` lines whenever it wants. The browser's `EventSource` reconnects automatically and can resume with `Last-Event-ID`.
+
+```java
+@GetMapping(value = "/orders/{id}/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+public SseEmitter track(@PathVariable long id) {
+    SseEmitter emitter = new SseEmitter(0L);          // no timeout
+    registry.add(id, emitter);                          // later: emitter.send("PREPARING")
+    emitter.onCompletion(() -> registry.remove(id, emitter));  // <- clean up or you leak memory
+    return emitter;
+}
+```
+
+```js
+const es = new EventSource('/orders/42/events');
+es.onmessage = e => showStatus(e.data);
+```
+
+**Pitfalls:** one-way only; browsers limit ~6 connections per domain on HTTP/1.1 (fine on HTTP/2); proxies that buffer responses can delay events (disable buffering, send a periodic comment as heartbeat).
+**Upgrade:** WebSocket if the client must send frequent messages too.
+
+#### 3. WebSockets
+
+A single TCP connection upgraded from HTTP (`Upgrade: websocket`) that stays open; both sides send messages at any time with very low overhead.
+
+```js
+const ws = new WebSocket('wss://chat.example.com/ws');   // wss = encrypted
+ws.onmessage = e => addMessage(JSON.parse(e.data));
+ws.send(JSON.stringify({ room: 'general', text: 'hi' }));
+```
+
+**Pitfalls**
+
+- **Connections are stateful**, so you can't treat servers as "just stateless" ([Q6](#service-stateless-matter-scaling-resilience)). With 3 servers, user A and user B may be connected to different ones. Use a pub/sub channel (Redis, Kafka) or a user → gateway map to forward messages ([Q36](#design-chat-system-like-whatsapp)).
+- 100,000 open connections use memory and file descriptors; plan capacity per node and scale out gateways separately from business logic.
+- You must write reconnection with backoff (see P5), heartbeats (ping/pong) to detect dead connections, and authentication on connect (tokens expire while the socket stays open).
+- Load balancers need WebSocket support and long idle timeouts.
+- On reconnect the client may have missed messages: give messages ids/sequence numbers and let the client ask "everything after #1234".
+
+**Upgrades:** a managed gateway (API Gateway WebSocket, Pusher, Ably) instead of running your own, or a library with fallbacks (Socket.IO).
+
+### P4. Slow jobs → background jobs {#p4}
+
+**Symptom.** An HTTP request does something that takes seconds or minutes: send an email, resize an image, generate a PDF report, call a slow partner API. The user stares at a spinner, requests time out, and web threads are blocked. Rule: **if the user doesn't need the result to see the response, don't do it inside the request.**
+
+Think of a restaurant: the waiter takes your order and gives it to the kitchen on a ticket (queue); several cooks (workers) pick tickets up. The waiter is free to serve the next table.
+
+```text
+Browser ─ POST /reports ─► API ─ put job in queue ─► returns 202 + jobId (in ~20 ms)
+                                      │
+                            Queue ◄───┘
+                              ├──► Worker 1 ─► builds PDF ─► stores file, marks job DONE
+                              └──► Worker 2
+Browser ─ GET /reports/jobId ─► "RUNNING" ... later "DONE" + download link
+```
+
+#### 1. Message queue
+
+A queue (RabbitMQ, SQS, Kafka, Redis streams) stores jobs durably between the producer (API) and consumers (workers). It decouples them: the API doesn't care if workers are slow, restarting or scaled up.
+
+```java
+// producer: fast, returns immediately
+@PostMapping("/reports")
+public ResponseEntity<?> create(@RequestBody ReportRequest req) {
+    String jobId = jobs.createPending(req);           // save the job row: status PENDING
+    rabbit.convertAndSend("reports", new ReportJob(jobId));
+    return ResponseEntity.accepted().body(Map.of("jobId", jobId));  // 202 Accepted
+}
+```
+
+**Pitfalls**
+
+- **At-least-once delivery.** If a worker crashes mid-job, the message is delivered again, so the same job may run twice. The job must be **idempotent** (P5): e.g. "if report X is already DONE, skip".
+- **Poison messages.** A job that always fails will be retried forever and block progress. Limit attempts and move it to a **dead-letter queue (DLQ)** for humans to inspect.
+- **Backlog hides problems.** The API looks healthy while the queue grows for hours. Alert on queue depth and *age of the oldest message* ([S3](#message-queue-backlog-grows-hours), [Q29](#backpressure-load-shedding-keep-overloaded)).
+- Don't lose the job between "save to DB" and "publish to queue" — use the outbox pattern ([Q16](#update-database-publish-event-losing)).
+- Unbounded queues turn an outage into a huge delayed storm; bound them.
+
+**Upgrades:** priority queues (password-reset email before the newsletter), delayed/scheduled jobs ([Q47](#design-distributed-job-scheduler-cron)), per-tenant queues so one customer can't starve others.
+
+#### 2. Worker pool
+
+A fixed number of workers that take jobs from the queue. The pool size is your **concurrency limit**: it protects the database and partners from being flooded.
+
+```java
+@RabbitListener(queues = "reports", concurrency = "4-8")   // 4 to 8 parallel workers
+public void handle(ReportJob job) {
+    if (jobs.isDone(job.id())) return;     // idempotent: safe if delivered twice
+    byte[] pdf = generator.build(job);
+    storage.save(job.id(), pdf);
+    jobs.markDone(job.id());               // ack the message only after this succeeds
+}
+```
+
+**Pitfalls**
+
+- **Too few workers** → backlog grows; **too many** → you overload the database or the third-party API you call. Size the pool from the numbers: jobs/s × seconds per job = workers needed (100 jobs/s × 0.5 s ≈ 50 workers).
+- Don't hold a DB transaction open while calling a slow external service.
+- Give each job a **timeout** so a hung job doesn't occupy a worker forever.
+- On shutdown, finish or hand back in-flight jobs (graceful shutdown) instead of killing them.
+
+**Upgrades:** autoscale workers on queue depth (Kubernetes KEDA), separate pools for fast and slow jobs, a workflow engine (Temporal, Step Functions) for multi-step jobs that need state and retries.
+
+### P5. Things will fail → reliability {#p5}
+
+**Symptom.** Networks drop packets, services restart, databases hiccup, partners time out. At scale something is *always* failing. The goal is not "never fail" but "fail in a way users barely notice and that does not make things worse." Three tools that work as a team: **retry** the call, make the retry **safe** (idempotency), and **stop calling** when it is clearly broken (circuit breaker).
+
+#### 1. Retries + backoff
+
+A transient failure (timeout, `503`) often succeeds a moment later, so try again. But **wait longer each time** (exponential backoff: 1 s, 2 s, 4 s, 8 s) and add **jitter** (a random amount), so thousands of clients do not all retry at the same instant.
+
+```java
+Duration delay = Duration.ofMillis(200);
+for (int attempt = 1; attempt <= 4; attempt++) {
+    try { return client.call(); }                       // always set a timeout on this call
+    catch (TransientException e) {
+        if (attempt == 4) throw e;                       // give up: cap the attempts
+        long jitter = ThreadLocalRandom.current().nextLong(delay.toMillis() / 2 + 1);
+        sleep(delay.toMillis() + jitter);                // 200, 400, 800 ms + random
+        delay = delay.multipliedBy(2);
+    }
+}
+```
+
+**Pitfalls**
+
+- **Retry storm.** If a service is already struggling and every client retries 3 times, load triples exactly when it can least afford it. Cap attempts, use jitter, and use a *retry budget* (retries ≤ ~10% of traffic) ([S14](#slow-dependency-triggers-full-system)).
+- **Retry only what is retryable**: timeouts, `502/503/504`, `429` (respecting `Retry-After`). Never retry `400`/`404`/validation errors — they will fail the same way.
+- **Retry at one layer only.** If A retries B and B retries C and C retries D, 3 × 3 × 3 = 27 calls hit D.
+- Retrying a write without protection can **duplicate** it (next tool).
+- No timeout = no failure signal. Always set connect and read timeouts.
+
+**Upgrades:** libraries (Resilience4j `@Retry`, Spring Retry), retry budgets, and a dead-letter queue for background jobs once retries run out.
+
+#### 2. Idempotency
+
+An operation is **idempotent** if doing it twice has the same effect as doing it once. `PUT /users/1 {name: "Ana"}` is naturally idempotent. "Charge 50 €" is not: if the response is lost and the client retries, the customer is charged twice.
+
+The fix: the client generates a unique **idempotency key** per logical action and sends it with every retry. The server remembers the result for that key.
+
+```http
+POST /payments
+Idempotency-Key: 7c9e6679-7425-40de-944b-e07fc1f90ae7
+{"amount": 50, "currency": "EUR"}
+```
+
+```sql
+-- the database enforces "only once" even under concurrent retries
+CREATE TABLE payments (
+  idempotency_key text PRIMARY KEY,   -- <- unique constraint is the real guard
+  status text, response jsonb
+);
+INSERT INTO payments(idempotency_key, status) VALUES (:key, 'PROCESSING')
+ON CONFLICT (idempotency_key) DO NOTHING;   -- 0 rows inserted => duplicate: return the stored response
+```
+
+**Pitfalls**
+
+- "Check if it exists, then insert" in application code is a **race**: two concurrent retries both pass the check. Use a unique constraint or atomic insert ([Q28](#idempotency-key-trap-client-retries)).
+- Same key with a **different body** should be rejected (`422`), not silently accepted.
+- Keep keys long enough to cover the longest retry window (e.g. 24 h), then expire them.
+- Message consumers need this too: store processed message ids, or make the update naturally idempotent (`SET status = 'SHIPPED'` instead of `quantity = quantity - 1`).
+- A timeout means *unknown*, not *failed*. For money, query the status before retrying ([Q41](#design-payment-flow-never-charge)).
+
+**Upgrades:** store the full response so a replay returns the original answer; use natural keys (order id) when available; deduplicate with the outbox/inbox pattern.
+
+#### 3. Circuit breaker
+
+If a dependency is clearly down, calling it harder just wastes threads and time. A circuit breaker (like the one in your home fuse box) **stops calls for a while** and fails fast.
+
+```text
+CLOSED ──(failure rate > 50% over the last 20 calls)──► OPEN
+  ▲                                                       │ every call fails instantly
+  │                                                       │ for 30 s
+  └──(probe call succeeds)── HALF-OPEN ◄──(wait over)────┘
+                          (lets a few test calls through)
+```
+
+```java
+@CircuitBreaker(name = "recommendations", fallbackMethod = "defaultRecs")
+public List<Item> recommendations(long userId) { return recoClient.fetch(userId); }
+
+private List<Item> defaultRecs(long userId, Throwable t) {
+    return popularItems.top(10);       // degraded but useful answer instead of an error page
+}
+```
+
+**Pitfalls**
+
+- Without a **fallback**, the breaker just turns slow errors into fast errors. Decide the degraded behaviour: cached data, a default, or hiding the feature.
+- Thresholds too sensitive → the circuit flaps open on a few errors; too lax → it never opens. Tune with real traffic and monitor state changes.
+- A breaker doesn't replace **timeouts** — it needs them to detect failures.
+- Don't put one breaker around *everything*; use one per dependency so one failing partner doesn't cut off the healthy ones (the *bulkhead* idea).
+
+**Upgrades:** bulkheads (separate thread/connection pools per dependency), load shedding ([Q29](#backpressure-load-shedding-keep-overloaded)), a service mesh (Istio/Envoy) that applies retries and breakers outside the code. See the full failure story in [S14](#slow-dependency-triggers-full-system) and [R1](#service-calls-b-calls-c).
+
+### P6. Reads and writes fighting → CQRS {#p6}
+
+**Symptom.** One data model is asked to serve two opposite jobs. Writes want a **normalised** schema with strict rules and small transactions. Reads want **denormalised, pre-joined** shapes ("order with customer, items and totals") and different scaling. Heavy report queries lock rows and slow checkouts; adding an index for reads slows writes; the one model becomes a compromise that is bad at both.
+
+**CQRS** (Command Query Responsibility Segregation) = use a separate path for **commands** (writes that change state) and **queries** (reads that return data). The two sides may have different code, different models and even different databases.
+
+```text
+                 COMMAND side                              QUERY side
+Client ─ POST /orders ─► validate rules ─► Write DB (normalised, ACID)
+                                  │
+                         publish "OrderPlaced" event (outbox)
+                                  ▼
+                        projector / consumer ─► Read DB / cache / search index
+                                                 (denormalised: one row per order page)
+Client ─ GET /orders/42/summary ───────────────► reads from the Read DB (fast, no joins)
+```
+
+```java
+// Command: intent + rules, no data returned
+record PlaceOrder(long customerId, List<Line> lines) {}
+void handle(PlaceOrder cmd) { Order o = Order.create(cmd); orders.save(o); outbox.add(new OrderPlaced(o.id(), ...)); }
+
+// Query: just a shape the screen needs
+record OrderSummary(long id, String customerName, BigDecimal total, String status) {}
+OrderSummary get(long id) { return summaryReadModel.find(id); }   // pre-joined table or Redis document
+```
+
+**Levels, from cheap to heavy** (pick the lowest that solves your problem):
+
+1. **Same database, separate code**: different classes for commands and queries, queries use hand-written SQL or views. Costs almost nothing.
+2. **Read replica or materialised view** for the query side.
+3. **Separate read store** (Elasticsearch, Redis, a denormalised table) updated from events. This is where eventual consistency appears.
+4. **Event sourcing** (store the events as the source of truth). Powerful, but a big step in complexity — only with a clear need such as full audit history.
+
+**Pitfalls**
+
+- **Eventual consistency.** The read side is updated a moment after the write. After `POST /orders`, `GET /orders` may not show the new order yet. Handle it: return the created object from the write call, show it optimistically in the UI, or read from the write side for that one user ([Q19](#concrete-practical-choosing-eventual-consistency), [Q21](#read-own-writes-break-under)).
+- **Complexity tax.** Two models, a projector, event schemas, replay, monitoring of projection lag. For a simple CRUD (create/read/update/delete) app this is over-engineering — don't use CQRS "because it's modern".
+- **Lost events** break the read model silently. Use the outbox ([Q16](#update-database-publish-event-losing)) and make projectors idempotent (P5); keep the ability to rebuild a read model from scratch.
+- Don't apply it to the whole system; use it only for the part with the conflict (e.g. the order search, the dashboard).
+
+**Upgrades:** multiple read models for different screens, search index for text queries ([Q10](#search-feature-fit-design-just)), event sourcing for audit-heavy domains.
+
+### Putting it together: one example {#p7}
+
+An online shop's "Black Friday" problems, each mapped to the right problem:
+
+| What breaks | Problem | First fix |
+|---|---|---|
+| Product pages slow, DB CPU 90% on `SELECT` | P1 reads | index on `category_id`, cache product pages (5 min TTL + jitter) |
+| Order inserts back up during the sale | P2 writes | batch the analytics events, queue them (async) |
+| "Your order is being prepared" needs live status | P3 real-time | SSE on the order page |
+| Confirmation email + invoice PDF slow the checkout | P4 slow jobs | queue + worker pool, return `202` |
+| Payment provider times out sometimes | P5 reliability | timeout + backoff/jitter, idempotency key, circuit breaker with "try again later" fallback |
+| Reports block checkouts | P6 split | read model / replica for reports (CQRS level 1–2) |
+
+Notice that no single problem needed *everything*. Fix the one you can measure, then re-measure.
 
 ## 🟢 Fundamentals
 
 ### Method
 
-#### Q1. What steps do you follow in a system design interview, and how do you split the 45 minutes?
-
+#### Q1. What steps do you follow in a system design interview, and how do you split the 45 minutes? {#steps-follow-system-design-interview}
 Requirements → estimation → API → data model → high-level design → deep dive → bottlenecks and trade-offs.
 Roughly: 5 min clarify functional and non-functional requirements (scale, latency, consistency, availability),
 5 min back-of-envelope numbers, 5 min API and data model, 10 min high-level boxes-and-arrows, 15 min deep dive on
@@ -24,8 +481,7 @@ API:      GET /feed?cursor=...&limit=20      POST /posts   <- cursor pagination 
 Data:     posts(id, author, body, ts), follows(follower, followee)   <- then boxes and arrows (Q3), then deep dive
 ```
 
-#### Q2. Which back-of-envelope numbers should you know by heart?
-
+#### Q2. Which back-of-envelope numbers should you know by heart? {#back-envelope-numbers-know-heart}
 You need orders of magnitude, not precision.
 
 | Quantity                          | Value                                   |
@@ -45,8 +501,7 @@ You need orders of magnitude, not precision.
 **Example:** 100M DAU × 10 reads/day = 10⁹ reads/day ≈ 12k reads/s average, ~50k at peak → a few dozen app servers
 plus a cache; 100M × 1 post/day × 1 KB ≈ 100 GB/day ≈ 36 TB/year of text only → needs sharding or object storage.
 
-#### Q3. A single server runs out of CPU and RAM. Walk through how the architecture evolves.
-
+#### Q3. A single server runs out of CPU and RAM. Walk through how the architecture evolves. {#single-server-runs-out-cpu}
 Each step solves the one bottleneck you actually observe: (1) **vertical scale** first — cheapest, has a ceiling;
 (2) **load balancer + N stateless app servers** — needs sessions externalised; (3) the database is now the
 bottleneck → **cache** hot reads (Redis) and add **read replicas** for read scaling; (4) static and media files
@@ -66,8 +521,7 @@ flowchart LR
   CDN --> S3[(Object storage)]
 ```
 
-#### Q4. What's the difference between high-level design (HLD) and low-level design (LLD)?
-
+#### Q4. What's the difference between high-level design (HLD) and low-level design (LLD)? {#high-level-design-hld-low}
 HLD is the zoomed-out view — the big pieces of the system (app servers, database, cache, queue,
 CDN) and how requests move between them. Designing Instagram at HLD level asks: where does a
 user's request go, where is data stored, what happens as traffic grows, what breaks first and
@@ -92,8 +546,7 @@ WHERE id = :post AND EXISTS (SELECT 1 FROM ins);
 
 ### Building blocks
 
-#### Q5. What is a load balancer, and what specific problem does it solve?
-
+#### Q5. What is a load balancer, and what specific problem does it solve? {#load-balancer-specific-problem-solve}
 When a single server runs out of CPU/RAM to handle growing traffic, adding another server only
 helps if requests are actually distributed across both — a load balancer sits in front of
 multiple servers and decides which one handles each incoming request (round-robin, least-
@@ -114,8 +567,7 @@ upstream app {
 server { listen 80; location / { proxy_pass http://app; } }
 ```
 
-#### Q6. What does it mean for a service to be stateless, and why does it matter for scaling and resilience?
-
+#### Q6. What does it mean for a service to be stateless, and why does it matter for scaling and resilience? {#service-stateless-matter-scaling-resilience}
 A stateless service keeps no request-specific or user-specific state **in its own memory or local disk between
 requests**: everything needed to handle a request arrives with it (parameters, a token) or is fetched from an external store (a
 database, a cache like Redis, object storage). Any instance can then serve any request, so a load balancer can distribute traffic with
@@ -136,8 +588,7 @@ Stateless:  POST /login  -> signed JWT (or session id stored in Redis)
             any instance validates it -> kill app-1 at any time, nobody notices
 ```
 
-#### Q7. What is caching, and what's the basic idea behind cache invalidation?
-
+#### Q7. What is caching, and what's the basic idea behind cache invalidation? {#caching-basic-idea-behind-cache}
 Caching keeps a copy of frequently-requested or expensive-to-compute data in a faster-access
 layer (in-memory, closer to the client) so repeated requests for the same data don't repeat the
 expensive underlying work (a slow query, a heavy computation, a network call) every time.
@@ -156,8 +607,7 @@ GET product:42   # hit: no DB query
 DEL product:42   # explicit invalidation on write; next read refills
 ```
 
-#### Q8. How do you choose between a relational (SQL) database and a NoSQL store when designing a system?
-
+#### Q8. How do you choose between a relational (SQL) database and a NoSQL store when designing a system? {#relational-sql-database-nosql-store}
 Start from the **access patterns and consistency needs**, not from fashion. A relational database is the default for
 data with relationships and invariants — orders, payments, inventory — because it gives you ACID
 transactions, constraints, joins and ad-hoc queries you didn't plan for, and modern PostgreSQL handles a very large
@@ -182,8 +632,7 @@ product search with facets      -> Elasticsearch (derived copy of the SQL data)
 10M writes/s of device events   -> Cassandra / DynamoDB (partition key = device_id)   <- only here do you give up joins and transactions
 ```
 
-#### Q9. When do you put a message queue in a design, and what does it buy you?
-
+#### Q9. When do you put a message queue in a design, and what does it buy you? {#put-message-queue-design-buy}
 When the producer must not wait for the consumer: **decoupling** (the sender is up even if the receiver is down),
 **load levelling** (a spike becomes a backlog instead of an outage), **retry and fan-out** (several consumers,
 dead-letter queue for poison messages). The price is eventual consistency, ordering and duplicate-delivery
@@ -199,8 +648,7 @@ spike: 5k msg/s in, workers do 1k/s -> backlog grows 4k/s during the spike, drai
 without the queue the same spike hits the email provider directly and times out.
 ```
 
-#### Q10. How does a search feature fit in a design? Why not just `LIKE '%term%'` on the primary database?
-
+#### Q10. How does a search feature fit in a design? Why not just `LIKE '%term%'` on the primary database? {#search-feature-fit-design-just}
 A leading-wildcard `LIKE` can't use a B-tree index and scans the table. Search needs an **inverted index**
 (term → document ids, with ranking such as BM25, stemming, typo tolerance) which is what Elasticsearch/OpenSearch
 or Postgres full-text provide. The index is a **derived copy**: the SQL database stays the source of truth and
@@ -222,8 +670,7 @@ SELECT id FROM products WHERE tsv @@ plainto_tsquery('english', 'laptop bag')
 ORDER BY ts_rank(tsv, plainto_tsquery('english', 'laptop bag')) DESC LIMIT 20;
 ```
 
-#### Q11. REST, gRPC or GraphQL — how do you choose, and how do you paginate a large list?
-
+#### Q11. REST, gRPC or GraphQL — how do you choose, and how do you paginate a large list? {#rest-grpc-graphql-paginate-large}
 REST for public, cacheable, resource-oriented APIs; gRPC for internal service-to-service calls (binary,
 schema-first, streaming, low latency); GraphQL when many different clients need to shape their own payloads and you
 accept the cost of query-complexity limiting and harder caching. For lists, prefer **cursor (keyset) pagination**
@@ -238,14 +685,13 @@ GET /posts?limit=2&cursor=97  -> SELECT ... WHERE id < 97 ORDER BY id DESC LIMIT
                                  (a post inserted meanwhile does not shift the pages)
 ```
 
-*See also:* [Persistence Q11](persistence-sql-postgres.md) for why `OFFSET` degrades and how keyset pagination works in SQL.
+*See also:* [Persistence Q11](persistence-sql-postgres.md#offset-pagination-get-slower-less) for why `OFFSET` degrades and how keyset pagination works in SQL.
 
 ## 🟡 Senior traps
 
 ### Trade-offs
 
-#### Q12. Explain the CAP theorem with a concrete example — why can't a distributed system have all three?
-
+#### Q12. Explain the CAP theorem with a concrete example — why can't a distributed system have all three? {#cap-theorem-concrete-distributed-system}
 **Answer:** CAP states that during a network partition (P — some communication failure between
 nodes, which in any real distributed system *will* eventually happen), a system must choose
 between Consistency (every read sees the most recent write, or an error) and Availability (every
@@ -281,8 +727,7 @@ every time, is C vs A during the partition specifically, and a senior answer nam
 failure mode* (a stale read vs a rejected request) is worse for *this* system, not just the
 theorem's name.
 
-#### Q13. CAP gets quoted in every interview — what does PACELC add?
-
+#### Q13. CAP gets quoted in every interview — what does PACELC add? {#cap-gets-quoted-every-interview}
 **Answer:** CAP only talks about behaviour *during* a partition. PACELC adds the everyday case: if there is a
 **P**artition choose **A** or **C**; **E**lse (normal operation) choose **L**atency or **C**onsistency. Replicating
 synchronously to another region gives consistency but adds a cross-region round trip to every write; replicating
@@ -299,8 +744,7 @@ Spanner / CockroachDB: PC/EC  -> consistent always, pays commit-wait / cross-reg
 **Why it's a trap:** candidates label a database "CP" or "AP" as if it were fixed; most systems let you tune it per
 operation (quorum reads, strongly consistent reads), and the senior answer names the latency cost of each choice.
 
-#### Q14. Fan-out on write or fan-out on read for a feed — and what breaks at celebrity scale?
-
+#### Q14. Fan-out on write or fan-out on read for a feed — and what breaks at celebrity scale? {#fan-out-write-fan-out}
 **Answer:** *Fan-out on write* (push) precomputes each follower's timeline when a post is created: reads are a
 single cache lookup, but a user with 50M followers causes 50M writes. *Fan-out on read* (pull) merges the followed
 accounts' posts at request time: cheap writes, expensive and slow reads. Production systems use a **hybrid**: push
@@ -318,8 +762,7 @@ read(timeline):
 **Why it's a trap:** picking pure push "because reads dominate" ignores the write amplification of high-follower
 accounts and inactive users — you pay to build timelines nobody reads.
 
-#### Q15. Compare rate-limiting algorithms. Which one would you pick and where do you store the counters?
-
+#### Q15. Compare rate-limiting algorithms. Which one would you pick and where do you store the counters? {#compare-rate-limiting-algorithms-one}
 **Answer:** *Fixed window* is simplest but allows 2× bursts at the window edge. *Sliding window log* is exact but
 stores every timestamp. *Sliding window counter* approximates with two counters — cheap and good enough. *Token
 bucket* allows controlled bursts and is what most gateways use; *leaky bucket* smooths output to a constant rate.
@@ -337,13 +780,11 @@ if tokens >= 1 then tokens = tokens - 1; allow else reject(429, Retry-After) end
 path becomes a single point of failure — decide whether the limiter **fails open** (availability) or **closed**
 (protection) when Redis is down.
 
-#### Q16. How do you update the database *and* publish an event without losing one of them?
-
-**Answer:** Covered in [Messaging Q27](messaging-rabbitmq-kafka.md) (transactional outbox) and [Messaging Q31](messaging-rabbitmq-kafka.md) (dual write vs polling outbox vs CDC).
+#### Q16. How do you update the database *and* publish an event without losing one of them? {#update-database-publish-event-losing}
+**Answer:** Covered in [Messaging Q27](messaging-rabbitmq-kafka.md#outbox-pattern-problem-solve) (transactional outbox) and [Messaging Q31](messaging-rabbitmq-kafka.md#compare-dual-writes-polling-outbox) (dual write vs polling outbox vs CDC).
 In short: write the business row and an `outbox` row in the same local transaction, let a relay publish at-least-once, and make consumers idempotent.
 
-#### Q17. How do you invalidate a cached entry, and what race hides behind invalidate-on-write?
-
+#### Q17. How do you invalidate a cached entry, and what race hides behind invalidate-on-write? {#invalidate-cached-entry-race-hides}
 **Answer:** (1) **TTL only** — simple, bounded staleness; (2) **invalidate on write** (delete the key after the DB
 commit) — fresher, but a race between a reader refilling an old value and the delete can leave stale data until TTL;
 (3) **event-driven invalidation** via CDC; (4) **versioned keys** (`user:42:v17`) — never invalidate, just read a new
@@ -360,15 +801,13 @@ T1 reader: writes OLD value into cache   <- stale until TTL
 **Why it's a trap:** "update the cache on write" has the same race plus ordering problems; deleting is safer than
 updating, and neither is a substitute for a TTL.
 
-#### Q18. Why not use auto-increment IDs or random UUIDs everywhere in a distributed system?
-
-**Answer:** Primary-key choice (`bigint` vs UUIDv4 vs UUIDv7) is covered in [Persistence Q40](persistence-sql-postgres.md); the distributed generator (Snowflake, ULID, clock skew) is covered in Q40.
+#### Q18. Why not use auto-increment IDs or random UUIDs everywhere in a distributed system? {#auto-increment-ids-random-uuids}
+**Answer:** Primary-key choice (`bigint` vs UUIDv4 vs UUIDv7) is covered in [Persistence Q40](persistence-sql-postgres.md#auto-increment-bigint-random-uuid); the distributed generator (Snowflake, ULID, clock skew) is covered in Q40.
 In short: auto-increment needs a coordinator and leaks volume, while random UUIDs scatter B-tree inserts. Prefer time-ordered ids.
 
 ### Consistency & replication
 
-#### Q19. Give a concrete, practical example of choosing eventual consistency over strong consistency, and explain why it's the right call there.
-
+#### Q19. Give a concrete, practical example of choosing eventual consistency over strong consistency, and explain why it's the right call there. {#concrete-practical-choosing-eventual-consistency}
 **Answer:** A social media "like count" or "follower count" is the textbook case: showing a count
 that's a few seconds stale is completely acceptable to users, and the alternative — strongly
 consistent, requiring a coordinated read/write across every replica for every single like — would
@@ -391,8 +830,7 @@ Checkout balance:  read must reflect the latest committed write, or two concurre
 everywhere to be safe" are both wrong defaults — the senior answer picks per data type based on
 the actual cost of staleness for that specific field, not a blanket policy for the whole system.
 
-#### Q20. What's the difference between synchronous and asynchronous database replication, and what does each trade off?
-
+#### Q20. What's the difference between synchronous and asynchronous database replication, and what does each trade off? {#synchronous-asynchronous-database-replication-each}
 **Answer:** Synchronous replication waits for the replica(s) to confirm they've received and
 applied a write before acknowledging it to the client — guarantees the replica is never behind the
 primary, at the cost of added write latency (bounded by the slowest replica) and reduced
@@ -420,8 +858,7 @@ data!") without naming what it buys in return — the trap runs the other way to
 everything to synchronous "to be safe" quietly imposes a latency and availability cost on data
 that never needed that guarantee (see Q19).
 
-#### Q21. Why does read-your-own-writes break under asynchronous replication, and how do you fix it for the data that needs it?
-
+#### Q21. Why does read-your-own-writes break under asynchronous replication, and how do you fix it for the data that needs it? {#read-own-writes-break-under}
 **Answer:** With async replication (Q20), a write lands on the primary and is acknowledged before
 every replica has applied it. If the very next request from the *same user* is a read routed to a
 lagging replica — a common setup, since reads are usually load-balanced across replicas for
@@ -447,8 +884,7 @@ low-stakes data" — but the stakes here aren't about the data's importance, the
 read is affected: staleness a different user sees is usually invisible and fine, staleness the
 *writer* sees immediately after their own write reads as a broken feature.
 
-#### Q22. Two-phase commit vs sagas — how do you keep data consistent across several services without a shared database?
-
+#### Q22. Two-phase commit vs sagas — how do you keep data consistent across several services without a shared database? {#two-phase-commit-sagas-keep}
 **Answer:** **Two-phase commit (2PC)** coordinates a single atomic transaction over several resources: a coordinator asks every participant to
 *prepare* (vote yes, holding locks), and only if all vote yes tells them to *commit*. It gives strong atomicity but at a
 price: participants hold locks during the protocol, so throughput and availability drop; the coordinator is a single point whose failure between the phases leaves
@@ -476,12 +912,11 @@ Order saga (orchestrated):
 **Why it's a trap:** candidates answer "we use distributed transactions" (an availability problem) or "we use a saga" without mentioning compensation failure, idempotency, visibility of intermediate
 states or the outbox — and "exactly-once" claims across services almost always hide *at-least-once delivery plus idempotent processing* (Q9, Q28).
 
-*See also:* [Messaging Q26](messaging-rabbitmq-kafka.md) (orchestration vs choreography) and [Messaging Q30](messaging-rabbitmq-kafka.md) (a worked saga).
+*See also:* [Messaging Q26](messaging-rabbitmq-kafka.md#saga-pattern-orchestration-choreography-trade) (orchestration vs choreography) and [Messaging Q30](messaging-rabbitmq-kafka.md#design-saga-order-payment-inventory) (a worked saga).
 
 ### Scaling & caching
 
-#### Q23. Horizontal vs vertical scaling — what's the actual trade-off?
-
+#### Q23. Horizontal vs vertical scaling — what's the actual trade-off? {#horizontal-vertical-scaling-trade-off}
 **Answer:** Vertical scaling (a bigger machine — more CPU/RAM on the same node) is simpler (no
 distributed-systems complexity, no data partitioning to reason about) but has a hard ceiling
 (there's a biggest machine money can buy) and a single point of failure. Horizontal scaling (more
@@ -508,8 +943,7 @@ candidate names the actual complexity horizontal scaling buys (partitioning, con
 overhead) instead of treating it as a free upgrade, and can say plainly when vertical scaling is
 still the right call.
 
-#### Q24. How do you choose a database shard key, and what happens with a bad choice?
-
+#### Q24. How do you choose a database shard key, and what happens with a bad choice? {#database-shard-key-happens-bad}
 **Answer:** A shard key determines which physical shard a given row lives on (commonly via a hash
 of the key, or a range partition on it) — the goal is distributing both data volume and, more
 importantly, *query/write load* evenly across shards. A bad choice creates a "hot shard": choosing
@@ -535,8 +969,7 @@ Cluster-wide CPU on the main dashboard reads "35% utilized" while shard(US) sits
 checks "is the cluster over capacity" misses the actual production symptom, which shows up as one
 shard's latency degrading while the fleet-wide average still looks healthy.
 
-#### Q25. What is consistent hashing, and why is it used for distributed caches and sharding instead of simple modulo hashing?
-
+#### Q25. What is consistent hashing, and why is it used for distributed caches and sharding instead of simple modulo hashing? {#consistent-hashing-used-distributed-caches}
 **Answer:** Simple modulo hashing (`hash(key) % N` to pick one of N servers) has a severe problem
 when N changes (a server is added or removed): nearly every key's assigned server changes too,
 because the modulus itself changed — for a distributed cache, this means a node change invalidates
@@ -561,8 +994,7 @@ mechanism that fixes it — "consistent hashing helps" without the ring/neighbor
 without an explanation, and an interviewer's follow-up ("why does only that subset move?") exposes
 the gap immediately.
 
-#### Q26. Cache-aside, write-through or write-behind — how do you choose a caching write strategy?
-
+#### Q26. Cache-aside, write-through or write-behind — how do you choose a caching write strategy? {#cache-aside-write-write-behind}
 **Answer:** **Cache-aside** (lazy loading): the application checks the cache first, and on a miss,
 reads from the database and populates the cache — simple, but the first request for any key is
 always a slow miss, and there's a real risk of serving stale data until TTL expiry or explicit
@@ -590,8 +1022,7 @@ specific staleness/latency trade-off, is the actual anti-pattern the classic jok
 about — the interview signal is picking a strategy deliberately for the read/write ratio at hand,
 not reciting all three as equally fine defaults.
 
-#### Q27. What does a CDN actually solve, and when does it not help?
-
+#### Q27. What does a CDN actually solve, and when does it not help? {#cdn-solve-help}
 **Answer:** A CDN caches content at edge locations geographically close to end users, reducing
 latency and offloading traffic from the origin server for content that's the same for every user.
 It's highly effective for static or infrequently-changing content (images, JS/CSS bundles, video)
@@ -614,8 +1045,7 @@ checking first whether the response is actually shareable across requests.
 
 ### Reliability
 
-#### Q28. What's the idempotency-key trap when a client retries a write after a timeout?
-
+#### Q28. What's the idempotency-key trap when a client retries a write after a timeout? {#idempotency-key-trap-client-retries}
 **Answer:** A client sends a write (e.g. "place order"), the server processes it and commits, but
 the response is lost in transit or the client times out before it arrives — from the client's
 point of view the request's outcome is unknown, so a naive client retries the exact same request.
@@ -646,8 +1076,7 @@ true for reads, false for writes without idempotency, and a candidate who says "
 without naming the duplicate-write risk hasn't actually thought through what "timeout" means: the
 request may well have succeeded server-side even though the client never found out.
 
-#### Q29. How do backpressure and load shedding keep an overloaded system alive, and what goes wrong without them?
-
+#### Q29. How do backpressure and load shedding keep an overloaded system alive, and what goes wrong without them? {#backpressure-load-shedding-keep-overloaded}
 **Answer:** Every system has a maximum throughput; when the arrival rate exceeds it, work piles up in queues (thread pools, connection
 backlogs, message queues), **latency grows without bound**, memory fills, timeouts fire, clients retry, and the retries add *more*
 load — a self-reinforcing collapse from which the system often cannot recover even after the original spike ends (a "metastable failure"; see S14). Two
@@ -683,8 +1112,7 @@ ResponseEntity<?> create(@RequestBody ReportRequest r) {
 spike or slow dependency converts into minutes of latency and an outage that outlasts the trigger. Failing fast under overload looks like a worse
 user experience in a demo, but it's what keeps the service available for the requests it can serve.
 
-#### Q30. Why isn't a distributed lock (Redis `SET NX`, ZooKeeper, database row) as safe as it looks, and what are fencing tokens?
-
+#### Q30. Why isn't a distributed lock (Redis `SET NX`, ZooKeeper, database row) as safe as it looks, and what are fencing tokens? {#isn-distributed-lock-redis-set}
 **Answer:** A lock is meant to guarantee that only one worker at a time performs an action on a resource. In a distributed system the lock holder
 can be *wrong about still holding it*: the lock is acquired with a **TTL** (so a crashed holder doesn't block everyone forever), but a long GC pause, a stalled VM or a
 slow network can make the holder continue to work after the lease expired — while a second worker has acquired the lock and is also working. Both then
@@ -716,8 +1144,7 @@ where id = :id and version = :expected_version;      -- 0 rows updated -> confli
 only appears under the rare pause or failover that never happens in tests — then two workers double-charge a customer or corrupt a file. The defence is to stop
 trusting the lock holder's opinion of the lock.
 
-#### Q31. What do RTO and RPO mean in disaster recovery planning, and how do they drive architecture decisions?
-
+#### Q31. What do RTO and RPO mean in disaster recovery planning, and how do they drive architecture decisions? {#rto-rpo-disaster-recovery-planning}
 **Answer:** **RTO (Recovery Time Objective)**: how long the system can be down before the business
 impact is unacceptable — drives decisions about failover automation and standby infrastructure.
 **RPO (Recovery Point Objective)**: how much data loss (measured in time) is acceptable — drives
@@ -741,8 +1168,7 @@ looser RTO/RPO than the business actually needs is its own real cost, not a safe
 
 ### Architecture & security
 
-#### Q32. When is a monolith the better choice over microservices, and what's the real cost of choosing microservices too early?
-
+#### Q32. When is a monolith the better choice over microservices, and what's the real cost of choosing microservices too early? {#monolith-better-choice-microservices-real}
 **Answer:** A monolith is the better default for a small team, an early-stage product with an
 evolving/unclear domain model, or a system where the operational overhead of distributed systems
 isn't yet justified by an actual organizational or scaling need. The real cost of premature
@@ -767,8 +1193,7 @@ now debugs 3 deployments instead of 1 for every feature.
 senior answer names the *specific*, currently-felt constraint that justifies the split, and is
 comfortable saying a monolith is the right answer for a team that doesn't have that constraint yet.
 
-#### Q33. What does an API Gateway centralize, and why put it in front of a microservices architecture?
-
+#### Q33. What does an API Gateway centralize, and why put it in front of a microservices architecture? {#api-gateway-centralize-put-front}
 **Answer:** An API Gateway sits as the single entry point in front of a set of backend services,
 centralizing concerns that would otherwise need to be duplicated in every individual service:
 authentication/authorization, rate limiting, request routing, protocol translation, and often
@@ -794,8 +1219,7 @@ naming the SPOF it introduces — the follow-up worth pre-empting is "what happe
 itself goes down," which is exactly why gateway redundancy gets treated as seriously as the
 services it fronts.
 
-#### Q34. Name several OWASP Top 10 risks and how you mitigate each at a system-design level.
-
+#### Q34. Name several OWASP Top 10 risks and how you mitigate each at a system-design level. {#name-several-owasp-top-10}
 **Answer:** **Injection** (SQL, command): parameterized queries/prepared statements, never
 string-concatenated input into a query. **Broken authentication**: strong password policies, MFA,
 secure session management, not rolling your own crypto/auth. **Sensitive data exposure**: encrypt
@@ -832,8 +1256,7 @@ See also: the [Security](security.md) module for the code-level details (JWT, ID
 
 ### Design exercises
 
-#### Q35. Design a URL shortener (bit.ly). Cover ID generation, storage, redirects and scale.
-
+#### Q35. Design a URL shortener (bit.ly). Cover ID generation, storage, redirects and scale. {#design-url-shortener-bit-ly}
 **Requirements:** create short link, redirect, optional custom alias/expiry, analytics. Non-functional: redirect
 p99 < 50 ms, 100:1 read:write, highly available, links never reused.
 
@@ -863,8 +1286,7 @@ flowchart LR
 **Trade-offs to mention:** sequential codes are enumerable (add a Feistel/permutation step if privacy matters);
 custom aliases need a unique constraint; abuse/phishing needs a URL reputation check at creation time.
 
-#### Q36. Design a chat system like WhatsApp or Slack (1:1 and groups, delivery receipts, offline users).
-
+#### Q36. Design a chat system like WhatsApp or Slack (1:1 and groups, delivery receipts, offline users). {#design-chat-system-like-whatsapp}
 **Requirements:** send/receive in real time, history, group chats, sent/delivered/read, push to offline devices.
 Non-functional: low latency, ordering per conversation, no message loss.
 
@@ -896,8 +1318,7 @@ flowchart LR
 **Trade-offs:** end-to-end encryption moves key management to clients and breaks server-side search; presence
 updates are chatty — throttle and batch them.
 
-#### Q37. Design a file storage and sync service (Dropbox / Google Drive).
-
+#### Q37. Design a file storage and sync service (Dropbox / Google Drive). {#design-file-storage-sync-service}
 **Core idea:** separate **metadata** (small, transactional, SQL) from **blocks** (large, immutable, object storage).
 
 ```mermaid
@@ -919,8 +1340,7 @@ flowchart LR
 **Trade-offs:** dedup across users leaks "does this file exist" information unless limited to a tenant; bigger blocks
 mean fewer requests but worse delta efficiency.
 
-#### Q38. Design video streaming (YouTube / Netflix): upload, processing and playback.
-
+#### Q38. Design video streaming (YouTube / Netflix): upload, processing and playback. {#design-video-streaming-youtube-netflix}
 ```mermaid
 flowchart LR
   U[Uploader] -->|resumable upload| RAW[(Raw bucket)]
@@ -944,8 +1364,7 @@ flowchart LR
 **Trade-offs:** more renditions cost storage and transcode time (encode popular titles more aggressively, rarely
 watched ones lazily); DRM and signed URLs add complexity to the CDN path.
 
-#### Q39. Design typeahead / search autocomplete for a search box.
-
+#### Q39. Design typeahead / search autocomplete for a search box. {#design-typeahead-search-autocomplete-search}
 **Requirements:** suggestions within ~100 ms as the user types, top-k by popularity, fresh enough for trends.
 
 - **Data structure:** a **trie** where each node caches its top-k completions; lookup is O(prefix length). In practice
@@ -968,8 +1387,7 @@ GET /suggest?q=iph  ->  GET sug:v42:iph   (one key lookup, no trie walk at reque
 publish sug:v43:* offline, then flip the "current version" pointer atomically
 ```
 
-#### Q40. Design a distributed unique ID generator (and say what you give up).
-
+#### Q40. Design a distributed unique ID generator (and say what you give up). {#design-distributed-unique-id-generator}
 Requirements: 64-bit, roughly time-ordered, no central bottleneck, ~100k ids/s per cluster.
 
 - **Snowflake layout:** 1 sign bit | 41 bits timestamp (≈ 69 years) | 10 bits worker id | 12 bits sequence.
@@ -996,8 +1414,7 @@ def next_id():
     return ((ts - EPOCH) << 22) | (worker_id << 12) | seq
 ```
 
-#### Q41. Design a payment flow that must never charge twice. How do you handle timeouts?
-
+#### Q41. Design a payment flow that must never charge twice. How do you handle timeouts? {#design-payment-flow-never-charge}
 Combine three ideas: **idempotency keys** (client generates one per payment attempt; server stores key → result under
 a unique constraint — mechanics in Q28), a **state machine** (`CREATED → AUTHORIZED → CAPTURED / FAILED`, transitions only forward,
 persisted before and after each external call) and **reconciliation** (a job compares your ledger with the
@@ -1019,10 +1436,9 @@ sequenceDiagram
 **Trade-offs:** double-entry ledger rows are append-only (fix errors with compensating entries, never `UPDATE`);
 money is an integer of minor units, never a float.
 
-*See also:* [Messaging Q29](messaging-rabbitmq-kafka.md) for the consumer side of the same guarantee.
+*See also:* [Messaging Q29](messaging-rabbitmq-kafka.md#design-exactly-once-processing-payment) for the consumer side of the same guarantee.
 
-#### Q42. Design Instagram's feed at a high level, then go deep on one component.
-
+#### Q42. Design Instagram's feed at a high level, then go deep on one component. {#design-instagram-feed-high-level}
 **Answer:** Functional: post a photo, follow users, see a feed, like/comment. Non-functional: read-heavy, fast feed, eventual consistency is fine for like counts and small feed delays.
 
 HLD: a post service (metadata in a database, image in object storage served via CDN), a social graph service for follows, and a feed generator — the deep-dive point.
@@ -1043,8 +1459,7 @@ naming the celebrity-account failure mode — a design that doesn't special-case
 accounts will visibly fall over (or silently rack up enormous write amplification) the moment a
 real celebrity account is modeled in the same system.
 
-#### Q43. Design a rate limiter as a distributed system component. What are the scale considerations?
-
+#### Q43. Design a rate limiter as a distributed system component. What are the scale considerations? {#design-rate-limiter-distributed-system}
 **Answer:** Pick the algorithm first (token bucket is the usual default; compare options in Q15), then the harder question: where does the state live when the limiter must be correct across many instances of the protected service?
 
 A per-instance in-memory counter is simple but wrong at scale — N instances collectively allow N times the limit. The standard fix is a shared counter store (Redis, atomic operations) that every instance checks.
@@ -1070,8 +1485,7 @@ Scale: 1M checks/s vs ~100k ops/s per Redis node -> shard counters by key over 1
 over-prepare for — the actual scale-breaking bug is almost always the per-instance-state mistake,
 which the algorithm choice alone doesn't fix.
 
-#### Q44. Design a notification system (email, SMS, push) that serves many product teams. Then go deep on delivery guarantees.
-
+#### Q44. Design a notification system (email, SMS, push) that serves many product teams. Then go deep on delivery guarantees. {#design-notification-system-email-sms}
 Clarify first (Q1): channels, volume (say 50 M notifications/day with 10× spikes on marketing campaigns), latency classes (an OTP must arrive in seconds, a
 newsletter can take hours), user preferences and opt-outs, and whether ordering or exactly-one delivery matters. **Architecture:** producers (other services) call a
 notification API or publish an event; the service validates, applies user preferences, quiet hours and regulatory rules (unsubscribe, consent), renders a template with
@@ -1084,7 +1498,7 @@ idempotency where it exists, and accept that a rare duplicate is better than a l
 backoff and jitter up to a limit, then a dead-letter queue with alerts; bad addresses and hard bounces stop retries. **Scale and abuse:** shard/partition by user or
 tenant, apply per-user and per-tenant rate limits (Q43) so a bug in one producer can't spam every customer, and protect the provider reputation (warm-up, throttling, complaint monitoring).
 Observability: queue lag and age per priority, send/delivery latency, bounce and complaint rates. The open trade-offs to discuss: a broker choice (SQS/Kafka/RabbitMQ), synchronous
-send for OTPs versus everything through queues, per-user digesting to avoid notification fatigue, and whether to build this or buy it ([Leadership Q7](leadership-behavioral.md)).
+send for OTPs versus everything through queues, per-user digesting to avoid notification fatigue, and whether to build this or buy it ([Leadership Q7](leadership-behavioral.md#decide-building-component-yourself-buying)).
 
 **Example (idempotent send):**
 
@@ -1095,8 +1509,7 @@ ON CONFLICT (dedupe_key) DO NOTHING;   -- unique constraint = the dedupe point (
 -- 0 rows inserted -> already handled, the worker acks and skips the provider call
 ```
 
-#### Q45. Design a ticket or seat booking system (concerts, flights) where two people must never get the same seat.
-
+#### Q45. Design a ticket or seat booking system (concerts, flights) where two people must never get the same seat. {#design-ticket-seat-booking-system}
 **Requirements:** browse events and seat maps, hold seats for a few minutes during checkout, pay, confirm; huge spikes
 when popular sales open. Non-functional: **no double booking** (strong consistency per seat), seat map reads fast,
 fair under spikes.
@@ -1132,8 +1545,7 @@ flowchart LR
 can be slightly stale, which is acceptable because the write path is authoritative. Bots and scalpers need rate limits,
 queue tokens and per-account caps.
 
-#### Q46. Design a doctor appointment-booking system (like a healthcare booking platform), including double-booking prevention, cancellations and peak load.
-
+#### Q46. Design a doctor appointment-booking system (like a healthcare booking platform), including double-booking prevention, cancellations and peak load. {#design-doctor-appointment-booking-system}
 **Requirements:**
 - Functional: practitioners publish availability; patients search by speciality, place and date, book, cancel and reschedule;
   reminders are sent. Out of scope: payments, video consults.
@@ -1164,7 +1576,7 @@ flowchart LR
   Store times in UTC with the practitioner's time zone and handle DST.
 - **Prevent double booking in the database** (the source of truth): unique constraint / exclusion constraint on
   `(practitioner_id, time range) WHERE status = 'CONFIRMED'`, or `UPDATE slot SET status='BOOKED' WHERE id=? AND status='FREE'`
-  checking the row count, then `409` for the loser (see [Persistence Q28](persistence-sql-postgres.md)). Make
+  checking the row count, then `409` for the loser (see [Persistence Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)). Make
   `POST /appointments` idempotent with an `Idempotency-Key` so retries do not create a second booking.
 - **Short hold** (optional UX): when the patient opens the confirm screen, put a TTL hold (Redis key with `SET NX PX 300000`
   or a `HELD` slot status with expiry) so the slot does not vanish while they type; the hold is a convenience, the
@@ -1173,22 +1585,21 @@ flowchart LR
   cancel the old one atomically (one transaction, new slot first, so the patient is never left with nothing); cancellation
   emits an event that re-offers the slot (waiting list).
 - **Search**: a read model (Elasticsearch/OpenSearch or denormalised tables) fed from Kafka events through the
-  **outbox pattern** (see [System Design Q16](system-design.md)). It is *eventually consistent*: a stale "available" slot is
+  **outbox pattern** (see [System Design Q16](system-design.md#update-database-publish-event-losing)). It is *eventually consistent*: a stale "available" slot is
   checked again at booking time and the user gets a friendly "just taken, here are alternatives".
 - **What to cache**: practitioner profiles, search results for a few seconds, slot lists with short TTL; **never** cache the
   booking decision.
 - **Peak load**: stateless booking pods behind an autoscaler; shard or partition by practitioner (hot practitioners are
   the contention point, not the total); queue notifications, never send them inside the booking transaction; rate-limit per user
   and add a virtual waiting room for extreme spikes; protect the DB with a bounded connection pool and load shedding
-  (see [System Design Q29](system-design.md)).
+  (see [System Design Q29](system-design.md#backpressure-load-shedding-keep-overloaded)).
 - **Privacy**: encrypt in transit and at rest, minimise what search indexes (no diagnosis), per-role access, audit every
-  read/write of patient data (see [Security Q19](security.md)).
+  read/write of patient data (see [Security Q19](security.md#design-protection-sensitive-healthcare-data)).
 
 **Trade-offs to mention:** strong consistency for booking vs eventual for search; hold TTL vs simplicity; one database per
 region (data residency) vs global search; outbox complexity vs lost events; pessimistic lock vs constraint (choose the constraint).
 
-#### Q47. Design a distributed job scheduler (cron at scale): run millions of scheduled and delayed jobs reliably.
-
+#### Q47. Design a distributed job scheduler (cron at scale): run millions of scheduled and delayed jobs reliably. {#design-distributed-job-scheduler-cron}
 **Requirements:** schedule one-off jobs ("send reminder at 09:00") and recurring jobs (cron expressions), retries
 with backoff, at-least-once execution, visibility (status, history), and cancellation. Non-functional: survive node
 failures, run on time (within seconds), and scale horizontally.
@@ -1222,13 +1633,12 @@ flowchart LR
 but adds latency (a timing wheel or delayed queue is more precise); time zones and DST for recurring jobs need
 explicit handling.
 
-#### Q48. How do you extract a service from a monolith without disrupting users? Cover boundaries, migration steps and data ownership.
-
+#### Q48. How do you extract a service from a monolith without disrupting users? Cover boundaries, migration steps and data ownership. {#extract-service-monolith-disrupting-users}
 **Requirements:** a booking monolith shares one database; the notification (or billing) module changes weekly, scales differently and
 blocks releases. Goal: extract it with zero downtime and no big-bang rewrite.
 
 **Design:**
-- **First ask whether to extract at all** (see [System Design Q32](system-design.md)): extract when a module has a clear
+- **First ask whether to extract at all** (see [System Design Q32](system-design.md#monolith-better-choice-microservices-real)): extract when a module has a clear
   business boundary, an independent release cadence or scaling profile, or a team owning it end to end; do **not** extract
   to "be modern". A *modular monolith* (enforced module boundaries, no cross-module table access) is often enough.
 - **Find the boundary**: group by business capability and data ownership (DDD bounded context), and look at the coupling
@@ -1242,12 +1652,12 @@ blocks releases. Goal: extract it with zero downtime and no big-bang rewrite.
 - **Data ownership**: the new service **owns its data**; no other service reads its tables. Migrate in phases: replicate
   (CDC with Debezium or dual-read) → new service becomes the writer → old code reads through the service API → drop the old
   tables. Avoid long-lived **dual writes** (they diverge): write once and propagate via the outbox/CDC (see
-  [System Design Q16](system-design.md)).
+  [System Design Q16](system-design.md#update-database-publish-event-losing)).
 - **Distributed transactions**: the old single ACID transaction disappears. Replace it with a **saga** (local transactions +
-  compensations, see [System Design Q22](system-design.md)), idempotent consumers and an outbox; accept eventual
+  compensations, see [System Design Q22](system-design.md#two-phase-commit-sagas-keep)), idempotent consumers and an outbox; accept eventual
   consistency where the business allows, and keep strongly consistent invariants *inside one service*.
 - **Cross-cutting**: authentication propagation, tracing, versioned contracts (consumer-driven tests, see
-  [Testing Q19](testing.md)), observability before the cut-over, and per-service SLOs.
+  [Testing Q19](testing.md#consumer-driven-contract-testing-worth)), observability before the cut-over, and per-service SLOs.
 
 **Trade-offs to mention:** network latency and partial failure replace in-process calls (add timeouts, retries, circuit
 breakers); operational cost (pipelines, dashboards, on-call per service); data consistency becomes your problem; the team
@@ -1255,8 +1665,7 @@ must be ready to run it ("you build it, you run it"). A common outcome: extract 
 
 ### Multi-region
 
-#### Q49. How would you design a service to run active-active across two regions, and what do you have to give up?
-
+#### Q49. How would you design a service to run active-active across two regions, and what do you have to give up? {#design-service-run-active-active}
 Active-active means both regions serve **live traffic and accept writes**, giving lower latency for users near each region and survival of a whole-region loss with minimal
 failover time (RTO close to zero, Q31). The hard part is data. With **asynchronous replication** between regions, a write in region A becomes visible in B some
 milliseconds to seconds later (the replication lag is your RPO), and if both regions can write the *same record* you get **conflicts**: last-write-wins by timestamp (simple, silently loses
@@ -1280,8 +1689,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 ## 🎯 Real-world scenarios
 
-### S1. After a deploy, every cache entry expires at once and the database falls over
-
+### S1. After a deploy, every cache entry expires at once and the database falls over {#after-deploy-every-cache-entry}
 - **Symptoms:** At the top of the hour DB CPU hits 100%, latency spikes from 20 ms to seconds, and the cache hit
   ratio drops from 95% to near zero before slowly recovering.
 
@@ -1306,8 +1714,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S2. Users see old data for several seconds after writing, only in the evening
-
+### S2. Users see old data for several seconds after writing, only in the evening {#users-see-old-data-several}
 - **Symptoms:** "I saved my profile and it shows the old photo"; complaints correlate with peak hours; the primary
   database is healthy.
 
@@ -1331,8 +1738,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S3. The message queue backlog grows for hours and consumers look healthy
-
+### S3. The message queue backlog grows for hours and consumers look healthy {#message-queue-backlog-grows-hours}
 - **Symptoms:** Queue depth climbs steadily, oldest-message age is 3 hours, consumer CPU is low, no errors in logs.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -1357,8 +1763,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S4. A regional outage turns into a global one when traffic fails over
-
+### S4. A regional outage turns into a global one when traffic fails over {#regional-outage-turns-global-one}
 - **Symptoms:** Region A goes down, traffic shifts to region B, and within minutes region B also becomes unavailable.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -1381,8 +1786,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S5. A single viral item makes one database shard unreachable
-
+### S5. A single viral item makes one database shard unreachable {#single-viral-item-one-database}
 - **Symptoms:** One shard sits at 100% CPU while the others idle; requests for a specific product or user time out.
 
 > 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
@@ -1405,8 +1809,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S6. A single server outage takes down the entire application
-
+### S6. A single server outage takes down the entire application {#single-server-outage-takes-down}
 - **Symptoms:** One server crashes or becomes unreachable, and the application is entirely down
   for all users until it's manually restarted or replaced.
 
@@ -1435,8 +1838,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S7. A cache expiring for a hot key causes a sudden spike in database load
-
+### S7. A cache expiring for a hot key causes a sudden spike in database load {#cache-expiring-hot-key-causes}
 - **Symptoms:** A brief but severe database load spike (and often a corresponding latency spike or
   timeout wave) occurs at a predictable interval, correlating with a popular cached item's TTL
   expiring.
@@ -1467,8 +1869,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S8. A client's retried request after a timeout creates a duplicate order instead of one
-
+### S8. A client's retried request after a timeout creates a duplicate order instead of one {#client-retried-request-after-timeout}
 - **Symptoms:** A customer is charged twice, or sees two identical orders from a single checkout
   click, and support tickets mention "I only clicked once."
 
@@ -1499,8 +1900,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S9. Two halves of a distributed system independently accept conflicting writes during a network partition
-
+### S9. Two halves of a distributed system independently accept conflicting writes during a network partition {#two-halves-distributed-system-independently}
 - **Symptoms:** After a network partition between two data centers (or two sets of nodes) is
   resolved, conflicting data is discovered — both sides accepted writes for what should have been
   the same, single logical record, and they disagree.
@@ -1532,8 +1932,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S10. A user immediately re-reads their own just-saved data and sees the old value
-
+### S10. A user immediately re-reads their own just-saved data and sees the old value {#user-immediately-re-reads-own}
 - **Symptoms:** A user updates their profile/settings, sees a "saved" confirmation, but on the
   very next page load the old value is back — support gets reports of "my changes aren't saving"
   even though the write clearly succeeded server-side.
@@ -1564,8 +1963,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S11. One database shard is consistently far busier than the others, and its overload periodically degrades the whole system
-
+### S11. One database shard is consistently far busier than the others, and its overload periodically degrades the whole system {#one-database-shard-consistently-far}
 - **Symptoms:** Monitoring shows one specific shard with disproportionately high CPU/latency
   compared to its siblings, and its degradation correlates with broader system slowdowns.
 
@@ -1595,8 +1993,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S12. Choosing asynchronous replication for availability leads to a real, user-visible data-loss incident during a failover
-
+### S12. Choosing asynchronous replication for availability leads to a real, user-visible data-loss incident during a failover {#choosing-asynchronous-replication-availability-leads}
 - **Symptoms:** A primary database failure triggers failover to a replica, and users report data
   they'd recently submitted (in the seconds before the failure) is missing from the promoted
   replica.
@@ -1629,8 +2026,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S13. A core service becomes the system's dominant bottleneck as the company's traffic grows 10x
-
+### S13. A core service becomes the system's dominant bottleneck as the company's traffic grows 10x {#core-service-becomes-system-dominant}
 - **Symptoms:** A service architected years earlier for a much smaller scale is now consistently
   the limiting factor on overall system throughput and latency, despite various tactical
   optimizations already applied to it.
@@ -1663,8 +2059,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S14. A slow dependency triggers a full-system outage that continues long after the dependency recovers
-
+### S14. A slow dependency triggers a full-system outage that continues long after the dependency recovers {#slow-dependency-triggers-full-system}
 - **Symptoms:** The recommendations service becomes slow for two minutes (a bad deploy, since rolled back). Within
   five minutes the product page, checkout and login all fail with timeouts. The dependency is healthy again, yet the platform stays down
   for 40 more minutes and only recovers after engineers restart services and block traffic at the load balancer.
@@ -1697,8 +2092,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S15. One Redis key receives most of the traffic; that node saturates while the cluster average looks fine
-
+### S15. One Redis key receives most of the traffic; that node saturates while the cluster average looks fine {#one-redis-key-receives-most}
 - **Symptoms:** During a flash sale, a Redis Cluster node sits at 100% CPU with rising latency and timeouts, while the other nodes are at 10%.
   Adding nodes and resharding doesn't help. The product-detail page for the sale item is slow for everyone.
 
@@ -1726,8 +2120,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S16. The monthly cloud bill is 3× the forecast and nobody knows why
-
+### S16. The monthly cloud bill is 3× the forecast and nobody knows why {#monthly-cloud-bill-3-forecast}
 - **Symptoms:** Finance flags a bill of $180k versus the $60k expected. There has been no traffic growth of that order, and no one can point to
   a specific change; the cost dashboard shows "EC2-Other" and "Data Transfer" as the largest lines.
 
@@ -1756,8 +2149,7 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
-### S17. A big-bang data migration fails halfway through the cutover, and the team cannot cleanly roll back
-
+### S17. A big-bang data migration fails halfway through the cutover, and the team cannot cleanly roll back {#big-bang-data-migration-fails}
 - **Symptoms:** On a Saturday cutover to a new database (or new service) after a six-month migration project, the migration script fails at 60% because of unexpected
   data (malformed legacy rows). The application has already switched some writers to the new system, so the two stores now contain different data. The team debates
   rolling forward versus rolling back for hours; leadership asks for an ETA nobody can give.
@@ -1788,87 +2180,97 @@ capacity: 2 regions x 50% load each; the survivor must absorb 100% -> run below 
 
 </details>
 
+### S18. Booking traffic jumps 50x when a vaccination campaign opens, and the booking API falls over {#booking-traffic-jumps-50x-vaccination}
+- **Symptoms:** At 08:00 the campaign is announced on TV. Within minutes, p99 on availability search climbs to 10 s, booking returns 5xx, the database connection pool is exhausted, and users who retry make it worse.
+
+> 🧠 **Try first:** Before opening the answer, write your first three hypotheses and the command or metric you would check for each.
+
+<details markdown="1">
+<summary>Show diagnosis, resolution & prevention</summary>
+
+- **Diagnosis:** Read traffic (availability search) and write traffic (booking) share the same primary database and pool. Every search recomputes slots from the appointments table. A few popular centres become hot rows, so bookings wait on locks and hold connections longer. Client retries without backoff multiply the load. Check pool wait time, `pg_stat_activity` lock waits, top queries by total time, and requests per user.
+- **Resolution:** Put a **virtual waiting room** at the edge that admits users at the rate the backend can absorb. Serve availability from a cache or read replica with a short TTL (a few seconds of staleness is acceptable, because the booking re-checks). Keep the booking transaction short, enforce no-overlap in the database ([Persistence Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)) and return `409` quickly when the slot is taken. Rate-limit per user and per IP, and scale the stateless tiers out.
+- **Prevention:** Load-test a "campaign opening" profile (spike test, see [Performance Q1](performance-load-testing.md#load-stress-spike-soak-tests)). Pre-scale before known announcements, keep the waiting room behind a feature flag, separate read and write pools, and alert on pool saturation and booking error rate.
+
+</details>
+
 ## 🗣️ Reported interview questions
 
 Questions reported from real interviews, grouped by topic. Each has a short model answer: expand it with the detailed questions and scenarios above, and say the answer aloud.
 
 ### Microservices & resilience
 
-#### R1. Service A calls B, which calls C, and C is down. How do you prevent the failure from cascading?
-
+#### R1. Service A calls B, which calls C, and C is down. How do you prevent the failure from cascading? {#service-calls-b-calls-c}
 **Answer:** Timeouts everywhere, **circuit breaker** (fail fast once C is unhealthy), **bulkheads** (isolated thread pools/connection limits per dependency), bounded retries with backoff and jitter, fallbacks/cached data/graceful degradation, and async messaging where a synchronous answer is not needed. Add health checks, load shedding and alerts.
 
-#### R2. One microservice becomes slow and affects the entire system. What patterns do you implement?
-
+#### R2. One microservice becomes slow and affects the entire system. What patterns do you implement? {#one-microservice-becomes-slow-affects}
 **Answer:** Timeouts, circuit breaker, bulkhead, rate limiting and load shedding, backpressure, caching, async/queue-based decoupling, autoscaling, and retries only with budgets (retry storms make it worse). Use distributed tracing to find which dependency is slow.
 
-#### R3. How do you handle cascading failures in microservices?
-
+#### R3. How do you handle cascading failures in microservices? {#handle-cascading-failures-microservices}
 **Answer:** Same toolbox: fail fast (timeouts, circuit breakers), isolate (bulkheads, separate pools), degrade gracefully (fallbacks, stale cache), shed load, avoid synchronous call chains, and test failure with chaos experiments and load tests.
 
-#### R4. How do you trace a request across 15 microservices?
-
+#### R4. How do you trace a request across 15 microservices? {#trace-request-across-15-microservices}
 **Answer:** Distributed tracing: propagate a **trace ID** (W3C `traceparent`) via headers and message metadata, instrument with OpenTelemetry, collect in Tempo/Jaeger/Zipkin, and put the trace ID in every structured log line (MDC) to correlate logs, metrics and traces.
 
-#### R5. One microservice must communicate with another. Would you choose REST, Kafka, or gRPC? Why?
-
+#### R5. One microservice must communicate with another. Would you choose REST, Kafka, or gRPC? Why? {#one-microservice-communicate-another-rest}
 **Answer:** Need an immediate answer, simple contract → REST; low latency/typed contract/internal/streaming → gRPC; fire-and-forget, fan-out, resilience to downtime or replay → Kafka. State the trade-off: sync coupling and availability vs async complexity and eventual consistency.
 
-#### R6. A customer reports the same payment was processed twice. How do you prevent duplicate processing?
-
+#### R6. A customer reports the same payment was processed twice. How do you prevent duplicate processing? {#customer-reports-same-payment-was}
 **Answer:** Idempotency: client sends an **idempotency key**; server stores it with the result under a unique constraint and returns the stored result on retry. Make consumers idempotent too (dedupe table / upsert), and use the outbox to avoid double publishing. See also the duplicate-payment answer in [Java Core & JVM](java-core-jvm.md).
 
 ### Payments / fund transfer
 
-#### R7. Design a fund transfer system capable of handling millions of transactions.
-
+#### R7. Design a fund transfer system capable of handling millions of transactions. {#design-fund-transfer-system-capable}
 **Answer:** Clarify requirements (consistency, latency, volume). API (idempotent `POST /transfers`) → transfer service writing a transfer row plus a ledger (double-entry) in one ACID transaction, partitioned by account; events via outbox to Kafka (keyed by account) for notifications/risk/reporting; async orchestration for cross-service steps (saga); strong consistency for balances, eventual for read models; replicas/cache for reads; audit trail, reconciliation job, observability.
 
-#### R8. What happens if Account A is debited but Account B's credit fails?
-
+#### R8. What happens if Account A is debited but Account B's credit fails? {#happens-account-debited-but-account}
 **Answer:** Never leave it half-done. In one database: a single transaction rolls both back. Across services: a **saga** with a compensating action (refund/reverse the debit), a pending state, retries of the credit with idempotency, and a reconciliation job for stuck transfers. Money is modelled as ledger entries so it is traceable.
 
-#### R9. How would you prevent duplicate transactions if the user clicks multiple times?
-
+#### R9. How would you prevent duplicate transactions if the user clicks multiple times? {#prevent-duplicate-transactions-user-clicks}
 **Answer:** Disable the button client-side (UX only), and enforce server-side with an **idempotency key** (unique constraint) so repeated requests return the first result. Add optimistic/pessimistic locking or a conditional state transition on the transfer.
 
-#### R10. How would you ensure transactions for an account are processed in order?
-
+#### R10. How would you ensure transactions for an account are processed in order? {#ensure-transactions-account-processed-order}
 **Answer:** Partition by account: Kafka key = account ID so events go to one partition consumed sequentially; or a per-account queue/lock; use a sequence number per account and reject/park out-of-order events. Avoid parallel processing within one account.
 
-#### R11. Which design would you use to avoid duplicate transactions and ensure correct processing?
-
+#### R11. Which design would you use to avoid duplicate transactions and ensure correct processing? {#design-avoid-duplicate-transactions-ensure}
 **Answer:** Idempotency key + unique constraint, transactional outbox for reliable event publishing, idempotent consumers (inbox/dedupe), partitioning by account for ordering, ACID ledger writes, saga with compensation for cross-service steps, and reconciliation as the safety net.
 
-#### R12. Explain how the Saga pattern can be used for fund transfer.
-
+#### R12. Explain how the Saga pattern can be used for fund transfer. {#saga-pattern-used-fund-transfer}
 **Answer:** Split the transfer into local transactions: *reserve/debit A → credit B → confirm*. Each step has a **compensation** (release the hold / refund A). If credit B fails after retries, run the compensations in reverse. Orchestration (central coordinator, easier to follow state) or choreography (events, less coupling, harder to trace).
 
-#### R13. Explain the architecture/flow of a Saga-based fund transfer system.
-
+#### R13. Explain the architecture/flow of a Saga-based fund transfer system. {#architecture-flow-saga-based-fund}
 **Answer:** 1) Client sends `POST /transfers` with idempotency key → Transfer Service stores `PENDING` + outbox event. 2) Orchestrator/Kafka event → Account Service debits A (or places a hold), emits `Debited`. 3) Credits B, emits `Credited`. 4) Transfer marked `COMPLETED`. On failure: `CreditFailed` → compensate (`Refund A`) → `FAILED`. All steps idempotent, state persisted, timeouts and a recovery job for stuck sagas, DLQ and alerts.
 
-#### R14. Which database would you choose and why?
-
+#### R14. Which database would you choose and why? {#database}
 **Answer:** For money: a relational ACID database (PostgreSQL) for the ledger and balances, with strong consistency and constraints. Add Redis for idempotency/caching, Kafka for events, and a read store (Elasticsearch/analytics DB) for queries and reporting. Shard by account if one node is not enough.
 
 ### Scaling & AWS-style ops
 
-#### R15. Your API receives 100,000 requests per minute. How would you scale it?
-
+#### R15. Your API receives 100,000 requests per minute. How would you scale it? {#api-receives-100-000-requests}
 **Answer:** That is ≈ 1,700 req/s: modest. Stateless instances behind a load balancer with autoscaling, connection pooling sized to the DB, caching (CDN, Redis), read replicas, async work via queues, rate limiting, and load tests to find the first bottleneck (usually the database). Scale horizontally after fixing hot queries.
 
-#### R16. Users are abusing your API. How would you implement rate limiting?
-
+#### R16. Users are abusing your API. How would you implement rate limiting? {#users-abusing-api-implement-rate}
 **Answer:** At the edge (API gateway/WAF/CDN) and in the app: token bucket or sliding window per API key/user/IP, counters in Redis (atomic `INCR` + TTL or a Lua script), return `429` with `Retry-After`, different limits per tier, plus bot/abuse detection and blocking for repeat offenders.
 
-#### R17. Your Redis cache crashes unexpectedly. How should your application behave?
-
+#### R17. Your Redis cache crashes unexpectedly. How should your application behave? {#redis-cache-crashes-unexpectedly-application}
 **Answer:** Degrade gracefully: treat cache as optional, fall back to the database with timeouts and a circuit breaker, protect the DB from a stampede (request coalescing, jittered TTLs, rate limit), and keep the app working with higher latency. Use replication/Sentinel/Cluster for availability and warm the cache after recovery.
 
-#### R18. A deployment causes increased latency. How do you identify the root cause and roll back safely?
-
+#### R18. A deployment causes increased latency. How do you identify the root cause and roll back safely? {#deployment-causes-increased-latency-identify}
 **Answer:** Correlate the latency change with the deploy time (dashboards, traces, error rate, saturation); diff the release (code, config, dependencies, DB migrations). Roll back fast with the previous image/ReplicaSet (`kubectl rollout undo`) if the SLO is at risk, but check backwards-compatible DB migrations first. Prevent with canary/blue-green and automated rollback on SLO breach.
+
+### Healthcare booking platform
+
+#### R19. Patients search for "dermatologist near me, earliest availability". How do you serve that at scale? {#patients-search-dermatologist-near-earliest}
+**Answer:** Separate search from booking. Practitioners go into a **search index** (OpenSearch/Elasticsearch) with geo point, specialty, languages, insurance/sector and a precomputed **next available slot**. That field is updated from booking and calendar events (Kafka) and repaired by a periodic recompute job. Search is eventually consistent and cached briefly; the detailed slots of one practitioner come from the availability service; the booking itself re-checks in the database ([Persistence Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)). Reads outnumber writes by orders of magnitude, so scale reads (replicas, cache) and keep the write path small and strongly consistent. See also [Q46](system-design.md#design-doctor-appointment-booking-system).
+
+#### R20. Design SMS and email reminders sent 24 h and 2 h before millions of appointments. {#design-sms-email-reminders-sent}
+**Answer:** Store due reminders in a table `(appointment_id, type, send_at, status)` with a unique key on `(appointment_id, type)` and an index on `send_at`. Workers claim batches with `SELECT … WHERE send_at <= now() AND status = 'PENDING' FOR UPDATE SKIP LOCKED LIMIT 500`, so many workers run without double-claiming. At send time, **re-read the appointment**: a cancelled or rescheduled one must not trigger a reminder. Send through a provider abstraction with failover, per-provider rate limits and the provider's idempotency key; respect the patient's time zone, quiet hours and opt-out. Mark `SENT`, retry with backoff on failure, and send to a dead-letter state after N tries. Metrics: lag between `send_at` and the real send, and the failure rate per provider. See [Q44](system-design.md#design-notification-system-email-sms) and [Messaging Q37](messaging-rabbitmq-kafka.md#consumer-sends-appointment-reminder-sms).
+
+#### R21. How do you let a practitioner share a medical document with a patient securely? {#let-practitioner-share-medical-document}
+**Answer:** The upload goes to object storage in a certified health-data region, encrypted with per-document data keys wrapped by KMS (envelope encryption), after a malware scan. Metadata and the access list (`document_id`, owner, patient, consent) live in the database. A download first checks authorization on the server (the requester is that patient or an authorised practitioner, which prevents IDOR, see [Security Q12](security.md#idor-broken-object-level-authorization)), then returns a **short-lived presigned URL**. Log every access in an append-only audit trail, apply retention rules and allow revocation. For the highest level of protection, use end-to-end encryption ([Security Q20](security.md#end-end-encryption-patientpractitioner-messages)), at the cost of server-side features.
+
+#### R22. Design teleconsultation (video between a patient and a practitioner). {#design-teleconsultation-video-patient-practitioner}
+**Answer:** Use **WebRTC**: the browsers exchange media directly (DTLS-SRTP encrypted), with a **signaling** service (WebSocket) to exchange offers, answers and ICE candidates, **STUN** to discover public addresses and **TURN** relays for networks that block peer-to-peer (corporate firewalls, about 10–20% of calls). For more than two participants, add an SFU. The call is tied to the appointment: a waiting room, a short-lived room token issued only to the two participants, and no recording by default. Monitor call quality (packet loss, jitter, setup failures by browser) and offer a phone fallback. The hard part is reliability across networks and devices, not raw scale.
 
 ## 🎤 Oral quiz
 
@@ -1876,16 +2278,27 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 
 1. Q1. What steps do you follow in a system design interview, and how do you split the 45 minutes?
 2. Q3. A single server runs out of CPU and RAM. Walk through how the architecture evolves.
-3. Q9. When do you put a message queue in a design, and what does it buy you?
+3. Q28. What's the idempotency-key trap when a client retries a write after a timeout?
 4. Q13. CAP gets quoted in every interview — what does PACELC add?
 5. Q14. Fan-out on write or fan-out on read for a feed — and what breaks at celebrity scale?
 6. Q16. How do you update the database *and* publish an event without losing one of them?
 7. Q35. Design a URL shortener (bit.ly). Cover ID generation, storage, redirects and scale.
-8. Q36. Design a chat system like WhatsApp or Slack (1:1 and groups, delivery receipts, offline users).
+8. Q46. Design a doctor appointment-booking system (like a healthcare booking platform), including double-booking prevention, cancellations and peak load.
 9. S1. After a deploy, every cache entry expires at once and the database falls over
 10. S4. A regional outage turns into a global one when traffic fails over
 
 ## 📌 Cheat-sheet
+
+### The six problems
+
+> **Start here:** (1) name the symptom before the tool; (2) try the cheapest fix first; (3) every tool has a price; (4) measure, fix, re-measure.
+
+- **Too many reads** — index → cache → read replicas. *Watch for stale cache, stampedes and replica lag.*
+- **Too many writes** — batch → async (queue) → shard. *Sharding is the last resort; a bad shard key creates a hot shard.*
+- **Live updates** — long polling (simple), SSE (server → client), WebSocket (both ways). *WebSockets are stateful: plan pub/sub, reconnect and missed messages.*
+- **Slow jobs** — return `202`, put the job in a queue, let a worker pool run it. *At-least-once delivery means idempotent jobs; use a DLQ for poison messages.*
+- **Things will fail** — timeout + retry with exponential backoff and jitter; idempotency key; circuit breaker with a fallback. *Retry at one layer only; a timeout means "unknown", not "failed".*
+- **Reads and writes fighting** — CQRS: separate command and query paths. *Start with separate code on one DB; accept eventual consistency; skip it for simple CRUD.*
 
 ### Interview method and numbers
 
@@ -1930,6 +2343,7 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 - **Read-your-own-writes** — reads from an async replica can make a user's own write look reverted. *Route the immediate post-write read to the primary, or trust the client's optimistic write.*
 - **Idempotency keys** — a unique token per logical request so a retry doesn't repeat the effect. *Without one, a client retry after a timeout can duplicate a write; enforce it with a unique constraint at the storage layer, not an in-memory check.*
 - **Outbox** — write the business row and an event row in one transaction; a relay then publishes the event at-least-once. *Solves "DB updated but event never sent".*
+- **Double booking** — make the invariant a database constraint (unique slot or exclusion constraint) or a conditional update, never a read-then-write check. *Hold a slot briefly with a TTL, return 409 on the lost race.*
 - **2PC vs saga** — 2PC (two-phase commit) = atomic but blocking and tied to its coordinator. Saga = local transactions plus idempotent compensations (undo steps), eventually consistent. *Put irreversible steps last and publish events via an outbox.*
 - **Distributed locks** — a lock with a TTL can expire while its holder is paused (e.g. GC pause). *Use fencing tokens (a rising number the resource checks) or idempotent/conditional writes (`WHERE version = ?`); locks are for efficiency, not correctness.*
 - **Active-active** *(advanced)* — the hard part is write conflicts: partition by home region and keep conflict-prone data single-writer. *LWW (last-write-wins) loses updates; the surviving region must absorb 100% of traffic; often active-passive is enough.*
