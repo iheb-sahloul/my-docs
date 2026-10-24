@@ -18,4 +18,6 @@ jobs:
             - name: EN/FR parity and question references
               run: python scripts/check_docs.py
             - name: Build (strict, also checks internal links and anchors)
-              run: mkdocs build --strict
+              run: |
+                  zensical build --strict
+                  zensical build --strict -f mkdocs.fr.yml
