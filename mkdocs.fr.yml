@@ -1,0 +1,63 @@
+# French site, built into site/fr/ after the English one: zensical build -f mkdocs.fr.yml
+INHERIT: mkdocs.base.yml
+docs_dir: docs/fr
+site_dir: site/fr
+site_url: https://iheb-sahloul.github.io/my-docs/fr/
+
+theme:
+  language: fr
+
+nav:
+- Accueil: index.md
+- Entretien:
+  - Vue d'ensemble: interviews/index.md
+  - Design Patterns: interviews/design-patterns.md
+  - Java Core & JVM: interviews/java-core-jvm.md
+  - Kotlin: interviews/kotlin.md
+  - Spring & Architecture: interviews/spring-architecture.md
+  - Persistance & SQL: interviews/persistence-sql-postgres.md
+  - Messagerie: interviews/messaging-rabbitmq-kafka.md
+  - React & TypeScript: interviews/react-typescript.md
+  - Full Stack & DevOps: interviews/fullstack-devops-k8s.md
+  - Conception de systèmes: interviews/system-design.md
+  - Cache & Redis: interviews/caching-redis.md
+  - Leadership & Comportemental (STAR): interviews/leadership-behavioral.md
+  - Ingénierie IA & Claude Code: interviews/claude-code.md
+  - Tests: interviews/testing.md
+  - Sécurité: interviews/security.md
+  - Live coding: interviews/coding.md
+  - Cloud (AWS): interviews/cloud-aws.md
+  - Conception d'API REST: interviews/rest-api.md
+  - Performance & tests de charge: interviews/performance-load-testing.md
+  - Observabilité: interviews/observability.md
+  - Checklist d'entretien blanc: interviews/mock-interview.md
+- Notes:
+  - Git: notes/git.md
+  - Java: notes/java.md
+  - Maven & Gradle: notes/maven-gradle.md
+  - Optimisation des requêtes SQL: notes/sql.md
+  - Postgres: notes/postgres.md
+  - Docker: notes/docker.md
+  - Kubernetes: notes/kubernetes.md
+  - Terraform: notes/terraform.md
+  - Linux: notes/linux.md
+  - Kafka & RabbitMQ: notes/messaging.md
+  - 'HTTP: curl & jq': notes/http-curl-jq.md
+  - AI: notes/ai.md
+- Bonnes pratiques:
+  - Git: best-practices/git.md
+  - Java: best-practices/java.md
+  - Spring Boot: best-practices/spring-boot.md
+  - Tests: best-practices/testing.md
+  - Sécurité: best-practices/security.md
+  - Observabilité: best-practices/observability.md
+  - REST API: best-practices/rest-api.md
+  - Messagerie: best-practices/messaging.md
+  - Architecture: best-practices/architecture.md
+  - React & TypeScript: best-practices/react-typescript.md
+  - SQL, JPA & Postgres: best-practices/sql-jpa-postgres.md
+  - Docker, K8s & DevOps: best-practices/docker-k8s-devops.md
+  - CI/CD: best-practices/ci-cd.md
+  - Prompts IA: best-practices/ai-prompts.md
+- Ressources:
+  - Pour aller plus loin: resources/further-reading.md

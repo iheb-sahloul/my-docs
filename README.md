@@ -1,12 +1,12 @@
 # my-docs
 
-My personal tech docs — notes and references on Java, Spring, SQL, messaging, React/TypeScript, DevOps/Kubernetes, system design, and interview prep — built with [MkDocs](https://www.mkdocs.org/) and the [Material theme](https://squidfunk.github.io/mkdocs-material/).
+My personal tech docs — notes and references on Java, Spring, SQL, messaging, React/TypeScript, DevOps/Kubernetes, system design, and interview prep — built with [Zensical](https://zensical.org/).
 
 Published at: https://iheb-sahloul.github.io/my-docs/
 
 ## Building locally
 
-**Prerequisites:** Python 3.x
+**Prerequisites:** Python 3.10+
 
 1. Install dependencies:
 
@@ -20,7 +20,8 @@ Published at: https://iheb-sahloul.github.io/my-docs/
 2. Serve the site locally with live reload:
 
    ```bash
-   python3 -m mkdocs serve
+   zensical serve                      # English
+   zensical serve -f mkdocs.fr.yml     # French
    ```
 
    Then open http://127.0.0.1:8000 in your browser.
@@ -28,8 +29,10 @@ Published at: https://iheb-sahloul.github.io/my-docs/
 3. Before pushing, check that the build has no warnings (broken links, missing pages):
 
    ```bash
-   python3 -m mkdocs build --strict
+   zensical build --strict && zensical build --strict -f mkdocs.fr.yml
    ```
+
+   Build EN first: it cleans `site/`, then FR builds into `site/fr/`.
 
 ## Content
 
@@ -44,12 +47,14 @@ Scenarios have a collapsed answer (`<details markdown="1">`, enabled by `md_in_h
 
 ## Translations
 
-Content lives in `docs/en/` (default, served at `/`) and `docs/fr/` (served at `/fr/`). To translate a page, copy it into `docs/fr/` at the same relative path; untranslated pages fall back to English. Nav labels are translated in `mkdocs.yml` under `nav_translations`.
+Content lives in `docs/en/` (default, served at `/`) and `docs/fr/` (served at `/fr/`). Each language is its own build: `mkdocs.yml` (EN) and `mkdocs.fr.yml` (FR), both inheriting the shared theme and extensions from `mkdocs.base.yml`. There is no fallback to English: every page needs its twin in `docs/fr/` at the same relative path, and the page must be listed in both files' `nav` (French labels go in `mkdocs.fr.yml`).
 
-Keep EN and FR in sync when you edit a page, and check with `python3 -m mkdocs build --strict`.
+Keep EN and FR in sync when you edit a page, and check with `python3 scripts/check_docs.py` and the two strict builds above.
 
-Shared images stay in `docs/assets/`.
+Images go next to the page in both `docs/en/` and `docs/fr/`; `docs/assets/` is outside both builds and is not published.
 
 ## Deployment
 
-Pushes to `main` automatically trigger the [deploy workflow](.github/workflows/deploy.yml), which builds the site with `mkdocs gh-deploy` and publishes it to GitHub Pages.
+Pushes to `main` automatically trigger the [deploy workflow](.github/workflows/deploy.yml), which builds both languages with Zensical and publishes `site/` to GitHub Pages (Settings → Pages → Source: GitHub Actions).
+
+To deploy by hand (any branch), go to Actions → 🚀 Deployment → Run workflow and enter the branch name.

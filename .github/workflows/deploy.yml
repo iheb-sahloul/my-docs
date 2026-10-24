@@ -4,15 +4,27 @@ on:
     push:
         branches:
             - main
+    workflow_dispatch:
+        inputs:
+            ref:
+                description: Branch to deploy
+                default: main
+                required: true
 
 jobs:
     deploy:
         runs-on: ubuntu-latest
         permissions:
-            contents: write
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
         steps:
             - name: ⤵️ Checkout code
               uses: actions/checkout@v7
+              with:
+                  ref: ${{ inputs.ref || github.ref }}
 
             - name: Set up Python
               uses: actions/setup-python@v7
@@ -25,5 +37,16 @@ jobs:
             - name: ✅ Docs checks
               run: python scripts/check_docs.py
 
+            # EN first: it cleans site/, then FR builds into site/fr/
+            - name: 🏗️ Build EN + FR
+              run: |
+                  zensical build --strict
+                  zensical build --strict -f mkdocs.fr.yml
+
+            - uses: actions/upload-pages-artifact@v4
+              with:
+                  path: site
+
             - name: 🚀 Deploy documentation
-              run: mkdocs gh-deploy --force --strict
+              id: deployment
+              uses: actions/deploy-pages@v4
