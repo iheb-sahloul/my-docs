@@ -57,7 +57,7 @@ jobs:
                   # fail if any private page is still plaintext
                   ! grep -rL staticrypt site/fr/private --include=*.html | grep .
 
-            - uses: actions/upload-pages-artifact@v4
+            - uses: actions/upload-pages-artifact@v5
               with:
                   path: site
 
