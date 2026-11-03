@@ -1,6 +1,6 @@
 # Live Coding & Algorithms
 
-Senior full-stack interviews rarely ask for exotic algorithms. They check that you can turn a problem into clean, tested code while talking, pick the right data structure, and reason about complexity. Java collection internals are in [Java Q6](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) and [Java Q18](java-core-jvm.md#happens-inside-hashmap-put-get).
+Senior full-stack interviews rarely ask for exotic algorithms. They check that you can turn a problem into clean, tested code while talking, pick the right data structure, and reason about complexity. Java collection internals are in [Java Q6](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) and [Java Q18](java-core-jvm.md#happens-inside-hashmap-put-get). A pattern-by-pattern reference with templates, worked examples and classic TDD katas is in [Coding Patterns & Katas](../notes/coding-patterns.md).
 
 ## 🟢 Fundamentals
 

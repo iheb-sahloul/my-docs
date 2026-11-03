@@ -6,10 +6,6 @@ site_author: Iheb Sahloul
 repo_name: iheb-sahloul/my-docs
 repo_url: https://github.com/iheb-sahloul/my-docs
 
-# docs/fr/private is a git-ignored symlink to private/ for reading in the IDE; never publish it
-exclude_docs: |
-  private/
-
 theme:
   name: material
   features:

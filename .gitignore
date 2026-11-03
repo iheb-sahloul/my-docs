@@ -4,6 +4,4 @@ site/
 build/
 
 # Personal, untracked notes
-private/
-docs/fr/private
-docs/en/private
+mkdocs.local.yml

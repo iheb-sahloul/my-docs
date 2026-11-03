@@ -29,6 +29,7 @@ nav:
 - Notes:
   - Git: notes/git.md
   - Java: notes/java.md
+  - Coding Patterns & Katas: notes/coding-patterns.md
   - Maven & Gradle: notes/maven-gradle.md
   - SQL Query Tuning: notes/sql.md
   - Postgres: notes/postgres.md

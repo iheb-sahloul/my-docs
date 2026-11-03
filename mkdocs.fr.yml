@@ -34,6 +34,7 @@ nav:
 - Notes:
   - Git: notes/git.md
   - Java: notes/java.md
+  - Patterns de code & katas: notes/coding-patterns.md
   - Maven & Gradle: notes/maven-gradle.md
   - Optimisation des requêtes SQL: notes/sql.md
   - Postgres: notes/postgres.md

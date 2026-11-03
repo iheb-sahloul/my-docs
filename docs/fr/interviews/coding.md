@@ -1,6 +1,6 @@
 # Live coding & algorithmes
 
-Les entretiens full-stack seniors demandent rarement des algorithmes exotiques. Ils vérifient que vous savez transformer un problème en code propre et testé tout en parlant, choisir la bonne structure de données et raisonner sur la complexité. Le fonctionnement interne des collections Java est traité dans [Java Q6](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) et [Java Q18](java-core-jvm.md#happens-inside-hashmap-put-get).
+Les entretiens full-stack seniors demandent rarement des algorithmes exotiques. Ils vérifient que vous savez transformer un problème en code propre et testé tout en parlant, choisir la bonne structure de données et raisonner sur la complexité. Le fonctionnement interne des collections Java est traité dans [Java Q6](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) et [Java Q18](java-core-jvm.md#happens-inside-hashmap-put-get). Une référence pattern par pattern, avec modèles, exemples résolus et katas TDD classiques, se trouve dans [Patterns de code & katas](../notes/coding-patterns.md).
 
 ## 🟢 Fondamentaux
 

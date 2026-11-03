@@ -29,8 +29,8 @@ for en in sorted((ROOT / "en").rglob("*.md")):
     if max(la, lb) > 1.5 * max(1, min(la, lb)):
         warnings.append(f"{rel}: line ratio EN {la} / FR {lb}")
 
-# private/ is git-ignored: checked locally when present, skipped in CI
-pages = sorted((ROOT / "en").rglob("*.md")) + sorted((ROOT / "fr").rglob("*.md")) + sorted((ROOT.parent / "private").glob("*.md"))
+# fr/ includes the git-ignored fr/private/ when present locally (absent in CI)
+pages = sorted((ROOT / "en").rglob("*.md")) + sorted((ROOT / "fr").rglob("*.md"))
 for f in pages:
     for m in LINK.finditer(f.read_text()):
         label, file, slug = m.groups()
