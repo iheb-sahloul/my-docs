@@ -34,7 +34,8 @@ jobs:
             # Private notes are encrypted in git (see .gitattributes); decrypt before checks/build
             - name: 🔓 Decrypt private notes
               run: |
-                  sudo apt-get install -y transcrypt
+                  curl -fsSL https://raw.githubusercontent.com/elasticdog/transcrypt/v2.3.2/transcrypt -o /usr/local/bin/transcrypt
+                  chmod +x /usr/local/bin/transcrypt
                   transcrypt -y -c aes-256-cbc -p "${{ secrets.TRANSCRYPT_PASSWORD }}"
 
             - name: Install dependencies
