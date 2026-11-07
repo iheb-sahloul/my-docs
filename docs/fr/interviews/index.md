@@ -23,6 +23,7 @@
 | 17 | [`Observabilité`](observability.md) | RED/USE, corrélation, cardinalité, échantillonnage, alertes de burn rate SLO |
 | 18 | [`Kotlin`](kotlin.md) | Null safety, classes sealed/value, coroutines, plugins Spring + JPA, interop Java |
 | 19 | [`Cache & Redis`](caching-redis.md) | Structures de données Redis, éviction, stampede, pièges de Spring Cache, verrous, Cluster |
+| 20 | [`Elasticsearch & OpenSearch`](elasticsearch-opensearch.md) | Lucene, mappings, shards, pertinence, exploitation de cluster, labs Elastic Certified Engineer |
 | ✓ | [`Entretien blanc`](mock-interview.md)                      | Checklist de préparation pour la veille                               |
 
 Les liens sélectionnés par sujet se trouvent dans **Ressources › [Pour aller plus loin](../resources/further-reading.md)**.
@@ -56,6 +57,8 @@ Les liens sélectionnés par sujet se trouvent dans **Ressources › [Pour aller
 | 🗣️ Questions posées      | questions d'entretiens réels avec courtes réponses types (`R1`, `R2`…) : Java, Spring, SQL, Messaging, System Design, Cloud, Sécurité, DevOps |
 | 🎤 Quiz oral             | dix questions à traiter à voix haute, auto-notées |
 | 📌 Cheat-sheet           | Révision rapide la veille                      |
+
+**Elasticsearch & OpenSearch** ajoute une section **🏅 Labs Elastic Certified Engineer** : des tâches pratiques dans le style de l'examen, numérotées comme des scénarios et résolues sur un cluster réel.
 
 **Leadership & Comportemental** suit la même structure. Sa partie **Comportemental** reprend les mêmes niveaux mais sans scénarios : chaque question indique pourquoi le recruteur la pose, un exemple de réponse ⭐ STAR, et le piège à éviter. Une dernière section **📞 Entretien avec le recruteur** couvre les questions du premier appel (raison du départ, salaire, projet à cinq ans, approfondissement de projet, questions à poser).
 

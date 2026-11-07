@@ -406,6 +406,10 @@
 | Link |
 |------|
 | [REST API with Spring Boot and Opensearch](https://archive.is/83P2Z) |
+| [Elastic Certified Engineer exam](https://www.elastic.co/training/elastic-certified-engineer-exam) |
+| [Elastic certification FAQ](https://www.elastic.co/training/certification/faq) |
+| [Exercises for the Elastic Certified Engineer exam: store data](https://medium.com/kreuzwerker-gmbh/exercises-for-the-elastic-certified-engineer-exam-store-data-into-elasticsearch-cbce230bcc6) |
+| [Exercises for the Elastic Certified Engineer exam: deploy and operate a cluster](https://medium.com/kreuzwerker-gmbh/exercises-for-the-elastic-certified-engineer-exam-deploy-and-operate-a-cluster-b06741760d47) |
 
 ### PostgreSQL {#postgresql}
 

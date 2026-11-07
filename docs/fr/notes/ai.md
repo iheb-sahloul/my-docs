@@ -329,6 +329,34 @@ def run_agent(task, tools, max_steps=15):
 - **Traitez prompts et skills comme du code** : versionnez-les, relisez-les, testez-les avec des évaluations.
 - **Gardez vos fondamentaux solides** : vous devez pouvoir relire ce que l'IA écrit (conception, plans SQL, concurrence, sécurité).
 
+### Workflow quotidien {#daily-workflow}
+
+**Une fois par dépôt :** lancez `/init` et réduisez `CLAUDE.md` à ce que Claude ne peut pas deviner (commandes, règles d'architecture, pièges). Commitez un `.claude/settings.json` partagé qui autorise les commandes sûres et refuse les dangereuses (`/fewer-permission-prompts` construit la liste à partir de votre historique). Mettez les règles à ne jamais enfreindre dans des hooks, par exemple « ne jamais modifier une migration Flyway déjà appliquée ». Ne connectez que les serveurs MCP que vous utilisez, avec l'accès le plus restreint.
+
+**La boucle pour chaque tâche :**
+
+| Étape | Ce que vous faites | Pourquoi |
+|---|---|---|
+| 1. Cadrer | Une tâche par session, `/clear` entre tâches sans rapport. | Un contexte périmé dégrade la qualité. |
+| 2. Explorer | Demandez comment le code fonctionne aujourd'hui, pointez les fichiers avec `@chemin`. | Vous trouvez d'abord les vraies contraintes. |
+| 3. Planifier | Plan mode (Shift+Tab) pour tout ce qui n'est pas trivial. Contestez le plan. | Corriger une approche coûte moins cher que corriger un diff. |
+| 4. Implémenter | Petites étapes, test d'abord, pointez un exemple existant à imiter. | Une sortie relisable qui suit vos conventions. |
+| 5. Vérifier | Claude lance tests, linter et build. Vous vérifiez que les tests prouvent l'intention. | Un test qui passe n'est pas un test correct. |
+| 6. Relire | Lisez chaque ligne. `/code-review`, plus `/security-review` sur les chemins sensibles. | Le merge est sous votre responsabilité. |
+| 7. Livrer | Une PR petite et ciblée. Vous écrivez l'intention. | Les relecteurs ont besoin du pourquoi. |
+| 8. Apprendre | Quand Claude répète une erreur, ajoutez une ligne à `CLAUDE.md`, un hook ou un skill. | La configuration s'améliore à chaque raté. |
+
+**Dans la journée :** `claude --continue` reprend la dernière session. Lancez une deuxième tâche indépendante dans un worktree git séparé (deux ou trois au plus : votre capacité de relecture est la limite). Utilisez `/code-review <PR#>` comme premier passage sur les PR des collègues, puis relisez la conception vous-même. Quand il dérive, appuyez sur Échap puis `/rewind` ; après deux corrections ratées, `/clear` et repartez avec un meilleur prompt. Sur les longues sessions, regardez `/context` et faites `/compact` en précisant ce qu'il faut garder. Pour les usages ponctuels dans le terminal, passez l'entrée à `claude -p`, par exemple `gh run view <id> --log-failed | claude -p "Trouve la cause racine. Ne modifie pas le code."`.
+
+**Exemples concrets (Java/Spring/Postgres) :**
+
+- **`POST /payments` idempotent.** En plan mode, donnez les contraintes (« sûr avec 3 instances, pas de nouvelle dépendance »). Si le plan est « chercher la clé, insérer si absente », c'est une race check-then-insert : deux requêtes concurrentes débitent toutes les deux. Demandez une contrainte unique avec `INSERT ... ON CONFLICT` et un test concurrent avec Testcontainers.
+- **`GET /orders` lent (N+1).** Demandez d'abord un test qui échoue en vérifiant le nombre de requêtes. Un premier correctif avec `JOIN FETCH` sur une requête paginée fait passer le test, mais Hibernate pagine alors en mémoire (`HHH90003004`). Demandez `@BatchSize` ou « paginer les ids, puis charger », et vérifiez avec `EXPLAIN ANALYZE` sur des données réalistes.
+- **Colonne `NOT NULL` sur une table de 200M lignes.** Demandez un plan expand/contract avec un rollback par étape, puis vérifiez-le : colonne nullable, backfill par lots, contrainte `NOT VALID`, puis `VALIDATE`. Exécutez-le en staging ; Claude ne touche jamais la production.
+- **Migration `javax` → `jakarta`.** Utilisez un outil à recettes (OpenRewrite) pour la partie déterministe, et Claude pour les erreurs de compilation et de tests restantes, dans un worktree avec un module par commit.
+
+**À ne pas déléguer :** la logique d'authentification, de paiement et de cryptographie sans relecture d'expert, les exigences floues, tout ce que vous ne pouvez pas vérifier, l'accès à la production, les secrets et les données clients. Pour y répondre en entretien, voir [Ingénierie IA & Claude Code R4](../interviews/claude-code.md#use-claude-code-day-to-day).
+
 ## 9. Glossaire
 
 | Terme | Signification |

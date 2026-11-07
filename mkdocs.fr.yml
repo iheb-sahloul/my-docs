@@ -21,6 +21,7 @@ nav:
   - Full Stack & DevOps: interviews/fullstack-devops-k8s.md
   - Conception de systèmes: interviews/system-design.md
   - Cache & Redis: interviews/caching-redis.md
+  - Elasticsearch & OpenSearch: interviews/elasticsearch-opensearch.md
   - Leadership & Comportemental (STAR): interviews/leadership-behavioral.md
   - Ingénierie IA & Claude Code: interviews/claude-code.md
   - Tests: interviews/testing.md
@@ -38,6 +39,7 @@ nav:
   - Maven & Gradle: notes/maven-gradle.md
   - Optimisation des requêtes SQL: notes/sql.md
   - Postgres: notes/postgres.md
+  - Elasticsearch & OpenSearch: notes/elasticsearch-opensearch.md
   - Docker: notes/docker.md
   - Kubernetes: notes/kubernetes.md
   - Terraform: notes/terraform.md

@@ -1850,6 +1850,19 @@ Questions qui reviennent souvent en entretien sur ce thème (un jeu typique, non
 #### R3. Comment réduire les hallucinations dans une fonctionnalité LLM ? {#reduce-hallucinations-llm-feature}
 **Réponse :** Ancrez les réponses dans des sources récupérées et exigez des citations, contraignez la sortie (schéma, valeurs autorisées), autorisez le modèle à répondre « je ne sais pas », validez les sorties en code et mesurez avec un jeu d'évaluation. Pour les actions à risque, ajoutez une revue humaine plutôt que de faire confiance au modèle.
 
+#### R4. Comment utilisez-vous Claude Code au quotidien ? {#use-claude-code-day-to-day}
+**Réponse :** Décrivez un processus, puis une histoire vraie. « Je l'utilise comme un binôme rapide, et je reste responsable de ce qui part en production. Chaque dépôt a un `CLAUDE.md` court, une liste blanche de commandes sûres et des hooks pour les règles à ne jamais enfreindre. Pour chaque tâche, j'ouvre une session neuve et je lui fais explorer le code. Pour tout ce qui n'est pas trivial, j'utilise le plan mode, car relire une approche coûte moins cher que relire un mauvais diff. Ensuite je travaille par petites étapes, test d'abord quand je peux, et je lis tout le diff avant d'ouvrir une PR. Par exemple, [votre histoire : la tâche, son erreur, comment vous l'avez repérée, le résultat]. Il m'aide surtout à explorer du code inconnu, écrire des tests, refactorer et trier des logs ; je suis beaucoup plus prudent sur l'authentification, les paiements et les migrations. Quand il répète une erreur, je corrige la configuration. » Le workflow complet et les exemples sont dans les [notes IA](../notes/ai.md#daily-workflow).
+
+Relances probables :
+
+- **Comment savez-vous que le code est correct ?** Même exigence que pour du code humain : des tests qui prouvent l'intention, les types, la CI et une lecture complète du diff. Vérifiez qu'aucun test n'a été affaibli, et ajoutez vous-même les cas limites.
+- **Êtes-vous vraiment plus rapide ?** Ne donnez que des chiffres mesurés. Sinon : plus rapide sur l'exploration et le travail mécanique, peu de gain sur la conception, et la relecture devient le goulot. À l'échelle de l'équipe, la preuve vient du lead time, du rework et des défauts échappés ([Q35](#measure-whether-ai-coding-tools)).
+- **Pour quoi ne l'utilisez-vous pas ?** Les exigences floues, la logique de sécurité sans relecture d'expert, tout ce que vous ne pouvez pas vérifier, et l'accès à la production.
+- **Sécurité et confidentialité ?** Uniquement des outils approuvés, ni secrets ni données clients dans les prompts, des permissions au moindre privilège, et le contenu externe traité comme non fiable ([Q20](#prompt-injection-defeated-structurally-doesn)).
+- **Vos compétences s'érodent-elles ?** Concevez d'abord, sachez expliquer chaque ligne que vous mergez, et résolvez parfois des problèmes difficiles sans lui.
+
+À éviter : énumérer des fonctionnalités au lieu d'un processus, « il écrit l'essentiel de mon code » sans parler de vérification, un gain x10 non mesuré, « c'est l'IA qui l'a écrit » comme excuse, et les histoires inventées. Préparez-en deux vraies : un vrai gain de temps, et une erreur que vous avez repérée.
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.

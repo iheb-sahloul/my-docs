@@ -328,6 +328,34 @@ def run_agent(task, tools, max_steps=15):
 - **Treat prompts and skills as code**: version them, review them, test them with evals.
 - **Keep your fundamentals sharp**: you must be able to review what the AI writes (design, SQL plans, concurrency, security).
 
+### Daily workflow {#daily-workflow}
+
+**Once per repo:** run `/init` and cut `CLAUDE.md` down to what Claude can't infer (commands, architecture rules, gotchas). Commit a shared `.claude/settings.json` that allows safe commands and denies dangerous ones (`/fewer-permission-prompts` builds the list from your history). Put rules that must never break in hooks, for example "never edit an applied Flyway migration". Connect only the MCP servers you use, with the narrowest access.
+
+**The loop for each task:**
+
+| Step | What you do | Why |
+|---|---|---|
+| 1. Scope | One task per session, `/clear` between unrelated tasks. | Stale context lowers quality. |
+| 2. Explore | Ask how the code works today, point at files with `@path`. | You find the real constraints first. |
+| 3. Plan | Plan mode (Shift+Tab) for anything non-trivial. Challenge the plan. | Fixing an approach is cheaper than fixing a diff. |
+| 4. Implement | Small steps, test first, point at an existing example to match. | Reviewable output that follows your conventions. |
+| 5. Verify | Claude runs tests, linter and build. You check that the tests prove the intent. | A passing test is not a correct test. |
+| 6. Review | Read every line. `/code-review`, plus `/security-review` on sensitive paths. | You own the merge. |
+| 7. Ship | Small, single-purpose PR. You write the intent. | Reviewers need the why. |
+| 8. Learn | When Claude repeats a mistake, add a `CLAUDE.md` line, a hook or a skill. | The setup improves with each miss. |
+
+**Through the day:** `claude --continue` resumes the last session. Run a second independent task in a separate git worktree (two or three at most: your review capacity is the limit). Use `/code-review <PR#>` as a first pass on colleagues' PRs, then review the design yourself. When it goes off course, press Esc and `/rewind`; after two failed corrections, `/clear` and restart with a better prompt. On long sessions, check `/context` and `/compact` with a note on what to keep. For terminal one-shots, pipe input to `claude -p`, for example `gh run view <id> --log-failed | claude -p "Find the root cause. Don't change code."`.
+
+**Worked examples (Java/Spring/Postgres):**
+
+- **Idempotent `POST /payments`.** In plan mode, give the constraints ("safe with 3 instances, no new dependency"). If the plan is "look up the key, insert if missing", that is a check-then-insert race: two concurrent requests both charge. Ask for a unique constraint with `INSERT ... ON CONFLICT` and a concurrent Testcontainers test.
+- **Slow `GET /orders` (N+1).** Ask for a failing test that asserts the query count first. A first fix with `JOIN FETCH` on a paginated query passes the test, but Hibernate then paginates in memory (`HHH90003004`). Ask for `@BatchSize` or "page the ids, then fetch", and check with `EXPLAIN ANALYZE` on realistic data.
+- **`NOT NULL` column on a 200M-row table.** Ask for an expand/contract plan with rollback per step, then check it: nullable column, batched backfill, constraint `NOT VALID`, then `VALIDATE`. Run it on staging; Claude never touches production.
+- **`javax` → `jakarta` migration.** Use a recipe tool (OpenRewrite) for the deterministic part, and Claude for the remaining compile and test fixes, in a worktree with one module per commit.
+
+**Don't delegate:** auth, payment and crypto logic without expert review, unclear requirements, anything you can't verify, production access, secrets and customer data. For how to answer this in an interview, see [AI Engineering & Claude Code R4](../interviews/claude-code.md#use-claude-code-day-to-day).
+
 ## 9. Glossary
 
 | Term | Meaning |

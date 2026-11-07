@@ -138,7 +138,7 @@ system design, leadership and tooling, and links to the deeper pages of this sit
 | Caching                        | 🟡    | Cache-aside, write-through, TTL, invalidation, stampede protection          |
 | Replication & sharding         | 🔴    | Read replicas, replication lag, partitioning keys, rebalancing              |
 
-**Go deeper:** [Persistence & SQL](interviews/persistence-sql-postgres.md)
+**Go deeper:** [Persistence & SQL](interviews/persistence-sql-postgres.md) · [Elasticsearch & OpenSearch](interviews/elasticsearch-opensearch.md) · [Elasticsearch notes](notes/elasticsearch-opensearch.md)
 
 **Practice**
 

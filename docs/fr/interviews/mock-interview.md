@@ -119,6 +119,14 @@ et visibilité.
 - [ ] Je sais expliquer pourquoi un verrou Redis convient pour l'efficacité mais pas pour la correction. ([Q9](caching-redis.md#redis-lock-redlock-debate))
 - [ ] Je sais expliquer pourquoi `KEYS *` bloque tous les clients. ([S3](caching-redis.md#redis-blocked-keys-command))
 
+### Elasticsearch & OpenSearch
+
+- [ ] Je sais expliquer pourquoi une requête `term` sur un champ `text` ne trouve rien. ([Q3](elasticsearch-opensearch.md#text-keyword-analyzer))
+- [ ] Je sais expliquer la différence entre `refresh` et `flush`, et pourquoi une écriture est durable avant d'être cherchable. ([Q5](elasticsearch-opensearch.md#refresh-flush-translog))
+- [ ] Je sais changer le type d'un champ sans interruption grâce à un alias. ([Q10](elasticsearch-opensearch.md#reindex-zero-downtime-alias))
+- [ ] Je sais garder un index synchronisé avec une base quand les événements arrivent dans le désordre. ([Q12](elasticsearch-opensearch.md#sync-index-with-database))
+- [ ] Je sais trouver pourquoi un cluster est rouge et dire ce que je lance en premier. ([S1](elasticsearch-opensearch.md#red-cluster-unassigned-shards))
+
 ### System design
 
 - [ ] Je sais expliquer les étapes d'un entretien de system design et comment je répartis les 45 minutes. ([Q1](system-design.md#steps-follow-system-design-interview))

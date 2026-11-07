@@ -139,7 +139,7 @@ détaillées de ce site.
 | Cache                          | 🟡     | Cache-aside, write-through, TTL, invalidation, protection contre le stampede |
 | Réplication & sharding         | 🔴     | Réplicas en lecture, lag de réplication, clés de partitionnement, rééquilibrage |
 
-**Pour aller plus loin :** [Persistance & SQL](interviews/persistence-sql-postgres.md)
+**Pour aller plus loin :** [Persistance & SQL](interviews/persistence-sql-postgres.md) · [Elasticsearch & OpenSearch](interviews/elasticsearch-opensearch.md) · [Notes Elasticsearch](notes/elasticsearch-opensearch.md)
 
 **Pratique**
 

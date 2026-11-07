@@ -119,6 +119,14 @@ with visibility.
 - [ ] I can explain why a Redis lock is fine for efficiency but not for correctness. ([Q9](caching-redis.md#redis-lock-redlock-debate))
 - [ ] I can explain why `KEYS *` stalls every client. ([S3](caching-redis.md#redis-blocked-keys-command))
 
+### Elasticsearch & OpenSearch
+
+- [ ] I can explain why a `term` query on a `text` field finds nothing. ([Q3](elasticsearch-opensearch.md#text-keyword-analyzer))
+- [ ] I can explain the difference between `refresh` and `flush`, and why a write is durable before it is searchable. ([Q5](elasticsearch-opensearch.md#refresh-flush-translog))
+- [ ] I can change a field type with zero downtime through an alias. ([Q10](elasticsearch-opensearch.md#reindex-zero-downtime-alias))
+- [ ] I can keep an index in sync with a database when events arrive out of order. ([Q12](elasticsearch-opensearch.md#sync-index-with-database))
+- [ ] I can find why a cluster is red and say what I would run first. ([S1](elasticsearch-opensearch.md#red-cluster-unassigned-shards))
+
 ### System design
 
 - [ ] I can explain the steps of a system design interview and how I split the 45 minutes. ([Q1](system-design.md#steps-follow-system-design-interview))

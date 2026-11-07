@@ -1852,6 +1852,19 @@ Questions that come up often in interviews on this topic (a typical set, not tie
 #### R3. How do you reduce hallucinations in an LLM feature? {#reduce-hallucinations-llm-feature}
 **Answer:** Ground answers in retrieved sources and require citations, constrain the output (schema, allowed values), tell the model it may answer "I don't know", validate outputs in code, and measure with an evaluation set. For high-risk actions, add human review rather than trusting the model.
 
+#### R4. How do you use Claude Code day to day? {#use-claude-code-day-to-day}
+**Answer:** Describe a process, then one true story. "I use it as a fast pair, and I stay responsible for what ships. Each repo has a short `CLAUDE.md`, an allow-list for safe commands, and hooks for the rules that must never break. For each task I start a fresh session and have it explore the code. For anything non-trivial I use plan mode, because reviewing an approach is cheaper than reviewing a wrong diff. Then I work in small steps, test first when I can, and read the whole diff before opening a PR. For example, [your story: the task, what it got wrong, how you caught it, the result]. It helps most with exploring unfamiliar code, tests, refactors and log triage; I'm much more careful with auth, payments and migrations. When it repeats a mistake, I fix the setup." The full workflow and worked examples are in the [AI notes](../notes/ai.md#daily-workflow).
+
+Likely follow-ups:
+
+- **How do you know the code is correct?** Same bar as human code: tests that prove the intent, types, CI and a full diff read. Check that no test was weakened, and add boundary cases yourself.
+- **Does it really make you faster?** Give only numbers you measured. Otherwise: faster on exploration and mechanical work, little gain on design, and review becomes the bottleneck. Team-level proof comes from lead time, rework and defect escape ([Q35](#measure-whether-ai-coding-tools)).
+- **What don't you use it for?** Unclear requirements, security logic without expert review, anything you can't verify, and production access.
+- **Security and confidentiality?** Approved tools only, no secrets or customer data in prompts, least-privilege permissions, and external content treated as untrusted ([Q20](#prompt-injection-defeated-structurally-doesn)).
+- **Do your skills decay?** Design first, be able to explain every line you merge, and sometimes solve hard problems without it.
+
+Avoid: listing features instead of a process, "it writes most of my code" with nothing on verification, an unmeasured 10x claim, "the AI wrote that" as an excuse, and invented stories. Prepare two true ones: a real time saving, and a mistake you caught.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

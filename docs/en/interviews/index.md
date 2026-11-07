@@ -23,6 +23,7 @@
 | 17 | [`Observability`](observability.md) | RED/USE, correlation, cardinality, sampling, SLO burn-rate alerts |
 | 18 | [`Kotlin`](kotlin.md) | Null safety, sealed/value classes, coroutines, Spring + JPA plugins, Java interop |
 | 19 | [`Caching & Redis`](caching-redis.md) | Redis data structures, eviction, stampede, Spring Cache pitfalls, locks, Cluster |
+| 20 | [`Elasticsearch & OpenSearch`](elasticsearch-opensearch.md) | Lucene, mappings, shards, relevance, cluster operations, Elastic Certified Engineer labs |
 | ✓ | [`Mock Interview`](mock-interview.md)                       | Readiness checklist for the day before                            |
 
 Curated links per topic live under **Resources › [Further Reading](../resources/further-reading.md)**.
@@ -56,6 +57,8 @@ Curated links per topic live under **Resources › [Further Reading](../resource
 | 🗣️ Reported questions   | questions from real interviews with short model answers (`R1`, `R2`…): Java, Spring, SQL, Messaging, System Design, Cloud, Security, DevOps |
 | 🎤 Oral quiz            | ten questions to answer out loud, self-scored |
 | 📌 Cheat-sheet          | Quick review the day before             |
+
+**Elasticsearch & OpenSearch** adds a **🏅 Elastic Certified Engineer labs** section: hands-on tasks in the exam's style, numbered as scenarios and solved on a live cluster.
 
 **Leadership & Behavioral** follows the same structure. Its **Behavioral** part uses the same levels but has no scenarios: each question gives why the interviewer asks it, a sample ⭐ STAR answer, and the pitfall to avoid. A final **📞 Recruiter screen** section covers the first-call questions (why leaving, salary, five-year plan, project deep-dive, questions to ask).
 
