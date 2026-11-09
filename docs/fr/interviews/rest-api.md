@@ -35,6 +35,31 @@ If-Match: "v7"
 #### Q6. Comment faire évoluer une API sans casser les clients ? {#evolve-api-breaking-clients}
 **Réponse :** Privilégiez le changement **additif** : nouveaux champs optionnels, nouveaux endpoints, lecteurs tolérants qui ignorent les champs inconnus. Ne renommez, ne supprimez ni ne changez jamais le sens d'un champ sur place. Quand une rupture est inévitable, versionnez (chemin ou en-tête), faites tourner les deux versions, annoncez la dépréciation avec les en-têtes `Deprecation`/`Sunset` et suivez l'usage par client avant suppression. Les tests de contrat pilotés par le consommateur détectent les ruptures accidentelles en CI.
 
+#### Q7. Concevez l'API REST d'une recherche produit avec facettes. {#design-rest-search-api-facets}
+**Réponse :** `GET` (la recherche est une lecture, cacheable, partageable par URL), paramètres explicites, réponse qui contient résultats, facettes et pagination, et **jamais** la requête Elasticsearch brute exposée au client. Une couche **traduit** paramètres → requête ES : validation (`size` ≤ 100, tri dans une liste blanche), pas d'injection de syntaxe Lucene, filtres de **droits** ajoutés côté serveur (jamais confiés au client). `total` : au-delà de 10 000, ES renvoie `relation: gte` par défaut (`track_total_hits`) ; afficher « plus de 10 000 » plutôt que de payer le comptage exact. Curseur opaque (valeurs de `search_after` encodées en base64). **Timeout** sur l'appel ES et réponse dégradée (sans facettes) plutôt qu'une erreur si le cluster est lent. Journaliser chaque recherche (requête, nombre de résultats, latence) : c'est le matériau de la pertinence.
+
+**Exemple :**
+
+```http
+GET /api/products/search?q=vélo+électrique&brand=decathlon&brand=btwin&price_min=300&price_max=1500&sort=relevance&size=24&cursor=eyJzIjpbMTIuMyw0Ml19
+```
+
+```json
+{
+  "total": { "value": 1342, "relation": "eq" },
+  "items": [ { "sku": "8529", "title": "Vélo électrique pliant", "price": 899.0,
+               "highlight": { "title": "<mark>Vélo électrique</mark> pliant" } } ],
+  "facets": {
+    "brand": [ { "value": "decathlon", "count": 412, "selected": true },
+               { "value": "btwin", "count": 120, "selected": true },
+               { "value": "moustache", "count": 64, "selected": false } ],
+    "price": [ { "from": 300, "to": 1000, "count": 801 } ]
+  },
+  "nextCursor": "eyJzIjpbMTEuOCw5OF19",
+  "didYouMean": null
+}
+```
+
 ## 🎯 Scénarios réels
 
 ### S1. Un endpoint de liste ralentit chaque mois et renvoie parfois des doublons {#list-endpoint-gets-slower-every}

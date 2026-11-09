@@ -1,6 +1,6 @@
 # Observabilité
 
-Au-delà des trois piliers : alerting basé sur les SLO, corrélation, cardinalité, échantillonnage et coût. Les piliers sont dans [Full Stack & DevOps](fullstack-devops-k8s.md#three-pillars-observability-each-one) et le « à quoi ressemble le bon » dans la [Q30](fullstack-devops-k8s.md#put-three-pillars-observability-practice) ; les règles dans [Bonnes pratiques › Observabilité](../best-practices/observability.md).
+Au-delà des trois piliers : alerting basé sur les SLO, corrélation, cardinalité, échantillonnage et coût. Les piliers sont dans [Full Stack & DevOps](fullstack-devops-k8s.md#three-pillars-observability-each-one) et le « à quoi ressemble le bon » dans la [Q33](fullstack-devops-k8s.md#put-three-pillars-observability-practice) ; les règles dans [Bonnes pratiques › Observabilité](../best-practices/observability.md).
 
 ## 🟢 Fondamentaux
 
@@ -30,7 +30,7 @@ Au-delà des trois piliers : alerting basé sur les SLO, corrélation, cardinali
 ## 🔴 Expert / Ouvert
 
 #### Q6. Comment concevez-vous un alerting basé sur les SLO avec des burn rates ? {#design-slo-based-alerting-burn}
-**Réponse :** Définissez un SLI (par ex. part des requêtes sous 300 ms et hors 5xx) et un SLO (99,9 % sur 30 jours), ce qui donne un budget d'erreur. Alertez sur le **burn rate** : une fenêtre rapide (par ex. 14× sur 1 h) déclenche une page immédiate, une fenêtre lente (par ex. 2× sur 6 h) ouvre un ticket. Cela réduit le bruit des à-coups courts tout en attrapant les fuites lentes. Voir [Full Stack Q35](fullstack-devops-k8s.md#slos-error-budgets-drive-release) pour SLO et budgets d'erreur.
+**Réponse :** Définissez un SLI (par ex. part des requêtes sous 300 ms et hors 5xx) et un SLO (99,9 % sur 30 jours), ce qui donne un budget d'erreur. Alertez sur le **burn rate** : une fenêtre rapide (par ex. 14× sur 1 h) déclenche une page immédiate, une fenêtre lente (par ex. 2× sur 6 h) ouvre un ticket. Cela réduit le bruit des à-coups courts tout en attrapant les fuites lentes. Voir [Full Stack Q38](fullstack-devops-k8s.md#slos-error-budgets-drive-release) pour SLO et budgets d'erreur.
 
 ## 🎯 Scénarios réels
 

@@ -121,7 +121,7 @@ small service into a data breach of every bucket in the account.
 **Answer:** In **Secrets Manager** (rotation built in, for example for RDS passwords) or **SSM Parameter Store**
 SecureString (cheaper, for config and secrets without rotation), encrypted with **KMS**. The workload's role is allowed
 to read only its own secrets. They reach the app through ECS task-definition `secrets`, the Kubernetes External Secrets
-Operator or Secrets Store CSI driver ([Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes)), or Spring Cloud AWS reading them at
+Operator or Secrets Store CSI driver ([Full Stack Q41](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes)), or Spring Cloud AWS reading them at
 startup. Even better, avoid the secret altogether: **RDS IAM authentication** uses the role instead of a password.
 
 **Example:**

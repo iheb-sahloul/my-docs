@@ -1,6 +1,6 @@
 # Performance & tests de charge
 
-Comment mesurer, tester et raisonner sur la performance : profils de charge, outils (k6, Gatling), percentiles, chasse aux goulots et capacité. Les percentiles de latence sont introduits dans [Full Stack & DevOps](fullstack-devops-k8s.md#p50-p95-p99-latency-average) ; l'exercice p95 de bout en bout est la [Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9).
+Comment mesurer, tester et raisonner sur la performance : profils de charge, outils (k6, Gatling), percentiles, chasse aux goulots et capacité. Les percentiles de latence sont introduits dans [Full Stack & DevOps](fullstack-devops-k8s.md#p50-p95-p99-latency-average) ; l'exercice p95 de bout en bout est la [Q39](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9).
 
 ## 🟢 Fondamentaux
 

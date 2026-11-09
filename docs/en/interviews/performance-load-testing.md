@@ -1,6 +1,6 @@
 # Performance & Load Testing
 
-How to measure, test and reason about performance: load shapes, tools (k6, Gatling), percentiles, bottleneck hunting and capacity. Latency percentiles are introduced in [Full Stack & DevOps](fullstack-devops-k8s.md#p50-p95-p99-latency-average); the end-to-end p95 exercise is [Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9).
+How to measure, test and reason about performance: load shapes, tools (k6, Gatling), percentiles, bottleneck hunting and capacity. Latency percentiles are introduced in [Full Stack & DevOps](fullstack-devops-k8s.md#p50-p95-p99-latency-average); the end-to-end p95 exercise is [Q39](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9).
 
 ## 🟢 Fundamentals
 

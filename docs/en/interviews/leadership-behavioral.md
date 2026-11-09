@@ -981,7 +981,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** describing delivery ("we shipped on time") without any evidence of impact. Say how you measured value, and what you chose *not* to build.
 
-*See also:* [Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average) on measuring what users experience.
+*See also:* [Full Stack Q9](fullstack-devops-k8s.md#p50-p95-p99-latency-average) on measuring what users experience.
 
 #### B18. Tell me about a production incident you investigated. {#production-incident-investigated}
 **Why they ask:** calm, method and learning under pressure, plus honesty about your own part.
@@ -993,7 +993,7 @@ R: "p95 went to 420 ms, zero incidents on the day, and the load test caught two 
 
 **Pitfall:** a hero narrative, blaming a person, or skipping the mitigation-before-diagnosis order. Show the sequence: stabilise, diagnose, prevent.
 
-*See also:* [Leadership S6](leadership-behavioral.md#production-incident-traces-back-architectural) for an incident caused by your own decision, and [Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) for a latency investigation method.
+*See also:* [Leadership S6](leadership-behavioral.md#production-incident-traces-back-architectural) for an incident caused by your own decision, and [Full Stack Q39](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) for a latency investigation method.
 
 #### B19. Tell me about a time you changed a technical decision after new evidence. {#time-changed-technical-decision-after}
 **Why they ask:** intellectual honesty and the ability to change course without ego.

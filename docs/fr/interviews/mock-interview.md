@@ -47,23 +47,23 @@ et visibilité.
 
 ### Docker, Kubernetes & DevOps
 
-- [ ] Je sais expliquer les premières commandes `kubectl`, dans l'ordre, pour un pod en échec. ([Q6](fullstack-devops-k8s.md#pod-isn-working-first-kubectl))
-- [ ] Je sais expliquer un conteneur qui sort avec le code 137, de bout en bout. ([Q17](fullstack-devops-k8s.md#diagnosing-docker-container-exits-code))
-- [ ] Je sais expliquer les probes liveness vs readiness vs startup et ce qui arrive quand elles sont mal réglées. ([Q19](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes))
-- [ ] Je sais expliquer un rolling update avec `maxSurge`/`maxUnavailable` et l'arrêt gracieux. ([Q22](fullstack-devops-k8s.md#kubernetes-rolling-update-maxsurge-maxunavailable))
-- [ ] Je sais expliquer blue-green vs canary vs rolling, et quand utiliser chacun. ([Q28](fullstack-devops-k8s.md#compare-blue-green-canary-rolling))
-- [ ] Je sais expliquer comment les SLO et error budgets pilotent les décisions de release. ([Q35](fullstack-devops-k8s.md#slos-error-budgets-drive-release))
+- [ ] Je sais expliquer les premières commandes `kubectl`, dans l'ordre, pour un pod en échec. ([Q7](fullstack-devops-k8s.md#pod-isn-working-first-kubectl))
+- [ ] Je sais expliquer un conteneur qui sort avec le code 137, de bout en bout. ([Q18](fullstack-devops-k8s.md#diagnosing-docker-container-exits-code))
+- [ ] Je sais expliquer les probes liveness vs readiness vs startup et ce qui arrive quand elles sont mal réglées. ([Q20](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes))
+- [ ] Je sais expliquer un rolling update avec `maxSurge`/`maxUnavailable` et l'arrêt gracieux. ([Q23](fullstack-devops-k8s.md#kubernetes-rolling-update-maxsurge-maxunavailable))
+- [ ] Je sais expliquer blue-green vs canary vs rolling, et quand utiliser chacun. ([Q30](fullstack-devops-k8s.md#compare-blue-green-canary-rolling))
+- [ ] Je sais expliquer comment les SLO et error budgets pilotent les décisions de release. ([Q38](fullstack-devops-k8s.md#slos-error-budgets-drive-release))
 
 ### API, sécurité & persistance (approfondissement)
 
-- [ ] Je sais expliquer l'idempotence REST et pourquoi `POST` nécessite une clé d'idempotence. ([Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need))
-- [ ] Je sais expliquer pourquoi CORS échoue dans le navigateur mais pas avec curl, et comment fonctionne le preflight. ([Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error))
-- [ ] Je sais expliquer les compromis entre JWT dans `localStorage`, cookie `HttpOnly` et session serveur. ([Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie))
+- [ ] Je sais expliquer l'idempotence REST et pourquoi `POST` nécessite une clé d'idempotence. ([Q11](fullstack-devops-k8s.md#idempotency-rest-api-post-need))
+- [ ] Je sais expliquer pourquoi CORS échoue dans le navigateur mais pas avec curl, et comment fonctionne le preflight. ([Q13](fullstack-devops-k8s.md#browser-request-fail-cors-error))
+- [ ] Je sais expliquer les compromis entre JWT dans `localStorage`, cookie `HttpOnly` et session serveur. ([Q14](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie))
 - [ ] Je sais expliquer lire la sortie d'`EXPLAIN ANALYZE` et trouver l'index manquant. ([Q24](persistence-sql-postgres.md#read-analyze-output-diagnose-slow))
 - [ ] Je sais expliquer les niveaux d'isolation et l'anomalie que chacun empêche. ([Q25](persistence-sql-postgres.md#name-transaction-isolation-levels-anomalies))
-- [ ] Je sais expliquer ajouter une colonne `NOT NULL` à une table de 50 M de lignes sans interruption. ([Q44](persistence-sql-postgres.md#safely-add-null-column-50))
-- [ ] Je sais expliquer ce que résolvent les virtual threads et leurs limites. ([Q33](java-core-jvm.md#problem-virtual-threads-project-loom))
-- [ ] Je sais expliquer choisir entre G1, ZGC et Shenandoah pour un service sensible à la latence. ([Q36](java-core-jvm.md#choosing-g1-zgc-shenandoah-latency))
+- [ ] Je sais expliquer ajouter une colonne `NOT NULL` à une table de 50 M de lignes sans interruption. ([Q47](persistence-sql-postgres.md#safely-add-null-column-50))
+- [ ] Je sais expliquer ce que résolvent les virtual threads et leurs limites. ([Q52](java-core-jvm.md#problem-virtual-threads-project-loom))
+- [ ] Je sais expliquer choisir entre G1, ZGC et Shenandoah pour un service sensible à la latence. ([Q55](java-core-jvm.md#choosing-g1-zgc-shenandoah-latency))
 
 ### Tests
 
@@ -85,8 +85,8 @@ et visibilité.
 
 - [ ] Je suis clarifier → force brute → optimiser → tester à voix haute, sans me taire. ([Q1](coding.md#approach-live-coding-exercise), [S1](coding.md#stuck-halfway-problem-interviewer-silent))
 - [ ] Je sais donner la complexité de ma solution et choisir une complexité cible selon la taille de l'entrée. ([Q2](coding.md#big-o-complexities-know-heart))
-- [ ] Je reconnais les problèmes de hachage, fenêtre glissante, BFS/DFS, tas et DP. ([Q4](coding.md#hash-map-turn-o-n2), [Q7](coding.md#two-pointer-sliding-window-patterns), [Q9](coding.md#bfs-dfs-each-solve-number), [Q10](coding.md#heap-right-tool-solve-top), [Q14](coding.md#dynamic-programming-spot-dp-problem))
-- [ ] Je sais coder un cache LRU et un rate limiter token bucket en Java. ([Q17](coding.md#implement-lru-cache-o-1), [Q19](coding.md#design-code-rate-limiter-class))
+- [ ] Je reconnais les problèmes de hachage, fenêtre glissante, BFS/DFS, tas et DP. ([Q4](coding.md#hash-map-turn-o-n2), [Q8](coding.md#two-pointer-sliding-window-patterns), [Q13](coding.md#bfs-dfs-each-solve-number), [Q15](coding.md#heap-right-tool-solve-top), [Q21](coding.md#dynamic-programming-spot-dp-problem))
+- [ ] Je sais coder un cache LRU et un rate limiter token bucket en Java. ([Q24](coding.md#implement-lru-cache-o-1), [Q26](coding.md#design-code-rate-limiter-class))
 
 ### Cloud (AWS)
 
@@ -122,9 +122,9 @@ et visibilité.
 ### Elasticsearch & OpenSearch
 
 - [ ] Je sais expliquer pourquoi une requête `term` sur un champ `text` ne trouve rien. ([Q3](elasticsearch-opensearch.md#text-keyword-analyzer))
-- [ ] Je sais expliquer la différence entre `refresh` et `flush`, et pourquoi une écriture est durable avant d'être cherchable. ([Q5](elasticsearch-opensearch.md#refresh-flush-translog))
-- [ ] Je sais changer le type d'un champ sans interruption grâce à un alias. ([Q10](elasticsearch-opensearch.md#reindex-zero-downtime-alias))
-- [ ] Je sais garder un index synchronisé avec une base quand les événements arrivent dans le désordre. ([Q12](elasticsearch-opensearch.md#sync-index-with-database))
+- [ ] Je sais expliquer la différence entre `refresh` et `flush`, et pourquoi une écriture est durable avant d'être cherchable. ([Q6](elasticsearch-opensearch.md#refresh-flush-translog))
+- [ ] Je sais changer le type d'un champ sans interruption grâce à un alias. ([Q13](elasticsearch-opensearch.md#reindex-zero-downtime-alias))
+- [ ] Je sais garder un index synchronisé avec une base quand les événements arrivent dans le désordre. ([Q20](elasticsearch-opensearch.md#sync-index-with-database))
 - [ ] Je sais trouver pourquoi un cluster est rouge et dire ce que je lance en premier. ([S1](elasticsearch-opensearch.md#red-cluster-unassigned-shards))
 
 ### System design
@@ -163,7 +163,7 @@ et visibilité.
 |------|------|-------|---------|
 | 1 | Échauffement | 30 min | Relire les cheat-sheets Java, Spring et SQL ; repérer les points faibles |
 | 1 | Quiz oral | 90 min | Répondre à voix haute aux quiz Java, Spring, Persistance (2–3 min chacun), te noter |
-| 1 | Live coding | 60 min | Deux problèmes chronométrés : un hachage/two-pointer ([Q4](coding.md#hash-map-turn-o-n2), [Q7](coding.md#two-pointer-sliding-window-patterns)), un de conception ([Q17](coding.md#implement-lru-cache-o-1)) |
+| 1 | Live coding | 60 min | Deux problèmes chronométrés : un hachage/two-pointer ([Q4](coding.md#hash-map-turn-o-n2), [Q8](coding.md#two-pointer-sliding-window-patterns)), un de conception ([Q24](coding.md#implement-lru-cache-o-1)) |
 | 2 | Conception | 90 min | Un system design complet en 45 min ([Q1](system-design.md#steps-follow-system-design-interview)), puis comparaison avec la réponse |
 | 2 | Plateforme | 60 min | Quiz DevOps/K8s, sécurité et tests à voix haute |
 | 2 | Comportemental | 60 min | Écrire 6 histoires STAR depuis la [banque d'histoires](leadership-behavioral.md#banque-histoires-star) et dire chacune en 2 minutes |

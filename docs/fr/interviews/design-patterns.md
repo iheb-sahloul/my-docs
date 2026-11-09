@@ -2,9 +2,67 @@
 
 ## 🟢 Fondamentaux
 
+### Principes de conception (SOLID)
+
+#### Q1. Que sont les principes SOLID, avec un exemple de code pour chacun ? {#solid-principles}
+**Réponse :** Cinq principes de conception orientée objet qui rendent le code modifiable sans casser l'existant. Ce ne
+sont pas des lois : on les applique pour réduire le coût du changement, et on s'arrête quand l'abstraction ne sert à rien.
+
+| Lettre | Principe | En une phrase |
+|---|---|---|
+| **S** | Single Responsibility | une classe a **une seule raison de changer** |
+| **O** | Open/Closed | ouvert à l'extension, fermé à la modification : on ajoute un comportement sans réécrire l'existant |
+| **L** | Liskov Substitution | une sous-classe doit pouvoir remplacer sa classe de base sans changer le comportement attendu |
+| **I** | Interface Segregation | plusieurs interfaces petites et ciblées plutôt qu'une grosse |
+| **D** | Dependency Inversion | dépendre d'**abstractions**, pas d'implémentations ; l'injection de dépendances en est l'outil |
+
+**Exemple :**
+
+```java
+// S : une seule raison de changer
+// Mal : OrderService calcule le prix, enregistre en base ET envoie l'e-mail
+class OrderService {
+    void place(Order o) { price(o); repo.save(o); mailer.send(o); }   // trois raisons de changer
+}
+// Mieux : PricingService, OrderRepository, NotificationService ; OrderService orchestre
+
+// O : on ajoute un comportement sans toucher au code existant
+interface DiscountPolicy { BigDecimal apply(BigDecimal amount); }
+class VipDiscount implements DiscountPolicy { public BigDecimal apply(BigDecimal a) { return a.multiply(new BigDecimal("0.90")); } }
+class BlackFridayDiscount implements DiscountPolicy { /* nouvelle classe, rien d'autre à modifier */ }
+// Mal : un if/else if (type.equals("VIP")) ... modifié à chaque nouvelle remise (voir Strategy, Q9)
+
+// L : le contrat de la classe de base doit rester valable
+class Rectangle { void setWidth(int w) { this.w = w; } void setHeight(int h) { this.h = h; } int area() { return w * h; } }
+class Square extends Rectangle {
+    @Override void setWidth(int w)  { this.w = w; this.h = w; }   // viole le contrat : changer la largeur change la hauteur
+}
+// rect.setWidth(5); rect.setHeight(4); area() == 20 → faux avec un Square (16)
+// Solution : ne pas faire hériter Square de Rectangle (une interface Shape avec area())
+
+// I : ne pas forcer une classe à implémenter ce qu'elle n'utilise pas
+interface Worker { void work(); void eat(); }   // un Robot n'a rien à faire d'eat()
+interface Workable { void work(); }
+interface Feedable { void eat(); }              // Human implémente les deux, Robot seulement Workable
+
+// D : dépendre de l'abstraction, l'implémentation est injectée
+class PaymentService {
+    private final PaymentGateway gateway;                    // interface
+    PaymentService(PaymentGateway gateway) { this.gateway = gateway; }   // injectée (Spring, ou à la main dans un test)
+}
+```
+
+**Pièges :**
+- Appliquer **O** partout produit des hiérarchies inutiles : une abstraction se justifie à la deuxième variante, pas à la
+  première (voir S4, l'abstraction de plugin à une seule implémentation).
+- **L** est le plus souvent violé par une sous-classe qui lève `UnsupportedOperationException` ou renforce une
+  précondition (`Collections.unmodifiableList` est l'exemple du JDK).
+- **D** n'est pas « injecter avec Spring » : c'est le sens de la dépendance qui compte (le haut niveau possède
+  l'interface). L'injection n'est que le mécanisme.
+
 ### Patrons créationnels
 
-#### Q1. Quel problème résout réellement le Singleton, et comment l'implémenter de façon thread-safe en Java ? {#problem-singleton-solve-implement-thread}
+#### Q2. Quel problème résout réellement le Singleton, et comment l'implémenter de façon thread-safe en Java ? {#problem-singleton-solve-implement-thread}
 **Réponse :** Le Singleton garantit qu'une classe n'a qu'une seule instance et fournit un point
 d'accès global unique — pertinent pour quelque chose de véritablement unique dans le processus :
 une façade de logging, un registre de configuration, un wrapper de pool de connexions. Un naïf
@@ -42,9 +100,9 @@ réponse classique fausse qui « a l'air » correcte — sans `volatile`, un aut
 un objet partiellement construit à cause du réordonnancement d'instructions. Si le double-checked
 locking est utilisé, le champ doit être `private static volatile Foo instance;`.
 
-*Voir aussi :* [Java Q28](java-core-jvm.md#name-thread-safe-singleton-implementation) pour la mécanique JVM : chargement de classe, et pourquoi `enum` résiste aussi à la réflexion et à la désérialisation.
+*Voir aussi :* [Java Q46](java-core-jvm.md#name-thread-safe-singleton-implementation) pour la mécanique JVM : chargement de classe, et pourquoi `enum` résiste aussi à la réflexion et à la désérialisation.
 
-#### Q2. Quelle est la vraie différence entre Factory Method et Abstract Factory ? {#factory-method-abstract-factory}
+#### Q3. Quelle est la vraie différence entre Factory Method et Abstract Factory ? {#factory-method-abstract-factory}
 **Réponse :** **Factory Method** est une méthode unique — souvent surchargée dans une sous-classe —
 qui crée un seul type d'objet, laissant les sous-classes décider du type concret à instancier
 pendant que l'appelant ne dépend que de l'interface du type de retour. **Abstract Factory** va plus
@@ -83,7 +141,7 @@ existe — le vrai bug qu'il évite est un appelant se retrouvant avec un `DarkB
 `LightCheckbox` parce que deux Factory Method indépendantes ont été appelées avec des thèmes
 incohérents.
 
-#### Q3. Quand un Builder est-il préférable à un constructeur télescopique ou à de simples setters JavaBean ? {#builder-beat-telescoping-constructor-plain}
+#### Q4. Quand un Builder est-il préférable à un constructeur télescopique ou à de simples setters JavaBean ? {#builder-beat-telescoping-constructor-plain}
 **Réponse :** Un constructeur télescopique (`new Pizza(size)`, `new Pizza(size, cheese)`, `new
 Pizza(size, cheese, pepperoni)`, ...) devient illisible et source d'erreurs au-delà de 3-4
 paramètres, surtout quand plusieurs partagent le même type (quel `boolean` est lequel ?). Les
@@ -124,7 +182,7 @@ class Pizza {
 du boilerplate pour du boilerplate. Le pattern justifie son coût précisément quand il y a plusieurs
 paramètres optionnels, une validation croisée entre champs, et un objet final qu'on veut immuable.
 
-#### Q4. Quand le pattern Prototype (clonage) est-il préférable à un appel à `new` ? {#prototype-pattern-cloning-beat-calling}
+#### Q5. Quand le pattern Prototype (clonage) est-il préférable à un appel à `new` ? {#prototype-pattern-cloning-beat-calling}
 **Réponse :** Prototype crée de nouveaux objets en copiant une instance existante, déjà entièrement
 configurée, plutôt qu'en construisant depuis zéro — ce qui vaut le coup quand la construction est
 coûteuse (une lecture base de données onéreuse, un appel réseau, ou un calcul lourd pour arriver à
@@ -160,7 +218,7 @@ l'état supposément indépendant de l'autre.
 
 ### Patrons structurels
 
-#### Q5. Comment Adapter réconcilie-t-il deux interfaces incompatibles, et quelle est la distinction adaptateur d'objet vs. adaptateur de classe ? {#adapter-reconcile-two-incompatible-interfaces}
+#### Q6. Comment Adapter réconcilie-t-il deux interfaces incompatibles, et quelle est la distinction adaptateur d'objet vs. adaptateur de classe ? {#adapter-reconcile-two-incompatible-interfaces}
 **Réponse :** Adapter enveloppe une classe existante derrière l'interface qu'un client attend
 réellement, traduisant les appels sans modifier ni l'un ni l'autre côté — le cas d'usage classique
 est l'intégration d'une bibliothèque tierce dont l'API ne correspond pas à l'interface dont dépend
@@ -190,7 +248,7 @@ l'intérieur de son *propre* code (plutôt qu'à une vraie frontière tierce) ne
 problème de conception derrière une couche d'indirection supplémentaire, au lieu de corriger
 l'interface qui n'aurait jamais dû diverger.
 
-#### Q6. En quoi Decorator diffère-t-il d'une simple sous-classe pour ajouter du comportement ? {#decorator-differ-just-subclassing-add}
+#### Q7. En quoi Decorator diffère-t-il d'une simple sous-classe pour ajouter du comportement ? {#decorator-differ-just-subclassing-add}
 **Réponse :** La sous-classe ajoute du comportement à la compilation, de façon statique, et
 multiplie combinatoirement — `CoffeeWithMilk`, `CoffeeWithSugar`, `CoffeeWithMilkAndSugar`, une
 sous-classe par combinaison. Decorator enveloppe un objet de la même interface à *l'exécution*,
@@ -226,7 +284,7 @@ comportement ajouté a réellement besoin de nouvelles méthodes que les appelan
 Decorator est le mauvais outil ; c'est un signal pour Strategy ou une simple composition, pas pour
 un décorateur qui ne respecte pas son interface.
 
-#### Q7. Quel problème précis Facade résout-il pour un sous-système complexe ? {#specific-problem-facade-solve-complex}
+#### Q8. Quel problème précis Facade résout-il pour un sous-système complexe ? {#specific-problem-facade-solve-complex}
 **Réponse :** Un sous-système avec de nombreuses classes en interaction (une bibliothèque de
 conversion vidéo avec codecs, buffers, gestion du bitrate, etc.) force chaque appelant à apprendre
 et à correctement séquencer cette complexité interne. Facade introduit une interface unique,
@@ -253,7 +311,7 @@ tordre pour exposer chaque réglage du sous-système « au cas où » va à l'en
 une façade qui accumule des paramètres pour chaque option sous-jacente redevient l'API complète du
 sous-système, juste renommée.
 
-#### Q8. Quelles sont les variantes de Proxy, et en quoi diffère-t-il de Decorator ? {#proxy-variants-differ-decorator}
+#### Q9. Quelles sont les variantes de Proxy, et en quoi diffère-t-il de Decorator ? {#proxy-variants-differ-decorator}
 **Réponse :** Proxy contrôle **l'accès** à un objet en se substituant à lui derrière la même
 interface : un **proxy virtuel** diffère une construction coûteuse jusqu'à la première utilisation
 réelle (chargement paresseux), un **proxy de protection** ajoute des vérifications d'autorisation
@@ -289,9 +347,43 @@ structurant de *contrôle d'accès* (cet appel doit-il seulement être autorisé
 quelle transaction ?), pas l'ajout d'une nouvelle capacité décorative ; voir `spring-architecture.md`
 Q11/Q13 pour la façon dont ce proxy précis interagit avec l'auto-invocation.
 
+**Comment Spring fabrique le proxy :**
+
+```text
+appelant → [ Proxy (JDK ou CGLIB) ] → intercepteur (transaction, cache, sécurité) → bean réel
+```
+
+```java
+// JDK : un proxy dynamique sur une interface, avec un InvocationHandler
+PaymentService real = new PaymentServiceImpl();
+PaymentService proxy = (PaymentService) Proxy.newProxyInstance(
+        PaymentService.class.getClassLoader(),
+        new Class<?>[] { PaymentService.class },
+        (p, method, args) -> {
+            long t0 = System.nanoTime();
+            try { return method.invoke(real, args); }          // délègue à l'objet réel
+            finally { System.out.println(method.getName() + " : " + (System.nanoTime() - t0) + " ns"); }
+        });
+```
+
+- **JDK proxy** : exige une interface, génère une classe qui l'implémente. **CGLIB** : génère une **sous-classe** de la
+  classe cible ; c'est le mode par défaut de Spring Boot.
+- **Auto-invocation** : un appel `this.autre()` à l'intérieur du bean **contourne** le proxy, donc `@Transactional`,
+  `@Cacheable`, `@Async` ne s'appliquent pas. Corrections : déplacer la méthode dans un autre bean, ou injecter le bean
+  lui-même.
+- Limites de CGLIB : les méthodes `final` et `private` ne peuvent pas être interceptées, et la classe ne doit pas être
+  `final`.
+- `@Configuration` est elle aussi proxifiée (CGLIB) : c'est ce qui garantit qu'un appel de méthode `@Bean` renvoie le
+  singleton.
+- Hibernate : une association `LAZY` est un proxy (sous-classe générée) ; `instanceof` et `getClass()` peuvent donc donner
+  un résultat inattendu : utiliser `Hibernate.unproxy` ou comparer par identifiant.
+
+Voir [Spring Q13, proxies JDK et CGLIB](spring-architecture.md#practical-jdk-dynamic-proxies-cglib) et
+[Spring Q14, `@Transactional` et le proxy](spring-architecture.md#since-transactional-relies-proxy-pattern).
+
 ### Patrons comportementaux
 
-#### Q9. Qu'apporte Strategy par rapport à un gros `if`/`switch` sur du comportement ? {#strategy-buy-large-switch-behavior}
+#### Q10. Qu'apporte Strategy par rapport à un gros `if`/`switch` sur du comportement ? {#strategy-buy-large-switch-behavior}
 **Réponse :** Strategy extrait un algorithme (ou l'une de plusieurs variantes interchangeables)
 derrière une interface commune, si bien que l'algorithme peut être sélectionné et échangé à
 l'exécution — souvent via injection de dépendances — sans que la classe qui l'utilise sache quelle
@@ -321,7 +413,25 @@ class Checkout {
 principe ouvert/fermé, testabilité indépendante de chaque stratégie) est la moitié superficielle de
 la réponse — voir Q17 pour les cas où cette indirection ne vaut pas le coût.
 
-#### Q10. Comment Observer découple-t-il éditeurs et abonnés, et quel est le piège classique à signaler d'emblée ? {#observer-decouple-publishers-subscribers-classic}
+**Version légère avec une lambda :** quand une stratégie tient en une ligne, une interface fonctionnelle suffit, sans classe
+dédiée.
+
+```java
+Map<String, UnaryOperator<BigDecimal>> discounts = Map.of(
+        "VIP",   a -> a.multiply(new BigDecimal("0.90")),
+        "STAFF", a -> a.multiply(new BigDecimal("0.80")));
+BigDecimal price = discounts.getOrDefault(type, UnaryOperator.identity()).apply(amount);
+```
+
+**Dans le JDK :** `Comparator` (tri), `RejectedExecutionHandler` (politique de rejet d'un pool), `RoundingMode`.
+
+**Pièges :**
+- Strategy vs State : Strategy est choisie **de l'extérieur** et reste stable ; State change **d'elle-même** selon les
+  transitions (voir R1). Un `switch` sur un type fermé s'écrit mieux avec un `sealed` + `switch` exhaustif (voir Q17).
+- Avec Spring, les stratégies sont des beans injectés dans une `Map<String, Strategy>` : voir
+  [Spring Q38](spring-architecture.md#strategy-pattern-spring-beans-simple).
+
+#### Q11. Comment Observer découple-t-il éditeurs et abonnés, et quel est le piège classique à signaler d'emblée ? {#observer-decouple-publishers-subscribers-classic}
 **Réponse :** Un sujet maintient une liste d'observateurs et les notifie tous à chaque changement
 d'état, sans rien savoir de ce que chaque observateur fait de cette notification — éditeurs et
 abonnés ne dépendent que d'une interface fine `Observer`/`Listener`, pas des types concrets l'un de
@@ -347,7 +457,7 @@ class OrderService {
 responsabilité de désinscription est incomplet — voir Q18 pour le piège de fuite mémoire que cela
 crée en pratique.
 
-#### Q11. Que corrige Template Method, et en quoi diffère-t-il d'un simple appel de méthodes utilitaires dans l'ordre ? {#template-method-fix-differ-just}
+#### Q12. Que corrige Template Method, et en quoi diffère-t-il d'un simple appel de méthodes utilitaires dans l'ordre ? {#template-method-fix-differ-just}
 **Réponse :** Template Method définit le *squelette fixe* d'un algorithme dans une méthode de
 classe de base (souvent `final`, pour que les sous-classes ne puissent ni réordonner ni sauter
 d'étapes), tout en déléguant des étapes spécifiques à des méthodes « hook » abstraites ou
@@ -380,7 +490,7 @@ class CsvImporter extends DataImporter {
 surcharger l'ensemble de la séquence, réintroduisant silencieusement exactement le bug « étapes
 dans le mauvais ordre » que le pattern est censé prévenir.
 
-#### Q12. Qu'apporte Command au-delà d'un « simple appel de méthode direct », et quels sont ses principaux cas d'usage ? {#command-buy-beyond-just-call}
+#### Q13. Qu'apporte Command au-delà d'un « simple appel de méthode direct », et quels sont ses principaux cas d'usage ? {#command-buy-beyond-just-call}
 **Réponse :** Command transforme une requête (un appel de méthode plus ses arguments) en un objet
 autonome implémentant une interface commune (typiquement une méthode `execute()`), ce qui découple
 l'objet qui *déclenche* une action de l'objet qui *sait comment l'exécuter*, et permet de stocker,
@@ -413,7 +523,7 @@ n'aura jamais besoin d'être mise en file, journalisée, réessayée ou annulée
 cérémonie — le pattern se justifie précisément quand l'un de ces besoins transverses (annulation,
 file de tâches, journal d'audit des actions exécutées) est réellement présent.
 
-#### Q13. En quoi State diffère-t-il de Strategy, alors que leurs diagrammes de classes sont presque identiques ? {#state-differ-strategy-given-class}
+#### Q14. En quoi State diffère-t-il de Strategy, alors que leurs diagrammes de classes sont presque identiques ? {#state-differ-strategy-given-class}
 Les deux délèguent le comportement à un objet interchangeable derrière une interface ; la différence est *qui choisit et pourquoi*.
 
 Avec **Strategy**, le client choisit un algorithme de l'extérieur et il change rarement durant la vie de l'objet (une règle de tarification, un ordre de tri).
@@ -444,7 +554,7 @@ class Paid implements OrderState {
 // Order : this.state = state.pay(this);   <- l'état décide de l'état suivant
 ```
 
-#### Q14. Quand Chain of Responsibility est-il le bon choix, et où l'utilisez-vous déjà sans le nommer ? {#chain-responsibility-right-fit-already}
+#### Q15. Quand Chain of Responsibility est-il le bon choix, et où l'utilisez-vous déjà sans le nommer ? {#chain-responsibility-right-fit-already}
 Chain of Responsibility fait circuler une requête le long d'une séquence de handlers, dont chacun la traite, la modifie ou la transmet au suivant ; l'émetteur ne sait pas quel handler agira.
 
 Il convient aux pipelines dont les étapes sont indépendantes, ordonnées, et ajoutées ou retirées par configuration : filtres servlet et chaîne de filtres de Spring Security, middleware HTTP, règles de validation ou d'approbation (« sous 1 k : chef d'équipe ; sous 10 k : directeur »), niveaux de log.
@@ -468,7 +578,7 @@ Handler audit = (r, next) -> { log.info("{} {}", r.method(), r.path()); next.run
 
 ### Questions
 
-#### Q15. Pourquoi de nombreux ingénieurs seniors traitent-ils Singleton comme un anti-pattern malgré le fait que ce soit le pattern « le plus facile » à implémenter correctement ? {#many-senior-engineers-treat-singleton}
+#### Q16. Pourquoi de nombreux ingénieurs seniors traitent-ils Singleton comme un anti-pattern malgré le fait que ce soit le pattern « le plus facile » à implémenter correctement ? {#many-senior-engineers-treat-singleton}
 **Réponse :** Le fait que l'implémentation soit facile à réussir (Q1) n'est pas le problème — c'est
 la conséquence de *conception* qui l'est. Un Singleton est un état mutable global avec un point
 d'accès statique, ce qui signifie que toute classe l'utilisant a une dépendance cachée invisible
@@ -503,7 +613,7 @@ class ReportGenerator {
 répond à la mauvaise question — la thread-safety n'a jamais été l'objection ; ce sont la
 testabilité et le couplage caché, et une implémentation correcte ne corrige ni l'un ni l'autre.
 
-#### Q16. Quand empiler des Decorator devient-il pire que l'explosion d'héritage qu'il devait éviter ? {#stacking-decorators-become-worse-inheritance}
+#### Q17. Quand empiler des Decorator devient-il pire que l'explosion d'héritage qu'il devait éviter ? {#stacking-decorators-become-worse-inheritance}
 **Réponse :** Decorator échange une explosion *exponentielle* de classes contre une chaîne
 d'exécution potentiellement profonde et sensible à l'ordre — cinq ou six décorateurs imbriqués,
 chacun dépendant silencieusement de s'exécuter avant ou après un autre (un décorateur de logging
@@ -528,7 +638,7 @@ d'une poignée de couches avec de vraies dépendances de séquencement, un build
 classe de pipeline explicite documentant l'ordre requis est souvent plus déboguable que la
 composition de décorateurs théoriquement infinie.
 
-#### Q17. Quand introduire Strategy ajoute-t-il plus de complexité qu'un simple `if`/`switch` ? {#introducing-strategy-add-more-complexity}
+#### Q18. Quand introduire Strategy ajoute-t-il plus de complexité qu'un simple `if`/`switch` ? {#introducing-strategy-add-more-complexity}
 **Réponse :** Strategy est rentable quand le nombre de variantes est véritablement ouvert (plugins,
 configuration à l'exécution, comportement par tenant) ou quand chaque variante a suffisamment de
 logique interne et sa propre surface de test pour mériter sa propre classe. C'est le mauvais choix
@@ -556,7 +666,7 @@ comme une règle, plutôt que parce que de nouvelles variantes sont réellement 
 temps, est du pattern pour le pattern — le bénéfice ouvert/fermé de Q9 ne compte que si l'ensemble
 fermé de cas va réellement s'ouvrir.
 
-#### Q18. Que se passe-t-il concrètement quand les abonnés Observer ne sont jamais désinscrits ? {#happens-observer-subscribers-never-unregistered}
+#### Q19. Que se passe-t-il concrètement quand les abonnés Observer ne sont jamais désinscrits ? {#happens-observer-subscribers-never-unregistered}
 **Réponse :** La liste d'écouteurs du sujet détient une référence forte vers chaque abonné qui lui
 a jamais été donné — si un abonné est, disons, un composant d'interface ou un objet à portée
 requête qui aurait dû être garbage-collecté une fois son écran/sa requête propriétaire terminé,
@@ -581,7 +691,7 @@ faux — elle se découvre via une courbe de croissance mémoire lente en superv
 à ce stade, en retracer la cause jusqu'à un `unsubscribe()` précis oublié nécessite un dump de tas
 et une analyse d'arbre de dominateurs, pas une pile d'appels.
 
-#### Q19. Qu'est-ce que le piège du « modèle de domaine anémique », et comment l'application non critique de patterns y contribue-t-elle ? {#anemic-domain-model-trap-uncritical}
+#### Q20. Qu'est-ce que le piège du « modèle de domaine anémique », et comment l'application non critique de patterns y contribue-t-elle ? {#anemic-domain-model-trap-uncritical}
 **Réponse :** Un modèle de domaine anémique est un ensemble de classes qui sont de purs conteneurs
 de données (champs plus getters/setters) avec tout le comportement réel extrait dans des classes
 « service » ou « manager » séparées — cela paraît organisé (séparation propre des données et de la
@@ -619,7 +729,7 @@ responsable — la présence du pattern ne dit pas lequel des deux s'est produit
 toujours « qui peut mettre cet objet dans un état invalide », pas « la logique est-elle dans une
 classe séparée ».
 
-#### Q20. Quel est le piège de concurrence avec une instance de Builder mutable partagée ? {#concurrency-trap-shared-mutable-builder}
+#### Q21. Quel est le piège de concurrence avec une instance de Builder mutable partagée ? {#concurrency-trap-shared-mutable-builder}
 **Réponse :** Un Builder accumule un état mutable à travers des appels chaînés avant un `build()`
 final — c'est très bien pour le cas courant d'un builder utilisé par un seul thread pour construire
 un seul objet. Cela casse dès que la *même instance de builder* est partagée ou réutilisée entre
@@ -651,7 +761,7 @@ l'immutabilité était censée éliminer en aval.
 
 ### Questions
 
-#### Q21. Concevez une architecture de plugins avec Strategy, Factory et un registre — détaillez les pièces. {#design-plugin-architecture-using-strategy}
+#### Q22. Concevez une architecture de plugins avec Strategy, Factory et un registre — détaillez les pièces. {#design-plugin-architecture-using-strategy}
 Un système de plugins a besoin de trois choses : un contrat commun que chaque plugin implémente
 (**Strategy** — pour que le code hôte ne dépende que de l'interface, jamais d'une classe de plugin
 concrète), un moyen d'obtenir la bonne instance de plugin pour un nom/type donné sans que
@@ -681,7 +791,7 @@ class PaymentPluginRegistry {
 }
 ```
 
-#### Q22. Quand un design pattern est-il de la sur-ingénierie plutôt que le bon choix, et comment en décider en revue de code ? {#design-pattern-engineering-right-call}
+#### Q23. Quand un design pattern est-il de la sur-ingénierie plutôt que le bon choix, et comment en décider en revue de code ? {#design-pattern-engineering-right-call}
 Le pattern lui-même n'est jamais le risque — c'est le décalage entre la promesse du pattern
 (flexibilité pour un changement futur) et la probabilité réelle et démontrée de ce changement qui
 l'est. L'heuristique pratique de revue : existe-t-il un second cas réel et proche dans le temps que
@@ -706,7 +816,7 @@ class PaymentProviderFactory { ... }                    // creates that 1 implem
 class StripeClient { Receipt charge(Money m) { ... } }  // extract the interface when provider #2 is real
 ```
 
-#### Q23. Comment les patterns créationnels/structurels du GoF se rapportent-ils aux patterns tactiques DDD comme Repository, Factory et Aggregate ? {#gof-creational-structural-patterns-relate}
+#### Q24. Comment les patterns créationnels/structurels du GoF se rapportent-ils aux patterns tactiques DDD comme Repository, Factory et Aggregate ? {#gof-creational-structural-patterns-relate}
 Les patterns tactiques DDD sont en grande partie des patterns GoF re-cadrés pour un rôle précis
 dans un modèle de domaine plutôt qu'un nouvel ensemble d'idées. Une **Factory** DDD est exactement
 la Factory GoF (Method ou Abstract) contrainte à produire un Aggregate valide — elle existe
@@ -733,7 +843,7 @@ interface OrderRepository { Optional<Order> findById(OrderId id); void save(Orde
 class OrderFactory { Order create(Customer c, Cart cart) { ... } }                     // Factory : construit un Aggregate valide
 ```
 
-#### Q24. Composite associé à Visitor sur un domaine en arbre (par exemple des règles de facturation imbriquées ou un système de fichiers) — quel est le vrai compromis face à l'ajout de méthodes directement sur les nœuds de l'arbre ? {#composite-plus-visitor-tree-shaped}
+#### Q25. Composite associé à Visitor sur un domaine en arbre (par exemple des règles de facturation imbriquées ou un système de fichiers) — quel est le vrai compromis face à l'ajout de méthodes directement sur les nœuds de l'arbre ? {#composite-plus-visitor-tree-shaped}
 Composite permet aux nœuds feuilles et composites de partager une interface uniforme, si bien que
 le code client peut traiter un élément unique et un groupe d'éléments de façon identique
 (`node.total()` fonctionne que `node` soit une ligne ou un dossier de lignes). Ajouter une

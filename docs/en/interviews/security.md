@@ -1,6 +1,6 @@
 # Security
 
-Rules and code-review checklists live in [Best practices › Security](../best-practices/security.md); this module is the interview Q&A. Related questions elsewhere: CORS in [Full Stack Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error), token storage in [Full Stack Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie), Kubernetes secrets in [Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes), the OWASP Top 10 at design level in [System Design Q34](system-design.md#name-several-owasp-top-10), and URL vs method authorization in [Spring Q41](spring-architecture.md#authorization-live-url-rules-method).
+Rules and code-review checklists live in [Best practices › Security](../best-practices/security.md); this module is the interview Q&A. Related questions elsewhere: CORS in [Full Stack Q13](fullstack-devops-k8s.md#browser-request-fail-cors-error), token storage in [Full Stack Q14](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie), Kubernetes secrets in [Full Stack Q41](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes), the OWASP Top 10 at design level in [System Design Q34](system-design.md#name-several-owasp-top-10), and URL vs method authorization in [Spring Q45](spring-architecture.md#authorization-live-url-rules-method).
 
 ## 🟢 Fundamentals
 
@@ -221,7 +221,7 @@ internal services; and on AWS enforce **IMDSv2**, which requires a token that a 
 `https://127.0.0.1.nip.io`, decimal IPs or an open redirect.
 
 #### Q14. Where should a browser app store tokens, and what is a BFF? {#browser-app-store-tokens-bff}
-**Answer:** The trade-offs between `localStorage`, memory and cookies are covered in [Full Stack Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie).
+**Answer:** The trade-offs between `localStorage`, memory and cookies are covered in [Full Stack Q14](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie).
 The senior answer for a sensitive app is the **Backend for Frontend (BFF)** pattern: a small server-side component
 (Spring Cloud Gateway with `TokenRelay`, or a dedicated service) acts as the confidential OAuth client. It performs the
 code flow, keeps access and refresh tokens server-side, and gives the browser only an **`HttpOnly`, `Secure`,
@@ -597,7 +597,7 @@ Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** w
 
 - **Resource server** — `issuer-uri`, JWKS caching, add an `aud` validator, map roles with `JwtAuthenticationConverter`.
 - **401 vs 403** — not authenticated vs authenticated but not allowed (`ExceptionTranslationFilter`).
-- **Method security** — `@PreAuthorize` for ownership and fine-grained rules; see [Spring Q41](spring-architecture.md#authorization-live-url-rules-method).
+- **Method security** — `@PreAuthorize` for ownership and fine-grained rules; see [Spring Q45](spring-architecture.md#authorization-live-url-rules-method).
 
 ### Platform & process
 

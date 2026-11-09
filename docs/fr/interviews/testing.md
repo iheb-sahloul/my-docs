@@ -239,7 +239,7 @@ class PatientDirectoryClientTest {
 **Pourquoi c'est un piège :** un mock Mockito de `RestTemplate` ne prouve rien sur les URL, la sérialisation ou les timeouts :
 il teste que vous avez appelé une méthode que vous avez vous-même configurée. Et des stubs qui ne renvoient que `200` laissent
 tous les chemins d'échec non testés, alors que c'est précisément là que la dépendance externe vous fait mal (voir aussi
-[Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need) sur les circuit breakers).
+[Spring Q39](spring-architecture.md#circuit-breaker-pattern-service-need) sur les circuit breakers).
 
 #### Q11. Qu'est-ce que le sur-mocking, et comment le reconnaître ? {#mocking-recognise}
 **Réponse :** Le sur-mocking consiste à remplacer tant de collaborateurs que le test ne vérifie plus que « la méthode A
@@ -405,7 +405,7 @@ la charge. Préférez un **modèle ouvert** (`constantUsersPerSec`, `rampUsersPe
 cadence fixe quelle que soit la lenteur du système, comme dans la vraie vie) à un **modèle fermé** (`atOnceUsers`,
 `constantConcurrentUsers` : un nombre fixe d'utilisateurs attend chaque réponse), car le modèle fermé ralentit ses propres
 arrivées quand le serveur ralentit et masque la queue (*omission coordonnée*, voir
-[Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average)). Types de tests courants : **smoke** (1 utilisateur, valider le script),
+[Full Stack Q9](fullstack-devops-k8s.md#p50-p95-p99-latency-average)). Types de tests courants : **smoke** (1 utilisateur, valider le script),
 **charge** (pic attendu, stable), **stress** (monter au-delà de la limite pour trouver le point de rupture et la façon
 d'échouer), **endurance/soak** (des heures à charge modérée pour révéler fuites et épuisement de pools), **pic/spike**
 (brusque x10). Définissez des **assertions** comme critères de réussite (`p95 < 300 ms`, `échecs < 1 %`) pour que le build
@@ -443,7 +443,7 @@ public class BookingSimulation extends Simulation {
 **Pourquoi c'est un piège :** un test vert sur une base vide, avec un seul enregistrement chaud en cache et un modèle fermé,
 ne prouve rien sur la production. Le volume de données de test, l'état du cache et les temps de réflexion changent autant la
 réponse que le code, et les chiffres d'un runner CI partagé ne valent que pour une comparaison *relative* entre builds. Voir
-[Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) pour exploiter les résultats afin de corriger un goulot.
+[Full Stack Q39](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) pour exploiter les résultats afin de corriger un goulot.
 
 ## 🔴 Expert / Ouvert
 

@@ -1820,7 +1820,7 @@ const fmt = new Intl.DateTimeFormat(locale, {
 
 - **Diagnostic :** L'interface décrivant la réponse de l'API a été écrite à la main (ou générée une
   fois à partir d'un exemple de réponse) et assertée sur le JSON parsé, plutôt que validée — les types
-  TypeScript sont effacés à la compilation ([Java Q10](java-core-jvm.md#type-erasure-break), le point sur l'effacement s'applique ici par
+  TypeScript sont effacés à la compilation ([Java Q27](java-core-jvm.md#type-erasure-break), le point sur l'effacement s'applique ici par
   analogie) et n'offrent aucune garantie à l'exécution ; un décalage entre le type déclaré et la forme
   réelle de la réponse est invisible pour le compilateur et ne se manifeste que lorsque la donnée non
   conforme est réellement utilisée.

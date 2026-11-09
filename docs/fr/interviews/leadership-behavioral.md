@@ -992,7 +992,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** décrire la livraison (« nous avons livré à temps ») sans preuve d'impact. Dites comment vous avez mesuré la valeur, et ce que vous avez choisi de *ne pas* construire.
 
-*Voir aussi :* [Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average) sur la mesure de ce que vivent les utilisateurs.
+*Voir aussi :* [Full Stack Q9](fullstack-devops-k8s.md#p50-p95-p99-latency-average) sur la mesure de ce que vivent les utilisateurs.
 
 #### B18. Parlez-moi d'un incident de production que vous avez investigué. {#production-incident-investigated}
 **Pourquoi on la pose :** calme, méthode et apprentissage sous pression, plus l'honnêteté sur votre part de responsabilité.
@@ -1004,7 +1004,7 @@ R : « Le p95 est passé à 420 ms, aucun incident le jour J, et le test de char
 
 **Piège :** un récit héroïque, accuser une personne, ou inverser l'ordre atténuation puis diagnostic. Montrez la séquence : stabiliser, diagnostiquer, prévenir.
 
-*Voir aussi :* [Leadership S6](leadership-behavioral.md#production-incident-traces-back-architectural) pour un incident causé par votre propre décision, et [Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) pour une méthode d'investigation de latence.
+*Voir aussi :* [Leadership S6](leadership-behavioral.md#production-incident-traces-back-architectural) pour un incident causé par votre propre décision, et [Full Stack Q39](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) pour une méthode d'investigation de latence.
 
 #### B19. Parlez-moi d'une fois où vous avez changé une décision technique face à de nouveaux éléments. {#time-changed-technical-decision-after}
 **Pourquoi on la pose :** honnêteté intellectuelle et capacité à changer de cap sans ego.

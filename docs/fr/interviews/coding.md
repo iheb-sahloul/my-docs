@@ -1,6 +1,6 @@
 # Live coding & algorithmes
 
-Les entretiens full-stack seniors demandent rarement des algorithmes exotiques. Ils vérifient que vous savez transformer un problème en code propre et testé tout en parlant, choisir la bonne structure de données et raisonner sur la complexité. Le fonctionnement interne des collections Java est traité dans [Java Q6](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) et [Java Q18](java-core-jvm.md#happens-inside-hashmap-put-get). Une référence pattern par pattern, avec modèles, exemples résolus et katas TDD classiques, se trouve dans [Patterns de code & katas](../notes/coding-patterns.md).
+Les entretiens full-stack seniors demandent rarement des algorithmes exotiques. Ils vérifient que vous savez transformer un problème en code propre et testé tout en parlant, choisir la bonne structure de données et raisonner sur la complexité. Le fonctionnement interne des collections Java est traité dans [Java Q14](java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap) et [Java Q36](java-core-jvm.md#happens-inside-hashmap-put-get). Une référence pattern par pattern, avec modèles, exemples résolus et katas TDD classiques, se trouve dans [Patterns de code & katas](../notes/coding-patterns.md).
 
 ## 🟢 Fondamentaux
 
@@ -44,6 +44,12 @@ O(n)        1e6 ops    ✅ ~ms
 O(n log n)  2e7 ops    ✅
 O(n²)       1e12 ops   ⛔ des heures
 ```
+
+**Règles de calcul :** instructions en séquence, on **additionne** puis on garde le terme dominant (O(n) + O(n²) = O(n²)) ; boucles imbriquées, on **multiplie** (n × m) ; diviser le problème par 2 à chaque étape, O(log n) ; récursion, (nombre d'appels) × (travail par appel), et l'espace est la **profondeur** maximale de la pile. Exemples : `HashMap.get` et `tab[i]` en O(1), `TreeMap.get` et la dichotomie en O(log n), `ArrayList.contains` en O(n), `List.sort` en O(n log n), Fibonacci naïf et les sous-ensembles en O(2ⁿ).
+
+Trois solutions au problème « doublons », trois compromis (voir Q5) : deux boucles imbriquées en O(n²) temps et O(1) espace ; un `HashSet` en O(n) temps et O(n) espace (on échange de la mémoire contre du temps) ; un tri puis comparaison des voisins en O(n log n), mais on modifie le tableau. La bonne réponse dépend de la mémoire disponible, du droit de modifier l'entrée et de la taille de n.
+
+**Pourquoi c'est un piège :** les appels cachés : `list.contains` dans une boucle = O(n²) ; `String +=` dans une boucle = O(n²) (copies), d'où `StringBuilder`. Fibonacci mémoïsé est O(n) en temps **et** en espace (tableau plus pile). Le O(1) de `HashMap` suppose un bon `hashCode` ; avec beaucoup de collisions, O(log n) (buckets en arbre).
 
 #### Q3. Quelles structures de données Java utiliser dans les exercices de code ? {#java-data-structures-coding-exercises}
 **Réponse :** `HashMap`/`HashSet` pour la recherche en O(1), le comptage et la déduplication ; `ArrayList` pour les
@@ -111,7 +117,7 @@ static <T> Set<T> duplicates(Collection<T> items) {
 
 **Pourquoi c'est un piège :** la version à boucles imbriquées marche sur l'exemple et échoue sur un million de lignes, et un
 `List.contains` dans la boucle est le même O(n²) déguisé. Des clés mutables avec un mauvais `hashCode` cassent silencieusement
-l'ensemble (voir [Java Q19](java-core-jvm.md#mutable-object-field-based-hashcode)).
+l'ensemble (voir [Java Q37](java-core-jvm.md#mutable-object-field-based-hashcode)).
 
 #### Q6. Trouver le premier caractère non répété d'une chaîne. {#find-first-non-repeating-character}
 **Réponse :** Deux passes avec une table de fréquences : la passe 1 compte chaque caractère, la passe 2 renvoie le premier
@@ -144,7 +150,44 @@ static OptionalInt firstUniqueIndex(String s) {
 échoue dès que l'entrée contient majuscules, chiffres ou accents. De plus, renvoyer un `' '` ou `0` magique pour « non trouvé »
 est ambigu quand la chaîne peut le contenir.
 
-#### Q7. Que sont les patterns two pointers et sliding window ? Résolvez « plus longue sous-chaîne sans caractère répété ». {#two-pointer-sliding-window-patterns}
+#### Q7. Katas sur les chaînes : anagrammes, inverser les mots d'une phrase, compter les occurrences avec `Map.merge`, FizzBuzz. {#string-katas-anagram-reverse-words-fizzbuzz}
+**Réponse :** Toutes ces solutions sont en O(n). Anagramme : comparer les longueurs, compter les caractères de `a` puis décrémenter avec ceux de `b` ; un compteur négatif signifie « pas un anagramme ». Pour des minuscules ASCII seulement, un `int[26]` indexé par `c - 'a'` est plus rapide qu'une map. Inverser les mots : `split("\\s+")` absorbe les espaces multiples. Comptage : `merge(c, 1, Integer::sum)`. FizzBuzz : tester 15 en premier.
+
+**Exemple :**
+
+```java
+static boolean isAnagram(String a, String b) {
+    if (a.length() != b.length()) return false;
+    Map<Character, Integer> counts = new HashMap<>();
+    for (char c : a.toCharArray()) counts.merge(c, 1, Integer::sum);
+    for (char c : b.toCharArray()) {
+        if (counts.merge(c, -1, Integer::sum) < 0) return false;
+    }
+    return true;                                  // même longueur et aucun compteur négatif : tous à zéro
+}
+
+static String reverseWords(String s) {
+    List<String> words = Arrays.asList(s.trim().split("\\s+"));  // \\s+ : absorbe les espaces multiples
+    Collections.reverse(words);
+    return String.join(" ", words);
+}
+
+static Map<Character, Integer> countChars(String s) {
+    Map<Character, Integer> counts = new TreeMap<>();            // TreeMap : sortie triée, pratique au tableau
+    for (char c : s.toCharArray()) counts.merge(c, 1, Integer::sum);
+    return counts;
+}
+// En stream : s.chars().mapToObj(c -> (char) c).collect(groupingBy(identity(), counting()))  → Map<Character, Long>
+
+static String fizzBuzz(int i) {
+    if (i % 15 == 0) return "FizzBuzz";           // tester 15 en premier, sinon on renvoie "Fizz"
+    if (i % 3 == 0) return "Fizz";
+    if (i % 5 == 0) return "Buzz";
+    return String.valueOf(i);
+}
+```
+
+#### Q8. Que sont les patterns two pointers et sliding window ? Résolvez « plus longue sous-chaîne sans caractère répété ». {#two-pointer-sliding-window-patterns}
 **Réponse :** Les **two pointers** avancent depuis les deux extrémités (tableaux triés, palindromes) ou à des vitesses
 différentes (détection de cycle). Une **fenêtre glissante** maintient un intervalle `[left, right]` qui respecte une
 condition : on étend `right`, et quand la condition casse, on avance `left` jusqu'à ce qu'elle soit de nouveau vraie.
@@ -167,7 +210,51 @@ int lengthOfLongestSubstring(String s) {
 }
 ```
 
-#### Q8. Comment écrire une recherche dichotomique sans erreur d'un indice ? {#write-binary-search-off-one}
+#### Q9. Katas sur les tableaux : sous-tableau de somme maximale (Kadane), rotation, fusion de deux tableaux triés, élément majoritaire. {#array-katas-kadane-rotation-merge-majority}
+**Réponse :** **Kadane** : à chaque élément, prolonger le sous-tableau courant ou repartir d'ici, O(n). **Rotation** : triple inversion (tout, puis les k premiers, puis le reste), O(n) en temps et O(1) en mémoire. **Fusion** de deux tableaux triés : deux indices, O(n + m). **Élément majoritaire** : vote de Boyer-Moore, O(n) et O(1). Si l'existence d'un majoritaire n'est pas garantie, faire une seconde passe pour compter le candidat. La solution naïve, une `HashMap` de compteurs, est en O(n) mémoire : la donner d'abord, puis optimiser.
+
+**Exemple :**
+
+```java
+static int maxSubarray(int[] a) {                 // Kadane, O(n), tableau non vide
+    int best = a[0], cur = a[0];
+    for (int i = 1; i < a.length; i++) {
+        cur = Math.max(a[i], cur + a[i]);          // prolonger le sous-tableau courant ou repartir d'ici
+        best = Math.max(best, cur);
+    }
+    return best;                                  // partir de a[0] et non de 0 : correct si tout est négatif
+}
+
+static void rotateRight(int[] a, int k) {         // triple inversion : O(n) temps, O(1) mémoire
+    int n = a.length;
+    if (n == 0) return;
+    k %= n;                                       // piège : k peut être plus grand que n
+    reverse(a, 0, n - 1);
+    reverse(a, 0, k - 1);
+    reverse(a, k, n - 1);
+}
+private static void reverse(int[] a, int i, int j) { while (i < j) swap(a, i++, j--); }  // swap : voir Tris
+
+static int[] mergeSorted(int[] a, int[] b) {      // O(n + m)
+    int[] out = new int[a.length + b.length];
+    int i = 0, j = 0, k = 0;
+    while (i < a.length && j < b.length) out[k++] = a[i] <= b[j] ? a[i++] : b[j++];
+    while (i < a.length) out[k++] = a[i++];
+    while (j < b.length) out[k++] = b[j++];
+    return out;
+}
+
+static int majority(int[] a) {                    // Boyer-Moore : O(n), O(1)
+    int candidate = 0, count = 0;
+    for (int x : a) {
+        if (count == 0) candidate = x;
+        count += x == candidate ? 1 : -1;
+    }
+    return candidate;                             // valable seulement si un élément apparaît plus de n/2 fois
+}
+```
+
+#### Q10. Comment écrire une recherche dichotomique sans erreur d'un indice ? {#write-binary-search-off-one}
 **Réponse :** Utilisez un seul modèle cohérent : un intervalle semi-ouvert ou fermé, une condition de boucle qui lui
 correspond, et `mid = lo + (hi - lo) / 2` pour éviter le dépassement. La forme la plus réutilisable cherche le **premier
 indice où une condition devient vraie** (lower bound), ce qui couvre aussi « position d'insertion », « première
@@ -187,7 +274,95 @@ int lowerBound(int[] a, int target) {
 }
 ```
 
-#### Q9. BFS ou DFS — quand utiliser chacun ? Résolvez « nombre d'îles ». {#bfs-dfs-each-solve-number}
+#### Q11. Implémentez un tri à bulles, un merge sort et un quicksort, et comparez leur complexité et leur stabilité. {#sorting-bubble-merge-quick-sort}
+**Réponse :** À savoir écrire sur papier en 15 min. Le **tri à bulles** (O(n²), stable, en place) sert surtout à savoir l'expliquer ; avec un drapeau `swapped` il est O(n) sur un tableau déjà trié. Le **merge sort** coupe en deux, trie chaque moitié et fusionne : O(n log n) dans tous les cas, **stable**, mais O(n) de mémoire. Le **quicksort** partitionne autour d'un pivot : O(n log n) en moyenne, **O(n²)** dans le pire cas, en place (O(log n) de pile), **non stable** ; un pivot aléatoire évite le pire cas sur un tableau déjà trié. `Arrays.sort(int[])` utilise un dual-pivot quicksort (la stabilité n'a pas de sens pour des primitifs) ; `Arrays.sort(Object[])` et `List.sort` utilisent TimSort, stable, parce que deux objets égaux pour le comparateur restent distinguables.
+
+**Exemple :**
+
+```java
+static void bubbleSort(int[] a) {
+    for (int end = a.length - 1; end > 0; end--) {
+        boolean swapped = false;
+        for (int i = 0; i < end; i++) {
+            if (a[i] > a[i + 1]) { swap(a, i, i + 1); swapped = true; }
+        }
+        if (!swapped) return;                     // déjà trié : O(n) dans le meilleur cas
+    }
+}
+
+static void mergeSort(int[] a) {
+    if (a.length > 1) mergeSort(a, new int[a.length], 0, a.length - 1);
+}
+private static void mergeSort(int[] a, int[] tmp, int lo, int hi) {
+    if (lo >= hi) return;
+    int mid = lo + (hi - lo) / 2;                 // pas (lo + hi) / 2 : débordement d'int
+    mergeSort(a, tmp, lo, mid);
+    mergeSort(a, tmp, mid + 1, hi);
+    int i = lo, j = mid + 1, k = lo;
+    while (i <= mid && j <= hi) tmp[k++] = a[i] <= a[j] ? a[i++] : a[j++];  // <= : garantit la stabilité
+    while (i <= mid) tmp[k++] = a[i++];
+    while (j <= hi) tmp[k++] = a[j++];
+    System.arraycopy(tmp, lo, a, lo, hi - lo + 1);
+}
+
+static void quickSort(int[] a) {
+    quickSort(a, 0, a.length - 1);
+}
+private static void quickSort(int[] a, int lo, int hi) {
+    if (lo >= hi) return;
+    swap(a, ThreadLocalRandom.current().nextInt(lo, hi + 1), hi);  // pivot aléatoire : évite O(n²) sur un tableau déjà trié
+    int pivot = a[hi], i = lo;
+    for (int j = lo; j < hi; j++) if (a[j] < pivot) swap(a, i++, j);  // partition de Lomuto
+    swap(a, i, hi);
+    quickSort(a, lo, i - 1);
+    quickSort(a, i + 1, hi);
+}
+
+static void swap(int[] a, int i, int j) { int t = a[i]; a[i] = a[j]; a[j] = t; }
+```
+
+| Tri | Moyen | Pire cas | Mémoire | Stable |
+|---|---|---|---|---|
+| Bulles | O(n²) | O(n²) | O(1) | oui |
+| Fusion | O(n log n) | O(n log n) | O(n) | oui |
+| Rapide | O(n log n) | O(n²) | O(log n) (pile d'appels) | non |
+
+#### Q12. Écrivez factorielle et Fibonacci (naïf, mémoïsé, itératif), puis la puissance rapide. {#recursion-factorial-fibonacci-fast-power}
+**Réponse :** Fibonacci naïf recalcule les mêmes sous-problèmes : O(2ⁿ) en temps. La **mémoïsation** le ramène à O(n) en temps et O(n) en mémoire (tableau plus pile) ; la version **itérative** à O(n) en temps et O(1) en mémoire. La **puissance rapide** divise l'exposant par 2 à chaque appel : O(log n). C'est le chemin naturel vers la programmation dynamique (voir Q14).
+
+**Exemple :**
+
+```java
+static long factorial(int n) {
+    if (n < 0) throw new IllegalArgumentException("n < 0");
+    return n <= 1 ? 1 : n * factorial(n - 1);    // déborde au-delà de 20! : passer à BigInteger
+}
+
+static long fibNaive(int n) { return n < 2 ? n : fibNaive(n - 1) + fibNaive(n - 2); }  // O(2ⁿ) : recalcule tout
+
+static long fibMemo(int n) { return fibMemo(n, new long[n + 1]); }
+private static long fibMemo(int n, long[] memo) {
+    if (n < 2) return n;
+    if (memo[n] != 0) return memo[n];
+    return memo[n] = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);  // O(n) temps, O(n) mémoire
+}
+
+static long fibIter(int n) {
+    long a = 0, b = 1;
+    for (int i = 0; i < n; i++) { long t = a + b; a = b; b = t; }
+    return a;                                     // O(n) temps, O(1) mémoire
+}
+
+static long power(long x, int n) {                // x^n en O(log n), n >= 0
+    if (n == 0) return 1;
+    long half = power(x, n / 2);
+    return n % 2 == 0 ? half * half : half * half * x;
+}
+```
+
+**Pourquoi c'est un piège :** une récursion trop profonde provoque une `StackOverflowError` ; Java n'optimise pas la récursion terminale, d'où la version itérative.
+
+#### Q13. BFS ou DFS — quand utiliser chacun ? Résolvez « nombre d'îles ». {#bfs-dfs-each-solve-number}
 **Réponse :** Le **BFS** (file) explore niveau par niveau, donc il trouve le **plus court chemin dans un graphe non
 pondéré** (nombre minimal de coups, degrés de séparation). Le **DFS** (récursion ou pile explicite) va d'abord en
 profondeur, adapté à l'exploration des composantes connexes, la détection de cycles, le tri topologique et le
@@ -222,7 +397,97 @@ int numIslands(char[][] grid) {
 }
 ```
 
-#### Q10. Quand un tas est-il le bon outil ? Résolvez « top K éléments les plus fréquents ». {#heap-right-tool-solve-top}
+#### Q14. Parcours d'un arbre binaire (préfixe, infixe, suffixe, récursifs et itératifs), hauteur, validation d'un BST et plus petit ancêtre commun. {#binary-tree-traversals-height-bst-lca}
+**Réponse :** Préfixe = racine, gauche, droite ; infixe = gauche, racine, droite (ordre **trié** pour un BST) ; suffixe = gauche, droite, racine. La version itérative remplace la pile d'appels par un `ArrayDeque` (le suffixe s'obtient en faisant un préfixe « racine, droite, gauche » puis en retournant le résultat). Toutes ces opérations sont en O(n). Pour valider un BST, on propage des **bornes** (min, max) vers le bas ; le plus petit ancêtre commun (LCA) est le premier nœud qui voit p et q de part et d'autre.
+
+**Exemple :**
+
+```java
+record Node(int val, Node left, Node right) {
+    Node(int val) { this(val, null, null); }
+}
+
+static void preorder(Node n, List<Integer> out) {      // racine, gauche, droite
+    if (n == null) return;
+    out.add(n.val());
+    preorder(n.left(), out);
+    preorder(n.right(), out);
+}
+
+static void inorder(Node n, List<Integer> out) {       // gauche, racine, droite : ordre trié pour un BST
+    if (n == null) return;
+    inorder(n.left(), out);
+    out.add(n.val());
+    inorder(n.right(), out);
+}
+
+static void postorder(Node n, List<Integer> out) {     // gauche, droite, racine
+    if (n == null) return;
+    postorder(n.left(), out);
+    postorder(n.right(), out);
+    out.add(n.val());
+}
+
+static List<Integer> preorderIterative(Node root) {
+    List<Integer> out = new ArrayList<>();
+    Deque<Node> stack = new ArrayDeque<>();
+    if (root != null) stack.push(root);
+    while (!stack.isEmpty()) {
+        Node n = stack.pop();
+        out.add(n.val());
+        if (n.right() != null) stack.push(n.right());   // droite d'abord, pour dépiler la gauche en premier
+        if (n.left() != null) stack.push(n.left());
+    }
+    return out;
+}
+
+static List<Integer> inorderIterative(Node root) {
+    List<Integer> out = new ArrayList<>();
+    Deque<Node> stack = new ArrayDeque<>();
+    Node cur = root;
+    while (cur != null || !stack.isEmpty()) {
+        while (cur != null) { stack.push(cur); cur = cur.left(); }  // descendre tout à gauche
+        cur = stack.pop();
+        out.add(cur.val());
+        cur = cur.right();
+    }
+    return out;
+}
+
+static List<Integer> postorderIterative(Node root) {    // préfixe inversé (racine, droite, gauche), puis on retourne
+    List<Integer> out = new ArrayList<>();
+    Deque<Node> stack = new ArrayDeque<>();
+    if (root != null) stack.push(root);
+    while (!stack.isEmpty()) {
+        Node n = stack.pop();
+        out.add(n.val());
+        if (n.left() != null) stack.push(n.left());
+        if (n.right() != null) stack.push(n.right());
+    }
+    Collections.reverse(out);
+    return out;
+}
+
+static int height(Node n) { return n == null ? 0 : 1 + Math.max(height(n.left()), height(n.right())); }
+
+static boolean isBst(Node n) { return isBst(n, Long.MIN_VALUE, Long.MAX_VALUE); }
+private static boolean isBst(Node n, long min, long max) {  // bornes exclusives, en long pour accepter Integer.MIN_VALUE
+    if (n == null) return true;
+    if (n.val() <= min || n.val() >= max) return false;
+    return isBst(n.left(), min, n.val()) && isBst(n.right(), n.val(), max);
+}
+
+static Node lca(Node root, Node p, Node q) {           // arbre binaire quelconque, O(n)
+    if (root == null || root == p || root == q) return root;
+    Node l = lca(root.left(), p, q), r = lca(root.right(), p, q);
+    if (l != null && r != null) return root;           // p et q sont de part et d'autre
+    return l != null ? l : r;
+}
+```
+
+**Pourquoi c'est un piège :** pour `isBst`, comparer chaque nœud seulement à ses enfants directs est faux (un petit-enfant peut violer la borne de la racine). Pour un BST, le LCA se trouve en O(h) : descendre à gauche si p et q sont plus petits que le nœud, à droite s'ils sont plus grands, sinon le nœud courant est la réponse.
+
+#### Q15. Quand un tas est-il le bon outil ? Résolvez « top K éléments les plus fréquents ». {#heap-right-tool-solve-top}
 **Réponse :** Utilisez un tas quand vous avez besoin à répétition du plus petit ou du plus grand élément d'un ensemble
 qui change : top K, fusion de K listes, ordonnancement, Dijkstra. Pour le top K parmi n, gardez un **tas min de taille
 K** : insérez chaque candidat et retirez le minimum quand la taille dépasse K. C'est O(n log K) en temps et O(K) pour
@@ -245,13 +510,84 @@ List<Integer> topKFrequent(int[] nums, int k) {
 }
 ```
 
+#### Q16. Listes chaînées : détecter un cycle (Floyd), trouver le milieu, fusionner deux listes triées. {#linked-list-cycle-middle-merge}
+**Réponse :** **Floyd** (lièvre et tortue) : deux pointeurs, l'un avance de 1 et l'autre de 2 ; s'ils se rejoignent, il y a un cycle. O(n) en temps, O(1) en mémoire. Le même schéma donne le **milieu** (quand le rapide atteint la fin, le lent est au milieu). Pour la **fusion**, un nœud sentinelle évite le cas particulier de la tête. Alternative à Floyd : stocker les nœuds visités dans un `HashSet`, plus simple mais en O(n) mémoire ; c'est la réponse naïve à donner en premier.
+
+**Exemple :**
+
+```java
+static final class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; }
+}
+
+static boolean hasCycle(ListNode head) {          // Floyd (lièvre et tortue) : O(n), O(1)
+    ListNode slow = head, fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) return true;
+    }
+    return false;
+}
+
+static ListNode middle(ListNode head) {           // longueur paire : renvoie le second milieu
+    ListNode slow = head, fast = head;
+    while (fast != null && fast.next != null) { slow = slow.next; fast = fast.next.next; }
+    return slow;
+}
+
+static ListNode mergeLists(ListNode a, ListNode b) {
+    ListNode dummy = new ListNode(0), tail = dummy;   // nœud sentinelle : pas de cas particulier pour la tête
+    while (a != null && b != null) {
+        if (a.val <= b.val) { tail.next = a; a = a.next; } else { tail.next = b; b = b.next; }
+        tail = tail.next;
+    }
+    tail.next = a != null ? a : b;
+    return dummy.next;
+}
+```
+
+Voir aussi R1 pour inverser une liste.
+
+#### Q17. Implémentez une file avec deux piles, et une pile qui renvoie son minimum en O(1) (min-stack). {#stack-queue-two-stack-queue-min-stack}
+**Réponse :** **File à deux piles** : on empile dans `in`, et on ne transfère vers `out` que lorsque `out` est vide ; chaque élément passe une seule fois de l'une à l'autre, donc O(1) **amorti**. **Min-stack** : une seconde pile ne garde que les minima successifs ; on y empile quand `x <=` au minimum courant (le `<=` gère les doublons du minimum). Utiliser `ArrayDeque` plutôt que `Stack`, synchronisée et héritée de `Vector`.
+
+**Exemple :**
+
+```java
+static final class TwoStackQueue<E> {
+    private final Deque<E> in = new ArrayDeque<>(), out = new ArrayDeque<>();
+    void offer(E e) { in.push(e); }
+    E poll() {
+        if (out.isEmpty()) while (!in.isEmpty()) out.push(in.pop());  // transfert seulement quand out est vide
+        return out.poll();                                              // null si la file est vide
+    }
+}
+
+static final class MinStack {
+    private final Deque<Integer> stack = new ArrayDeque<>(), mins = new ArrayDeque<>();
+    void push(int x) {
+        stack.push(x);
+        if (mins.isEmpty() || x <= mins.peek()) mins.push(x);   // <= : gère les doublons du minimum
+    }
+    int pop() {
+        int x = stack.pop();
+        if (x == mins.peek()) mins.pop();
+        return x;
+    }
+    int min() { return mins.peek(); }                           // O(1)
+}
+```
+
 ## 🟡 Pièges seniors
 
 ### Questions
 
-#### Q11. Quels pièges Java font perdre des points en live coding ? {#java-pitfalls-cost-candidates-points}
+#### Q18. Quels pièges Java font perdre des points en live coding ? {#java-pitfalls-cost-candidates-points}
 **Réponse :** Le **dépassement d'entier** (`(lo + hi) / 2`, sommes de grands entiers : utilisez `long`) ; comparer
-des nombres boxés avec `==` (`Integer` au-delà de 127, voir [Java Q9](java-core-jvm.md#autoboxing-trap-integer)) ; un comparateur écrit
+des nombres boxés avec `==` (`Integer` au-delà de 127, voir [Java Q26](java-core-jvm.md#autoboxing-trap-integer)) ; un comparateur écrit
 `a - b`, qui déborde (utilisez `Integer.compare`) ; la concaténation de chaînes en boucle (O(n²) ; utilisez
 `StringBuilder`) ; modifier une collection pendant un parcours for-each ; `Arrays.asList` qui renvoie une liste de
 taille fixe ; la profondeur de récursion sur de grandes entrées ; oublier l'entrée vide ; et l'arithmétique sur `char`
@@ -269,7 +605,7 @@ list.sort(Integer::compare);
 **Pourquoi c'est un piège :** l'algorithme est juste et le cas de test passe ; l'intervieweur demande alors « et si les
 valeurs sont proches de `Integer.MAX_VALUE` ? », et le bug est dans la ligne à laquelle vous n'avez pas pensé.
 
-#### Q12. Regrouper des rendez-vous par médecin et par date avec les streams. {#group-appointments-doctor-date-streams}
+#### Q19. Regrouper des rendez-vous par médecin et par date avec les streams. {#group-appointments-doctor-date-streams}
 **Réponse :** `Collectors.groupingBy` avec un collecteur *aval* le fait en une passe. Pour un regroupement à deux niveaux,
 imbriquez les collecteurs : médecin → date → liste. Choisissez le type de map délibérément : `TreeMap` pour des clés triées
 (dates dans l'ordre), `LinkedHashMap` pour garder l'ordre de rencontre, et triez les listes internes
@@ -307,9 +643,9 @@ Map<String, Long> minutes = appointments.stream().filter(a -> !a.cancelled())
 
 **Pourquoi c'est un piège :** oublier le fuseau horaire, supposer que `groupingBy` renvoie des clés triées (il renvoie une
 `HashMap`), et modifier une liste depuis le stream. Voir aussi les pièges des streams dans
-[Java Q14](java-core-jvm.md#common-ways-stream-pipeline-goes).
+[Java Q31](java-core-jvm.md#common-ways-stream-pipeline-goes).
 
-#### Q13. Détecter des réservations qui se chevauchent. {#detect-overlapping-bookings}
+#### Q20. Détecter des réservations qui se chevauchent. {#detect-overlapping-bookings}
 **Réponse :** Deux plages horaires se chevauchent exactement quand `a.start < b.end && b.start < a.end`. Traitez les plages
 comme **semi-ouvertes** `[début, fin)` pour que des rendez-vous consécutifs (10:00–10:30 et 10:30–11:00) n'entrent *pas* en
 conflit ; cette seule décision cause la plupart des bugs d'écart d'un, dites-la à voix haute. Pour une nouvelle réservation
@@ -346,7 +682,7 @@ static List<Booking[]> conflicts(List<Booking> bookings) {
 réservation à l'intérieur d'une longue) est manqué si l'on ne compare que les voisines, et comparer des `LocalDateTime`
 ignore les fuseaux horaires. Testez les trois formes : chevauchement partiel, inclusion et extrémités qui se touchent.
 
-#### Q14. Qu'est-ce que la programmation dynamique, et comment repérer un problème de DP ? {#dynamic-programming-spot-dp-problem}
+#### Q21. Qu'est-ce que la programmation dynamique, et comment repérer un problème de DP ? {#dynamic-programming-spot-dp-problem}
 **Réponse :** La DP s'applique quand un problème a des **sous-problèmes qui se recouvrent** et une **sous-structure
 optimale** : la meilleure réponse se construit à partir des meilleures réponses à des versions plus petites, et ces
 mêmes versions reviennent sans cesse. Signaux : « nombre de façons », « coût minimal », « plus longue/courte ...
@@ -374,7 +710,7 @@ int coinChange(int[] coins, int amount) {
 échoue sur `{1, 3, 4}` pour un montant de 6 (le glouton donne 3 pièces, l'optimum est 2). Testez toujours une idée
 gloutonne contre un contre-exemple.
 
-#### Q15. Implémenter un compteur thread-safe. {#implement-thread-safe-counter}
+#### Q22. Implémenter un compteur thread-safe. {#implement-thread-safe-counter}
 **Réponse :** `count++` fait trois étapes (lire, ajouter, écrire), donc deux threads peuvent lire 5 et écrire tous deux 6 : une
 mise à jour perdue. Options, de la plus simple à la plus scalable : (1) des méthodes **`synchronized`** ou un `ReentrantLock` :
 correct, mais les threads font la queue à chaque appel ; (2) **`AtomicLong`/`AtomicInteger`** : `incrementAndGet()` utilise un
@@ -384,7 +720,7 @@ internes et les additionne dans `sum()`, bien plus rapide sous forte contention 
 requêtes), mais `sum()` n'est pas un instantané atomique et il n'offre pas de compare-and-set, donc il est inadapté pour
 « incrémenter *seulement si* sous une limite ». (4) Ne pas partager du tout : des compteurs par thread fusionnés à la fin. Un
 `volatile long` seul **ne suffit pas** : il garantit la visibilité mais pas l'atomicité de `++` (voir
-[Java Q23](java-core-jvm.md#real-synchronized-volatile)). Pour un compteur borné (limite de débit, « maximum 3 réservations »), utilisez une boucle CAS
+[Java Q41](java-core-jvm.md#real-synchronized-volatile)). Pour un compteur borné (limite de débit, « maximum 3 réservations »), utilisez une boucle CAS
 avec `updateAndGet`/`compareAndSet` pour que le test et l'incrément forment une seule étape atomique. Testez avec beaucoup de
 threads et vérifiez le total exact ; un test mono-thread ne prouve rien.
 
@@ -419,12 +755,12 @@ assertEquals(1_000_000, c.get());
 thread-safe et ne le sont pas ; utilisez `merge(k, 1, Integer::sum)` ou une valeur `LongAdder`. De plus, un compteur atomique
 protège un nombre, pas un invariant portant sur deux champs.
 
-#### Q16. Implémenter une logique de nouvelle tentative (retry) avec un nombre maximal de tentatives. {#implement-retry-logic-maximum-number}
+#### Q23. Implémenter une logique de nouvelle tentative (retry) avec un nombre maximal de tentatives. {#implement-retry-logic-maximum-number}
 **Réponse :** Un utilitaire de retry reçoit une opération, un nombre maximal de tentatives, une politique de délai et un
 prédicat indiquant quels échecs sont rejouables. Décisions à énoncer : (1) **ne rejouer que les erreurs transitoires**
 (timeouts, `503`, connexion coupée, victime de deadlock), jamais les erreurs de validation ou `4xx`, et **seulement les
 opérations idempotentes**, ou protégées par une clé d'idempotence, sinon un retry après une réponse perdue duplique un
-paiement ou une réservation (voir [Full Stack Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need)) ; (2) **le borner** : un nombre maximal de
+paiement ou une réservation (voir [Full Stack Q11](fullstack-devops-k8s.md#idempotency-rest-api-post-need)) ; (2) **le borner** : un nombre maximal de
 tentatives (par ex. 3) et une échéance globale ; (3) **attente exponentielle avec jitter** (100 ms, 200 ms, 400 ms,
 randomisés) pour que de nombreux clients ne rejouent pas en phase et n'écrasent pas un service en récupération (*tempête de
 retries*) ; (4) **relancer le dernier échec en y attachant les précédents** (`addSuppressed`) pour ne rien perdre ; (5)
@@ -463,15 +799,15 @@ static <T> T retry(int maxAttempts, Duration baseDelay, Predicate<Exception> ret
 **Pourquoi c'est un piège :** rejouer des appels non idempotents, rejouer indéfiniment, pas de jitter, et avaler l'exception
 d'origine sont les quatre erreurs classiques. Rappelez-vous aussi qu'un retry n'est pas gratuit : avec une dépendance lente il
 garde threads et connexions occupés plus longtemps, donc associez-le à des timeouts et à un circuit breaker (voir
-[Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need)).
+[Spring Q39](spring-architecture.md#circuit-breaker-pattern-service-need)).
 
-#### Q17. Implémentez un cache LRU avec `get` et `put` en O(1). {#implement-lru-cache-o-1}
+#### Q24. Implémentez un cache LRU avec `get` et `put` en O(1). {#implement-lru-cache-o-1}
 **Réponse :** Il faut une recherche en O(1) (une table de hachage) et des opérations « passer en plus récent » et
 « évincer le plus ancien » en O(1) (une liste doublement chaînée). En Java, `LinkedHashMap` avec `accessOrder = true`
 et une redéfinition de `removeEldestEntry` fournit exactement cela en quelques lignes. Les intervieweurs demandent
 souvent ensuite de le construire à la main (map de clé vers nœud, plus une liste doublement chaînée avec des
 sentinelles en tête et en queue) : soyez prêt pour les deux. La sûreté multi-thread et les compromis de mémoire bornée
-sont traités dans [Java Q21](java-core-jvm.md#design-thread-safe-bounded-lru).
+sont traités dans [Java Q39](java-core-jvm.md#design-thread-safe-bounded-lru).
 
 **Exemple :**
 
@@ -486,7 +822,7 @@ class LruCache<K, V> extends LinkedHashMap<K, V> {
 **Pourquoi c'est un piège :** une `LinkedList` simple avec `remove(Object)` pour déplacer une clé semble correcte mais
 coûte O(n) par accès.
 
-#### Q18. Comment tester votre code pendant l'entretien ? {#test-code-during-interview}
+#### Q25. Comment tester votre code pendant l'entretien ? {#test-code-during-interview}
 **Réponse :** Ne vous contentez pas de « ça a l'air bon ». Déroulez un exemple normal ligne par ligne en suivant les
 variables à voix haute. Puis passez les cas limites : entrée vide, un seul élément, tous les éléments égaux, réponse en
 première ou dernière position, nombres négatifs, et la plus grande entrée pour la performance. Si l'environnement
@@ -508,7 +844,7 @@ non testés que le candidat aurait trouvés en une minute.
 
 ### Questions
 
-#### Q19. Concevez et codez une classe de rate limiter pour une seule instance de service. {#design-code-rate-limiter-class}
+#### Q26. Concevez et codez une classe de rate limiter pour une seule instance de service. {#design-code-rate-limiter-class}
 **Réponse :** Clarifiez d'abord : par utilisateur ou global, limite et fenêtre, comportement en cas de rejet, besoin
 de sûreté multi-thread. Un **token bucket** est la réponse habituelle : chaque clé a un seau de capacité C rempli à R
 jetons par seconde ; une requête prend un jeton ou est rejetée. Stockez l'état par clé dans une `ConcurrentHashMap` et
@@ -543,7 +879,7 @@ class TokenBucketLimiter {
 }
 ```
 
-#### Q20. Fusionnez des intervalles qui se chevauchent ; comment la solution change-t-elle pour un flux d'intervalles ? {#merge-overlapping-intervals-solution-change}
+#### Q27. Fusionnez des intervalles qui se chevauchent ; comment la solution change-t-elle pour un flux d'intervalles ? {#merge-overlapping-intervals-solution-change}
 **Réponse :** Pour une liste, **triez par début** (O(n log n)), puis parcourez : si l'intervalle suivant commence avant
 ou à la fin courante, prolongez la fin ; sinon fermez l'intervalle courant et en commencez un nouveau. Pour un **flux**
 (intervalles arrivant un par un, comme des réservations d'agenda), gardez les intervalles fusionnés dans une
@@ -566,10 +902,10 @@ int[][] merge(int[][] intervals) {
 }
 ```
 
-#### Q21. Étant donné les horaires de travail d'un praticien et ses rendez-vous existants, trouver les créneaux disponibles. {#given-practitioner-working-hours-existing}
+#### Q28. Étant donné les horaires de travail d'un praticien et ses rendez-vous existants, trouver les créneaux disponibles. {#given-practitioner-working-hours-existing}
 **Réponse :** C'est de la « soustraction d'intervalles » : partir des intervalles libres, retirer les occupés, puis découper
 le reste en créneaux réservables. Algorithme : (1) valider et **normaliser** la liste des occupés : écarter les annulés, trier
-par début et **fusionner les intervalles qui se chevauchent ou se touchent** (voir [Coding Q20](coding.md#merge-overlapping-intervals-solution-change)) pour que le
+par début et **fusionner les intervalles qui se chevauchent ou se touchent** (voir [Coding Q27](coding.md#merge-overlapping-intervals-solution-change)) pour que le
 balayage soit simple ; (2) garder un curseur au début de la journée ; pour chaque intervalle occupé borné à la fenêtre de
 travail, si `busy.start > cursor` alors `[cursor, busy.start)` est un trou libre ; avancer le curseur à `max(cursor,
 busy.end)` ; après la boucle ajouter le trou final `[cursor, dayEnd)` ; (3) pour chaque trou, produire des créneaux de la
@@ -614,14 +950,14 @@ horaires, des écarts d'un aux bornes de la journée, et renvoyer des créneaux 
 le test de fin était `<` au lieu de `<=`. Testez : aucun rendez-vous, journée complète, rendez-vous commençant avant la
 journée ou finissant après, rendez-vous consécutifs.
 
-#### Q22. Traiter un très grand flux d'événements (plus gros que la mémoire) et calculer des statistiques ou le top K. {#process-very-large-stream-events}
+#### Q29. Traiter un très grand flux d'événements (plus gros que la mémoire) et calculer des statistiques ou le top K. {#process-very-large-stream-events}
 **Réponse :** La contrainte est la mémoire, donc la réponse est **ne jamais tout charger** : lire de façon incrémentale et ne
 garder que des agrégats. Posez d'abord les questions : que calcule-t-on (comptes par clé, nombre de valeurs distinctes, top K,
 percentiles, déduplication) ? L'ordre est-il garanti ? Est-ce un fichier ponctuel ou un flux vivant non borné ? Techniques :
 (1) **lecture en flux** : `Files.lines(path)` ou un `BufferedReader` (paresseux, à fermer avec try-with-resources), un
 consommateur Kafka, ou un `ResultSet` JDBC avec une taille de fetch / curseur côté serveur, jamais `readAllLines()` ; (2)
 **agrégats courants** en mémoire O(1) par élément : compte, somme, min, max, moyenne/variance (Welford) ; (3) **structures
-bornées** : top K avec un min-heap de taille K (temps O(n log K), mémoire O(K), voir [Coding Q10](coding.md#heap-right-tool-solve-top)) ; (4) **maps
+bornées** : top K avec un min-heap de taille K (temps O(n log K), mémoire O(K), voir [Coding Q15](coding.md#heap-right-tool-solve-top)) ; (4) **maps
 bornées par la cardinalité** : compter par utilisateur convient si le nombre d'utilisateurs tient en mémoire ; sinon,
 **partitionner par hachage** (regroupement externe en N fichiers, traiter chacun) ou utiliser des sketches approximatifs
 (HyperLogLog pour les distincts, Count-Min Sketch pour les éléments fréquents, t-digest pour les percentiles) en échangeant de
@@ -658,7 +994,7 @@ static List<Map.Entry<String, Long>> topK(Path file, int k) throws IOException {
 `HashMap` partagée échouent tous à grande échelle (OOM ou comptes faux). De plus, un stream issu de `Files.lines` doit être
 fermé, sinon le descripteur de fichier fuit.
 
-#### Q23. Comment aborder un exercice pratique « refactorez ce code » ou « revoyez cette pull request » ? {#approach-practical-refactor-code-review}
+#### Q30. Comment aborder un exercice pratique « refactorez ce code » ou « revoyez cette pull request » ? {#approach-practical-refactor-code-review}
 **Réponse :** Les entretiens seniors remplacent de plus en plus les énigmes par du code réaliste. Lisez tout d'abord et
 dites ce que fait le code. Puis classez les problèmes par impact : **exactitude** (bugs, conditions de course,
 transaction manquante, mauvaise égalité), **sécurité** (injection, autorisation manquante, secrets), **fiabilité**
@@ -667,8 +1003,8 @@ responsabilités mélangées, nommage). Proposez de petites étapes sûres : ajo
 actuel, puis refactorez. Pour une revue, rédigez vos commentaires comme pour un collègue : le problème, pourquoi il
 compte, et une suggestion concrète, en séparant « à corriger » de « détail ».
 
-#### Q24. Calculez les disponibilités d'un praticien sur les 7 prochains jours à partir d'ouvertures hebdomadaires récurrentes et de rendez-vous réservés. {#compute-practitioner-availabilities-next-7}
-**Réponse :** C'est le kata classique des plateformes de prise de rendez-vous, souvent donné en take-home ou en pair programming. L'entrée est une liste d'événements : des **ouvertures** (ponctuelles, ou récurrentes chaque semaine à partir de leur date de début) et des **rendez-vous**. La sortie donne, pour chacun des 7 jours à partir d'une date, la liste des créneaux libres de 30 minutes. Algorithme par jour : (1) garder les ouvertures qui **ont lieu ce jour-là** : une ouverture ponctuelle à cette date, ou une ouverture hebdomadaire du même jour de la semaine dont la première occurrence n'est pas postérieure au jour ; (2) découper chaque ouverture en créneaux `[t, t + 30 min)` tant que `t + 30 min <= fin` ; (3) retirer chaque créneau qui **chevauche** un rendez-vous du jour (`slot.start < appt.end && slot.end > appt.start`, intervalles semi-ouverts) ; (4) dédoublonner et trier. Complexité O(D × (O + S × A)) pour D jours, O ouvertures, S créneaux, A rendez-vous. C'est suffisant pour un agenda. Ne mentionnez la version plus rapide (trier les rendez-vous et balayer, voir [Coding Q21](coding.md#given-practitioner-working-hours-existing)) que si on vous la demande. En pair programming, commencez par les cas de test, écrivez la version la plus simple, puis refactorez : on observe votre méthode plus que le code final.
+#### Q31. Calculez les disponibilités d'un praticien sur les 7 prochains jours à partir d'ouvertures hebdomadaires récurrentes et de rendez-vous réservés. {#compute-practitioner-availabilities-next-7}
+**Réponse :** C'est le kata classique des plateformes de prise de rendez-vous, souvent donné en take-home ou en pair programming. L'entrée est une liste d'événements : des **ouvertures** (ponctuelles, ou récurrentes chaque semaine à partir de leur date de début) et des **rendez-vous**. La sortie donne, pour chacun des 7 jours à partir d'une date, la liste des créneaux libres de 30 minutes. Algorithme par jour : (1) garder les ouvertures qui **ont lieu ce jour-là** : une ouverture ponctuelle à cette date, ou une ouverture hebdomadaire du même jour de la semaine dont la première occurrence n'est pas postérieure au jour ; (2) découper chaque ouverture en créneaux `[t, t + 30 min)` tant que `t + 30 min <= fin` ; (3) retirer chaque créneau qui **chevauche** un rendez-vous du jour (`slot.start < appt.end && slot.end > appt.start`, intervalles semi-ouverts) ; (4) dédoublonner et trier. Complexité O(D × (O + S × A)) pour D jours, O ouvertures, S créneaux, A rendez-vous. C'est suffisant pour un agenda. Ne mentionnez la version plus rapide (trier les rendez-vous et balayer, voir [Coding Q28](coding.md#given-practitioner-working-hours-existing)) que si on vous la demande. En pair programming, commencez par les cas de test, écrivez la version la plus simple, puis refactorez : on observe votre méthode plus que le code final.
 
 **Exemple :**
 
