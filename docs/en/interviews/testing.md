@@ -230,7 +230,7 @@ class PatientDirectoryClientTest {
 
 **Why it's a trap:** a Mockito mock of `RestTemplate` proves nothing about URLs, serialisation or timeouts: it tests that
 you called a method you configured yourself. And stubs only returning `200` leave every failure path untested, which is
-exactly where the external dependency hurts you (see also [Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need) on circuit breakers).
+exactly where the external dependency hurts you (see also [Spring Q39](spring-architecture.md#circuit-breaker-pattern-service-need) on circuit breakers).
 
 #### Q11. What is over-mocking, and how do you recognise it? {#mocking-recognise}
 **Answer:** Over-mocking is replacing so many collaborators that the test only checks "method A calls method B with
@@ -386,7 +386,7 @@ checks on each response (status, JSON field, response time) and an **injection p
 **open model** (`constantUsersPerSec`, `rampUsersPerSec`: new users arrive at a fixed rate regardless of how slow the system
 is, as in real life) over a **closed model** (`atOnceUsers`, `constantConcurrentUsers`: a fixed number of users wait for each
 response), because the closed model slows its own arrivals when the server slows down and hides the tail (*coordinated
-omission*, see [Full Stack Q8](fullstack-devops-k8s.md#p50-p95-p99-latency-average)). Typical test types: **smoke** (1 user, validate the script),
+omission*, see [Full Stack Q9](fullstack-devops-k8s.md#p50-p95-p99-latency-average)). Typical test types: **smoke** (1 user, validate the script),
 **load** (expected peak, steady), **stress** (ramp past the limit to find the breaking point and how it fails), **soak**
 (hours at moderate load to reveal leaks and pool exhaustion), **spike** (sudden 10x). Define **assertions** as pass/fail
 criteria (`p95 < 300 ms`, `failed < 1%`) so the build can fail automatically. Read the report by looking at: response-time
@@ -423,7 +423,7 @@ public class BookingSimulation extends Simulation {
 **Why it's a trap:** a green test against an empty database, with one hot cached record and a closed model, proves nothing
 about production. Test data volume, cache state, and think times change the answer as much as the code does, and the
 numbers from a shared CI runner are only good for *relative* comparison between builds. See
-[Full Stack Q36](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) for how to use the results to fix a bottleneck.
+[Full Stack Q39](fullstack-devops-k8s.md#reducing-endpoint-p95-latency-9) for how to use the results to fix a bottleneck.
 
 ## 🔴 Expert / Open
 

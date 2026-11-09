@@ -47,23 +47,23 @@ with visibility.
 
 ### Docker, Kubernetes & DevOps
 
-- [ ] I can explain the first `kubectl` commands, in order, for a failing pod. ([Q6](fullstack-devops-k8s.md#pod-isn-working-first-kubectl))
-- [ ] I can explain a container that exits with code 137, end to end. ([Q17](fullstack-devops-k8s.md#diagnosing-docker-container-exits-code))
-- [ ] I can explain liveness vs readiness vs startup probes and what happens when they're wrong. ([Q19](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes))
-- [ ] I can explain a rolling update with `maxSurge`/`maxUnavailable` and graceful shutdown. ([Q22](fullstack-devops-k8s.md#kubernetes-rolling-update-maxsurge-maxunavailable))
-- [ ] I can explain blue-green vs canary vs rolling, and when to use each. ([Q28](fullstack-devops-k8s.md#compare-blue-green-canary-rolling))
-- [ ] I can explain how SLOs and error budgets drive release decisions. ([Q35](fullstack-devops-k8s.md#slos-error-budgets-drive-release))
+- [ ] I can explain the first `kubectl` commands, in order, for a failing pod. ([Q7](fullstack-devops-k8s.md#pod-isn-working-first-kubectl))
+- [ ] I can explain a container that exits with code 137, end to end. ([Q18](fullstack-devops-k8s.md#diagnosing-docker-container-exits-code))
+- [ ] I can explain liveness vs readiness vs startup probes and what happens when they're wrong. ([Q20](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes))
+- [ ] I can explain a rolling update with `maxSurge`/`maxUnavailable` and graceful shutdown. ([Q23](fullstack-devops-k8s.md#kubernetes-rolling-update-maxsurge-maxunavailable))
+- [ ] I can explain blue-green vs canary vs rolling, and when to use each. ([Q30](fullstack-devops-k8s.md#compare-blue-green-canary-rolling))
+- [ ] I can explain how SLOs and error budgets drive release decisions. ([Q38](fullstack-devops-k8s.md#slos-error-budgets-drive-release))
 
 ### API, security & persistence depth
 
-- [ ] I can explain REST idempotency and why `POST` needs an idempotency key. ([Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need))
-- [ ] I can explain why CORS fails in the browser but not in curl, and how preflight works. ([Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error))
-- [ ] I can explain the trade-offs of JWT in `localStorage` vs an `HttpOnly` cookie vs a session. ([Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie))
+- [ ] I can explain REST idempotency and why `POST` needs an idempotency key. ([Q11](fullstack-devops-k8s.md#idempotency-rest-api-post-need))
+- [ ] I can explain why CORS fails in the browser but not in curl, and how preflight works. ([Q13](fullstack-devops-k8s.md#browser-request-fail-cors-error))
+- [ ] I can explain the trade-offs of JWT in `localStorage` vs an `HttpOnly` cookie vs a session. ([Q14](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie))
 - [ ] I can explain read `EXPLAIN ANALYZE` output and find the missing index. ([Q24](persistence-sql-postgres.md#read-analyze-output-diagnose-slow))
 - [ ] I can explain the isolation levels and which anomaly each prevents. ([Q25](persistence-sql-postgres.md#name-transaction-isolation-levels-anomalies))
-- [ ] I can explain add a `NOT NULL` column to a 50M-row table with zero downtime. ([Q44](persistence-sql-postgres.md#safely-add-null-column-50))
-- [ ] I can explain what virtual threads solve and where they still fall short. ([Q33](java-core-jvm.md#problem-virtual-threads-project-loom))
-- [ ] I can explain choose between G1, ZGC and Shenandoah for a latency-sensitive service. ([Q36](java-core-jvm.md#choosing-g1-zgc-shenandoah-latency))
+- [ ] I can explain add a `NOT NULL` column to a 50M-row table with zero downtime. ([Q47](persistence-sql-postgres.md#safely-add-null-column-50))
+- [ ] I can explain what virtual threads solve and where they still fall short. ([Q52](java-core-jvm.md#problem-virtual-threads-project-loom))
+- [ ] I can explain choose between G1, ZGC and Shenandoah for a latency-sensitive service. ([Q55](java-core-jvm.md#choosing-g1-zgc-shenandoah-latency))
 
 ### Testing
 
@@ -85,8 +85,8 @@ with visibility.
 
 - [ ] I follow clarify → brute force → optimize → test out loud, without going silent. ([Q1](coding.md#approach-live-coding-exercise), [S1](coding.md#stuck-halfway-problem-interviewer-silent))
 - [ ] I can state the complexity of my solution and pick a target complexity from the input size. ([Q2](coding.md#big-o-complexities-know-heart))
-- [ ] I can recognise hashing, sliding-window, BFS/DFS, heap and DP problems. ([Q4](coding.md#hash-map-turn-o-n2), [Q7](coding.md#two-pointer-sliding-window-patterns), [Q9](coding.md#bfs-dfs-each-solve-number), [Q10](coding.md#heap-right-tool-solve-top), [Q14](coding.md#dynamic-programming-spot-dp-problem))
-- [ ] I can code an LRU cache and a token-bucket rate limiter in Java. ([Q17](coding.md#implement-lru-cache-o-1), [Q19](coding.md#design-code-rate-limiter-class))
+- [ ] I can recognise hashing, sliding-window, BFS/DFS, heap and DP problems. ([Q4](coding.md#hash-map-turn-o-n2), [Q8](coding.md#two-pointer-sliding-window-patterns), [Q13](coding.md#bfs-dfs-each-solve-number), [Q15](coding.md#heap-right-tool-solve-top), [Q21](coding.md#dynamic-programming-spot-dp-problem))
+- [ ] I can code an LRU cache and a token-bucket rate limiter in Java. ([Q24](coding.md#implement-lru-cache-o-1), [Q26](coding.md#design-code-rate-limiter-class))
 
 ### Cloud (AWS)
 
@@ -122,9 +122,9 @@ with visibility.
 ### Elasticsearch & OpenSearch
 
 - [ ] I can explain why a `term` query on a `text` field finds nothing. ([Q3](elasticsearch-opensearch.md#text-keyword-analyzer))
-- [ ] I can explain the difference between `refresh` and `flush`, and why a write is durable before it is searchable. ([Q5](elasticsearch-opensearch.md#refresh-flush-translog))
-- [ ] I can change a field type with zero downtime through an alias. ([Q10](elasticsearch-opensearch.md#reindex-zero-downtime-alias))
-- [ ] I can keep an index in sync with a database when events arrive out of order. ([Q12](elasticsearch-opensearch.md#sync-index-with-database))
+- [ ] I can explain the difference between `refresh` and `flush`, and why a write is durable before it is searchable. ([Q6](elasticsearch-opensearch.md#refresh-flush-translog))
+- [ ] I can change a field type with zero downtime through an alias. ([Q13](elasticsearch-opensearch.md#reindex-zero-downtime-alias))
+- [ ] I can keep an index in sync with a database when events arrive out of order. ([Q20](elasticsearch-opensearch.md#sync-index-with-database))
 - [ ] I can find why a cluster is red and say what I would run first. ([S1](elasticsearch-opensearch.md#red-cluster-unassigned-shards))
 
 ### System design
@@ -163,7 +163,7 @@ Use it when you have three days, not three weeks. Each block is a timer: stop wh
 |-----|-------|------|------------|
 | 1 | Warm-up | 30 min | Read the cheat-sheets of Java, Spring and SQL; mark weak items |
 | 1 | Oral quiz | 90 min | Answer the Oral-quiz questions of Java, Spring, Persistence aloud (2–3 min each), score yourself |
-| 1 | Live coding | 60 min | Two timed problems: one hashing/two-pointer ([Q4](coding.md#hash-map-turn-o-n2), [Q7](coding.md#two-pointer-sliding-window-patterns)), one design ([Q17](coding.md#implement-lru-cache-o-1)) |
+| 1 | Live coding | 60 min | Two timed problems: one hashing/two-pointer ([Q4](coding.md#hash-map-turn-o-n2), [Q8](coding.md#two-pointer-sliding-window-patterns)), one design ([Q24](coding.md#implement-lru-cache-o-1)) |
 | 2 | Design | 90 min | One full system design in 45 min ([Q1](system-design.md#steps-follow-system-design-interview)), then review against the answer |
 | 2 | Platform | 60 min | DevOps/K8s, security and testing quizzes aloud |
 | 2 | Behavioral | 60 min | Write 6 STAR stories from the [story bank](leadership-behavioral.md#star-story-bank) and say each in 2 minutes |

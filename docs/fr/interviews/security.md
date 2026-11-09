@@ -1,6 +1,6 @@
 # Sécurité
 
-Les règles et checklists de revue sont dans [Bonnes pratiques › Sécurité](../best-practices/security.md) ; ce module est le Q&A d'entretien. Questions liées ailleurs : CORS dans [Full Stack Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error), stockage des tokens dans [Full Stack Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie), secrets Kubernetes dans [Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes), OWASP Top 10 au niveau conception dans [System Design Q34](system-design.md#name-several-owasp-top-10), et autorisation par URL vs par méthode dans [Spring Q41](spring-architecture.md#authorization-live-url-rules-method).
+Les règles et checklists de revue sont dans [Bonnes pratiques › Sécurité](../best-practices/security.md) ; ce module est le Q&A d'entretien. Questions liées ailleurs : CORS dans [Full Stack Q13](fullstack-devops-k8s.md#browser-request-fail-cors-error), stockage des tokens dans [Full Stack Q14](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie), secrets Kubernetes dans [Full Stack Q41](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes), OWASP Top 10 au niveau conception dans [System Design Q34](system-design.md#name-several-owasp-top-10), et autorisation par URL vs par méthode dans [Spring Q45](spring-architecture.md#authorization-live-url-rules-method).
 
 ## 🟢 Fondamentaux
 
@@ -239,7 +239,7 @@ SSRF ne peut pas obtenir.
 contourné par `https://127.0.0.1.nip.io`, des IP décimales ou une redirection ouverte.
 
 #### Q14. Où une app navigateur doit-elle stocker les tokens, et qu'est-ce qu'un BFF ? {#browser-app-store-tokens-bff}
-**Réponse :** Les compromis entre `localStorage`, mémoire et cookies sont traités dans [Full Stack Q13](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie).
+**Réponse :** Les compromis entre `localStorage`, mémoire et cookies sont traités dans [Full Stack Q14](fullstack-devops-k8s.md#jwt-localstorage-jwt-httponly-cookie).
 La réponse senior pour une app sensible est le pattern **Backend for Frontend (BFF)** : un petit composant côté serveur
 (Spring Cloud Gateway avec `TokenRelay`, ou un service dédié) joue le rôle de client OAuth confidentiel. Il exécute le
 code flow, garde access et refresh tokens côté serveur, et ne donne au navigateur qu'un **cookie de session
@@ -633,7 +633,7 @@ Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute e
 
 - **Resource server** — `issuer-uri`, cache JWKS, ajouter un validateur `aud`, mapper les rôles avec `JwtAuthenticationConverter`.
 - **401 vs 403** — non authentifié vs authentifié mais non autorisé (`ExceptionTranslationFilter`).
-- **Sécurité de méthode** — `@PreAuthorize` pour la propriété et les règles fines ; voir [Spring Q41](spring-architecture.md#authorization-live-url-rules-method).
+- **Sécurité de méthode** — `@PreAuthorize` pour la propriété et les règles fines ; voir [Spring Q45](spring-architecture.md#authorization-live-url-rules-method).
 
 ### Plateforme & processus
 

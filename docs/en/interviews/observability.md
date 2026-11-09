@@ -1,6 +1,6 @@
 # Observability
 
-Going beyond the three pillars: SLO-based alerting, correlation, cardinality, sampling and cost. The pillars themselves are in [Full Stack & DevOps](fullstack-devops-k8s.md#three-pillars-observability-each-one) and the practical "what good looks like" in [Q30](fullstack-devops-k8s.md#put-three-pillars-observability-practice); rules live in [Best practices › Observability](../best-practices/observability.md).
+Going beyond the three pillars: SLO-based alerting, correlation, cardinality, sampling and cost. The pillars themselves are in [Full Stack & DevOps](fullstack-devops-k8s.md#three-pillars-observability-each-one) and the practical "what good looks like" in [Q33](fullstack-devops-k8s.md#put-three-pillars-observability-practice); rules live in [Best practices › Observability](../best-practices/observability.md).
 
 ## 🟢 Fundamentals
 
@@ -30,7 +30,7 @@ Going beyond the three pillars: SLO-based alerting, correlation, cardinality, sa
 ## 🔴 Expert / Open
 
 #### Q6. How do you design SLO-based alerting with burn rates? {#design-slo-based-alerting-burn}
-**Answer:** Define an SLI (for example share of requests under 300 ms and non-5xx) and an SLO (99.9% over 30 days), giving an error budget. Alert on **burn rate**: a fast window (for example 14× burn over 1 h) pages immediately, a slow window (for example 2× over 6 h) opens a ticket. This cuts noise from short blips and still catches slow leaks. See [Full Stack Q35](fullstack-devops-k8s.md#slos-error-budgets-drive-release) for SLOs and error budgets.
+**Answer:** Define an SLI (for example share of requests under 300 ms and non-5xx) and an SLO (99.9% over 30 days), giving an error budget. Alert on **burn rate**: a fast window (for example 14× burn over 1 h) pages immediately, a slow window (for example 2× over 6 h) opens a ticket. This cuts noise from short blips and still catches slow leaks. See [Full Stack Q38](fullstack-devops-k8s.md#slos-error-budgets-drive-release) for SLOs and error budgets.
 
 ## 🎯 Real-world scenarios
 

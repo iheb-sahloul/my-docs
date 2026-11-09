@@ -749,7 +749,7 @@ select * from orders where status = 'PENDING';
 **Why it's a trap:** "just add a composite index on every column the query filters on" without
 checking column order against the actual query shape produces an index that silently doesn't
 serve the query it was added for — `EXPLAIN` still shows a `Seq Scan`, and the index just sits
-there paying its write cost for nothing.
+there paying its write cost for nothing. A function applied to the column (`lower(desk) = 'fx'`) also defeats the index, unless there is an expression index on `lower(desk)`. Nuance: Oracle and PostgreSQL 18 can do a "skip scan" on the 2nd column when the 1st has few distinct values; rule of thumb: put the equality-filtered column first, then the range-filtered one.
 
 #### Q23. When can adding an index make performance worse? {#adding-index-make-performance-worse}
 **Answer:** An index is a second data structure the database must keep consistent, so it trades **write cost and space for
@@ -947,7 +947,7 @@ a hot slot (`FOR UPDATE SKIP LOCKED`, `NOWAIT` help). (3) **Optimistic lock**: a
 loser's `UPDATE ... WHERE version = ?` affects 0 rows and Hibernate throws `OptimisticLockException`, which you map to 409
 or retry. Best when conflicts are rare. (4) **Serializable isolation** with retry on serialization failure: correct but
 costly and needs retry logic everywhere. Pair the database guard with an **idempotency key** so a client retry after a
-timeout returns the same booking instead of a second attempt (see [Full Stack Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need)). Cache
+timeout returns the same booking instead of a second attempt (see [Full Stack Q11](fullstack-devops-k8s.md#idempotency-rest-api-post-need)). Cache
 availability for browsing if you like, but never use the cache as the source of truth for the booking decision.
 
 **Example:**
@@ -1011,7 +1011,41 @@ entity itself — that resolves this one query, but now *every* other query touc
 eagerly pulls the association too, and stacking two eager collections on the same entity produces
 a cartesian-product join that can be far worse than the N+1 it replaced.
 
-#### Q30. Name the four Hibernate entity states, with a usage example for each. {#name-four-hibernate-entity-states}
+#### Q30. What are the drawbacks of `JOIN FETCH`, and what are the remedies? {#join-fetch-drawbacks}
+**Answer:** `JOIN FETCH` loads an association in the same query: it is the classic cure for N+1 (Q29), but it has four costs. (1) The **Cartesian product**: two collections fetched together multiply rows (1 order × 50 lines × 10 payments = 500 rows for 61 objects). (2) **`MultipleBagFetchException`**: Hibernate refuses to fetch two `List`s (*bags*) in the same query; switching to `Set` compiles... and triggers the Cartesian product. (3) **In-memory pagination**: with a collection fetch, Hibernate loads ALL rows and then keeps the page (see S27), OOM possible. (4) **Systematic loading** even for a screen that does not need the association. Filtering on the fetched alias (`join fetch o.lines l where l.status = 'OPEN'`) is also dangerous: the entity gets an incomplete collection that is then treated as complete (and may even be persisted that way).
+
+**Example:**
+
+```java
+@Query("select o from Order o join fetch o.lines")
+List<Order> findAllWithLines();
+// SQL: 1 row per (order, line). 1,000 orders × 50 lines = 50,000 rows transferred.
+// Hibernate 5: each Order appears 50 times → "select distinct o". Hibernate 6: deduplicated automatically.
+
+// Remedy a) two-query pagination: ids first, then the fetch
+@Query("select o.id from Order o where o.status = :status")
+Page<Long> findIds(Status status, Pageable pageable);
+
+@Query("select distinct o from Order o join fetch o.lines where o.id in :ids")
+List<Order> findWithLines(List<Long> ids);
+
+// b) Batch fetching: N+1 → 1 + N/50 queries, no Cartesian product
+@OneToMany(mappedBy = "order")
+@BatchSize(size = 50)              // or globally: hibernate.default_batch_fetch_size=50
+List<OrderLine> lines;
+
+// c) Entity graph: fetch chosen per method, without rewriting the JPQL
+@EntityGraph(attributePaths = "lines")
+List<Order> findByStatus(Status status);
+
+// d) DTO projection: only the useful columns, no managed entities
+@Query("select new com.bank.OrderSummary(o.id, o.total, count(l)) from Order o join o.lines l group by o.id, o.total")
+List<OrderSummary> summaries();
+```
+
+**Why it's a trap:** `join fetch` + `Pageable` compiles and "works" in tests on 10 rows, then loads the whole table in production (`HHH000104: firstResult/maxResults specified with collection fetch; applying in memory`). Rule of thumb: a single collection `JOIN FETCH` per query, never with pagination; a global `@BatchSize` as a safety net; DTOs for list screens.
+
+#### Q31. Name the four Hibernate entity states, with a usage example for each. {#name-four-hibernate-entity-states}
 **Answer:** **Transient**: a plain `new Entity()`, not associated with any persistence context and not
 represented in the database — `new Order()` before `save()`. **Persistent** (managed): attached
 to an active persistence context; changes to it are automatically tracked and flushed to the DB
@@ -1045,7 +1079,7 @@ field values wholesale. If another transaction updated that row after this objec
 `merge()` silently discards that newer write with no conflict detection, unless `@Version` (Q26)
 is also in play to catch it.
 
-#### Q31. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it? {#orm-generated-inserts-updates-often}
+#### Q32. Why are ORM-generated inserts/updates often slow in bulk, and how do you fix it? {#orm-generated-inserts-updates-often}
 **Answer:** By default, most ORMs issue one `INSERT`/`UPDATE` statement per entity, in a loop — for a batch
 of 10,000 rows, that's 10,000 round trips (or 10,000 statements even if pipelined), each paying
 per-statement overhead. Fixes: enable Hibernate's batch settings
@@ -1076,7 +1110,7 @@ different entity types are interleaved in the persistence context (e.g. saving a
 `Payment` then another `Order`), so the "batched" insert silently reverts to one-at-a-time
 statements without the missing flag.
 
-#### Q32. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor? {#mybatis-approach-persistence-differ-jpa}
+#### Q33. How does MyBatis's approach to persistence differ from JPA/Hibernate's, and when is that difference the deciding factor? {#mybatis-approach-persistence-differ-jpa}
 **Answer:** JPA/Hibernate is a full ORM: you declare entity mappings and let Hibernate generate SQL, manage
 a persistence context with dirty-checking, and handle caching/lazy-loading transparently — which
 is powerful but means the actual SQL executed is somewhat indirect and can surprise you (N+1,
@@ -1106,7 +1140,9 @@ duplicate query for an entity already loaded in this transaction) is work a MyBa
 codebase has to hand-roll if the use case genuinely needs it. The right choice is about how much
 control over the exact SQL the team needs, not a blanket performance verdict.
 
-#### Q33. What does calling `flush()` on a persistence context actually do, and how does it differ from `commit()`? {#calling-flush-persistence-context-differ}
+Another MyBatis trap: `${}` concatenates the value into the SQL (SQL injection possible) whereas `#{}` is a bound parameter; only use `${}` for column names coming from a whitelist (dynamic sorting). The two tools coexist well in the same application: Hibernate for a CRUD-heavy domain, MyBatis for heavy reporting, stored procedures or an imposed schema.
+
+#### Q34. What does calling `flush()` on a persistence context actually do, and how does it differ from `commit()`? {#calling-flush-persistence-context-differ}
 **Answer:** `flush()` pushes all pending changes to the database immediately but does **not**
 commit the transaction — it just synchronizes the persistence context (the first-level cache)
 with the database early, which is sometimes necessary before running a query that needs to see
@@ -1134,9 +1170,95 @@ Integer count = (Integer) entityManager
 permanent." Flushing early is sometimes necessary, but a flush is not a commit — the change is
 still fully reversible until the transaction actually ends.
 
+#### Q35. What is a query hint in Hibernate? {#hibernate-query-hints}
+**Answer:** A *hint* is an indication passed to the query, on top of the JPQL, to tune its execution without changing its result: read-only, JDBC fetch size, timeout, cache, lock. Two families to tell apart: (1) **JPA / Hibernate hints**, interpreted by Hibernate or the JDBC driver; (2) **SQL optimizer hints** (Oracle `/*+ INDEX(t idx_trade_date) */`), passed as-is to the database, usually in a native query.
+
+**Example:**
+
+```java
+// Spring Data JPA
+@QueryHints({
+    @QueryHint(name = "org.hibernate.readOnly", value = "true"),   // no snapshot, no dirty checking
+    @QueryHint(name = "org.hibernate.fetchSize", value = "500"),   // rows fetched per JDBC round trip
+    @QueryHint(name = "jakarta.persistence.query.timeout", value = "5000")  // in milliseconds
+})
+@Query("select t from Trade t where t.tradeDate = :date")
+List<Trade> findForEndOfDayReport(LocalDate date);
+
+// Plain JPA
+List<Trade> trades = em.createQuery("select t from Trade t where t.desk = :desk", Trade.class)
+        .setParameter("desk", "FX")
+        .setHint("org.hibernate.readOnly", true)
+        .setHint("org.hibernate.cacheable", true)          // query cache (L2) if configured
+        .getResultList();
+
+// Pessimistic lock without waiting forever
+em.find(Account.class, id, LockModeType.PESSIMISTIC_WRITE,
+        Map.of("jakarta.persistence.lock.timeout", 2000));
+```
+
+| Hint | Effect | When |
+|---|---|---|
+| `org.hibernate.readOnly` | entities loaded read-only: less memory, faster flush | reporting, exports |
+| `org.hibernate.fetchSize` | rows per network round trip | large volumes, streaming |
+| `jakarta.persistence.query.timeout` | cuts a query that runs too long | APIs with an SLA |
+| `jakarta.persistence.lock.timeout` | maximum wait for a lock | `SELECT ... FOR UPDATE` |
+| `org.hibernate.cacheable` | puts the result in the query cache | rarely modified reference data |
+| `jakarta.persistence.fetchgraph` / `loadgraph` | applies an entity graph | avoid N+1 without changing the JPQL |
+
+**Why it's a trap:** an unknown hint is ignored **silently**: a typo raises nothing (check with the SQL logs). `HINT_PASS_DISTINCT_THROUGH` only exists in Hibernate 5: in Hibernate 6 fetch-join duplicates are deduplicated automatically. The query cache is useless without a second-level cache, and it is invalidated on every write to the tables involved. Real-world use (bank): `readOnly` + `fetchSize` on end-of-day batches, `lock.timeout` on account debits, Oracle hints in critical native queries.
+
+#### Q36. How do you optimize a Hibernate query that is only used for reading? {#optimize-read-only-hibernate-query}
+**Answer:** Don't pay for what a read doesn't need. By default every loaded entity is **managed**: Hibernate keeps a copy (*snapshot*) of its state, compares it at flush (*dirty checking*) and loads all its columns. For pure reads: a **`readOnly` transaction**, **read-only entities** (hint), and above all a **DTO projection** when you don't need entities at all. Then the classic levers: the right fetch (no N+1), pagination, `fetchSize`, cache, indexes.
+
+**Example:**
+
+```java
+// 1. Read-only transaction (Spring): FlushMode.MANUAL on the Hibernate side, so no flush
+//    or dirty checking at commit, and the JDBC connection is marked read-only (routing to a replica possible)
+@Transactional(readOnly = true)
+public List<TradeView> endOfDayReport(LocalDate date) {
+    return tradeRepo.findViews(date);
+}
+
+// 2. Read-only entities: no snapshot kept → half the memory per entity
+@QueryHints(@QueryHint(name = "org.hibernate.readOnly", value = "true"))
+@Query("select t from Trade t where t.tradeDate = :date")
+List<Trade> findForReport(LocalDate date);
+
+// 3. Most effective: DTO projection. Only the useful columns, nothing in the persistence context
+record TradeView(String id, String desk, BigDecimal notional) {}
+
+@Query("select new com.bank.TradeView(t.id, t.desk, t.notional) from Trade t where t.tradeDate = :date")
+List<TradeView> findViews(LocalDate date);
+
+// 4. Large volume: streaming with fetchSize, without loading everything in memory
+@QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "500"))
+@Query("select new com.bank.TradeView(t.id, t.desk, t.notional) from Trade t")
+Stream<TradeView> streamAll();         // call inside a transaction, and close: try (var s = repo.streamAll()) { ... }
+
+// 5. Reference data never modified by the application
+@Entity @Immutable                     // Hibernate ignores any UPDATE on this entity, no dirty checking
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+class Currency { @Id String code; String label; }
+```
+
+| Lever | What it saves | When |
+|---|---|---|
+| `@Transactional(readOnly = true)` | flush and dirty checking at commit | every read service method |
+| `org.hibernate.readOnly` hint / `session.setDefaultReadOnly(true)` | snapshots (memory), dirty checking | you need entities but won't modify them |
+| DTO or interface projection | useless columns, managed entities, lazy loading | list screens, reporting, APIs |
+| `JOIN FETCH` / `@EntityGraph` / `@BatchSize` | the N queries of N+1 | associations that are read (see the `JOIN FETCH` question) |
+| pagination, `Stream` + `fetchSize` | memory, network round trips | large volumes, exports |
+| `@Immutable` + `READ_ONLY` L2 cache | repeated queries on stable data | reference data (currencies, countries) |
+| `StatelessSession` | the whole persistence context | export batches of millions of rows |
+| index + `EXPLAIN` | the full scan on the database side | always first if the SQL query is slow |
+
+**Why it's a trap:** `readOnly = true` is an optimization, not a safety net: depending on the driver and database, an explicit `save` may still go through. Modifying an entity loaded read-only raises nothing: the change is **silently ignored**. A `Stream` returned by a repository requires an open transaction and must be closed (try-with-resources), otherwise the connection leaks. The L2 cache is counter-productive on frequently modified data (constant invalidations). Measure before optimizing: SQL logs and `hibernate.generate_statistics=true`. Say: "My read services are `@Transactional(readOnly = true)`; for a list screen or a report I return DTOs via projection; I only keep entities when I'm going to modify them." See also `readOnly` in Spring (Q16 of the Spring module).
+
 ### Connections & topology
 
-#### Q34. How do you size a HikariCP connection pool, and what's the common sizing mistake? {#size-hikaricp-connection-pool-common}
+#### Q37. How do you size a HikariCP connection pool, and what's the common sizing mistake? {#size-hikaricp-connection-pool-common}
 **Answer:** The common mistake is sizing the pool far larger than needed, on the intuition that "more
 connections = more throughput" — in reality, past a certain point (roughly tied to the database
 server's own CPU core count and its ability to context-switch between active queries), adding
@@ -1164,7 +1286,7 @@ slow-query-under-load complaint — past the database's actual concurrency sweet
 connections adds context-switching and lock contention on the server, making latency *worse*, not
 better, which is the opposite of what the change was meant to achieve.
 
-#### Q35. How do you configure and safely route to multiple data sources in one Spring application? {#configure-safely-route-multiple-data}
+#### Q38. How do you configure and safely route to multiple data sources in one Spring application? {#configure-safely-route-multiple-data}
 **Answer:** Define each `DataSource` as its own `@Bean`, mark the default one `@Primary`, bind each to its
 own configuration prefix, and — critically for correctness, not just wiring — configure separate
 `EntityManagerFactory`/`TransactionManager` beans per data source if they're genuinely
@@ -1198,7 +1320,7 @@ the second write leaves the first one committed, and no annotation in this code 
 that; the fix is a design decision (idempotent retries, a saga, or a single source of truth), not
 a missing configuration flag.
 
-#### Q36. What breaks when you naively add a read replica for scaling reads? {#breaks-naively-add-read-replica}
+#### Q39. What breaks when you naively add a read replica for scaling reads? {#breaks-naively-add-read-replica}
 **Answer:** The obvious failure mode: **read-after-write inconsistency** — a client writes to the primary,
 then immediately reads from a replica that hasn't received (or applied) that write yet due to
 replication lag, and sees stale data, which is especially jarring for a user who just submitted
@@ -1227,7 +1349,7 @@ create-then-redirect flow above, discovered by a confused user rather than caugh
 
 ### Schema & modeling
 
-#### Q37. What's the safe process for a schema migration in a production database, and what tools manage this? {#safe-process-schema-migration-production}
+#### Q40. What's the safe process for a schema migration in a production database, and what tools manage this? {#safe-process-schema-migration-production}
 **Answer:** Flyway and Liquibase are the standard tools — each migration is a versioned, tracked script
 (SQL or, for Liquibase, also XML/YAML) applied in order and recorded in a migrations-history
 table, so the schema's current state is always derivable and repeatable across environments. The
@@ -1259,7 +1381,7 @@ against production simply because production has orders of magnitude more rows a
 traffic staging never had; the multi-step pattern isn't extra caution, it's the only version that
 scales to production's actual size and concurrency.
 
-#### Q38. When should a column be `JSONB` versus a properly normalized set of tables? {#column-jsonb-properly-normalized-set}
+#### Q41. When should a column be `JSONB` versus a properly normalized set of tables? {#column-jsonb-properly-normalized-set}
 **Answer:** `JSONB` is appropriate for genuinely semi-structured, sparse, or schema-varying data — a
 "custom attributes" bag on a product that varies wildly by category, or an audit log's payload
 that isn't queried structurally, only stored and occasionally retrieved whole. It's a poor fit
@@ -1291,7 +1413,7 @@ never revisiting that decision once the field becomes a stable, frequently-filte
 how a GIN index ends up papering over what should have been a normalized column with a real
 foreign key and `NOT NULL` constraint from the start.
 
-#### Q39. Soft deletes vs. hard deletes — what's the actual trade-off? {#soft-deletes-hard-deletes-trade}
+#### Q42. Soft deletes vs. hard deletes — what's the actual trade-off? {#soft-deletes-hard-deletes-trade}
 **Answer:** Soft deletes (a `deleted_at` timestamp or `is_deleted` flag, with rows never physically removed)
 preserve audit history, support "undo," and avoid foreign-key cascade surprises (see S15) —
 but every single query in the codebase now must remember to filter out soft-deleted rows
@@ -1327,11 +1449,11 @@ scoped to non-deleted rows.
 
 ### Schema & indexing design
 
-#### Q40. Auto-increment `bigint`, random UUID (v4) or time-ordered UUID (v7) for primary keys — how do you choose? {#auto-increment-bigint-random-uuid}
+#### Q43. Auto-increment `bigint`, random UUID (v4) or time-ordered UUID (v7) for primary keys — how do you choose? {#auto-increment-bigint-random-uuid}
 **Answer:** Each option optimizes something different. A **`bigint` identity/sequence** is small (8 bytes), the
 index is dense and inserts always go to the right-most B-tree page (excellent locality and cache
 behaviour), and joins are fast; the downsides are that ids are guessable (enumeration attacks
-unless authorization is correct, [Spring Q41](spring-architecture.md#authorization-live-url-rules-method)), they leak volume ("we have 4,231 orders"),
+unless authorization is correct, [Spring Q45](spring-architecture.md#authorization-live-url-rules-method)), they leak volume ("we have 4,231 orders"),
 they need a central sequence, and merging data from several databases collides. A **random UUIDv4**
 can be generated anywhere without coordination and is unguessable, but it is 16 bytes and
 *uniformly random*, so every insert lands on a random leaf page of the primary key index: page
@@ -1365,7 +1487,7 @@ create table orders (
 turns every insert into a random page write on a big index — fine at 1M rows, painful at 500M — and
 that the key type is almost impossible to change later.
 
-#### Q41. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows. {#design-schema-indexing-strategy-high}
+#### Q44. Design the schema and indexing strategy for a high-write, append-heavy feed/event table expected to reach billions of rows. {#design-schema-indexing-strategy-high}
 **Answer:** Favor an append-only insert pattern (avoid updates where possible — updates on a huge table
 fight with vacuum and bloat, see S14) and partition the table by time (native PostgreSQL range
 partitioning on a timestamp column) so that queries scoped to a recent time window only touch
@@ -1404,7 +1526,7 @@ mistake, not caution — every additional index is write-amplification paid on e
 and at billions of rows, indexes that were never actually used by a real query pattern are pure
 cost with no offsetting benefit.
 
-#### Q42. Design the indexing for a search screen that filters orders by status and date, looks customers up by e-mail case-insensitively, and supports "contains" text search. Which index features do you use? {#design-indexing-search-screen-filters}
+#### Q45. Design the indexing for a search screen that filters orders by status and date, looks customers up by e-mail case-insensitively, and supports "contains" text search. Which index features do you use? {#design-indexing-search-screen-filters}
 **Answer:** This is a toolkit question: match each query shape to the smallest index that serves it, since every
 index costs write throughput, disk and vacuum work. (1) **Composite B-tree** for the main
 list — equality columns first, range/sort column last (Q22): `(customer_id, status, created_at desc)`.
@@ -1442,7 +1564,7 @@ create index concurrently idx_x on orders (created_at);                         
 **Why it's a trap:** answering "add an index on every filtered column" — each index taxes every write,
 and the wrong shape (wrong column order, `lower()` mismatch, leading wildcard) is silently ignored by the planner.
 
-#### Q43. When is table partitioning the right answer in PostgreSQL, and what does it cost you? {#table-partitioning-right-answer-postgresql}
+#### Q46. When is table partitioning the right answer in PostgreSQL, and what does it cost you? {#table-partitioning-right-answer-postgresql}
 **Answer:** Declarative partitioning (`PARTITION BY RANGE (created_at)`, or `LIST`/`HASH`) splits one
 logical table into physical child tables. It pays off in three situations: **retention** (dropping
 or detaching an old partition is an instant metadata operation, whereas `DELETE`-ing 200 million
@@ -1487,7 +1609,7 @@ on the partition key — you pay planning overhead and lose global uniqueness fo
 
 ### Evolution & trade-offs
 
-#### Q44. How do you safely add a `NOT NULL` column to a 50-million-row table with zero downtime? {#safely-add-null-column-50}
+#### Q47. How do you safely add a `NOT NULL` column to a 50-million-row table with zero downtime? {#safely-add-null-column-50}
 **Answer:** Never add `NOT NULL` directly in one migration on a huge table under concurrent write load — in
 older Postgres versions this would rewrite the entire table under an exclusive lock; even with
 modern Postgres's improvements (adding a column with a constant default no longer rewrites the
@@ -1531,7 +1653,7 @@ full-table validation — the difference only shows up at production's actual sc
 precisely why this has to be a deliberate, tested pattern rather than something discovered the
 hard way during a deploy.
 
-#### Q45. When do you deliberately denormalize, and how do you keep the denormalized copy consistent? {#deliberately-denormalize-keep-denormalized-copy}
+#### Q48. When do you deliberately denormalize, and how do you keep the denormalized copy consistent? {#deliberately-denormalize-keep-denormalized-copy}
 **Answer:** Denormalize when a read pattern is both extremely hot and expensive to compute from normalized
 data on every request — a running total, a frequently-displayed aggregate (comment count on a
 post, follower count on a profile), or data joined so often that the join cost itself is the
@@ -1566,7 +1688,7 @@ follow-up — what happens when an update event is missed, and how would anyone 
 the reconciliation mechanism up front is what separates a senior answer from a plausible-sounding
 one that hasn't been tested against a real failure mode.
 
-#### Q46. Walk me through optimizing a slow, complex query step by step. {#optimizing-slow-complex-query-step}
+#### Q49. Walk me through optimizing a slow, complex query step by step. {#optimizing-slow-complex-query-step}
 **Answer:** Follow a fixed loop and change **one thing at a time**, re-measuring after each: (1) get the real
 plan — `EXPLAIN (ANALYZE, BUFFERS)` on production-sized data (Q24); (2) find the *dominant* node (the one
 with most time, or loops × per-loop cost), not the first suspicious one; (3) check estimates vs actuals —

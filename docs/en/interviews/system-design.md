@@ -781,7 +781,7 @@ path becomes a single point of failure — decide whether the limiter **fails op
 (protection) when Redis is down.
 
 #### Q16. How do you update the database *and* publish an event without losing one of them? {#update-database-publish-event-losing}
-**Answer:** Covered in [Messaging Q27](messaging-rabbitmq-kafka.md#outbox-pattern-problem-solve) (transactional outbox) and [Messaging Q31](messaging-rabbitmq-kafka.md#compare-dual-writes-polling-outbox) (dual write vs polling outbox vs CDC).
+**Answer:** Covered in [Messaging Q27](messaging-rabbitmq-kafka.md#outbox-pattern-problem-solve) (transactional outbox) and [Messaging Q32](messaging-rabbitmq-kafka.md#compare-dual-writes-polling-outbox) (dual write vs polling outbox vs CDC).
 In short: write the business row and an `outbox` row in the same local transaction, let a relay publish at-least-once, and make consumers idempotent.
 
 #### Q17. How do you invalidate a cached entry, and what race hides behind invalidate-on-write? {#invalidate-cached-entry-race-hides}
@@ -802,7 +802,7 @@ T1 reader: writes OLD value into cache   <- stale until TTL
 updating, and neither is a substitute for a TTL.
 
 #### Q18. Why not use auto-increment IDs or random UUIDs everywhere in a distributed system? {#auto-increment-ids-random-uuids}
-**Answer:** Primary-key choice (`bigint` vs UUIDv4 vs UUIDv7) is covered in [Persistence Q40](persistence-sql-postgres.md#auto-increment-bigint-random-uuid); the distributed generator (Snowflake, ULID, clock skew) is covered in Q40.
+**Answer:** Primary-key choice (`bigint` vs UUIDv4 vs UUIDv7) is covered in [Persistence Q43](persistence-sql-postgres.md#auto-increment-bigint-random-uuid); the distributed generator (Snowflake, ULID, clock skew) is covered in Q40.
 In short: auto-increment needs a coordinator and leaks volume, while random UUIDs scatter B-tree inserts. Prefer time-ordered ids.
 
 ### Consistency & replication
@@ -912,7 +912,7 @@ Order saga (orchestrated):
 **Why it's a trap:** candidates answer "we use distributed transactions" (an availability problem) or "we use a saga" without mentioning compensation failure, idempotency, visibility of intermediate
 states or the outbox — and "exactly-once" claims across services almost always hide *at-least-once delivery plus idempotent processing* (Q9, Q28).
 
-*See also:* [Messaging Q26](messaging-rabbitmq-kafka.md#saga-pattern-orchestration-choreography-trade) (orchestration vs choreography) and [Messaging Q30](messaging-rabbitmq-kafka.md#design-saga-order-payment-inventory) (a worked saga).
+*See also:* [Messaging Q26](messaging-rabbitmq-kafka.md#saga-pattern-orchestration-choreography-trade) (orchestration vs choreography) and [Messaging Q31](messaging-rabbitmq-kafka.md#design-saga-order-payment-inventory) (a worked saga).
 
 ### Scaling & caching
 
@@ -2264,7 +2264,7 @@ Questions reported from real interviews, grouped by topic. Each has a short mode
 **Answer:** Separate search from booking. Practitioners go into a **search index** (OpenSearch/Elasticsearch) with geo point, specialty, languages, insurance/sector and a precomputed **next available slot**. That field is updated from booking and calendar events (Kafka) and repaired by a periodic recompute job. Search is eventually consistent and cached briefly; the detailed slots of one practitioner come from the availability service; the booking itself re-checks in the database ([Persistence Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)). Reads outnumber writes by orders of magnitude, so scale reads (replicas, cache) and keep the write path small and strongly consistent. See also [Q46](system-design.md#design-doctor-appointment-booking-system).
 
 #### R20. Design SMS and email reminders sent 24 h and 2 h before millions of appointments. {#design-sms-email-reminders-sent}
-**Answer:** Store due reminders in a table `(appointment_id, type, send_at, status)` with a unique key on `(appointment_id, type)` and an index on `send_at`. Workers claim batches with `SELECT … WHERE send_at <= now() AND status = 'PENDING' FOR UPDATE SKIP LOCKED LIMIT 500`, so many workers run without double-claiming. At send time, **re-read the appointment**: a cancelled or rescheduled one must not trigger a reminder. Send through a provider abstraction with failover, per-provider rate limits and the provider's idempotency key; respect the patient's time zone, quiet hours and opt-out. Mark `SENT`, retry with backoff on failure, and send to a dead-letter state after N tries. Metrics: lag between `send_at` and the real send, and the failure rate per provider. See [Q44](system-design.md#design-notification-system-email-sms) and [Messaging Q37](messaging-rabbitmq-kafka.md#consumer-sends-appointment-reminder-sms).
+**Answer:** Store due reminders in a table `(appointment_id, type, send_at, status)` with a unique key on `(appointment_id, type)` and an index on `send_at`. Workers claim batches with `SELECT … WHERE send_at <= now() AND status = 'PENDING' FOR UPDATE SKIP LOCKED LIMIT 500`, so many workers run without double-claiming. At send time, **re-read the appointment**: a cancelled or rescheduled one must not trigger a reminder. Send through a provider abstraction with failover, per-provider rate limits and the provider's idempotency key; respect the patient's time zone, quiet hours and opt-out. Mark `SENT`, retry with backoff on failure, and send to a dead-letter state after N tries. Metrics: lag between `send_at` and the real send, and the failure rate per provider. See [Q44](system-design.md#design-notification-system-email-sms) and [Messaging Q39](messaging-rabbitmq-kafka.md#consumer-sends-appointment-reminder-sms).
 
 #### R21. How do you let a practitioner share a medical document with a patient securely? {#let-practitioner-share-medical-document}
 **Answer:** The upload goes to object storage in a certified health-data region, encrypted with per-document data keys wrapped by KMS (envelope encryption), after a malware scan. Metadata and the access list (`document_id`, owner, patient, consent) live in the database. A download first checks authorization on the server (the requester is that patient or an authorised practitioner, which prevents IDOR, see [Security Q12](security.md#idor-broken-object-level-authorization)), then returns a **short-lived presigned URL**. Log every access in an append-only audit trail, apply retention rules and allow revocation. For the highest level of protection, use end-to-end encryption ([Security Q20](security.md#end-end-encryption-patientpractitioner-messages)), at the cost of server-side features.

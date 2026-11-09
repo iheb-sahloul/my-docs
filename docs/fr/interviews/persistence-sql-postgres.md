@@ -747,7 +747,7 @@ select * from orders where status = 'PENDING';
 **Pourquoi c'est un piège :** « il suffit d'ajouter un index composite sur chaque colonne filtrée par la requête » sans
 vérifier l'ordre des colonnes par rapport à la forme réelle de la requête produit un index qui ne
 sert silencieusement pas la requête pour laquelle il a été ajouté — `EXPLAIN` montre toujours un `Seq Scan`, et l'index reste
-là à payer son coût d'écriture pour rien.
+là à payer son coût d'écriture pour rien. Une fonction appliquée à la colonne (`lower(desk) = 'fx'`) empêche aussi l'index, sauf index d'expression sur `lower(desk)`. Nuance : Oracle et PostgreSQL 18 savent faire un « skip scan » sur la 2ᵉ colonne quand la 1ʳᵉ a peu de valeurs distinctes ; règle pratique : mettre en tête la colonne filtrée par égalité, puis celle filtrée par plage.
 
 #### Q23. Quand l'ajout d'un index peut-il dégrader les performances ? {#adding-index-make-performance-worse}
 **Réponse :** Un index est une seconde structure que la base doit garder cohérente : il échange du **coût d'écriture et de
@@ -948,7 +948,7 @@ d'attente sur un créneau très demandé (`FOR UPDATE SKIP LOCKED`, `NOWAIT` aid
 `OptimisticLockException`, que vous traduisez en 409 ou rejouez. Idéal quand les conflits sont rares. (4) **Isolation
 serializable** avec nouvel essai en cas d'échec de sérialisation : correct mais coûteux, avec une logique de reprise
 partout. Associez la garde en base à une **clé d'idempotence** pour qu'une nouvelle tentative du client après un timeout
-renvoie la même réservation plutôt qu'une seconde tentative (voir [Full Stack Q10](fullstack-devops-k8s.md#idempotency-rest-api-post-need)). Mettez en
+renvoie la même réservation plutôt qu'une seconde tentative (voir [Full Stack Q11](fullstack-devops-k8s.md#idempotency-rest-api-post-need)). Mettez en
 cache la disponibilité pour la consultation si vous voulez, mais jamais le cache comme source de vérité de la décision de
 réservation.
 
@@ -1013,7 +1013,41 @@ l'entité elle-même — cela résout cette requête-ci, mais désormais *toute*
 ramène aussi l'association en eager, et empiler deux collections eager sur la même entité produit
 une jointure à produit cartésien qui peut être bien pire que le N+1 qu'elle remplaçait.
 
-#### Q30. Nommez les quatre états d'une entité Hibernate, avec un exemple d'usage pour chacun. {#name-four-hibernate-entity-states}
+#### Q30. Quels sont les inconvénients d'un `JOIN FETCH`, et quels remèdes ? {#join-fetch-drawbacks}
+**Réponse :** `JOIN FETCH` charge une association dans la même requête : c'est le remède classique au N+1 (Q29), mais il a quatre coûts. (1) Le **produit cartésien** : deux collections fetchées ensemble multiplient les lignes (1 commande × 50 lignes × 10 paiements = 500 lignes pour 61 objets). (2) La **`MultipleBagFetchException`** : Hibernate refuse de fetcher deux `List` (des *bags*) dans la même requête ; passer en `Set` fait compiler… et déclenche le produit cartésien. (3) La **pagination en mémoire** : avec un fetch de collection, Hibernate charge TOUTES les lignes puis garde la page (voir S27), OOM possible. (4) Un **chargement systématique** même pour un écran qui n'a pas besoin de l'association. Filtrer sur l'alias fetché (`join fetch o.lines l where l.status = 'OPEN'`) est de plus dangereux : l'entité reçoit une collection incomplète qui est ensuite considérée comme complète (et peut même être persistée ainsi).
+
+**Exemple :**
+
+```java
+@Query("select o from Order o join fetch o.lines")
+List<Order> findAllWithLines();
+// SQL : 1 ligne par (commande, ligne). 1 000 commandes × 50 lignes = 50 000 lignes transférées.
+// Hibernate 5 : chaque Order apparaît 50 fois → "select distinct o". Hibernate 6 : dédoublonné automatiquement.
+
+// Remède a) pagination en deux requêtes : les ids d'abord, puis le fetch
+@Query("select o.id from Order o where o.status = :status")
+Page<Long> findIds(Status status, Pageable pageable);
+
+@Query("select distinct o from Order o join fetch o.lines where o.id in :ids")
+List<Order> findWithLines(List<Long> ids);
+
+// b) Batch fetching : N+1 → 1 + N/50 requêtes, sans produit cartésien
+@OneToMany(mappedBy = "order")
+@BatchSize(size = 50)              // ou globalement : hibernate.default_batch_fetch_size=50
+List<OrderLine> lines;
+
+// c) Entity graph : fetch choisi par méthode, sans réécrire le JPQL
+@EntityGraph(attributePaths = "lines")
+List<Order> findByStatus(Status status);
+
+// d) Projection DTO : seulement les colonnes utiles, pas d'entités managées
+@Query("select new com.bank.OrderSummary(o.id, o.total, count(l)) from Order o join o.lines l group by o.id, o.total")
+List<OrderSummary> summaries();
+```
+
+**Pourquoi c'est un piège :** `join fetch` + `Pageable` compile et « marche » en test sur 10 lignes, puis charge toute la table en production (`HHH000104: firstResult/maxResults specified with collection fetch; applying in memory`). Règle pratique : un seul `JOIN FETCH` de collection par requête, jamais avec de la pagination ; `@BatchSize` global comme filet de sécurité ; DTO pour les écrans de liste.
+
+#### Q31. Nommez les quatre états d'une entité Hibernate, avec un exemple d'usage pour chacun. {#name-four-hibernate-entity-states}
 **Réponse :** **Transient** : un simple `new Entity()`, non associé à aucun persistence context et non
 représenté en base — `new Order()` avant `save()`. **Persistent** (managed) : attaché
 à un persistence context actif ; ses changements sont automatiquement suivis et flushés vers la base
@@ -1047,7 +1081,7 @@ en bloc. Si une autre transaction a mis à jour cette ligne après le detach de 
 `merge()` écarte silencieusement cette écriture plus récente sans détection de conflit, à moins que `@Version` (Q26)
 ne soit aussi en jeu pour l'attraper.
 
-#### Q31. Pourquoi les inserts/updates générés par l'ORM sont-ils souvent lents en masse, et comment y remédier ? {#orm-generated-inserts-updates-often}
+#### Q32. Pourquoi les inserts/updates générés par l'ORM sont-ils souvent lents en masse, et comment y remédier ? {#orm-generated-inserts-updates-often}
 **Réponse :** Par défaut, la plupart des ORM émettent une instruction `INSERT`/`UPDATE` par entité, dans une boucle — pour un lot
 de 10 000 lignes, cela fait 10 000 aller-retours (ou 10 000 instructions même en pipeline), chacune payant
 un surcoût par instruction. Corrections : activer les paramètres de batch d'Hibernate
@@ -1078,7 +1112,7 @@ des types d'entités différents sont entrelacés dans le persistence context (p
 `Payment`, puis un autre `Order`), donc l'insert « batché » revient silencieusement à des instructions une par une
 en l'absence du flag manquant.
 
-#### Q32. En quoi l'approche de persistance de MyBatis diffère-t-elle de celle de JPA/Hibernate, et quand cette différence est-elle le facteur décisif ? {#mybatis-approach-persistence-differ-jpa}
+#### Q33. En quoi l'approche de persistance de MyBatis diffère-t-elle de celle de JPA/Hibernate, et quand cette différence est-elle le facteur décisif ? {#mybatis-approach-persistence-differ-jpa}
 **Réponse :** JPA/Hibernate est un ORM complet : on déclare des mappings d'entités et on laisse Hibernate générer le SQL, gérer
 un persistence context avec dirty-checking, et prendre en charge le caching/lazy-loading de façon transparente — ce qui
 est puissant mais signifie que le SQL réellement exécuté est un peu indirect et peut vous surprendre (N+1,
@@ -1108,7 +1142,9 @@ requête en double pour une entité déjà chargée dans cette transaction) est 
 doit réécrire à la main si le cas d'usage l'exige vraiment. Le bon choix dépend du niveau de
 contrôle sur le SQL exact dont l'équipe a besoin, pas d'un verdict de performance systématique.
 
-#### Q33. Que fait réellement `flush()` sur un persistence context, et en quoi diffère-t-il de `commit()` ? {#calling-flush-persistence-context-differ}
+Autre piège MyBatis : `${}` concatène la valeur dans le SQL (injection SQL possible) alors que `#{}` est un paramètre lié ; ne réserver `${}` qu'aux noms de colonnes issus d'une liste blanche (tri dynamique). Les deux outils cohabitent très bien dans la même application : Hibernate pour un domaine riche en CRUD, MyBatis pour le reporting lourd, les procédures stockées ou un schéma imposé.
+
+#### Q34. Que fait réellement `flush()` sur un persistence context, et en quoi diffère-t-il de `commit()` ? {#calling-flush-persistence-context-differ}
 **Réponse :** `flush()` pousse immédiatement tous les changements en attente vers la base de données mais ne **commit** pas
 la transaction — il synchronise simplement le persistence context (le cache de premier niveau)
 avec la base de données plus tôt, ce qui est parfois nécessaire avant d'exécuter une requête qui doit voir
@@ -1136,9 +1172,95 @@ Integer count = (Integer) entityManager
 permanente ». Flusher tôt est parfois nécessaire, mais un flush n'est pas un commit — le changement est
 encore entièrement réversible tant que la transaction n'est pas réellement terminée.
 
+#### Q35. Qu'est-ce qu'un query hint avec Hibernate ? {#hibernate-query-hints}
+**Réponse :** Un *hint* est une indication passée à la requête, en plus du JPQL, pour régler son exécution sans changer son résultat : lecture seule, taille de fetch JDBC, timeout, cache, verrou. Deux familles à distinguer : (1) les **hints JPA / Hibernate**, interprétés par Hibernate ou le driver JDBC ; (2) les **hints de l'optimiseur SQL** (Oracle `/*+ INDEX(t idx_trade_date) */`), passés tels quels à la base, en général dans une requête native.
+
+**Exemple :**
+
+```java
+// Spring Data JPA
+@QueryHints({
+    @QueryHint(name = "org.hibernate.readOnly", value = "true"),   // pas de snapshot ni de dirty checking
+    @QueryHint(name = "org.hibernate.fetchSize", value = "500"),   // lignes ramenées par aller-retour JDBC
+    @QueryHint(name = "jakarta.persistence.query.timeout", value = "5000")  // en millisecondes
+})
+@Query("select t from Trade t where t.tradeDate = :date")
+List<Trade> findForEndOfDayReport(LocalDate date);
+
+// JPA pur
+List<Trade> trades = em.createQuery("select t from Trade t where t.desk = :desk", Trade.class)
+        .setParameter("desk", "FX")
+        .setHint("org.hibernate.readOnly", true)
+        .setHint("org.hibernate.cacheable", true)          // cache de requêtes (L2) si configuré
+        .getResultList();
+
+// Verrou pessimiste sans attente infinie
+em.find(Account.class, id, LockModeType.PESSIMISTIC_WRITE,
+        Map.of("jakarta.persistence.lock.timeout", 2000));
+```
+
+| Hint | Effet | Quand |
+|---|---|---|
+| `org.hibernate.readOnly` | entités chargées en lecture seule : moins de mémoire, flush plus rapide | reporting, exports |
+| `org.hibernate.fetchSize` | nombre de lignes par aller-retour réseau | gros volumes, streaming |
+| `jakarta.persistence.query.timeout` | coupe une requête trop longue | API avec SLA |
+| `jakarta.persistence.lock.timeout` | attente maximale d'un verrou | `SELECT ... FOR UPDATE` |
+| `org.hibernate.cacheable` | met le résultat en cache de requêtes | référentiels peu modifiés |
+| `jakarta.persistence.fetchgraph` / `loadgraph` | applique un entity graph | éviter le N+1 sans changer le JPQL |
+
+**Pourquoi c'est un piège :** un hint inconnu est ignoré **silencieusement** : une faute de frappe ne lève rien (vérifier avec les logs SQL). `HINT_PASS_DISTINCT_THROUGH` n'existe qu'en Hibernate 5 : en Hibernate 6 les doublons d'un fetch join sont dédupliqués automatiquement. Le cache de requêtes ne sert à rien sans cache de second niveau, et il est invalidé à chaque écriture sur les tables concernées. Usage réel (banque) : `readOnly` + `fetchSize` sur les batchs de fin de journée, `lock.timeout` sur les débits de compte, hints Oracle dans les requêtes natives critiques.
+
+#### Q36. Comment optimiser une requête Hibernate utilisée uniquement en lecture ? {#optimize-read-only-hibernate-query}
+**Réponse :** Ne pas payer ce dont une lecture n'a pas besoin. Par défaut, chaque entité chargée est **managée** : Hibernate garde une copie (*snapshot*) de son état, la compare au flush (*dirty checking*) et charge toutes ses colonnes. Pour de la lecture pure : **transaction `readOnly`**, **entités en lecture seule** (hint), et surtout **projection DTO** quand on n'a pas besoin d'entités du tout. Puis les leviers classiques : bon fetch (pas de N+1), pagination, `fetchSize`, cache, index.
+
+**Exemple :**
+
+```java
+// 1. Transaction en lecture seule (Spring) : FlushMode.MANUAL côté Hibernate, donc pas de flush
+//    ni de dirty checking au commit, et connexion JDBC marquée read-only (routage possible vers un réplica)
+@Transactional(readOnly = true)
+public List<TradeView> endOfDayReport(LocalDate date) {
+    return tradeRepo.findViews(date);
+}
+
+// 2. Entités en lecture seule : aucun snapshot conservé → moitié moins de mémoire par entité
+@QueryHints(@QueryHint(name = "org.hibernate.readOnly", value = "true"))
+@Query("select t from Trade t where t.tradeDate = :date")
+List<Trade> findForReport(LocalDate date);
+
+// 3. Le plus efficace : projection DTO. Seulement les colonnes utiles, rien dans le contexte de persistance
+record TradeView(String id, String desk, BigDecimal notional) {}
+
+@Query("select new com.bank.TradeView(t.id, t.desk, t.notional) from Trade t where t.tradeDate = :date")
+List<TradeView> findViews(LocalDate date);
+
+// 4. Gros volume : streaming avec fetchSize, sans tout charger en mémoire
+@QueryHints(@QueryHint(name = "org.hibernate.fetchSize", value = "500"))
+@Query("select new com.bank.TradeView(t.id, t.desk, t.notional) from Trade t")
+Stream<TradeView> streamAll();         // appeler dans une transaction, et fermer : try (var s = repo.streamAll()) { ... }
+
+// 5. Référentiel jamais modifié par l'application
+@Entity @Immutable                     // Hibernate ignore tout UPDATE sur cette entité, pas de dirty checking
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
+class Currency { @Id String code; String label; }
+```
+
+| Levier | Ce qu'on économise | Quand |
+|---|---|---|
+| `@Transactional(readOnly = true)` | flush et dirty checking au commit | toute méthode de service en lecture |
+| hint `org.hibernate.readOnly` / `session.setDefaultReadOnly(true)` | snapshots (mémoire), dirty checking | besoin d'entités, mais sans modification |
+| projection DTO ou interface | colonnes inutiles, entités managées, lazy loading | écrans de liste, reporting, API |
+| `JOIN FETCH` / `@EntityGraph` / `@BatchSize` | les N requêtes du N+1 | associations lues (voir la question sur le `JOIN FETCH`) |
+| pagination, `Stream` + `fetchSize` | mémoire, allers-retours réseau | gros volumes, exports |
+| `@Immutable` + cache L2 `READ_ONLY` | requêtes répétées sur des données stables | référentiels (devises, pays) |
+| `StatelessSession` | tout le contexte de persistance | batchs d'export de millions de lignes |
+| index + `EXPLAIN` | le full scan côté base | toujours en premier si la requête SQL est lente |
+
+**Pourquoi c'est un piège :** `readOnly = true` est une optimisation, pas une sécurité : selon le driver et la base, un `save` explicite peut quand même passer. Modifier une entité chargée en lecture seule ne lève rien : la modification est **ignorée silencieusement**. Un `Stream` renvoyé par un repository exige une transaction ouverte et doit être fermé (try-with-resources), sinon la connexion fuit. Le cache L2 est contre-productif sur des données souvent modifiées (invalidations permanentes). Mesurer avant d'optimiser : logs SQL et `hibernate.generate_statistics=true`. À dire : « Mes services de lecture sont en `@Transactional(readOnly = true)` ; pour un écran de liste ou un rapport je renvoie des DTO par projection ; je ne garde des entités que si je vais les modifier. » Voir aussi `readOnly` en Spring (Q16 du module Spring).
+
 ### Connexions & topologie
 
-#### Q34. Comment dimensionnez-vous un pool de connexions HikariCP, et quelle est l'erreur de dimensionnement courante ? {#size-hikaricp-connection-pool-common}
+#### Q37. Comment dimensionnez-vous un pool de connexions HikariCP, et quelle est l'erreur de dimensionnement courante ? {#size-hikaricp-connection-pool-common}
 **Réponse :** L'erreur courante est de dimensionner le pool bien plus grand que nécessaire, par intuition que « plus de
 connexions = plus de débit » — en réalité, au-delà d'un certain point (à peu près lié au nombre de cœurs CPU du serveur
 de base de données et à sa capacité à faire du context-switch entre requêtes actives), ajouter
@@ -1166,7 +1288,7 @@ plainte de requête lente sous charge — au-delà du vrai point optimal de conc
 connexions ajoute du context-switching et de la contention de locks sur le serveur, rendant la latence *pire* et non
 meilleure, ce qui est le contraire de l'objectif du changement.
 
-#### Q35. Comment configurez-vous et routez-vous en toute sécurité vers plusieurs data sources dans une même application Spring ? {#configure-safely-route-multiple-data}
+#### Q38. Comment configurez-vous et routez-vous en toute sécurité vers plusieurs data sources dans une même application Spring ? {#configure-safely-route-multiple-data}
 **Réponse :** Définir chaque `DataSource` comme son propre `@Bean`, marquer celle par défaut `@Primary`, lier chacune à son
 propre préfixe de configuration, et — de façon critique pour la correction, pas seulement pour le câblage — configurer des beans
 `EntityManagerFactory`/`TransactionManager` séparés par data source si ce sont des bases réellement
@@ -1200,7 +1322,7 @@ seconde écriture laisse la première commitée, et aucune annotation dans ce co
 solution est une décision de conception (retries idempotents, une saga, ou une source de vérité unique), pas
 un flag de configuration manquant.
 
-#### Q36. Qu'est-ce qui casse quand on ajoute naïvement un read replica pour scaler les lectures ? {#breaks-naively-add-read-replica}
+#### Q39. Qu'est-ce qui casse quand on ajoute naïvement un read replica pour scaler les lectures ? {#breaks-naively-add-read-replica}
 **Réponse :** Le mode d'échec évident : l'**incohérence read-after-write** — un client écrit sur le primary,
 puis lit immédiatement depuis un replica qui n'a pas encore reçu (ou appliqué) cette écriture à cause du
 retard de réplication, et voit des données périmées, ce qui est particulièrement déroutant pour un utilisateur qui vient de soumettre
@@ -1229,7 +1351,7 @@ create-then-redirect ci-dessus, découvert par un utilisateur perplexe plutôt q
 
 ### Schéma & modélisation
 
-#### Q37. Quel est le processus sûr pour une migration de schéma sur une base de production, et quels outils la gèrent ? {#safe-process-schema-migration-production}
+#### Q40. Quel est le processus sûr pour une migration de schéma sur une base de production, et quels outils la gèrent ? {#safe-process-schema-migration-production}
 **Réponse :** Flyway et Liquibase sont les outils standards — chaque migration est un script versionné et suivi
 (SQL ou, pour Liquibase, aussi XML/YAML) appliqué dans l'ordre et enregistré dans une table d'historique des migrations,
 de sorte que l'état courant du schéma est toujours déductible et reproductible d'un environnement à l'autre. Le
@@ -1261,7 +1383,7 @@ en production simplement parce que la production a des ordres de grandeur de lig
 que le staging n'a jamais eu ; le pattern en plusieurs étapes n'est pas une précaution excessive, c'est la seule version qui
 passe à l'échelle réelle et à la concurrence de la production.
 
-#### Q38. Quand une colonne doit-elle être `JSONB` plutôt qu'un ensemble de tables correctement normalisées ? {#column-jsonb-properly-normalized-set}
+#### Q41. Quand une colonne doit-elle être `JSONB` plutôt qu'un ensemble de tables correctement normalisées ? {#column-jsonb-properly-normalized-set}
 **Réponse :** `JSONB` convient aux données réellement semi-structurées, éparses ou à schéma variable — un
 sac d'« attributs personnalisés » sur un produit qui varie fortement selon la catégorie, ou le payload d'un journal d'audit
 qui n'est pas interrogé structurellement, seulement stocké et occasionnellement récupéré en entier. Il est mal adapté
@@ -1293,7 +1415,7 @@ ne jamais revoir cette décision une fois que le champ devient une colonne stabl
 ainsi qu'un index GIN finit par cacher ce qui aurait dû être une colonne normalisée avec une vraie
 clé étrangère et une contrainte `NOT NULL` dès le départ.
 
-#### Q39. Soft deletes vs hard deletes — quel est le vrai compromis ? {#soft-deletes-hard-deletes-trade}
+#### Q42. Soft deletes vs hard deletes — quel est le vrai compromis ? {#soft-deletes-hard-deletes-trade}
 **Réponse :** Les soft deletes (un timestamp `deleted_at` ou un flag `is_deleted`, les lignes n'étant jamais physiquement supprimées)
 préservent l'historique d'audit, permettent l'« annulation » et évitent les surprises de cascade de clés étrangères (voir S15) —
 mais chaque requête de la base de code doit désormais penser à filtrer les lignes soft-deleted
@@ -1329,11 +1451,11 @@ limitée aux lignes non supprimées.
 
 ### Conception de schéma & d'indexation
 
-#### Q40. `bigint` auto-incrémenté, UUID aléatoire (v4) ou UUID ordonné dans le temps (v7) pour les clés primaires — comment choisir ? {#auto-increment-bigint-random-uuid}
+#### Q43. `bigint` auto-incrémenté, UUID aléatoire (v4) ou UUID ordonné dans le temps (v7) pour les clés primaires — comment choisir ? {#auto-increment-bigint-random-uuid}
 **Réponse :** Chaque option optimise quelque chose de différent. Un **`bigint` identity/sequence** est petit (8 octets),
 l'index est dense et les inserts vont toujours vers la page B-tree la plus à droite (excellente localité et comportement
 de cache), et les jointures sont rapides ; les inconvénients sont que les ids sont devinables (attaques par énumération
-si l'autorisation n'est pas correcte, [Spring Q41](spring-architecture.md#authorization-live-url-rules-method)), ils révèlent le volume (« nous avons 4 231 commandes »),
+si l'autorisation n'est pas correcte, [Spring Q45](spring-architecture.md#authorization-live-url-rules-method)), ils révèlent le volume (« nous avons 4 231 commandes »),
 ils nécessitent une séquence centrale, et la fusion de données de plusieurs bases provoque des collisions. Un **UUIDv4 aléatoire**
 peut être généré n'importe où sans coordination et n'est pas devinable, mais il fait 16 octets et est
 *uniformément aléatoire*, donc chaque insert atterrit sur une page feuille aléatoire de l'index de clé primaire : splits
@@ -1367,7 +1489,7 @@ create table orders (
 transforme chaque insert en écriture de page aléatoire sur un gros index — sans conséquence à 1M de lignes, douloureux à 500M —
 et que le type de clé est presque impossible à changer plus tard.
 
-#### Q41. Concevez le schéma et la stratégie d'indexation d'une table de feed/événements à forte écriture, en append, censée atteindre des milliards de lignes. {#design-schema-indexing-strategy-high}
+#### Q44. Concevez le schéma et la stratégie d'indexation d'une table de feed/événements à forte écriture, en append, censée atteindre des milliards de lignes. {#design-schema-indexing-strategy-high}
 **Réponse :** Privilégier un pattern d'insert en append-only (éviter les updates autant que possible — les updates sur une énorme table
 luttent avec vacuum et le bloat, voir S14) et partitionner la table par temps (partitionnement par plage natif PostgreSQL
 sur une colonne timestamp) pour que les requêtes limitées à une fenêtre de temps récente ne touchent que
@@ -1406,7 +1528,7 @@ erreur, pas de la prudence — chaque index supplémentaire est une amplificatio
 et à des milliards de lignes, des index qui n'ont jamais été utilisés par un vrai pattern de requête sont du pur
 coût sans aucun bénéfice compensatoire.
 
-#### Q42. Concevez l'indexation d'un écran de recherche qui filtre les commandes par statut et date, retrouve les clients par e-mail sans tenir compte de la casse, et supporte la recherche textuelle « contient ». Quelles fonctionnalités d'index utilisez-vous ? {#design-indexing-search-screen-filters}
+#### Q45. Concevez l'indexation d'un écran de recherche qui filtre les commandes par statut et date, retrouve les clients par e-mail sans tenir compte de la casse, et supporte la recherche textuelle « contient ». Quelles fonctionnalités d'index utilisez-vous ? {#design-indexing-search-screen-filters}
 **Réponse :** C'est une question de boîte à outils : associer chaque forme de requête au plus petit index qui la sert, puisque chaque
 index coûte du débit d'écriture, du disque et du travail de vacuum. (1) **B-tree composite** pour la liste
 principale — colonnes d'égalité d'abord, colonne de plage/tri en dernier (Q22) : `(customer_id, status, created_at desc)`.
@@ -1444,7 +1566,7 @@ create index concurrently idx_x on orders (created_at);                         
 **Pourquoi c'est un piège :** répondre « ajouter un index sur chaque colonne filtrée » — chaque index taxe toutes les écritures,
 et la mauvaise forme (mauvais ordre de colonnes, `lower()` différent, joker en tête) est silencieusement ignorée par le planner.
 
-#### Q43. Quand le partitionnement de table est-il la bonne réponse dans PostgreSQL, et que vous coûte-t-il ? {#table-partitioning-right-answer-postgresql}
+#### Q46. Quand le partitionnement de table est-il la bonne réponse dans PostgreSQL, et que vous coûte-t-il ? {#table-partitioning-right-answer-postgresql}
 **Réponse :** Le partitionnement déclaratif (`PARTITION BY RANGE (created_at)`, ou `LIST`/`HASH`) découpe une
 table logique en tables filles physiques. Il est rentable dans trois situations : la **rétention** (supprimer
 ou détacher une ancienne partition est une opération de métadonnées instantanée, alors que `DELETE`-er 200 millions
@@ -1489,7 +1611,7 @@ filtrent pas sur la clé de partition — on paie le coût de planification et o
 
 ### Évolution & compromis
 
-#### Q44. Comment ajoutez-vous en toute sécurité une colonne `NOT NULL` à une table de 50 millions de lignes sans aucune interruption ? {#safely-add-null-column-50}
+#### Q47. Comment ajoutez-vous en toute sécurité une colonne `NOT NULL` à une table de 50 millions de lignes sans aucune interruption ? {#safely-add-null-column-50}
 **Réponse :** Ne jamais ajouter `NOT NULL` directement dans une seule migration sur une énorme table sous charge d'écriture concurrente — dans
 les anciennes versions de Postgres, cela réécrivait toute la table sous un lock exclusif ; même avec les
 améliorations du Postgres moderne (ajouter une colonne avec un défaut constant ne réécrit plus la
@@ -1533,7 +1655,7 @@ validation de table complète — la différence n'apparaît qu'à l'échelle r�
 précisément pourquoi cela doit être un pattern délibéré et testé plutôt que quelque chose découvert à la
 dure pendant un déploiement.
 
-#### Q45. Quand dénormalisez-vous délibérément, et comment maintenez-vous la cohérence de la copie dénormalisée ? {#deliberately-denormalize-keep-denormalized-copy}
+#### Q48. Quand dénormalisez-vous délibérément, et comment maintenez-vous la cohérence de la copie dénormalisée ? {#deliberately-denormalize-keep-denormalized-copy}
 **Réponse :** Dénormaliser quand un pattern de lecture est à la fois extrêmement chaud et coûteux à calculer à partir de données
 normalisées à chaque requête — un total cumulé, un agrégat fréquemment affiché (nombre de commentaires sur un
 post, nombre d'abonnés sur un profil), ou des données jointes si souvent que le coût de la jointure lui-même est le
@@ -1568,7 +1690,7 @@ question de suivi évidente — que se passe-t-il quand un événement de mise �
 le mécanisme de réconciliation d'emblée est ce qui distingue une réponse senior d'une réponse plausible
 qui n'a pas été testée face à un vrai mode d'échec.
 
-#### Q46. Détaillez, étape par étape, l'optimisation d'une requête complexe et lente. {#optimizing-slow-complex-query-step}
+#### Q49. Détaillez, étape par étape, l'optimisation d'une requête complexe et lente. {#optimizing-slow-complex-query-step}
 **Réponse :** Suivez une boucle fixe et ne changez **qu'une chose à la fois**, en re-mesurant après chaque modification : (1) obtenir le vrai plan —
 `EXPLAIN (ANALYZE, BUFFERS)` sur des données à l'échelle de la production (Q24) ; (2) trouver le nœud *dominant* (celui avec le plus de temps,
 ou boucles × coût par boucle), pas le premier suspect venu ; (3) comparer estimations et valeurs réelles — un

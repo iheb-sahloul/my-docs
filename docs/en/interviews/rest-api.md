@@ -35,6 +35,31 @@ If-Match: "v7"
 #### Q6. How do you evolve an API without breaking clients? {#evolve-api-breaking-clients}
 **Answer:** Prefer **additive** change: new optional fields, new endpoints, tolerant readers that ignore unknown fields. Never rename, remove or change the meaning of a field in place. When a break is unavoidable, version (path or header), run both versions, announce deprecation with `Deprecation`/`Sunset` headers, and track usage per client before removal. Consumer-driven contract tests catch accidental breaks in CI.
 
+#### Q7. Design the REST API of a product search with facets. {#design-rest-search-api-facets}
+**Answer:** `GET` (search is a read, cacheable, shareable by URL), explicit parameters, a response that contains results, facets and pagination, and **never** the raw Elasticsearch query exposed to the client. A layer **translates** parameters → ES query: validation (`size` ≤ 100, sort from an allowlist), no Lucene syntax injection, **permission** filters added server-side (never entrusted to the client). `total`: beyond 10,000, ES returns `relation: gte` by default (`track_total_hits`); display "more than 10,000" rather than paying for the exact count. Opaque cursor (`search_after` values encoded in base64). A **timeout** on the ES call and a degraded response (without facets) rather than an error if the cluster is slow. Log every search (query, result count, latency): it is the raw material for relevance tuning.
+
+**Example:**
+
+```http
+GET /api/products/search?q=electric+bike&brand=decathlon&brand=btwin&price_min=300&price_max=1500&sort=relevance&size=24&cursor=eyJzIjpbMTIuMyw0Ml19
+```
+
+```json
+{
+  "total": { "value": 1342, "relation": "eq" },
+  "items": [ { "sku": "8529", "title": "Folding electric bike", "price": 899.0,
+               "highlight": { "title": "Folding <mark>electric bike</mark>" } } ],
+  "facets": {
+    "brand": [ { "value": "decathlon", "count": 412, "selected": true },
+               { "value": "btwin", "count": 120, "selected": true },
+               { "value": "moustache", "count": 64, "selected": false } ],
+    "price": [ { "from": 300, "to": 1000, "count": 801 } ]
+  },
+  "nextCursor": "eyJzIjpbMTEuOCw5OF19",
+  "didYouMean": null
+}
+```
+
 ## 🎯 Real-world scenarios
 
 ### S1. A list endpoint gets slower every month and sometimes returns duplicate items {#list-endpoint-gets-slower-every}

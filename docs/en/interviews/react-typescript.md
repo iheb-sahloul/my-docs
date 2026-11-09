@@ -1736,7 +1736,7 @@ const fmt = new Intl.DateTimeFormat(locale, {
 
 - **Diagnosis:** The interface describing the API response was written by hand (or generated once
   from a sample response) and asserted onto the parsed JSON, rather than validated — TypeScript
-  types are erased at compile time ([Java Q10](java-core-jvm.md#type-erasure-break)'s erasure point applies analogously here) and
+  types are erased at compile time ([Java Q27](java-core-jvm.md#type-erasure-break)'s erasure point applies analogously here) and
   provide zero runtime enforcement; a mismatch between the declared type and the actual response
   shape is invisible to the compiler and only manifests when the mismatched data is actually used.
 - **Example:**

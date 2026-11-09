@@ -31,6 +31,20 @@ public abstract class BaseImporter {           // état partagé + squelette fix
 }
 ```
 
+**Piège : conflit de méthodes `default`.** Si une classe implémente deux interfaces qui fournissent la même méthode
+`default`, elle doit la redéfinir et choisir explicitement.
+
+```java
+interface Entity    { default String label() { return "entity"; } }
+interface Auditable { default String label() { return "audited"; } }
+
+class Account implements Entity, Auditable {
+    @Override public String label() {
+        return Auditable.super.label();      // choix explicite ; sans cela : erreur de compilation
+    }
+}
+```
+
 #### Q2. Quelle est la différence entre `==` et `.equals()` ? {#double-equals-vs-equals}
 **Réponse :** `==` compare ce que les variables *contiennent* : pour les primitifs c'est la valeur, pour les références
 c'est l'identité de l'objet (les deux variables pointent-elles vers exactement le même objet du tas ?). `.equals()` est
@@ -58,7 +72,7 @@ new Slot("d1", t).equals(new Slot("d1", t)); // true : un record génère equals
 **Pourquoi c'est un piège :** les littéraux de chaîne sont mis en pool, donc `"a" == "a"` vaut `true` et un test rapide
 donne l'impression que `==` est correct, jusqu'à ce qu'une valeur vienne d'une saisie, d'une base de données ou de
 `new String(...)` et que la comparaison échoue silencieusement en production. C'est pareil avec les nombres encapsulés
-(voir [Java Q9](java-core-jvm.md#autoboxing-trap-integer)). Et redéfinir `equals` sans `hashCode` casse les collections à hachage
+(voir [Java Q26](java-core-jvm.md#autoboxing-trap-integer)). Et redéfinir `equals` sans `hashCode` casse les collections à hachage
 (voir [Java Q3](java-core-jvm.md#equals-hashcode-contract-breaks-override)).
 
 #### Q3. Quel est le contrat `equals`/`hashCode`, et que se passe-t-il si on n'en redéfinit qu'un ? {#equals-hashcode-contract-breaks-override}
@@ -100,7 +114,89 @@ names.add("Ada");                 // ok : la liste est mutable
 static final List<String> ROLES = List.of("ADMIN", "USER");   // une vraie constante : valeur immuable
 ```
 
-#### Q5. Comment les modificateurs d'accès et les packages servent-ils l'encapsulation en pratique ? {#access-modifiers-packages-support-encapsulation}
+**Méthode `static` en détail :** une méthode `static` appartient à la classe, pas à une instance : elle n'a ni `this` ni
+`super`. Elle ne peut donc pas accéder **directement** aux champs et méthodes d'instance, mais elle peut tout à fait les
+utiliser **via une référence d'objet**. Formulation à éviter, trop forte : « une méthode static ne peut contenir que des
+attributs static et appeler des méthodes static ».
+
+```java
+class Counter {
+    private int value;                 // membre d'instance
+    private static int created;        // membre de classe
+
+    static Counter create() {
+        created++;                     // OK : membre static
+        // value++;                    // erreur : quel objet ? il n'y a pas de this
+        Counter c = new Counter();
+        c.value = 10;                  // OK : accès via une référence explicite
+        return c;
+    }
+
+    void inc() {
+        value++;
+        created++;                     // une méthode d'instance voit aussi les membres static
+    }
+}
+```
+
+**Pièges :**
+- Une méthode `static` n'est **pas redéfinie** mais **masquée** : l'appel dépend du type déclaré, pas du type réel (voir
+  l'exemple `Printer.kind()` dans la question sur la surcharge et la redéfinition).
+- `counter.create()` compile (avec un avertissement) mais appelle bien la méthode de classe : écrire `Counter.create()`.
+- Un champ `static` mutable est un état global partagé entre threads : à éviter, ou à protéger.
+
+**Usage réel :** fabriques (`List.of`, `Optional.of`, `Money.of`), utilitaires sans état (`Math`, `Objects`,
+`Collections`), constantes `static final`.
+
+#### Q5. Qu'est-ce qu'un bloc `static`, et quand s'exécute-t-il ? {#static-block-init-order}
+**Réponse :** Un bloc `static { ... }` est exécuté **une seule fois**, à l'initialisation de la classe, c'est-à-dire à sa
+première utilisation active : `new`, appel d'une méthode `static`, lecture d'un champ `static` non constant,
+`Class.forName(...)`, ou initialisation d'une sous-classe. Il sert à initialiser des champs `static` qui demandent plus
+qu'une expression. Ordre à retenir : **static parent → static enfant**, puis à chaque `new` : **instance parent →
+constructeur parent → instance enfant → constructeur enfant**. Dans une classe, champs `static` et blocs `static`
+s'exécutent dans l'ordre du fichier.
+
+**Exemple :**
+
+```java
+class Parent {
+    static { System.out.println("1. static Parent"); }
+    { System.out.println("3. bloc d'instance Parent"); }
+    Parent() { System.out.println("4. constructeur Parent"); }
+}
+
+class Child extends Parent {
+    static { System.out.println("2. static Child"); }
+    { System.out.println("5. bloc d'instance Child"); }
+    Child() { System.out.println("6. constructeur Child"); }
+}
+
+new Child();   // 1, 2, 3, 4, 5, 6
+new Child();   // 3, 4, 5, 6 : les blocs static ne repassent jamais
+
+class Rates {
+    static final Map<String, BigDecimal> FX;
+    static {
+        Map<String, BigDecimal> m = new HashMap<>();
+        m.put("USD", new BigDecimal("1.0850"));
+        m.put("GBP", new BigDecimal("0.8420"));
+        FX = Map.copyOf(m);            // immuable une fois publié
+    }
+}
+```
+
+**Pièges :**
+- Si le bloc lève une exception : `ExceptionInInitializerError` au premier accès, puis `NoClassDefFoundError` à **chaque**
+  accès suivant. La classe est inutilisable jusqu'au redémarrage (voir [Java Q45](java-core-jvm.md#class-initialization-itself-deadlock-static)).
+- Lire une constante de compilation (`static final String NAME = "x"`) ne déclenche pas l'initialisation : la valeur est
+  recopiée par le compilateur.
+- L'initialisation est thread-safe (verrou de la JVM), c'est ce qu'exploite le *holder idiom* du Singleton. Mais deux
+  classes qui s'initialisent mutuellement depuis deux threads peuvent se bloquer.
+
+**Usage réel :** charger un driver JDBC (historique : `Class.forName`), remplir une table de correspondance, enregistrer
+des plugins. Aujourd'hui, on préfère souvent `Map.of(...)` ou un bean Spring.
+
+#### Q6. Comment les modificateurs d'accès et les packages servent-ils l'encapsulation en pratique ? {#access-modifiers-packages-support-encapsulation}
 **Réponse :** Quatre niveaux : `private` (la classe seule), package-private (sans mot-clé : même package), `protected`
 (package plus sous-classes) et `public`. Utilisez la **visibilité la plus restreinte qui fonctionne** : champs privés,
 helpers privés ou package-private, et seule la vraie API publique. Le package-private est sous-utilisé : dans une
@@ -109,9 +205,296 @@ le repository et les classes internes restent package-private, pour que les autr
 contourner le service. Pour l'imposer entre modules, utilisez les `exports` JPMS (voir la section expert) ou des règles
 ArchUnit.
 
+**Les quatre niveaux en détail :**
+
+| Modificateur | Même classe | Même package | Sous-classe (autre package) | Partout |
+|---|:-:|:-:|:-:|:-:|
+| `private` | oui | | | |
+| *(défaut)* | oui | oui | | |
+| `protected` | oui | oui | oui (par héritage) | |
+| `public` | oui | oui | oui | oui |
+
+```java
+package com.bank.core;
+
+public class Account {
+    private BigDecimal balance;        // seulement Account
+    String branchCode;                 // tout le package com.bank.core
+    protected void audit() { }         // package + sous-classes, même ailleurs
+    public BigDecimal balance() { return balance; }
+}
+
+package com.bank.savings;
+
+class SavingsAccount extends Account {
+    void close() {
+        audit();                       // OK : accès hérité via this
+        // new Account().audit();      // erreur : autre package, et pas via l'héritage
+        // branchCode = "X";           // erreur : package-private
+    }
+}
+```
+
+**Pièges :**
+- `protected` est **plus ouvert** que le défaut : il inclut tout le package. Beaucoup de candidats pensent « classe +
+  sous-classes seulement ».
+- Une classe de premier niveau ne peut être que `public` ou package-private. `private` et `protected` ne s'appliquent
+  qu'aux membres et aux classes imbriquées.
+- Une redéfinition ne peut pas réduire la visibilité : une méthode `public` reste `public` dans la sous-classe.
+- Les modules (Java 9+) ajoutent un niveau au-dessus : une classe `public` d'un package non exporté reste invisible hors
+  du module.
+
+**Usage réel :** tout `private` par défaut, puis ouvrir au besoin. Le package-private est idéal pour les classes
+d'implémentation et pour tester sans tout rendre `public`.
+
+#### Q7. Quels sont les quatre piliers de la POO ? {#four-pillars-oop}
+**Réponse :** **Encapsulation** (l'état n'est modifié que par des méthodes qui valident), **abstraction** (le contrat, pas
+le comment), **héritage** (le code commun est écrit une fois) et **polymorphisme** (un seul appel, l'implémentation est
+choisie à l'exécution). À l'entretien, donner un exemple de code pour chacun.
+
+**Exemple :**
+
+```java
+interface PaymentMethod {                         // abstraction : le contrat, pas le comment
+    BigDecimal fee(BigDecimal amount);
+}
+
+final class Account {                             // encapsulation : l'état ne change que via des méthodes qui valident
+    private BigDecimal balance = BigDecimal.ZERO;
+    void deposit(BigDecimal amount) {
+        if (amount.signum() <= 0) throw new IllegalArgumentException("montant <= 0");
+        balance = balance.add(amount);
+    }
+    BigDecimal balance() { return balance; }
+}
+
+abstract class Card implements PaymentMethod {    // héritage : le code commun est écrit une fois
+    protected abstract BigDecimal rate();
+    public BigDecimal fee(BigDecimal amount) { return amount.multiply(rate()); }
+}
+class Visa extends Card { protected BigDecimal rate() { return new BigDecimal("0.015"); } }
+class Amex extends Card { protected BigDecimal rate() { return new BigDecimal("0.025"); } }
+
+// polymorphisme : un seul appel, l'implémentation est choisie à l'exécution
+for (PaymentMethod p : List.of(new Visa(), new Amex())) System.out.println(p.fee(amount));
+```
+
+**Pourquoi c'est un piège :** l'encapsulation ne se résume pas à des getters/setters. Un setter public sur `balance`
+ruine l'invariant.
+
+#### Q8. Surcharge vs redéfinition : quelle différence ? {#overloading-vs-overriding}
+**Réponse :** La **surcharge** (*overloading*) est résolue à la **compilation**, d'après la signature et le type
+**statique** des arguments. La **redéfinition** (*overriding*) est résolue à l'**exécution** (liaison dynamique), d'après
+le type **réel** de l'objet. Autour : `@Override` fait vérifier la redéfinition par le compilateur, le type de retour
+peut être covariant, et une méthode `static` est **masquée** et non redéfinie.
+
+**Exemple :**
+
+```java
+class Printer {
+    void print(Object o) { System.out.println("Object"); }
+    void print(String s) { System.out.println("String"); }           // surcharge : autre signature
+    static String kind() { return "Printer"; }
+    Number value() { return 1; }
+}
+class ColorPrinter extends Printer {
+    @Override void print(String s) { System.out.println("Color"); }  // redéfinition
+    static String kind() { return "ColorPrinter"; }                  // masquage, pas redéfinition
+    @Override Integer value() { return 2; }                          // type de retour covariant
+}
+
+Printer p = new ColorPrinter();
+Object o = "hi";
+p.print(o);     // "Object" : la surcharge est choisie à la compilation, sur le type statique de o
+p.print("hi");  // "Color"  : la redéfinition est choisie à l'exécution, sur le type réel de p
+p.kind();       // "Printer" : une méthode static dépend du type déclaré
+```
+
+#### Q9. Composition ou héritage : lequel choisir ? {#composition-vs-inheritance}
+**Réponse :** « Favor composition over inheritance ». L'héritage exprime une relation « est un » et couple la sous-classe
+à l'implémentation de son parent ; la composition exprime « a un » et n'expose que ce qui a du sens. Contre-exemple du JDK :
+`Stack` hérite de `Vector` et en expose toutes les méthodes. Voir aussi
+[Préférez la composition à l'héritage](../best-practices/java.md) pour l'exemple `HashSet`.
+
+**Exemple :**
+
+```java
+// Contre-exemple du JDK : Stack hérite de Vector et en expose toutes les méthodes
+Stack<Integer> s = new Stack<>();
+s.push(1);
+s.add(0, 99);   // insère au fond de la pile : l'invariant LIFO est cassé
+
+// Composition : on n'expose que ce qui a du sens
+final class LifoStack<E> {
+    private final Deque<E> items = new ArrayDeque<>();
+    void push(E e) { items.push(e); }
+    E pop() { return items.pop(); }
+    boolean isEmpty() { return items.isEmpty(); }
+}
+```
+
+#### Q10. Couplage, cohésion et loi de Déméter : que faut-il savoir dire ? {#coupling-cohesion-law-of-demeter}
+**Réponse :** On vise un **couplage faible** (peu de dépendances entre classes) et une **cohésion forte** (une classe
+regroupe ce qui change ensemble). La **loi de Déméter** (« ne parle qu'à tes amis proches ») en est la règle pratique :
+on ne traverse pas la structure interne d'un objet, on demande à celui qui détient l'information.
+
+**Exemple :**
+
+```java
+// Couplage fort : l'appelant dépend de toute la structure interne
+String city = order.getCustomer().getAddress().getCity();
+
+// Mieux : on demande à l'objet qui détient l'information
+String city = order.shippingCity();
+```
+
+Cohésion forte : `Order` porte les règles qui portent sur ses propres données (total, statut), au lieu de les laisser dans
+un `OrderService`.
+
+### Exceptions : les bases
+
+#### Q11. Décrivez la hiérarchie des exceptions {#exception-hierarchy-error-vs-exception}
+**Réponse :** Tout part de `Throwable`, qui a deux branches. `Error` : problèmes graves de la JVM, qu'on n'attrape pas.
+`Exception` : problèmes que l'application peut traiter. Parmi les `Exception`, `RuntimeException` et ses sous-classes sont
+**unchecked** (le compilateur n'impose rien) ; toutes les autres sont **checked** (il faut les attraper ou les déclarer
+avec `throws`). Techniquement on peut attraper une `Error` (`catch (Throwable t)`), mais elle signale un état de la JVM dont
+on ne peut pas se remettre de façon fiable (`OutOfMemoryError`, `StackOverflowError`). Seule exception tolérée : un
+gestionnaire de dernier niveau qui journalise puis laisse mourir le thread ou le processus. En production :
+`-XX:+HeapDumpOnOutOfMemoryError` et redémarrage par l'orchestrateur.
+
+```text
+Throwable
+├── Error                                   unchecked : ne pas attraper
+│   ├── VirtualMachineError
+│   │   ├── OutOfMemoryError
+│   │   └── StackOverflowError
+│   ├── LinkageError
+│   │   ├── NoClassDefFoundError
+│   │   └── ExceptionInInitializerError
+│   └── AssertionError
+└── Exception                               checked
+    ├── IOException
+    │   ├── FileNotFoundException
+    │   └── FileSystemException → NoSuchFileException
+    ├── SQLException
+    ├── InterruptedException
+    ├── ReflectiveOperationException → ClassNotFoundException
+    └── RuntimeException                    unchecked
+        ├── NullPointerException
+        ├── IllegalArgumentException → NumberFormatException
+        ├── IllegalStateException
+        ├── ArithmeticException
+        ├── ClassCastException
+        ├── IndexOutOfBoundsException → ArrayIndexOutOfBoundsException
+        ├── UnsupportedOperationException
+        ├── ConcurrentModificationException
+        └── (Spring) DataAccessException, (JPA) PersistenceException
+```
+
+**À dire :**
+- **Checked** : échec prévisible et récupérable, hors du contrôle du programme (fichier absent, réseau). Le compilateur
+  force l'appelant à décider.
+- **Unchecked** : bug ou contrat violé (`null`, argument invalide). Le corriger plutôt que l'attraper.
+- Dans une application Spring, les erreurs métier sont en général des `RuntimeException` : elles traversent les couches et
+  déclenchent le rollback de `@Transactional` (qui, par défaut, **ne fait pas** de rollback sur une checked, sauf avec
+  `@Transactional(rollbackFor = Exception.class)`).
+
+**Exemple :**
+
+```java
+// Exception métier : unchecked, avec le contexte utile au diagnostic
+class InsufficientFundsException extends RuntimeException {
+    InsufficientFundsException(String accountId, BigDecimal requested) {
+        super("Solde insuffisant sur " + accountId + " pour " + requested);
+    }
+}
+
+// Envelopper sans perdre la cause
+try {
+    return Files.readString(path);
+} catch (IOException e) {
+    throw new UncheckedIOException("Lecture impossible : " + path, e);   // la cause est conservée
+}
+```
+
+**Pièges :**
+- `ClassNotFoundException` (checked, chargement dynamique par nom) vs `NoClassDefFoundError` (`Error`, classe présente à la
+  compilation mais absente ou cassée à l'exécution).
+- Ne jamais avaler une exception (`catch (Exception e) {}`) ni perdre la cause (`throw new X(e.getMessage())` au lieu de
+  `new X(msg, e)`).
+- `catch (InterruptedException e)` : restaurer le statut avec `Thread.currentThread().interrupt()`.
+
+Voir [Java Q35, checked vs unchecked](java-core-jvm.md#checked-unchecked-exceptions-design-trade).
+
+#### Q12. L'ordre des blocs `catch` a-t-il de l'importance ? {#catch-block-order-multi-catch}
+**Réponse :** Oui. Les blocs `catch` sont testés **de haut en bas** et seul le **premier** qui correspond s'exécute. Il faut
+donc aller du **plus spécifique au plus général**. Si un `catch` parent précède un `catch` enfant, l'enfant est
+inatteignable : c'est une **erreur de compilation**, pas un simple avertissement. Entre types sans lien d'héritage, l'ordre
+n'a aucune importance.
+
+**Exemple :**
+
+```java
+try {
+    String content = Files.readString(path);
+    int qty = Integer.parseInt(content.trim());
+} catch (NoSuchFileException e) {              // le plus spécifique d'abord
+    log.warn("Fichier absent : {}", path);
+} catch (IOException e) {                      // puis son parent
+    throw new UncheckedIOException(e);
+} catch (NumberFormatException e) {            // sans lien avec IOException : position libre
+    throw new IllegalArgumentException("Quantité invalide dans " + path, e);
+}
+
+// Inversé :
+// catch (IOException e) { ... }
+// catch (NoSuchFileException e) { ... }       // erreur : exception NoSuchFileException has already been caught
+```
+
+**Multi-catch (Java 7).** Factorise le traitement de types **sans lien d'héritage**.
+
+```java
+catch (NoSuchFileException | NumberFormatException e) { ... }   // OK
+// catch (NoSuchFileException | IOException e)                   // erreur : types liés par héritage
+// Dans un multi-catch, e est implicitement final
+```
+
+**Pièges :**
+- `catch (Exception e)` en premier rend tous les suivants inatteignables (erreur de compilation).
+- Le `finally` s'exécute après le `catch` choisi, que le `catch` relance ou non.
+- Le compilateur refuse aussi un `catch` d'une exception checked que le bloc `try` ne peut pas lever (`catch (IOException e)`
+  autour d'un code sans I/O).
+
+#### Q13. `final`, `finally`, `finalize` : quelles différences, et que renvoie une méthode avec un `return` dans `try` et `finally` ? {#final-finally-finalize-return-in-finally}
+**Réponse :** `final` est un **mot-clé** : variable affectée une seule fois, méthode non redéfinissable, classe non
+héritable. `finally` est un **bloc** toujours exécuté après `try`/`catch`, pour libérer une ressource (remplacé le plus
+souvent par try-with-resources). `finalize()` est une **méthode** d'`Object` appelée par le GC avant la destruction, sans
+garantie de moment ni d'exécution ; dépréciée pour suppression depuis Java 18 (JEP 421), on utilise try-with-resources ou
+`java.lang.ref.Cleaner`. Le `finally` ne s'exécute pas si la JVM s'arrête : `System.exit()`, crash, `kill -9`.
+
+**Exemple :**
+
+```java
+static int a() {
+    try { return 1; }
+    finally { System.out.println("finally"); }   // affiché AVANT que la méthode ne rende 1
+}
+
+static int b() {
+    int x = 1;
+    try { return x; }                          // la valeur 1 est déjà évaluée et mise de côté
+    finally { x = 2; }                         // sans effet sur la valeur renvoyée : b() renvoie 1
+}
+
+static int c() {
+    try { throw new IllegalStateException(); }
+    finally { return 3; }                      // renvoie 3 et AVALE l'exception : à proscrire
+}
+```
+
 ### Collections & génériques
 
-#### Q6. `ArrayList` vs `LinkedList`, `HashMap` vs `TreeMap` vs `LinkedHashMap` — comment choisir une collection ? {#arraylist-linkedlist-hashmap-treemap-linkedhashmap}
+#### Q14. `ArrayList` vs `LinkedList`, `HashMap` vs `TreeMap` vs `LinkedHashMap` — comment choisir une collection ? {#arraylist-linkedlist-hashmap-treemap-linkedhashmap}
 **Réponse :** Par défaut **`ArrayList`** : mémoire contiguë, accès par index en O(1) et itération rapide grâce aux
 caches CPU. `LinkedList` ne gagne qu'en théorie (insertion en O(1) sur un nœud connu) ; en pratique atteindre le nœud
 coûte O(n) et chaque nœud est un objet séparé, donc elle est presque toujours plus lente. Pour une file ou une pile,
@@ -129,7 +512,140 @@ NavigableMap<LocalDate, Rate> rates = new TreeMap<>();
 Rate applicable = rates.floorEntry(invoiceDate).getValue(); // dernier taux à la date ou avant
 ```
 
-#### Q7. `Comparable` vs `Comparator`, et que signifie PECS pour les génériques ? {#comparable-comparator-pecs-generics}
+**Pour aller plus loin sur le choix :** `HashSet` est une `HashMap` dont les éléments sont les clés (valeur factice
+partagée). `Hashtable` est l'ancêtre synchronisé (chaque méthode verrouille toute la table) et refuse les `null` : à
+remplacer par `ConcurrentHashMap`.
+
+| Collection | Accès / recherche | Ajout | Ordre | Quand l'utiliser |
+|---|---|---|---|---|
+| `ArrayList` | `get(i)` O(1), `contains` O(n) | fin O(1) amorti, milieu O(n) | insertion | le choix par défaut pour une liste |
+| `LinkedList` | `get(i)` O(n) | extrémités O(1) | insertion | presque jamais : `ArrayDeque` fait mieux |
+| `ArrayDeque` | extrémités O(1) | O(1) | insertion | pile ou file |
+| `HashMap` / `HashSet` | O(1) en moyenne | O(1) | aucun | recherche par clé |
+| `LinkedHashMap` | O(1) | O(1) | insertion (ou accès : cache LRU) | ordre prévisible |
+| `TreeMap` / `TreeSet` | O(log n) | O(log n) | trié | plages : `floorKey`, `subMap`, `headMap` |
+| `PriorityQueue` | `peek` O(1) | `offer`/`poll` O(log n) | tas | top K, planification |
+
+Exemple de raisonnement : « Je dois trouver le dernier cours connu à une date donnée » → `TreeMap<LocalDate, BigDecimal>`
+puis `floorEntry(date)` en O(log n).
+
+#### Q15. List ou Set : comment choisir ? {#list-vs-set-choose}
+**Réponse :** Une `List` est une séquence **ordonnée, indexée, qui accepte les doublons**. Un `Set` est un ensemble **sans
+doublons**, sans index, dont l'ordre dépend de l'implémentation. On choisit `Set` quand l'unicité compte ou quand on teste
+souvent l'appartenance (`contains` en O(1) pour un `HashSet`, contre O(n) pour une `ArrayList`).
+
+| | `ArrayList` | `HashSet` | `LinkedHashSet` | `TreeSet` |
+|---|---|---|---|---|
+| Doublons | oui | non | non | non |
+| Ordre | insertion | aucun | insertion | trié |
+| `get(i)` | O(1) | n/a | n/a | n/a |
+| `contains` | O(n) | O(1) moyen | O(1) moyen | O(log n) |
+| `null` | oui | un seul | un seul | non (NPE) |
+| Égalité basée sur | `equals` | `hashCode` + `equals` | `hashCode` + `equals` | `compareTo` / `Comparator` |
+
+**Exemple :**
+
+```java
+List<String> isins = List.of("FR001", "US002", "FR001");
+Set<String> unique = new HashSet<>(isins);              // [US002, FR001] : ordre imprévisible
+Set<String> ordered = new LinkedHashSet<>(isins);       // [FR001, US002] : dédoublonné, ordre conservé
+List<String> back = new ArrayList<>(ordered);           // retour à une List si on a besoin d'un index
+List<String> viaStream = isins.stream().distinct().toList();   // même résultat en stream
+
+Set<String> blocked = Set.of("RU123", "IR456");
+boolean ok = !blocked.contains(isin);                   // O(1) : liste noire, contrôle d'appartenance
+```
+
+**Pièges :**
+- Un `HashSet` est en réalité une `HashMap` dont les éléments sont les clés : sans `equals`/`hashCode` corrects, les
+  doublons passent (voir [Java Q3](java-core-jvm.md#equals-hashcode-contract-breaks-override)).
+- Modifier un champ utilisé par `hashCode` après l'insertion rend l'élément introuvable.
+- `TreeSet` utilise `compareTo` et non `equals` : `new BigDecimal("2.0")` et `"2.00"` y sont un seul élément, mais deux dans
+  un `HashSet`.
+- `List.remove(int index)` vs `List.remove(Object o)` : sur une `List<Integer>`, `remove(1)` supprime l'index 1, pas la
+  valeur 1.
+
+**Usage réel :** avec JPA, une association `@OneToMany` en `Set` évite la `MultipleBagFetchException`, mais exige un
+`equals`/`hashCode` stable sur l'entité.
+
+#### Q16. Quelles sont les façons d'itérer sur une collection, et laquelle choisir ? {#ways-to-iterate-collection}
+**Réponse :** Il y en a six principales : la boucle indexée, la boucle for-each, l'`Iterator` explicite, `ListIterator`,
+`forEach` avec une lambda, et les streams. Pour une `Map`, on itère sur `entrySet()`. **Par défaut : la boucle for-each**,
+la plus lisible et sûre pour toutes les collections. Les autres répondent à un besoin précis.
+
+**Exemple :**
+
+```java
+List<Trade> trades = repo.findAll();
+
+// 1. Boucle indexée : seulement si on a besoin de l'index, et seulement sur une liste à accès direct
+for (int i = 0; i < trades.size(); i++) {
+    System.out.println(i + " : " + trades.get(i));
+}
+
+// 2. For-each : le choix par défaut (compilé en Iterator pour une collection)
+for (Trade t : trades) {
+    process(t);
+}
+
+// 3. Iterator explicite : pour supprimer pendant le parcours
+for (Iterator<Trade> it = trades.iterator(); it.hasNext(); ) {
+    if (it.next().isCancelled()) it.remove();
+}
+trades.removeIf(Trade::isCancelled);   // équivalent moderne, plus court
+
+// 4. ListIterator : parcours dans les deux sens, remplacement ou insertion en place
+for (ListIterator<String> it = codes.listIterator(); it.hasNext(); ) {
+    it.set(it.next().toUpperCase());
+}
+codes.replaceAll(String::toUpperCase); // équivalent moderne
+
+// 5. forEach + lambda : une action simple par élément
+trades.forEach(this::publish);
+
+// 6. Stream : pour transformer, filtrer, agréger
+List<String> fxIds = trades.stream()
+        .filter(t -> t.desk().equals("FX"))
+        .map(Trade::id)
+        .toList();
+```
+
+**Pour une `Map` :**
+
+```java
+// Bien : une seule recherche par entrée
+for (Map.Entry<String, BigDecimal> e : balances.entrySet()) {
+    System.out.println(e.getKey() + " = " + e.getValue());
+}
+balances.forEach((account, balance) -> System.out.println(account + " = " + balance));
+
+// Moins bien : keySet + get = une recherche supplémentaire par clé
+for (String account : balances.keySet()) {
+    System.out.println(account + " = " + balances.get(account));
+}
+```
+
+**Quelle option choisir ?**
+
+| Besoin | Meilleure option |
+|---|---|
+| Parcourir simplement | for-each |
+| Besoin de l'index | boucle indexée (sur `ArrayList` ou tableau uniquement) |
+| Supprimer pendant le parcours | `removeIf`, ou `Iterator.remove()` |
+| Modifier chaque élément en place | `replaceAll`, ou `ListIterator.set()` |
+| Transformer, filtrer, agréger | stream |
+| Clés et valeurs d'une `Map` | `entrySet()` ou `Map.forEach` |
+| Sortie anticipée (`break`, `return`) ou exception checked | for-each (impossible dans une lambda `forEach`) |
+
+**Pièges :**
+- `list.remove(x)` dans un for-each → `ConcurrentModificationException` (voir [Java Q38](java-core-jvm.md#causes-concurrentmodificationexception-correct-fix)).
+- Boucle indexée sur une `LinkedList` : `get(i)` est en O(n), donc le parcours devient O(n²).
+- `forEach` avec une lambda n'accepte ni `break` ni `continue` (`return` = `continue`), ni variable locale modifiée.
+- Les performances des boucles sont équivalentes sur une `ArrayList` : on choisit pour la lisibilité, pas pour la vitesse.
+- Les collections concurrentes (`CopyOnWriteArrayList`, `ConcurrentHashMap`) ont des itérateurs *weakly consistent* : pas de
+  `ConcurrentModificationException`, mais pas forcément les dernières modifications.
+
+#### Q17. `Comparable` vs `Comparator`, et que signifie PECS pour les génériques ? {#comparable-comparator-pecs-generics}
 **Réponse :** `Comparable` définit l'**ordre naturel** d'un type dans la classe elle-même (`compareTo`), et il n'y en a
 qu'un. `Comparator` définit un **ordre externe**, on peut donc en avoir plusieurs
 (`Comparator.comparing(Order::total).reversed().thenComparing(Order::id)`). Gardez `compareTo` cohérent avec `equals`,
@@ -150,11 +666,410 @@ sum(List.of(1, 2.5, 3L));
 fill(new ArrayList<Number>());
 ```
 
+### Versions, JDK & build
+
+#### Q18. Quelles sont les versions LTS de Java et leurs nouveautés phares, et quelle différence entre JDK, JRE et JVM ? {#java-lts-versions-features-jdk-jre-jvm}
+**Réponse :** **LTS** : 8 (lambdas, streams, `Optional`, `java.time`, méthodes `default`) ; 11 (`HttpClient`, `var` dans les lambdas, `String.isBlank`/`strip`/`lines`, lancement direct d'un fichier `.java`, retrait des modules Java EE) ; 17 (records, classes `sealed`, pattern matching pour `instanceof`, text blocks, expressions `switch`) ; 21 (virtual threads, pattern matching dans `switch`, record patterns, sequenced collections, ZGC générationnel) ; 25 (méthodes `main` d'instance et fichiers source compacts, `import module`, instructions avant `super(...)` dans les constructeurs, scoped values, en-têtes d'objets compacts). **Cadence** : une version tous les 6 mois (mars et septembre), une LTS tous les 2 ans depuis Java 17 ; en entreprise on monte de LTS en LTS. **JVM** : exécute le bytecode ; **JRE** = JVM + bibliothèques standard ; **JDK** = JRE + outils (`javac`, `jar`, `jcmd`, `jfr`…). Depuis Java 11, il n'y a plus de JRE séparé chez Oracle : on construit un runtime minimal avec `jlink`. **OpenJDK vs Oracle JDK** : même code source ; OpenJDK est l'implémentation de référence, Temurin (Eclipse Adoptium), Corretto (Amazon) ou Zulu (Azul) en sont des builds gratuits avec support long, tandis que l'Oracle JDK impose une licence payante en production selon les versions. **JCP et JEP** : le JCP fait évoluer les spécifications ; une JEP décrit une évolution précise d'OpenJDK (JEP 444 pour les virtual threads).
+
+**Exemple :**
+
+```java
+// Java 8 : lambdas, streams, Optional, java.time
+List<String> desks = trades.stream()
+        .filter(t -> t.notional().signum() > 0)
+        .map(Trade::desk).distinct().collect(Collectors.toList());
+LocalDate valueDate = LocalDate.of(2026, 10, 29).plusDays(2);   // immuable et thread-safe, contrairement à Date
+
+// Java 11 : HttpClient, nouvelles méthodes de String
+HttpClient http = HttpClient.newHttpClient();
+HttpResponse<String> resp = http.send(
+        HttpRequest.newBuilder(URI.create("https://api.example.com/rates")).build(),
+        HttpResponse.BodyHandlers.ofString());
+"  ".isBlank();                        // true ; et "a\nb".lines(), " x ".strip()
+// $ java Hello.java                   → lance un fichier source sans passer par javac
+
+// Java 17 : records, sealed, pattern matching pour instanceof, switch expression
+if (obj instanceof Trade t && t.notional().signum() > 0) { /* t déjà typé */ }
+String label = switch (day) { case SATURDAY, SUNDAY -> "week-end"; default -> "semaine"; };
+
+// Java 21 : virtual threads, pattern matching dans switch, sequenced collections
+Thread.startVirtualThread(() -> System.out.println("hello"));
+List<String> l = List.of("a", "b", "c");
+l.getFirst(); l.getLast(); l.reversed();   // SequencedCollection : enfin une API commune
+
+// Java 25 : fichier source compact et main d'instance (le fichier entier)
+void main() {
+    IO.println("Bonjour");                 // ni classe, ni static, ni String[] args
+}
+```
+
+Runtime minimal avec `jlink` :
+
+```bash
+jdeps --print-module-deps app.jar                      # → java.base,java.net.http,java.sql
+jlink --add-modules java.base,java.net.http,java.sql \
+      --strip-debug --no-header-files --no-man-pages --output runtime
+./runtime/bin/java -jar app.jar                        # une image de quelques dizaines de Mo au lieu d'un JDK complet
+```
+
+
+**Avantages d'une LTS :**
+- **Sécurité** : patchs trimestriels pendant des années (builds gratuits Temurin, Corretto, Zulu).
+- **Écosystème** : frameworks, serveurs d'applications et outils sont certifiés sur les LTS (Spring Boot, Hibernate,
+  agents APM).
+- **Moins de migrations** : une tous les 2 ans au lieu de tous les 6 mois, ce qui compte quand chaque montée de version
+  passe par une homologation.
+- **Stabilité** : une LTS regroupe les fonctionnalités finalisées des versions précédentes ; les fonctionnalités en
+  *preview* restent désactivées par défaut.
+
+**Ce qu'apporte Java 25 (septembre 2025) par rapport à 21.** Fonctionnalités finalisées de 22 à 25 :
+
+| Fonctionnalité | JEP | Intérêt |
+|---|---|---|
+| Variables anonymes `_` | 456 (22) | ignorer un paramètre ou une exception inutilisés |
+| API Foreign Function & Memory | 454 (22) | appeler du natif sans JNI |
+| Stream gatherers | 485 (24) | opérations intermédiaires sur mesure (fenêtres, regroupements) |
+| Virtual threads sans pinning sur `synchronized` | 491 (24) | plus besoin de remplacer `synchronized` par `ReentrantLock` |
+| Scoped values | 506 (25) | remplace `ThreadLocal`, adapté aux virtual threads |
+| `import module` | 511 (25) | importer tous les packages d'un module en une ligne |
+| Fichiers source compacts, `main` d'instance | 512 (25) | scripts et apprentissage sans boilerplate |
+| Instructions avant `super(...)` | 513 (25) | valider les arguments avant d'appeler le constructeur parent |
+| En-têtes d'objets compacts | 519 (25) | en-tête de 12 à 8 octets : moins de heap, meilleure localité |
+| Cache AOT (ergonomie, profilage) | 514, 515 (25) | démarrage et montée en charge plus rapides |
+| Shenandoah générationnel | 521 (25) | GC basse latence plus efficace |
+
+**Exemple Java 22–25 :**
+
+```java
+// Variables anonymes (22)
+try { Integer.parseInt(s); } catch (NumberFormatException _) { return false; }
+switch (payment) {
+    case Card _, Cash _ -> handleSimple();
+    case Transfer t -> handleTransfer(t);
+}
+
+// Stream gatherers (24)
+Stream.of(1, 2, 3, 4, 5).gather(Gatherers.windowFixed(2)).toList();   // [[1, 2], [3, 4], [5]]
+
+// Instructions avant super(...) (25)
+class Trade extends Entity {
+    Trade(String id, Instant createdAt) {
+        if (id.isBlank()) throw new IllegalArgumentException("id vide");   // interdit avant Java 25
+        super(createdAt);
+    }
+}
+
+// Scoped values (25) : un contexte immuable, visible dans toute la pile d'appels, libéré à la sortie
+static final ScopedValue<String> USER = ScopedValue.newInstance();
+ScopedValue.where(USER, "u123").run(() -> paymentService.handle());   // USER.get() dans handle()
+
+// import module (25)
+import module java.base;              // java.util, java.io, java.time... en une ligne
+```
+
+```bash
+# En-têtes compacts : à activer explicitement en 25
+java -XX:+UseCompactObjectHeaders -jar app.jar
+```
+
+**Ce qui reste en preview dans 25** (à ne pas présenter comme finalisé) : structured concurrency, patterns sur les types
+primitifs, *stable values*.
+
+**À dire en conclusion :** « Passer de 21 à 25, c'est un gain gratuit en mémoire et en démarrage, des virtual threads enfin
+utilisables avec du code `synchronized` existant, et plusieurs années de support en plus. »
+
+#### Q19. Maven ou Gradle : quelles différences, et à quoi ressemble la même dépendance ? {#maven-vs-gradle}
+**Réponse :** Maven est déclaratif (XML, cycle de vie fixe, conventions fortes) ; Gradle est programmable (DSL Kotlin ou Groovy), incrémental et doté d'un cache de build, donc plus rapide sur les gros projets mais plus libre. Maven suit un cycle de vie fixe (`validate → compile → test → package → verify → install → deploy`), et `mvn verify` exécute tout jusqu'à `verify`. Gradle exécute un graphe de tâches (`./gradlew build`), ne relance que ce qui a changé, et distingue `api` (dépendance exposée aux consommateurs) de `implementation` (dépendance cachée).
+
+**Exemple :**
+
+```xml
+<!-- pom.xml -->
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.junit.jupiter:junit-jupiter")
+}
+```
+
+**Comparator en pratique :** pour trier sur plusieurs critères, on chaîne les comparateurs ; un piège classique est la
+soustraction.
+
+```java
+record Trade(String desk, BigDecimal notional, Instant time) {}
+
+trades.sort(Comparator.comparing(Trade::desk)
+        .thenComparing(Trade::notional, Comparator.reverseOrder())
+        .thenComparing(Trade::time));
+// Comparable : l'ordre naturel, écrit dans la classe (compareTo) ; Comparator : des ordres externes, autant qu'on veut
+
+// Piège : (a, b) -> a.qty - b.qty déborde avec de grands entiers ou des négatifs → Integer.compare(a.qty, b.qty)
+
+// PECS : Producer Extends, Consumer Super
+static <T> void copy(List<? super T> dest, List<? extends T> src) {
+    for (T t : src) dest.add(t);       // src produit des T (extends), dest consomme des T (super)
+}
+List<Number> numbers = new ArrayList<>();
+copy(numbers, List.of(1, 2, 3));       // T = Integer, et une List<Number> accepte des Integer
+// List<? extends Number> : on peut y lire des Number, mais pas y ajouter (sauf null)
+```
+
+### Java moderne : lambdas & streams
+
+#### Q20. Interface fonctionnelle ou lambda : quelle différence ? {#functional-interface-vs-lambda}
+**Réponse :** Ce ne sont pas deux choses du même niveau. Une **interface fonctionnelle** est un **type** : une interface
+avec **une seule méthode abstraite**. Une **lambda** est une **expression** qui fournit une **implémentation** de cette
+méthode. Une lambda n'existe jamais seule : elle a toujours pour type cible une interface fonctionnelle.
+
+**Exemple :**
+
+```java
+@FunctionalInterface                  // facultatif, mais le compilateur vérifie qu'il n'y a qu'une méthode abstraite
+interface FeeRule {
+    BigDecimal apply(BigDecimal amount);                         // la méthode abstraite unique
+
+    default FeeRule capped(BigDecimal max) {                     // autorisé : méthode default
+        return amount -> apply(amount).min(max);
+    }
+
+    static FeeRule rate(String rate) {                           // autorisé : méthode static
+        return amount -> amount.multiply(new BigDecimal(rate));
+    }
+
+    boolean equals(Object o);                                    // autorisé : les méthodes d'Object ne comptent pas
+}
+
+// Trois façons d'implémenter la même interface
+FeeRule anonymous = new FeeRule() {                              // avant Java 8 : classe anonyme
+    public BigDecimal apply(BigDecimal amount) { return BigDecimal.ONE; }
+};
+FeeRule lambda = amount -> amount.multiply(new BigDecimal("0.015"));
+FeeRule methodRef = BigDecimal::negate;                          // référence de méthode : lambda abrégée
+
+FeeRule card = FeeRule.rate("0.015").capped(new BigDecimal("50"));
+card.apply(new BigDecimal("10000"));                             // 50 : plafonné
+```
+
+**Les interfaces fonctionnelles du JDK** (`java.util.function`) : `Function<T, R>` (`T -> R`), `Predicate<T>` (`T ->
+boolean`), `Supplier<T>` (`() -> T`), `Consumer<T>` (`T -> void`), `UnaryOperator<T>`, `BinaryOperator<T>`, leurs variantes
+`Bi…` et primitives (`IntPredicate`, sans boxing). Et les historiques : `Runnable`, `Callable`, `Comparator`.
+
+**Lambda vs classe anonyme :**
+
+| | Lambda | Classe anonyme |
+|---|---|---|
+| Cible | interface fonctionnelle uniquement | interface ou classe, plusieurs méthodes possibles |
+| `this` | l'instance englobante | l'instance anonyme |
+| État | aucun champ propre | peut avoir des champs |
+| Compilation | `invokedynamic`, pas de fichier `.class` | un fichier `Outer$1.class` |
+
+**Pièges :**
+- Variables capturées : elles doivent être *effectively final*. `int count = 0; list.forEach(x -> count++);` ne compile pas →
+  `AtomicInteger`, ou mieux, `list.size()` / un stream.
+- Une lambda ne peut pas lever d'exception checked si la méthode de l'interface ne la déclare pas (`Function.apply` ne
+  déclare rien).
+- `var f = x -> x * 2;` ne compile pas : sans type cible, le compilateur ne sait pas quelle interface implémenter.
+- `Comparator` déclare `equals` en abstrait et reste fonctionnelle : les méthodes publiques d'`Object` ne comptent pas.
+
+#### Q21. L'annotation `@FunctionalInterface` est-elle obligatoire ? {#functional-interface-annotation-optional}
+**Réponse :** Non. Toute interface qui a **exactement une méthode abstraite** est fonctionnelle et accepte une lambda,
+annotée ou pas. `@FunctionalInterface` est une **bonne pratique** : elle documente l'intention (« cette interface est faite
+pour des lambdas ») et demande au **compilateur de vérifier** la règle. Si quelqu'un ajoute plus tard une deuxième méthode
+abstraite, l'erreur tombe sur l'interface elle-même, au lieu de casser toutes les lambdas qui l'utilisent. C'est le même
+principe qu'`@Override` : facultatif, mais le compilateur transforme une erreur silencieuse en erreur explicite. Le JDK la
+met sur `Function`, `Predicate` ou `Runnable`.
+
+**Exemple :**
+
+```java
+// Sans annotation : fonctionne quand même
+interface Validator {
+    boolean validate(Trade t);
+}
+Validator positive = t -> t.notional().signum() > 0;      // compile
+
+// Six mois plus tard, quelqu'un ajoute une méthode abstraite :
+interface Validator {
+    boolean validate(Trade t);
+    String errorMessage();                                // l'interface compile toujours...
+}
+// ... mais chaque lambda, partout dans le code (et chez les équipes qui utilisent la librairie), casse :
+// error: incompatible types: Validator is not a functional interface
+
+// Avec annotation : l'erreur est immédiate, au bon endroit
+@FunctionalInterface
+interface Validator {
+    boolean validate(Trade t);
+    String errorMessage();
+    // error: Unexpected @FunctionalInterface annotation
+    //   Validator is not a functional interface: multiple non-overriding abstract methods found
+}
+
+// La bonne évolution : une méthode default ne casse rien
+@FunctionalInterface
+interface Validator {
+    boolean validate(Trade t);
+    default String errorMessage() { return "invalid trade"; }
+}
+```
+
+**Pièges :**
+- Ne comptent pas comme méthodes abstraites : les méthodes `default`, `static`, et les méthodes publiques d'`Object`
+  redéclarées (`equals`, `toString`).
+- L'annotation sur une classe, une classe abstraite ou une enum est une erreur de compilation : seules les interfaces
+  peuvent être fonctionnelles.
+- Une interface qui étend une interface fonctionnelle reste fonctionnelle tant qu'elle n'ajoute pas de méthode abstraite.
+- L'annotation est `@Documented` : elle apparaît dans la Javadoc, ce qui informe les utilisateurs de l'API.
+
+#### Q22. `map` ou `flatMap` ? Et que sont les méthodes `default`, `var` et les text blocks ? {#default-methods-var-text-blocks}
+**Réponse :** `map` transforme chaque élément en **un** résultat ; `flatMap` transforme chaque élément en un **stream** (ou
+un `Optional`) puis **aplatit** le tout d'un niveau. Même logique pour `Optional` : `opt.flatMap(this::findOwner)` quand
+`findOwner` renvoie déjà un `Optional`. Les méthodes `default` permettent de faire évoluer une interface sans casser ses
+implémentations (`List.sort`, `Collection.stream` en Java 8). `var` est une inférence de type locale. Les text blocks
+(`"""`) écrivent des chaînes multi-lignes.
+
+**Exemple :**
+
+```java
+List<List<String>> byDesk = List.of(List.of("T1", "T2"), List.of("T3"));
+byDesk.stream().map(List::stream);                        // Stream<Stream<String>> : un niveau de trop
+byDesk.stream().flatMap(List::stream).toList();           // [T1, T2, T3] : aplati
+
+// default : faire évoluer une interface sans casser ses implémentations
+interface Priced {
+    BigDecimal price();
+    default BigDecimal priceWithVat() { return price().multiply(new BigDecimal("1.20")); }
+}
+
+var trades = new HashMap<String, List<Trade>>();   // inférence locale ; interdit en champ, en paramètre, avec null
+var list = new ArrayList<>();                      // piège : ArrayList<Object>
+
+String json = """
+        {"id": "T1", "amount": 100.50}
+        """;                                         // indentation commune retirée, saut de ligne final inclus
+```
+
+### Concurrence : les bases
+
+#### Q23. Multithreading : comment créer et coordonner des threads en Java ? {#create-coordinate-threads-basics}
+**Réponse :** Un **processus** a sa propre mémoire ; ses **threads** partagent le heap et ont chacun leur stack. Le
+multithreading sert à exécuter plusieurs tâches en parallèle (CPU) ou à ne pas bloquer pendant les attentes (I/O). En
+pratique, on ne crée pas de threads à la main : on soumet des **tâches** à un **pool** (`ExecutorService`), et on protège
+l'état partagé.
+
+**Les façons de lancer du travail concurrent, de la plus ancienne à la plus moderne :**
+
+```java
+// 1. Hériter de Thread : à éviter (on gaspille l'héritage, on mélange tâche et mécanisme)
+class Worker extends Thread { public void run() { /* ... */ } }
+new Worker().start();
+
+// 2. Runnable : la tâche sans résultat, séparée du thread
+Thread t = new Thread(() -> System.out.println("hello"));
+t.start();                             // start() crée un nouveau thread ; run() s'exécuterait dans le thread courant
+t.join();                              // attendre la fin
+
+// 3. Callable + Future : une tâche qui renvoie un résultat et peut lever une exception checked
+try (ExecutorService pool = Executors.newFixedThreadPool(4)) {
+    Future<BigDecimal> price = pool.submit(() -> pricer.price("FR0000131104"));
+    BigDecimal p = price.get(2, TimeUnit.SECONDS);   // bloquant, avec timeout
+}
+
+// 4. CompletableFuture : composer des tâches asynchrones sans bloquer
+CompletableFuture.supplyAsync(() -> clientApi.get(id), pool)
+        .thenApply(Client::name)
+        .exceptionally(ex -> "inconnu");
+
+// 5. Virtual threads (Java 21) : un thread léger par tâche, idéal pour l'I/O bloquante
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    ids.forEach(id -> executor.submit(() -> clientApi.get(id)));
+}
+```
+
+**Cycle de vie d'un thread** (`Thread.State`) : `NEW` → `RUNNABLE` → (`BLOCKED` en attente d'un moniteur, `WAITING` /
+`TIMED_WAITING` sur `join`, `wait`, `sleep`, `park`) → `TERMINATED`.
+
+**Coordonner et protéger :**
+
+| Besoin | Outil |
+|---|---|
+| Exclusion mutuelle | `synchronized`, `ReentrantLock` |
+| Visibilité d'un drapeau | `volatile` |
+| Compteur, référence atomique | `AtomicInteger`, `AtomicReference`, `LongAdder` |
+| Map partagée | `ConcurrentHashMap` (`merge`, `computeIfAbsent`) |
+| Producteur / consommateur | `BlockingQueue` (`ArrayBlockingQueue`) |
+| Attendre N tâches | `CountDownLatch`, `invokeAll`, `CompletableFuture.allOf` |
+| Limiter l'accès concurrent | `Semaphore` (ex. 10 appels simultanés à une API) |
+
+**Pièges :**
+- `run()` au lieu de `start()` : aucun nouveau thread.
+- `sleep` garde les verrous ; `wait` relâche le moniteur (et s'appelle dans un `synchronized`, dans une boucle `while`).
+- Oublier de fermer un `ExecutorService` : la JVM ne s'arrête pas (threads non démons).
+- Une exception dans une tâche soumise par `submit` est capturée dans le `Future` : sans `get()`, elle passe inaperçue.
+- Race condition (`count++`), deadlock (verrous pris dans un ordre différent) : voir [Java Q40](java-core-jvm.md#race-condition-deadlock-thread-starvation).
+
+**Usage réel :** paralléliser des appels à plusieurs services (`CompletableFuture` + pool dédié), batchs CPU (pool de la
+taille du nombre de cœurs), serveur web à forte concurrence I/O (virtual threads). Voir
+[Java Q48, `ExecutorService`](java-core-jvm.md#using-executorservice-creating-raw-thread) et
+[Java Q52, virtual threads](java-core-jvm.md#problem-virtual-threads-project-loom).
+
+### Mémoire JVM : les bases
+
+#### Q24. Heap ou stack : qu'est-ce qui vit où ? {#heap-vs-stack}
+**Réponse :** La **stack** est propre à chaque thread : elle contient une *frame* par appel de méthode, avec les variables
+locales, les primitifs et les **références**. Elle est libérée automatiquement au retour de la méthode. Le **heap** est
+partagé par tous les threads : il contient **tous les objets** (et les tableaux), et c'est le garbage collector qui le
+libère.
+
+| | Stack | Heap |
+|---|---|---|
+| Contenu | frames : variables locales, primitifs, références, adresse de retour | objets, tableaux, string pool (depuis Java 7) |
+| Portée | un thread | toute la JVM |
+| Durée de vie | celle de l'appel de méthode | jusqu'à ce que l'objet ne soit plus accessible |
+| Libération | automatique, au dépilement | garbage collector |
+| Taille | petite, `-Xss` (souvent 512 Ko à 1 Mo) | grande, `-Xms` / `-Xmx` |
+| Vitesse | allocation quasi gratuite | allocation rapide (TLAB), mais coût du GC |
+| Thread-safety | naturelle : rien n'est partagé | à gérer |
+| Erreur si plein | `StackOverflowError` | `OutOfMemoryError: Java heap space` |
+
+**Exemple :**
+
+```java
+void book(int qty) {                   // qty : primitif, dans la frame de book (stack)
+    Trade t = new Trade("T1", qty);    // t : référence sur la stack ; l'objet Trade : sur le heap
+    List<Trade> batch = List.of(t);    // une 2e référence vers le même objet du heap
+    repo.save(t);                      // nouvelle frame empilée pour save, dépilée au retour
+}                                      // frame de book dépilée : l'objet Trade devient éligible au GC
+```
+
+**Pièges :**
+- « Les primitifs sont sur la stack » n'est vrai que pour les **variables locales**. Un champ `int` d'un objet vit dans
+  l'objet, donc sur le heap.
+- Java passe tout **par valeur** : pour un objet, c'est la référence qui est copiée. Réaffecter le paramètre ne change rien
+  chez l'appelant ; modifier l'objet, si.
+- Le JIT peut éviter une allocation sur le heap grâce à l'*escape analysis* (objet qui ne sort pas de la méthode).
+
+**Usage réel :** diagnostiquer : `StackOverflowError` → récursion ; `OutOfMemoryError` → heap dump et Eclipse MAT. Dans un
+conteneur, la mémoire totale = heap + metaspace + stacks des threads + mémoire native : d'où `-XX:MaxRAMPercentage=75`
+plutôt que 100 %. Détail des zones : [R9](java-core-jvm.md#java-memory-management-different-jvm).
+
 ## 🟡 Pièges seniors
 
 ### Langage & types
 
-#### Q8. Pourquoi `String` est-elle immuable, et qu'est-ce que le string pool ? {#string-immutable-string-pool}
+#### Q25. Pourquoi `String` est-elle immuable, et qu'est-ce que le string pool ? {#string-immutable-string-pool}
 **Réponse :** Une fois créé, le stockage interne des caractères d'une `String` n'est jamais modifié — chaque
 méthode « modifiante » (`concat`, `substring`, `replace`) retourne une nouvelle `String`. Cela apporte la
 thread safety sans synchronisation (partage sûr entre threads), permet d'utiliser une `String` sans risque comme
@@ -187,7 +1102,11 @@ System.out.println(a == c.intern());  // true  — intern() returns the pooled r
 la réserve sur `new String(...)` — un recruteur enchaînera immédiatement avec exactement cette ligne pour voir
 si la distinction est réellement comprise, et pas mémorisée comme un fait isolé.
 
-#### Q9. Quel est le piège de `==` avec l'autoboxing sur `Integer` ? {#autoboxing-trap-integer}
+**Compléments sur le pool :** `String d = "hel" + "lo";` est une constante calculée à la compilation, donc `a == d` est
+`true`, alors que `String part = "hel"; a == part + "lo"` est `false` (concaténation à l'exécution, donc nouvel objet).
+`new String("hello")` crée 1 ou 2 objets : celui du heap, plus le littéral `"hello"` dans le pool s'il n'y est pas encore.
+
+#### Q26. Quel est le piège de `==` avec l'autoboxing sur `Integer` ? {#autoboxing-trap-integer}
 **Réponse :** La JVM met en cache les `Integer` boxés de -128 à 127 (le cache interne de `Integer.valueOf`,
 rempli à l'initialisation de la classe et garanti par la JLS, pas seulement un détail d'implémentation sur
 lequel on ne pourrait pas compter), donc `Integer a = 100; Integer b = 100; a == b` vaut `true` — les deux
@@ -221,7 +1140,7 @@ d'une bizarrerie de la JVM — la JLS impose explicitement le cache de -128..127
 le fait que `==` « marche » dans cette plage n'est même pas un comportement indéfini sur lequel vous avez eu de
 la chance ; il est garanti de continuer à marcher jusqu'à ce qu'une valeur réelle franchisse la frontière.
 
-#### Q10. Qu'est-ce que le type erasure, et qu'est-ce que cela casse réellement ? {#type-erasure-break}
+#### Q27. Qu'est-ce que le type erasure, et qu'est-ce que cela casse réellement ? {#type-erasure-break}
 **Réponse :** L'information de type générique (`List<String>` vs `List<Integer>`) n'existe qu'à la compilation
 pour le contrôle de types ; le compilateur l'efface vers des raw types (`List`) avec des casts insérés, donc à
 l'exécution les deux ne sont que des `List`. Cela casse : la surcharge de deux méthodes qui ne diffèrent que par
@@ -256,7 +1175,7 @@ type générique à l'exécution », mais peu savent expliquer le mécanisme de 
 polymorphisme de continuer à fonctionner malgré cela — c'est la différence entre réciter le terme et comprendre
 ce que le compilateur a dû faire.
 
-#### Q11. Qu'apporte le compact canonical constructor d'un record que `@Data` de Lombok ne garantit pas structurellement ? {#record-compact-canonical-constructor-buy}
+#### Q28. Qu'apporte le compact canonical constructor d'un record que `@Data` de Lombok ne garantit pas structurellement ? {#record-compact-canonical-constructor-buy}
 **Réponse :** Le compact constructor d'un record (`record Range(int lo, int hi) { Range { if (lo > hi)
 throw new IllegalArgumentException(); } }`) exécute la validation *avant* l'affectation des champs, comme partie
 intrinsèque de l'unique façon de construire le type — il n'y a ni setter, ni second constructeur, ni builder
@@ -289,7 +1208,7 @@ moins de boilerplate » est le mauvais modèle mental — la garantie du record 
 l'impose), alors que l'immutabilité de `@Data` (si tant est qu'on ait pensé à `@Value` à la place) est une
 convention qu'un appel de setter ultérieur ou un framework basé sur la réflexion peut violer silencieusement.
 
-#### Q12. Comment le pattern matching pour `switch` se combine-t-il avec les sealed types, et pourquoi est-ce important pour l'exhaustivité ? {#pattern-matching-switch-combine-sealed}
+#### Q29. Comment le pattern matching pour `switch` se combine-t-il avec les sealed types, et pourquoi est-ce important pour l'exhaustivité ? {#pattern-matching-switch-combine-sealed}
 **Réponse :** Depuis Java 21, `switch` peut faire du pattern-matching directement sur les sous-types permis d'un
 sealed type : `switch (shape) { case Circle c -> ...; case Square s -> ...; case Triangle t -> ...; }`.
 Comme `Shape` est `sealed permits Circle, Square, Triangle`, le compilateur connaît l'ensemble complet des
@@ -328,7 +1247,7 @@ une bonne pratique, mais cela réintroduit silencieusement exactement le trou à
 
 + le switch exhaustif ont été conçus pour éliminer à la compilation.
 
-#### Q13. Où `Optional` aide-t-il, et où son usage dégrade-t-il le code ? {#optional-help-using-make-code}
+#### Q30. Où `Optional` aide-t-il, et où son usage dégrade-t-il le code ? {#optional-help-using-make-code}
 **Réponse :** `Optional<T>` a été conçu pour exactement une tâche : un *type de retour* qui dit « il peut ne pas
 y avoir de résultat » afin que l'appelant ne puisse pas oublier de gérer l'absence. Il n'est pas destiné à
 remplacer `null` partout. Mauvais usages que les seniors doivent savoir signaler : (1) comme **champ** ou **paramètre de méthode** — il n'est pas `Serializable`, ajoute une allocation et un troisième état (`null` *ou*
@@ -368,7 +1287,7 @@ String city = repo.findById(id)
 classique parce que la version eager est invisible jusqu'à ce que l'argument ait un effet de bord
 (un insert en double, une requête lente à chaque requête).
 
-#### Q14. Quelles sont les façons courantes dont un pipeline `Stream` tourne mal, même lorsqu'il compile et « marche » dans un test ? {#common-ways-stream-pipeline-goes}
+#### Q31. Quelles sont les façons courantes dont un pipeline `Stream` tourne mal, même lorsqu'il compile et « marche » dans un test ? {#common-ways-stream-pipeline-goes}
 **Réponse :** Cinq cas récurrents. (1) **Laziness** : les opérations intermédiaires (`map`, `filter`,
 `peek`) ne font rien tant qu'une opération terminale ne s'exécute pas, donc un pipeline sans opération terminale
 ne fait silencieusement rien, et `peek` est une aide au debug, pas un endroit pour de la logique (il peut être
@@ -412,7 +1331,77 @@ Map<String, User> safe = users.stream()
 Les recruteurs utilisent `toMap` avec doublons et `forEach` parallèle précisément parce qu'ils montrent
 si vous avez déjà débuggé des streams en production plutôt que seulement lu un tutoriel.
 
-#### Q15. Pourquoi `double` est-il inadapté à l'argent, et quels sont les pièges de `BigDecimal` une fois qu'on change ? {#double-wrong-money-bigdecimal-traps}
+#### Q32. Comment grouper des éléments avec les streams ? {#stream-grouping-groupingby}
+**Réponse :** Avec `Collectors.groupingBy(classifier)`, qui renvoie une `Map<K, List<T>>`. Sa force est le **collector
+aval** (*downstream*) en second argument : au lieu d'une liste, on peut compter, sommer, extraire un champ, garder le
+maximum… Et une variante à trois arguments choisit le type de `Map` (par exemple `TreeMap` pour un résultat trié).
+`groupingBy` est l'équivalent du `GROUP BY` SQL : le classificateur est la clause `GROUP BY`, le collector aval est la
+fonction d'agrégation (`COUNT`, `SUM`, `MAX`). Mais si les données sont en base, on fait le `GROUP BY` en SQL plutôt que de
+tout charger en mémoire.
+
+**Exemple :**
+
+```java
+record Trade(String id, String desk, String currency, BigDecimal notional, Status status) {}
+
+// 1. Grouper simplement : Map<String, List<Trade>>
+Map<String, List<Trade>> byDesk = trades.stream()
+        .collect(groupingBy(Trade::desk));
+
+// 2. Compter par groupe : Map<String, Long>
+Map<String, Long> countByDesk = trades.stream()
+        .collect(groupingBy(Trade::desk, counting()));
+
+// 3. Sommer des BigDecimal par groupe (jamais summingDouble pour de l'argent)
+Map<String, BigDecimal> notionalByDesk = trades.stream()
+        .collect(groupingBy(Trade::desk,
+                 reducing(BigDecimal.ZERO, Trade::notional, BigDecimal::add)));
+
+// 4. Extraire un champ : Map<String, Set<String>>, les devises traitées par desk
+Map<String, Set<String>> currenciesByDesk = trades.stream()
+        .collect(groupingBy(Trade::desk, mapping(Trade::currency, toSet())));
+
+// 5. Le plus gros trade par desk : Map<String, Optional<Trade>>
+Map<String, Optional<Trade>> biggest = trades.stream()
+        .collect(groupingBy(Trade::desk, maxBy(comparing(Trade::notional))));
+
+// 6. Résultat trié par clé : 3e argument = fabrique de Map
+TreeMap<String, Long> sorted = trades.stream()
+        .collect(groupingBy(Trade::desk, TreeMap::new, counting()));
+
+// 7. Deux niveaux : desk, puis statut
+Map<String, Map<Status, List<Trade>>> byDeskAndStatus = trades.stream()
+        .collect(groupingBy(Trade::desk, groupingBy(Trade::status)));
+
+// 8. Deux groupes seulement (true / false) : partitioningBy
+Map<Boolean, List<Trade>> bigOrNot = trades.stream()
+        .collect(partitioningBy(t -> t.notional().compareTo(new BigDecimal("1000000")) > 0));
+```
+
+Imports utilisés : `import static java.util.stream.Collectors.*;` et `import static java.util.Comparator.comparing;`.
+
+**`groupingBy` vs `toMap` :**
+
+```java
+// Une valeur par clé (pas une liste) : toMap
+Map<String, Trade> byId = trades.stream().collect(toMap(Trade::id, Function.identity()));
+// Clé en double → IllegalStateException ; fournir une fonction de fusion si c'est attendu :
+Map<String, BigDecimal> totals = trades.stream()
+        .collect(toMap(Trade::desk, Trade::notional, BigDecimal::add));   // équivalent du cas 3
+```
+
+**Pièges :**
+- La `Map` renvoyée par `groupingBy` est une `HashMap` : **aucun ordre** garanti. Utiliser `TreeMap::new` ou
+  `LinkedHashMap::new`.
+- `counting()` renvoie des `Long`, pas des `Integer`.
+- `summingDouble` / `averagingDouble` sur des montants : erreurs d'arrondi. Pour l'argent, `reducing` avec `BigDecimal::add`.
+- Une clé `null` renvoyée par le classificateur → `NullPointerException`. `partitioningBy` renvoie toujours les deux clés,
+  même vides.
+- En parallèle, `groupingByConcurrent` évite la fusion coûteuse des maps (au prix de l'ordre).
+- Pour lire le résultat trié par valeur (top 3 des desks) :
+  `countByDesk.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(3)`.
+
+#### Q33. Pourquoi `double` est-il inadapté à l'argent, et quels sont les pièges de `BigDecimal` une fois qu'on change ? {#double-wrong-money-bigdecimal-traps}
 **Réponse :** `double` est une virgule flottante binaire : `0.1` n'a pas de représentation exacte, donc
 `0.1 + 0.2 == 0.30000000000000004` et les erreurs s'accumulent à travers les sommes, remises et lignes de taxe —
 un centime d'écart çà et là, ce dont les équipes de réconciliation et les auditeurs se soucient *bel et bien*.
@@ -454,7 +1443,9 @@ sont là où naissent réellement les bugs financiers.
 
 ### Exceptions & ressources
 
-#### Q16. Que garantit réellement `try-with-resources`, et sur quelle interface repose-t-il ? {#try-resources-guarantee-interface-rely}
+**Stocker l'argent :** en base, `NUMERIC(19,4)` (ou des centimes en `long`), jamais `FLOAT`/`DOUBLE`.
+
+#### Q34. Que garantit réellement `try-with-resources`, et sur quelle interface repose-t-il ? {#try-resources-guarantee-interface-rely}
 **Réponse :** Toute ressource implémentant `AutoCloseable` (ou `Closeable`, qui l'étend et
 restreint `close()` à ne lever que `IOException`) déclarée dans les parenthèses du `try(...)` voit son
 `close()` appelé automatiquement à la sortie du bloc — normale ou par exception — dans l'ordre **inverse**
@@ -483,7 +1474,7 @@ try (Resource r1 = new Resource("A"); Resource r2 = new Resource("B")) {
 mécanisme des exceptions suppressed, qui est exactement le détail qui compte lors du debug d'une
 stack trace de production contenant une section « Suppressed: » qu'un lecteur a survolée.
 
-#### Q17. Exceptions checked vs unchecked — quel est le véritable compromis de conception ? {#checked-unchecked-exceptions-design-trade}
+#### Q35. Exceptions checked vs unchecked — quel est le véritable compromis de conception ? {#checked-unchecked-exceptions-design-trade}
 **Réponse :** Les exceptions checked (sous-classes de `Exception` mais pas de `RuntimeException`) doivent être
 déclarées ou attrapées — le compilateur force l'appelant à reconnaître un mode de défaillance spécifique et
 récupérable (par ex. `IOException`). Les exceptions unchecked (`RuntimeException` et ses sous-classes)
@@ -523,7 +1514,7 @@ explique pourquoi c'est pire que des exceptions checked ou unchecked bien utilis
 
 ### Collections
 
-#### Q18. Décrivez ce qui se passe réellement dans `HashMap.put()` et `.get()`, et expliquez pourquoi un mauvais `hashCode()` est un vrai bug de performance. {#happens-inside-hashmap-put-get}
+#### Q36. Décrivez ce qui se passe réellement dans `HashMap.put()` et `.get()`, et expliquez pourquoi un mauvais `hashCode()` est un vrai bug de performance. {#happens-inside-hashmap-put-get}
 **Réponse :** `put()` calcule `hashCode()`, le disperse avec une fonction de mix interne
 (`h ^ (h >>> 16)`, pour replier les bits de poids fort dans les bits de poids faible afin que les tailles de table qui sont de petites puissances de
 deux gardent une bonne distribution), et choisit un index de bucket à partir de ce hash modulo la capacité
@@ -568,7 +1559,7 @@ System.out.println(map.size()); // 2, not 1 — "duplicate" entries for an equal
 contrat `equals()`/`hashCode()` rompu n'est pas un ralentissement — c'est un bug de correction qui
 duplique silencieusement les données.
 
-#### Q19. Pourquoi un objet mutable avec un `hashCode()` basé sur ses champs est-il dangereux comme clé de `HashMap` ou élément de `HashSet` ? {#mutable-object-field-based-hashcode}
+#### Q37. Pourquoi un objet mutable avec un `hashCode()` basé sur ses champs est-il dangereux comme clé de `HashMap` ou élément de `HashSet` ? {#mutable-object-field-based-hashcode}
 **Réponse :** Une `HashMap`/`HashSet` range une entrée dans un bucket en utilisant le `hashCode()` de la clé *au
 moment de l'insertion* et ne le recalcule jamais (Q18). Si un champ qui participe à `hashCode()` /
 `equals()` est muté ensuite, l'entrée reste dans l'ancien bucket alors que chaque lookup ultérieur
@@ -616,7 +1607,7 @@ immédiatement — le bug n'apparaît que lorsque quelque chose mute l'objet *al
 collection hashée*, souvent loin de l'endroit où il a été inséré, et le symptôme (un élément « fantôme »)
 apparaît bien après la mutation.
 
-#### Q20. Qu'est-ce qui cause `ConcurrentModificationException`, et quelle est la bonne correction ? {#causes-concurrentmodificationexception-correct-fix}
+#### Q38. Qu'est-ce qui cause `ConcurrentModificationException`, et quelle est la bonne correction ? {#causes-concurrentmodificationexception-correct-fix}
 **Réponse :** Les collections Java utilisent un itérateur fail-fast reposant sur un champ `modCount` ;
 l'itérateur capture `modCount` à sa création et le vérifie à chaque `next()`. Modifier structurellement
 la collection (add/remove, pas seulement mettre à jour une valeur via `set()`) en dehors de la propre méthode
@@ -657,7 +1648,7 @@ names.removeIf(n -> n.equals("Bob"));
 en boucle par index qui saute un élément après la suppression — les deux cachent un vrai bug au lieu de
 le corriger (la version par index saute silencieusement l'élément qui suit celui supprimé).
 
-#### Q21. Concevez un cache LRU thread-safe et borné from scratch. Quels sont les vrais compromis ? {#design-thread-safe-bounded-lru}
+#### Q39. Concevez un cache LRU thread-safe et borné from scratch. Quels sont les vrais compromis ? {#design-thread-safe-bounded-lru}
 **Réponse :** Une `LinkedHashMap` en mode access-order (`new LinkedHashMap<>(cap, 0.75f, true)`) avec
 `removeEldestEntry` redéfini pour évincer au-delà d'un seuil de taille vous donne la sémantique LRU presque
 gratuitement, car le mode access-order re-lie une entrée en queue de la liste doublement chaînée interne
@@ -702,7 +1693,7 @@ solution naïve du lock partout est elle-même l'amorce de la relance sur les co
 
 ### Concurrence & modèle mémoire
 
-#### Q22. Qu'est-ce qu'une race condition, un deadlock et une famine de threads, et comment reconnaître et prévenir chacun ? {#race-condition-deadlock-thread-starvation}
+#### Q40. Qu'est-ce qu'une race condition, un deadlock et une famine de threads, et comment reconnaître et prévenir chacun ? {#race-condition-deadlock-thread-starvation}
 **Réponse :** Ce sont les trois façons classiques dont la concurrence sur état partagé tourne mal, et elles échouent
 différemment. Une **race condition** est un bug où le résultat dépend d'un entrelacement malchanceux des threads : la
 forme typique est *check-then-act* (`if (slot.isFree()) slot.book()`) ou *read-modify-write* (`count++`, qui fait trois
@@ -740,10 +1731,10 @@ void transfer(Account a, Account b) {
 
 **Pourquoi c'est un piège :** une race condition peut survivre des années car elle exige une vraie concurrence et un
 timing rare ; « ça marche sur ma machine » ne prouve rien. Et `volatile` ou une `ConcurrentHashMap` ne rendent pas une
-*séquence* d'opérations atomique (voir [Java Q23](java-core-jvm.md#real-synchronized-volatile)). Les équivalents côté base de données sont traités
+*séquence* d'opérations atomique (voir [Java Q41](java-core-jvm.md#real-synchronized-volatile)). Les équivalents côté base de données sont traités
 dans [Persistence Q26](persistence-sql-postgres.md#optimistic-pessimistic-locking-terms-contention).
 
-#### Q23. Quelle est la vraie différence entre `synchronized` et `volatile` ? {#real-synchronized-volatile}
+#### Q41. Quelle est la vraie différence entre `synchronized` et `volatile` ? {#real-synchronized-volatile}
 **Réponse :** `synchronized` fournit l'exclusion mutuelle (un seul thread exécute le bloc à la
 fois) **et** une arête happens-before : tout ce qu'un thread a fait avant de relâcher un lock est visible
 pour le thread suivant qui acquiert ce même lock, y compris les écritures simples (non volatile) faites
@@ -785,12 +1776,12 @@ autre thread ne s'intercale entre la lecture et l'écriture.
 cette question — volatile ne supprime que les bugs de lecture périmée, il ne fait rien contre les race conditions sur
 les opérations composées.
 
-#### Q24. Qu'est-ce que l'immuabilité, et pourquoi les objets immuables sont-ils si utiles dans les applications concurrentes ? {#immutability-immutable-objects-useful-concurrent}
+#### Q42. Qu'est-ce que l'immuabilité, et pourquoi les objets immuables sont-ils si utiles dans les applications concurrentes ? {#immutability-immutable-objects-useful-concurrent}
 **Réponse :** Un objet immuable ne peut plus changer après sa construction : tous les champs sont `final`, affectés dans le
 constructeur, la classe ne peut pas être étendue (ou est un `record`), et aucune méthode n'expose d'état interne mutable.
 Comme rien ne peut jamais changer, il n'y a rien à synchroniser : un nombre quelconque de threads peuvent lire la même
 instance en même temps sans verrou, sans problème de visibilité (les champs `final` sont publiés en sécurité, voir
-[Java Q25](java-core-jvm.md#safe-publication-java-memory-model)) et sans copies défensives à chaque frontière. Cela supprime des familles entières de bugs
+[Java Q43](java-core-jvm.md#safe-publication-java-memory-model)) et sans copies défensives à chaque frontière. Cela supprime des familles entières de bugs
 (races, lectures déchirées, `ConcurrentModificationException`), rend les objets sûrs comme clés de `HashMap` et valeurs de
 cache, et rend le raisonnement local. Le coût est l'allocation : chaque « modification » crée un nouvel objet
 (`LocalDate.plusDays`, `String.concat`), ce que la JVM gère bien pour de petites valeurs mais qui est inadapté à de grosses
@@ -817,7 +1808,7 @@ une `Date` mutable n'est immuable qu'en surface. De plus, l'immuabilité protèg
 `volatile Appointment current` exige encore un remplacement atomique (`AtomicReference.compareAndSet`) quand plusieurs
 threads le mettent à jour.
 
-#### Q25. Qu'est-ce que la « safe publication » dans le Java Memory Model, et pourquoi un autre thread peut-il voir un objet à moitié construit ? {#safe-publication-java-memory-model}
+#### Q43. Qu'est-ce que la « safe publication » dans le Java Memory Model, et pourquoi un autre thread peut-il voir un objet à moitié construit ? {#safe-publication-java-memory-model}
 **Réponse :** Sans arête happens-before entre le thread qui construit un objet et le
 thread qui lit la référence, le JMM permet au lecteur de voir la *référence* comme non nulle alors que
 certains *champs de l'objet contiennent encore leurs valeurs par défaut* — le compilateur et le CPU sont libres de
@@ -863,7 +1854,7 @@ Listener(EventBus bus) { bus.register(this); this.state = load(); } // bus threa
 car le réordonnancement dépend du matériel et du JIT. Les candidats qui disent « volatile ne sert que pour les
 flags » ratent que son vrai rôle est l'arête happens-before qui rend visible le *reste* d'un objet.
 
-#### Q26. Quand choisiriez-vous `ReentrantLock` (ou `StampedLock`) plutôt que `synchronized` ? {#pick-reentrantlock-stampedlock-synchronized}
+#### Q44. Quand choisiriez-vous `ReentrantLock` (ou `StampedLock`) plutôt que `synchronized` ? {#pick-reentrantlock-stampedlock-synchronized}
 **Réponse :** `synchronized` est le bon choix par défaut : il relâche le monitor automatiquement même sur
 une exception, ne peut pas être oublié, et la JVM l'optimise fortement. Ne recourez à
 `java.util.concurrent.locks` que lorsque vous avez besoin de quelque chose qu'il ne peut pas exprimer : **`tryLock()` /
@@ -912,7 +1903,7 @@ double distance() {
 débit est généralement négligeable sur les JVM modernes. La réponse senior porte sur les *capacités*
 (timeouts, interruption, conditions) et sur la responsabilité accrue de déverrouiller correctement.
 
-#### Q27. L'initialisation de classe peut-elle elle-même provoquer un deadlock, et comment se comporte l'échec d'un static initializer par la suite ? {#class-initialization-itself-deadlock-static}
+#### Q45. L'initialisation de classe peut-elle elle-même provoquer un deadlock, et comment se comporte l'échec d'un static initializer par la suite ? {#class-initialization-itself-deadlock-static}
 **Réponse :** Oui. La JVM garantit que chaque classe est initialisée exactement une fois en détenant un
 lock d'initialisation pendant l'exécution des initialiseurs `static` (JLS §12.4.2). Si l'initialiseur static de la classe `A`
 a besoin de la classe `B`, et celui de `B` a besoin de `A`, et que deux threads différents déclenchent `A` et `B`
@@ -949,7 +1940,7 @@ class Settings {
 `NoClassDefFoundError` est le faux indice habituel lors d'un incident : les ingénieurs poursuivent un « jar manquant »
 qui est en réalité présent, alors que le vrai bug est la première erreur d'initialiseur, depuis longtemps sortie du scroll.
 
-#### Q28. Nommez les stratégies d'implémentation d'un Singleton thread-safe, et expliquez pourquoi Bill Pugh / static inner class est généralement préféré. {#name-thread-safe-singleton-implementation}
+#### Q46. Nommez les stratégies d'implémentation d'un Singleton thread-safe, et expliquez pourquoi Bill Pugh / static inner class est généralement préféré. {#name-thread-safe-singleton-implementation}
 **Réponse :** Quatre approches courantes : (1) l'initialisation eager — un champ `static final`,
 instancié au chargement de la classe, simple et thread-safe mais qui paie toujours le coût de construction
 même s'il n'est pas utilisé ; (2) un `getInstance()` synchronized — correct mais sérialise chaque appel pour toujours,
@@ -1003,9 +1994,9 @@ public enum EnumRegistry {
 recruteur qui creuse (« et la réflexion ? ») teste si vous connaissez réellement la
 faille, et pas seulement le nom du pattern.
 
-*Voir aussi :* [Design Patterns Q1](design-patterns.md#problem-singleton-solve-implement-thread) (quand un Singleton est vraiment justifié) et [Design Patterns Q15](design-patterns.md#many-senior-engineers-treat-singleton) (pourquoi c'est souvent un anti-pattern).
+*Voir aussi :* [Design Patterns Q2](design-patterns.md#problem-singleton-solve-implement-thread) (quand un Singleton est vraiment justifié) et [Design Patterns Q16](design-patterns.md#many-senior-engineers-treat-singleton) (pourquoi c'est souvent un anti-pattern).
 
-#### Q29. Pourquoi les `ThreadLocal`s conviennent-ils mal au code concurrent moderne, et que change `ScopedValue` ? {#threadlocal-poor-fit-modern-concurrent}
+#### Q47. Pourquoi les `ThreadLocal`s conviennent-ils mal au code concurrent moderne, et que change `ScopedValue` ? {#threadlocal-poor-fit-modern-concurrent}
 **Réponse :** Un `ThreadLocal` est un emplacement par thread, mutable et sans portée : n'importe qui peut le `set()`, il
 vit jusqu'à ce que quelqu'un pense à le `remove()`, et sur un thread poolé il fait fuiter silencieusement la
 valeur de la requête précédente dans la suivante (Q37). Il coûte aussi de la mémoire par thread, ce qui cesse
@@ -1049,7 +2040,7 @@ abstraction, et pas seulement réciter la fuite.
 
 ### Executors & async
 
-#### Q30. Quelle est la différence entre utiliser `ExecutorService` et créer des objets `Thread` bruts, et quel est un piège courant avec le common fork-join pool ? {#using-executorservice-creating-raw-thread}
+#### Q48. Quelle est la différence entre utiliser `ExecutorService` et créer des objets `Thread` bruts, et quel est un piège courant avec le common fork-join pool ? {#using-executorservice-creating-raw-thread}
 **Réponse :** `ExecutorService` découple la soumission des tâches de la gestion des threads — vous soumettez
 des `Runnable`s ou `Callable`s à un pool de taille bornée (ou un virtual-thread-per-task), récupérez des
 `Future`s, et le pool gère la réutilisation, la mise en file et l'arrêt ; la création brute de `Thread` ne vous donne rien
@@ -1082,7 +2073,7 @@ List<Future<String>> futures = urls.stream()
 ralentissement sans rapport apparent, apparemment aléatoire, dans une partie complètement différente de l'application qui
 utilise elle aussi `parallelStream()` ou des `CompletableFuture` async par défaut.
 
-#### Q31. Quelle est la différence entre une charge CPU-bound et I/O-bound, et comment cela change-t-il le dimensionnement des pools de threads ? {#cpu-bound-o-bound-workloads}
+#### Q49. Quelle est la différence entre une charge CPU-bound et I/O-bound, et comment cela change-t-il le dimensionnement des pools de threads ? {#cpu-bound-o-bound-workloads}
 **Réponse :** Une tâche **CPU-bound** occupe un cœur à calculer (parsing, hachage, compression, génération de rapports) :
 sa vitesse est limitée par le nombre de cœurs, donc plus de threads que de cœurs n'ajoute que des changements de contexte.
 Une tâche **I/O-bound** passe l'essentiel de son temps à *attendre* (appel HTTP, requête SQL, disque, broker de
@@ -1093,9 +2084,9 @@ environ 8 (ou `cœurs + 1`). En pratique on ne mélange pas : on donne au calcul
 `ForkJoinPool.commonPool()` / streams parallèles) et aux I/O bloquantes leur propre pool, plus grand mais *borné*, pour
 qu'une dépendance lente ne puisse ni affamer le calcul ni épuiser tous les threads. Les threads virtuels changent le côté
 I/O : on peut en créer un par tâche bloquante et cesser de dimensionner le pool à la main (voir
-[Java Q33](java-core-jvm.md#problem-virtual-threads-project-loom)), mais ils n'apportent rien au CPU-bound, toujours limité par les cœurs. Mesurez avant de
+[Java Q52](java-core-jvm.md#problem-virtual-threads-project-loom)), mais ils n'apportent rien au CPU-bound, toujours limité par les cœurs. Mesurez avant de
 régler : CPU proche de 100 % avec une courte file d'exécution signale du CPU-bound ; CPU bas avec beaucoup de threads
-`WAITING` et une latence croissante signale de l'I/O-bound (voir [Java Q40](java-core-jvm.md#profile-slow-cpu-hungry-java) pour le profilage).
+`WAITING` et une latence croissante signale de l'I/O-bound (voir [Java Q59](java-core-jvm.md#profile-slow-cpu-hungry-java) pour le profilage).
 
 **Exemple :**
 
@@ -1112,10 +2103,59 @@ CompletableFuture.supplyAsync(() -> patientApi.fetch(id), ioPool)         // att
 
 **Pourquoi c'est un piège :** un seul pool partagé pour tout laisse une rafale d'appels HTTP lents occuper tous les threads
 et affamer le calcul (et les health checks) ; et `newCachedThreadPool` pour de l'I/O n'a aucune borne, si bien qu'un aval
-lent finit en `OutOfMemoryError: unable to create native thread`. Voir [Java Q30](java-core-jvm.md#using-executorservice-creating-raw-thread) pour les pièges des
+lent finit en `OutOfMemoryError: unable to create native thread`. Voir [Java Q48](java-core-jvm.md#using-executorservice-creating-raw-thread) pour les pièges des
 executors.
 
-#### Q32. Décrivez `thenApply` vs `thenCompose` vs `thenCombine` sur `CompletableFuture`, et nommez un piège courant. {#thenapply-thencompose-thencombine-completablefuture-name}
+#### Q50. Les parallel streams : comment ça marche, et quand les utiliser ? {#parallel-streams-when-worth-it}
+**Réponse :** `parallelStream()` (ou `.parallel()`) découpe la source en morceaux (via un `Spliterator`), les traite sur
+plusieurs threads du **`ForkJoinPool.commonPool()`** (taille = nombre de cœurs − 1, plus le thread appelant), puis combine
+les résultats. C'est rentable **seulement** pour un gros volume de calcul **CPU**, sur une source facile à découper, avec
+des opérations **sans état partagé**. Dans tous les autres cas, c'est plus lent ou faux. Par défaut on reste en séquentiel :
+on passe en parallèle pour un calcul CPU lourd sur une grosse collection, après mesure, et jamais pour des appels réseau.
+
+**Exemple :**
+
+```java
+// Bon candidat : beaucoup d'éléments, calcul CPU, source découpable, aucune mutation partagée
+BigDecimal totalRisk = positions.parallelStream()          // ArrayList : découpage en O(1)
+        .map(riskEngine::computeVaR)                         // calcul lourd et pur
+        .reduce(BigDecimal.ZERO, BigDecimal::add);           // opération associative, identité correcte
+
+// Faux : état partagé non thread-safe
+List<String> out = new ArrayList<>();
+names.parallelStream().map(String::toUpperCase).forEach(out::add);   // pertes ou ArrayIndexOutOfBoundsException
+List<String> ok = names.parallelStream().map(String::toUpperCase).toList();   // le collector gère la fusion
+
+// Ordre : forEach ne respecte pas l'ordre en parallèle
+IntStream.range(0, 5).parallel().forEach(System.out::print);         // ex. 31042
+IntStream.range(0, 5).parallel().forEachOrdered(System.out::print);  // 01234, mais on perd une partie du gain
+```
+
+**Quand c'est rentable : la grille à donner.**
+
+| Critère | Favorable | Défavorable |
+|---|---|---|
+| Volume × coût par élément | grand (règle empirique : N × Q > 10 000) | quelques centaines d'éléments simples |
+| Nature du travail | CPU pur | I/O bloquante (HTTP, base, fichiers) |
+| Source | `ArrayList`, tableau, `IntStream.range` | `LinkedList`, `Stream.iterate`, `BufferedReader.lines` |
+| Opérations | sans état, associatives | `sorted`, `distinct`, `limit`, `findFirst` sur source ordonnée |
+| Contexte | batch, calcul isolé | serveur web : le common pool est partagé par toute la JVM |
+
+**Pièges :**
+- **I/O dans un parallel stream** : les quelques threads du common pool restent bloqués, et tous les autres parallel
+  streams et `CompletableFuture` sans pool explicite de l'application attendent.
+- **`reduce` mal écrit** : l'identité doit être neutre. `reduce(1, Integer::sum)` en parallèle ajoute 1 par morceau. La
+  fonction doit être associative (pas de soustraction).
+- **Contexte de thread perdu** : `@Transactional`, `SecurityContext`, MDC des logs et `ThreadLocal` ne suivent pas sur les
+  threads du pool.
+- **Mesurer** avant de conclure (JMH) : le coût du découpage et de la fusion dépasse souvent le gain.
+- Pool personnalisé : `customPool.submit(() -> list.parallelStream()...).get()` fonctionne, mais c'est un détail
+  d'implémentation. Pour de l'I/O, utiliser plutôt des `CompletableFuture` sur un pool dédié ou des virtual threads.
+
+Voir [Java Q31, pièges des streams](java-core-jvm.md#common-ways-stream-pipeline-goes) et
+[R7, pool par défaut](java-core-jvm.md#completablefuture-create-own-thread-pool).
+
+#### Q51. Décrivez `thenApply` vs `thenCompose` vs `thenCombine` sur `CompletableFuture`, et nommez un piège courant. {#thenapply-thencompose-thencombine-completablefuture-name}
 **Réponse :** `thenApply` transforme le résultat avec une fonction simple (`T -> U`) — à utiliser quand
 l'étape suivante n'est pas elle-même async. `thenCompose` aplatit une étape qui *retourne* un autre
 `CompletableFuture` (`T -> CompletableFuture<U>`) — l'équivalent async de `flatMap` ; utiliser
@@ -1149,7 +2189,10 @@ CompletableFuture<Dashboard> dashboard =
 c'est un bug de forme de type, pas une erreur de syntaxe, donc il n'apparaît que lorsqu'un appelant essaie d'utiliser le
 résultat et obtient un `CompletableFuture` là où il attendait la vraie valeur.
 
-#### Q33. Quel problème les virtual threads (Project Loom) résolvent-ils réellement, et où échouent-ils encore ? {#problem-virtual-threads-project-loom}
+**Délais et repli :** `future.orTimeout(2, TimeUnit.SECONDS).exceptionally(ex -> fallback)` borne l'attente et fournit une
+valeur de repli si l'appel échoue ou expire.
+
+#### Q52. Quel problème les virtual threads (Project Loom) résolvent-ils réellement, et où échouent-ils encore ? {#problem-virtual-threads-project-loom}
 **Réponse :** Les platform threads sont de fines enveloppes autour de threads OS — coûteux à créer
 (stacks de l'ordre du mégaoctet) et limités en nombre (des milliers, pas des millions), ce qui explique pourquoi
 les serveurs I/O-bound à forte concurrence se sont historiquement tournés vers la programmation réactive/async
@@ -1186,7 +2229,7 @@ bloc `synchronized` ou un `ThreadLocal` surdimensionné soit sur le hot path —
 « qu'est-ce qui pourrait mal tourner ? » vérifie si vous connaissez les deux modes de défaillance concrets, pas seulement le
 bénéfice affiché.
 
-#### Q34. Quand choisiriez-vous des virtual threads plutôt qu'une stack réactive (WebFlux) pour un service I/O-bound à forte concurrence, et inversement ? {#virtual-threads-reactive-stack-webflux}
+#### Q53. Quand choisiriez-vous des virtual threads plutôt qu'une stack réactive (WebFlux) pour un service I/O-bound à forte concurrence, et inversement ? {#virtual-threads-reactive-stack-webflux}
 **Réponse :** Les virtual threads (Q33) l'emportent quand le codebase, ses bibliothèques et son outillage de debug
 supposent du code bloquant et synchrone — la plupart des drivers JDBC, la plupart de la logique métier existante, des stack traces
 qui se lisent de haut en bas — et que vous voulez une concurrence à l'échelle réactive sans réécriture réactive
@@ -1225,7 +2268,7 @@ au lieu de choisir un vainqueur universel.
 
 ### Mémoire JVM & GC
 
-#### Q35. Expliquez l'analyse d'accessibilité (reachability) et les GC roots, et nommez deux algorithmes de garbage collection. {#reachability-analysis-gc-roots-name}
+#### Q54. Expliquez l'analyse d'accessibilité (reachability) et les GC roots, et nommez deux algorithmes de garbage collection. {#reachability-analysis-gc-roots-name}
 **Réponse :** La JVM n'utilise pas de comptage de références ; elle trace périodiquement l'accessibilité depuis un
 ensemble fixe de **GC roots** — variables locales et paramètres sur la stack de chaque thread vivant,
 champs statiques, références JNI détenues par du code natif, et quelques autres (monitors actifs, références
@@ -1266,7 +2309,7 @@ void demo() {
 Objective-C) supposent parfois que Java a le même problème de fuite par cycle que ces langages ont sans
 collector de cycles — le GC tracing de Java n'a jamais eu ce problème.
 
-#### Q36. Décrivez comment choisir entre G1, ZGC et Shenandoah pour un service sensible à la latence. {#choosing-g1-zgc-shenandoah-latency}
+#### Q55. Décrivez comment choisir entre G1, ZGC et Shenandoah pour un service sensible à la latence. {#choosing-g1-zgc-shenandoah-latency}
 **Réponse :** Partez de la contrainte réelle, pas du nom du collector : G1 est le défaut sûr —
 mature, bien compris, basé sur des régions, avec des objectifs de temps de pause ajustables (`-XX:MaxGCPauseMillis`) — et
 convient à la plupart des services où « une pause occasionnelle de quelques dizaines de millisecondes » est acceptable. Si le
@@ -1302,7 +2345,7 @@ SLO de latence réel du service est un signal d'alarme — un job batch sans exi
 rien avec ZGC et en paie l'overhead pour rien, alors qu'un service avec un budget réel inférieur à 10 ms
 qui reste sur G1 « parce que c'est le défaut » ne satisfait pas sa propre exigence.
 
-#### Q37. Java a un garbage collection — comment une fuite mémoire peut-elle encore se produire ? {#java-has-garbage-collection-memory}
+#### Q56. Java a un garbage collection — comment une fuite mémoire peut-elle encore se produire ? {#java-has-garbage-collection-memory}
 **Réponse :** Le GC ne récupère que les objets *inaccessibles* ; une « fuite » en Java est en réalité une accessibilité
 involontaire — quelque chose détient encore une référence vers des objets dont plus personne n'a besoin, donc ils ne
 deviennent jamais éligibles à la collecte. Causes classiques : une collection `static` (cache, liste de listeners) qui
@@ -1334,7 +2377,10 @@ class RequestContext {
 le recruteur veut entendre qu'une fuite est un bug d'accessibilité dont l'*application* est responsable, et non
 quelque chose qu'on pourrait attendre d'un garbage collector qu'il détecte ou corrige.
 
-#### Q38. Quelle est la différence entre `StackOverflowError` et `OutOfMemoryError`, et d'où vient réellement chacune ? {#stackoverflowerror-outofmemoryerror-each-come}
+**Diagnostiquer une fuite :** `jcmd <pid> GC.heap_dump /tmp/heap.hprof`, puis Eclipse MAT (*dominator tree* et *Leak
+Suspects*). Signal typique : l'Old Gen remonte après chaque full GC.
+
+#### Q57. Quelle est la différence entre `StackOverflowError` et `OutOfMemoryError`, et d'où vient réellement chacune ? {#stackoverflowerror-outofmemoryerror-each-come}
 **Réponse :** Les deux sont des `Error`s (pas des `Exception`s — la JVM signale quelque chose dont l'application
 ne devrait généralement pas essayer de se remettre), mais elles viennent de régions mémoire différentes.
 `StackOverflowError` se produit quand la call stack d'un seul thread dépasse sa taille fixe — presque
@@ -1368,11 +2414,40 @@ while (true) {
 la stack » comme correction universelle pour les deux — cela traite le symptôme, pas la cause racine propre à chaque région,
 et les deux erreurs continuent de se reproduire (simplement plus tard) si l'algorithme sous-jacent est réellement non borné.
 
+**Les causes typiques d'un `StackOverflowError` :**
+
+```java
+// 1. Récursion sans cas d'arrêt
+static int depth(int n) { return depth(n + 1); }
+
+// 2. Récursion correcte mais trop profonde : une liste chaînée d'un million de nœuds
+static int length(ListNode n) { return n == null ? 0 : 1 + length(n.next); }
+
+// Correction : version itérative, profondeur de stack constante
+static int lengthIter(ListNode n) {
+    int len = 0;
+    for (; n != null; n = n.next) len++;
+    return len;
+}
+
+// 3. Le cas réel le plus fréquent : relation bidirectionnelle JPA + toString/equals/JSON générés
+@Entity class Order  { @OneToMany(mappedBy = "order") List<OrderLine> lines; /* toString() inclut lines */ }
+@Entity class OrderLine { @ManyToOne Order order; /* toString() inclut order */ }
+// order.toString() → line.toString() → order.toString() → ... → StackOverflowError
+// Jackson : "Infinite recursion (StackOverflowError)" → @JsonManagedReference / @JsonBackReference, ou un DTO
+```
+
+- Java n'optimise **pas** la récursion terminale : même une récursion « en queue » consomme une frame par appel.
+- Augmenter `-Xss` repousse le problème sans le régler, et multiplie la mémoire réservée par le nombre de threads.
+- La trace de pile est tronquée (1 024 lignes par défaut) : chercher le motif qui se répète.
+- Lombok `@Data` / `@ToString` sur des entités bidirectionnelles : exclure le côté inverse (`@ToString.Exclude`). Parcours
+  d'arbres profonds : pile explicite (`ArrayDeque`). Voir aussi [Scénario S10](java-core-jvm.md#newly-deployed-feature-crashes-stackoverflowerror).
+
 ## 🔴 Expert / Ouvert
 
 ### Internes de la JVM & performance
 
-#### Q39. Que fait le compilateur JIT, et que sont l'escape analysis et la désoptimisation ? {#jit-compiler-escape-analysis-deoptimization}
+#### Q58. Que fait le compilateur JIT, et que sont l'escape analysis et la désoptimisation ? {#jit-compiler-escape-analysis-deoptimization}
 **Réponse :** La JVM commence par **interpréter** le bytecode en le profilant. Les méthodes chaudes sont compilées par
 **C1** (rapide, optimisation légère), puis les plus chaudes par **C2** (ou Graal) avec des optimisations agressives
 fondées sur le profil observé : **inlining** (la plus importante, elle permet toutes les autres), déroulage de boucles,
@@ -1391,7 +2466,7 @@ warm-up) ; et les sites d'appel mégamorphiques (nombreuses implémentations) so
    1890  412   4   com.acme.Pricing::finalPrice   made not entrant   <- désoptimisée
 ```
 
-#### Q40. Comment profiler un service Java lent ou gourmand en CPU en production ? {#profile-slow-cpu-hungry-java}
+#### Q59. Comment profiler un service Java lent ou gourmand en CPU en production ? {#profile-slow-cpu-hungry-java}
 **Réponse :** Partez des métriques (CPU, temps de pause GC, taux d'allocation, pools de threads) pour savoir quelle
 ressource sature. Utilisez ensuite des **profileurs à faible surcoût** utilisables en production : **Java Flight
 Recorder** (intégré au JDK, environ 1 % de surcoût : `jcmd <pid> JFR.start duration=60s filename=rec.jfr`, puis
@@ -1410,7 +2485,7 @@ flame graph : 41 % dans com.fasterxml.jackson...serialize  <- sérialisation d'u
 ./asprof -e alloc -d 30 -f alloc.html <pid>
 ```
 
-#### Q41. GraalVM native image vs une JVM classique — quand cela en vaut-il la peine ? {#graalvm-native-image-regular-jvm}
+#### Q60. GraalVM native image vs une JVM classique — quand cela en vaut-il la peine ? {#graalvm-native-image-regular-jvm}
 **Réponse :** Native image compile l'application à l'avance en un exécutable autonome, sous une **hypothèse de monde
 fermé** : tout ce qui est atteignable doit être connu au build. Gains : démarrage en dizaines de millisecondes et
 empreinte mémoire bien plus faible, ce qui convient aux fonctions serverless, aux CLI et aux charges qui descendent à
@@ -1421,7 +2496,7 @@ services longue durée sur Kubernetes, une JVM classique avec **Class Data Shari
 **CRaC**, ou le cache AOT de Leyden dans les JDK récents apporte souvent l'essentiel du gain au démarrage avec moins de
 contraintes.
 
-#### Q42. Comment fonctionne le chargement de classes, et qu'apporte JPMS (les modules) ? {#class-loading-jpms-modules-add}
+#### Q61. Comment fonctionne le chargement de classes, et qu'apporte JPMS (les modules) ? {#class-loading-jpms-modules-add}
 **Réponse :** Les classes sont chargées paresseusement par une hiérarchie de class loaders : **bootstrap** (cœur du
 JDK), **platform** et **application** (votre classpath), avec **délégation au parent** (on demande d'abord au parent).
 Les serveurs d'applications, les fat jars Spring Boot et les systèmes de plugins ajoutent leurs propres loaders. Une
@@ -1444,7 +2519,7 @@ module com.acme.billing {
 }
 ```
 
-#### Q43. Pourquoi les images natives consomment-elles si peu de mémoire et démarrent-elles si vite, et que sacrifie-t-on ? {#native-images-little-memory-start}
+#### Q62. Pourquoi les images natives consomment-elles si peu de mémoire et démarrent-elles si vite, et que sacrifie-t-on ? {#native-images-little-memory-start}
 **Réponse :** Une JVM classique fait à l'exécution ce qu'une image native a fait une seule fois au build. Au démarrage,
 la JVM charge et vérifie les classes, interprète le bytecode, le profile, puis compile les méthodes chaudes avec C1/C2
 sur des threads d'arrière-plan ; cela coûte du temps (de centaines de ms à plusieurs secondes) et de la mémoire
@@ -1471,7 +2546,7 @@ java -jar app.jar          # démarrage ~2,5 s   RSS ~380 Mo
 ps -o rss= -p <pid>        # mémoire résidente en Ko
 ```
 
-#### Q44. Comment construit-on une application Spring Boot 3 en image native, étape par étape ? {#build-spring-boot-3-application}
+#### Q63. Comment construit-on une application Spring Boot 3 en image native, étape par étape ? {#build-spring-boot-3-application}
 **Réponse :**
 
 1. **Installer un JDK GraalVM** (21+ pour Boot 3.x) et le vérifier : `sdk install java <version-graalvm>`, puis

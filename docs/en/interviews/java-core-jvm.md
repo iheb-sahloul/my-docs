@@ -29,6 +29,20 @@ public abstract class BaseImporter {           // shared state + fixed skeleton
 }
 ```
 
+**Pitfall: conflicting `default` methods.** If a class implements two interfaces that provide the same `default` method,
+it must override it and choose explicitly.
+
+```java
+interface Entity    { default String label() { return "entity"; } }
+interface Auditable { default String label() { return "audited"; } }
+
+class Account implements Entity, Auditable {
+    @Override public String label() {
+        return Auditable.super.label();      // explicit choice; without it: compile error
+    }
+}
+```
+
 #### Q2. What is the difference between `==` and `.equals()`? {#double-equals-vs-equals}
 **Answer:** `==` compares what the variables *hold*: for primitives that is the value, for references it is the
 object's identity (are both variables pointing at the very same object in the heap?). `.equals()` is a method that asks
@@ -54,7 +68,7 @@ new Slot("d1", t).equals(new Slot("d1", t)); // true: records generate equals on
 
 **Why it's a trap:** string literals are pooled, so `"a" == "a"` is `true` and a quick test makes `==` look correct, until a
 value comes from user input, a database or `new String(...)` and the comparison silently fails in production. The same
-happens with boxed numbers (see [Java Q9](java-core-jvm.md#autoboxing-trap-integer)). And overriding `equals` without `hashCode` breaks
+happens with boxed numbers (see [Java Q26](java-core-jvm.md#autoboxing-trap-integer)). And overriding `equals` without `hashCode` breaks
 hash-based collections (see [Java Q3](java-core-jvm.md#equals-hashcode-contract-breaks-override)).
 
 #### Q3. What is the `equals`/`hashCode` contract, and what breaks if you override only one? {#equals-hashcode-contract-breaks-override}
@@ -95,7 +109,88 @@ names.add("Ada");                 // fine: the list is mutable
 static final List<String> ROLES = List.of("ADMIN", "USER");   // a real constant: immutable value
 ```
 
-#### Q5. How do access modifiers and packages support encapsulation in practice? {#access-modifiers-packages-support-encapsulation}
+**`static` methods in detail:** a `static` method belongs to the class, not to an instance: it has neither `this` nor
+`super`. So it cannot access instance fields and methods **directly**, but it can perfectly well use them **through an
+object reference**. A formulation to avoid, because it is too strong: "a static method can only contain static
+attributes and call static methods".
+
+```java
+class Counter {
+    private int value;                 // instance member
+    private static int created;        // class member
+
+    static Counter create() {
+        created++;                     // OK: static member
+        // value++;                    // error: which object? there is no this
+        Counter c = new Counter();
+        c.value = 10;                  // OK: access through an explicit reference
+        return c;
+    }
+
+    void inc() {
+        value++;
+        created++;                     // an instance method also sees static members
+    }
+}
+```
+
+**Pitfalls:**
+- A `static` method is **not overridden** but **hidden**: the call depends on the declared type, not the actual type (see
+  the `Printer.kind()` example in the overloading vs overriding question).
+- `counter.create()` compiles (with a warning) but does call the class method: write `Counter.create()`.
+- A mutable `static` field is global state shared between threads: avoid it, or protect it.
+
+**Real use:** factories (`List.of`, `Optional.of`, `Money.of`), stateless utilities (`Math`, `Objects`, `Collections`),
+`static final` constants.
+
+#### Q5. What is a `static` block, and when does it run? {#static-block-init-order}
+**Answer:** A `static { ... }` block runs **exactly once**, when the class is initialized, i.e. on its first active use:
+`new`, a call to a `static` method, a read of a non-constant `static` field, `Class.forName(...)`, or the initialization
+of a subclass. It initializes `static` fields that need more than a single expression. Order to remember: **parent static
+-> child static**, then on every `new`: **parent instance -> parent constructor -> child instance -> child constructor**.
+Within one class, `static` fields and `static` blocks run in file order.
+
+**Example:**
+
+```java
+class Parent {
+    static { System.out.println("1. static Parent"); }
+    { System.out.println("3. instance block Parent"); }
+    Parent() { System.out.println("4. constructor Parent"); }
+}
+
+class Child extends Parent {
+    static { System.out.println("2. static Child"); }
+    { System.out.println("5. instance block Child"); }
+    Child() { System.out.println("6. constructor Child"); }
+}
+
+new Child();   // 1, 2, 3, 4, 5, 6
+new Child();   // 3, 4, 5, 6: static blocks never run again
+
+class Rates {
+    static final Map<String, BigDecimal> FX;
+    static {
+        Map<String, BigDecimal> m = new HashMap<>();
+        m.put("USD", new BigDecimal("1.0850"));
+        m.put("GBP", new BigDecimal("0.8420"));
+        FX = Map.copyOf(m);            // immutable once published
+    }
+}
+```
+
+**Pitfalls:**
+- If the block throws: `ExceptionInInitializerError` on first access, then `NoClassDefFoundError` on **every** later
+  access. The class is unusable until restart (see [Java Q45](java-core-jvm.md#class-initialization-itself-deadlock-static)).
+- Reading a compile-time constant (`static final String NAME = "x"`) does not trigger initialization: the compiler
+  inlines the value.
+- Initialization is thread-safe (JVM lock), which is what the Singleton *holder idiom* relies on. But two classes that
+  initialize each other from two threads can deadlock.
+
+**Real use:** loading a JDBC driver (historically `Class.forName`), filling a lookup table, registering plugins. Today
+`Map.of(...)` or a Spring bean is often preferred.
+
+#### Q6. How do access modifiers and packages support encapsulation in practice? {#access-modifiers-packages-support-encapsulation}
 **Answer:** Four levels: `private` (the class only), package-private (no keyword: same package), `protected` (package
 plus subclasses) and `public`. Use the **narrowest visibility that works**: fields private, helpers private or
 package-private, and only the real API public. Package-private is underused: in a feature-based package layout
@@ -103,9 +198,292 @@ package-private, and only the real API public. Package-private is underused: in 
 stay package-private, so other packages can't bypass the service. For enforcement across modules, use JPMS
 `exports` (see the expert section) or ArchUnit rules.
 
+**The four levels in detail:**
+
+| Modifier | Same class | Same package | Subclass (other package) | Everywhere |
+|---|:-:|:-:|:-:|:-:|
+| `private` | yes | | | |
+| *(default)* | yes | yes | | |
+| `protected` | yes | yes | yes (via inheritance) | |
+| `public` | yes | yes | yes | yes |
+
+```java
+package com.bank.core;
+
+public class Account {
+    private BigDecimal balance;        // Account only
+    String branchCode;                 // the whole com.bank.core package
+    protected void audit() { }         // package + subclasses, even elsewhere
+    public BigDecimal balance() { return balance; }
+}
+
+package com.bank.savings;
+
+class SavingsAccount extends Account {
+    void close() {
+        audit();                       // OK: inherited access through this
+        // new Account().audit();      // error: other package, and not through inheritance
+        // branchCode = "X";           // error: package-private
+    }
+}
+```
+
+**Pitfalls:**
+- `protected` is **more open** than the default: it includes the whole package. Many candidates think "class +
+  subclasses only".
+- A top-level class can only be `public` or package-private. `private` and `protected` apply only to members and nested
+  classes.
+- An override cannot reduce visibility: a `public` method stays `public` in the subclass.
+- Modules (Java 9+) add a level above: a `public` class in a non-exported package stays invisible outside the module.
+
+**Real use:** everything `private` by default, then open up as needed. Package-private is ideal for implementation
+classes and for testing without making everything `public`.
+
+#### Q7. What are the four pillars of OOP? {#four-pillars-oop}
+**Answer:** **Encapsulation** (state is only changed through methods that validate), **abstraction** (the contract, not
+the how), **inheritance** (common code is written once) and **polymorphism** (one call, the implementation is chosen at
+runtime). In an interview, give a code example for each.
+
+**Example:**
+
+```java
+interface PaymentMethod {                         // abstraction: the contract, not the how
+    BigDecimal fee(BigDecimal amount);
+}
+
+final class Account {                             // encapsulation: state changes only through methods that validate
+    private BigDecimal balance = BigDecimal.ZERO;
+    void deposit(BigDecimal amount) {
+        if (amount.signum() <= 0) throw new IllegalArgumentException("amount <= 0");
+        balance = balance.add(amount);
+    }
+    BigDecimal balance() { return balance; }
+}
+
+abstract class Card implements PaymentMethod {    // inheritance: common code is written once
+    protected abstract BigDecimal rate();
+    public BigDecimal fee(BigDecimal amount) { return amount.multiply(rate()); }
+}
+class Visa extends Card { protected BigDecimal rate() { return new BigDecimal("0.015"); } }
+class Amex extends Card { protected BigDecimal rate() { return new BigDecimal("0.025"); } }
+
+// polymorphism: one call, the implementation is chosen at runtime
+for (PaymentMethod p : List.of(new Visa(), new Amex())) System.out.println(p.fee(amount));
+```
+
+**Why it's a trap:** encapsulation is not just getters/setters. A public setter on `balance` ruins the invariant.
+
+#### Q8. Overloading vs overriding: what is the difference? {#overloading-vs-overriding}
+**Answer:** **Overloading** is resolved at **compile time**, from the signature and the **static** type of the
+arguments. **Overriding** is resolved at **runtime** (dynamic dispatch), from the **actual** type of the object. Around
+it: `@Override` makes the compiler check the override, the return type can be covariant, and a `static` method is
+**hidden**, not overridden.
+
+**Example:**
+
+```java
+class Printer {
+    void print(Object o) { System.out.println("Object"); }
+    void print(String s) { System.out.println("String"); }           // overload: different signature
+    static String kind() { return "Printer"; }
+    Number value() { return 1; }
+}
+class ColorPrinter extends Printer {
+    @Override void print(String s) { System.out.println("Color"); }  // override
+    static String kind() { return "ColorPrinter"; }                  // hiding, not overriding
+    @Override Integer value() { return 2; }                          // covariant return type
+}
+
+Printer p = new ColorPrinter();
+Object o = "hi";
+p.print(o);     // "Object": the overload is chosen at compile time, on the static type of o
+p.print("hi");  // "Color":  the override is chosen at runtime, on the actual type of p
+p.kind();       // "Printer": a static method depends on the declared type
+```
+
+#### Q9. Composition or inheritance: which to choose? {#composition-vs-inheritance}
+**Answer:** "Favor composition over inheritance". Inheritance expresses an "is-a" relationship and couples the subclass
+to its parent's implementation; composition expresses "has-a" and only exposes what makes sense. JDK counter-example:
+`Stack` extends `Vector` and exposes all its methods. See also
+[Prefer composition over inheritance](../best-practices/java.md) for the `HashSet` example.
+
+**Example:**
+
+```java
+// JDK counter-example: Stack extends Vector and exposes all its methods
+Stack<Integer> s = new Stack<>();
+s.push(1);
+s.add(0, 99);   // inserts at the bottom of the stack: the LIFO invariant is broken
+
+// Composition: only expose what makes sense
+final class LifoStack<E> {
+    private final Deque<E> items = new ArrayDeque<>();
+    void push(E e) { items.push(e); }
+    E pop() { return items.pop(); }
+    boolean isEmpty() { return items.isEmpty(); }
+}
+```
+
+#### Q10. Coupling, cohesion and the Law of Demeter: what should you be able to say? {#coupling-cohesion-law-of-demeter}
+**Answer:** Aim for **loose coupling** (few dependencies between classes) and **high cohesion** (a class groups what
+changes together). The **Law of Demeter** ("only talk to your close friends") is the practical rule: do not walk through
+an object's internal structure, ask the object that holds the information.
+
+**Example:**
+
+```java
+// Tight coupling: the caller depends on the whole internal structure
+String city = order.getCustomer().getAddress().getCity();
+
+// Better: ask the object that holds the information
+String city = order.shippingCity();
+```
+
+High cohesion: `Order` carries the rules about its own data (total, status), instead of leaving them in an
+`OrderService`.
+
+### Exceptions: the basics
+
+#### Q11. Describe the exception hierarchy {#exception-hierarchy-error-vs-exception}
+**Answer:** Everything starts at `Throwable`, which has two branches. `Error`: serious JVM problems, not to be caught.
+`Exception`: problems the application can handle. Among `Exception`s, `RuntimeException` and its subclasses are
+**unchecked** (the compiler enforces nothing); all the others are **checked** (you must catch them or declare them with
+`throws`). Technically you can catch an `Error` (`catch (Throwable t)`), but it signals a JVM state you cannot reliably
+recover from (`OutOfMemoryError`, `StackOverflowError`). The only tolerated exception: a top-level handler that logs and
+then lets the thread or process die. In production: `-XX:+HeapDumpOnOutOfMemoryError` and a restart by the orchestrator.
+
+```text
+Throwable
+├── Error                                   unchecked: do not catch
+│   ├── VirtualMachineError
+│   │   ├── OutOfMemoryError
+│   │   └── StackOverflowError
+│   ├── LinkageError
+│   │   ├── NoClassDefFoundError
+│   │   └── ExceptionInInitializerError
+│   └── AssertionError
+└── Exception                               checked
+    ├── IOException
+    │   ├── FileNotFoundException
+    │   └── FileSystemException → NoSuchFileException
+    ├── SQLException
+    ├── InterruptedException
+    ├── ReflectiveOperationException → ClassNotFoundException
+    └── RuntimeException                    unchecked
+        ├── NullPointerException
+        ├── IllegalArgumentException → NumberFormatException
+        ├── IllegalStateException
+        ├── ArithmeticException
+        ├── ClassCastException
+        ├── IndexOutOfBoundsException → ArrayIndexOutOfBoundsException
+        ├── UnsupportedOperationException
+        ├── ConcurrentModificationException
+        └── (Spring) DataAccessException, (JPA) PersistenceException
+```
+
+**What to say:**
+- **Checked**: a foreseeable, recoverable failure outside the program's control (missing file, network). The compiler
+  forces the caller to decide.
+- **Unchecked**: a bug or violated contract (`null`, invalid argument). Fix it rather than catch it.
+- In a Spring application, business errors are usually `RuntimeException`s: they cross layers and trigger the
+  `@Transactional` rollback (which, by default, does **not** roll back on a checked exception, unless
+  `@Transactional(rollbackFor = Exception.class)`).
+
+**Example:**
+
+```java
+// Business exception: unchecked, with the context useful for diagnosis
+class InsufficientFundsException extends RuntimeException {
+    InsufficientFundsException(String accountId, BigDecimal requested) {
+        super("Insufficient funds on " + accountId + " for " + requested);
+    }
+}
+
+// Wrap without losing the cause
+try {
+    return Files.readString(path);
+} catch (IOException e) {
+    throw new UncheckedIOException("Cannot read: " + path, e);   // the cause is kept
+}
+```
+
+**Pitfalls:**
+- `ClassNotFoundException` (checked, dynamic loading by name) vs `NoClassDefFoundError` (an `Error`: class present at
+  compile time but missing or broken at runtime).
+- Never swallow an exception (`catch (Exception e) {}`) nor lose the cause (`throw new X(e.getMessage())` instead of
+  `new X(msg, e)`).
+- `catch (InterruptedException e)`: restore the status with `Thread.currentThread().interrupt()`.
+
+See [Java Q35, checked vs unchecked](java-core-jvm.md#checked-unchecked-exceptions-design-trade).
+
+#### Q12. Does the order of `catch` blocks matter? {#catch-block-order-multi-catch}
+**Answer:** Yes. `catch` blocks are tested **top to bottom** and only the **first** match runs. So go from the **most
+specific to the most general**. If a parent `catch` comes before a child `catch`, the child is unreachable: that is a
+**compile error**, not just a warning. Between unrelated types, order does not matter.
+
+**Example:**
+
+```java
+try {
+    String content = Files.readString(path);
+    int qty = Integer.parseInt(content.trim());
+} catch (NoSuchFileException e) {              // most specific first
+    log.warn("File missing: {}", path);
+} catch (IOException e) {                      // then its parent
+    throw new UncheckedIOException(e);
+} catch (NumberFormatException e) {            // unrelated to IOException: free position
+    throw new IllegalArgumentException("Invalid quantity in " + path, e);
+}
+
+// Reversed:
+// catch (IOException e) { ... }
+// catch (NoSuchFileException e) { ... }       // error: exception NoSuchFileException has already been caught
+```
+
+**Multi-catch (Java 7).** Factors the handling of **unrelated** types.
+
+```java
+catch (NoSuchFileException | NumberFormatException e) { ... }   // OK
+// catch (NoSuchFileException | IOException e)                   // error: types related by inheritance
+// In a multi-catch, e is implicitly final
+```
+
+**Pitfalls:**
+- `catch (Exception e)` first makes all following ones unreachable (compile error).
+- `finally` runs after the chosen `catch`, whether or not the `catch` rethrows.
+- The compiler also rejects a `catch` of a checked exception that the `try` block cannot throw (`catch (IOException e)`
+  around code with no I/O).
+
+#### Q13. `final`, `finally`, `finalize`: what are the differences, and what does a method return with a `return` in both `try` and `finally`? {#final-finally-finalize-return-in-finally}
+**Answer:** `final` is a **keyword**: variable assigned once, method that cannot be overridden, class that cannot be
+extended. `finally` is a **block** always executed after `try`/`catch`, to release a resource (mostly replaced by
+try-with-resources). `finalize()` is an `Object` **method** called by the GC before destruction, with no guarantee of
+when or whether it runs; deprecated for removal since Java 18 (JEP 421), use try-with-resources or
+`java.lang.ref.Cleaner`. `finally` does not run if the JVM stops: `System.exit()`, crash, `kill -9`.
+
+**Example:**
+
+```java
+static int a() {
+    try { return 1; }
+    finally { System.out.println("finally"); }   // printed BEFORE the method returns 1
+}
+
+static int b() {
+    int x = 1;
+    try { return x; }                          // the value 1 is already evaluated and set aside
+    finally { x = 2; }                         // no effect on the returned value: b() returns 1
+}
+
+static int c() {
+    try { throw new IllegalStateException(); }
+    finally { return 3; }                      // returns 3 and SWALLOWS the exception: never do this
+}
+```
+
 ### Collections & generics
 
-#### Q6. `ArrayList` vs `LinkedList`, `HashMap` vs `TreeMap` vs `LinkedHashMap` — how do you choose a collection? {#arraylist-linkedlist-hashmap-treemap-linkedhashmap}
+#### Q14. `ArrayList` vs `LinkedList`, `HashMap` vs `TreeMap` vs `LinkedHashMap` — how do you choose a collection? {#arraylist-linkedlist-hashmap-treemap-linkedhashmap}
 **Answer:** Default to **`ArrayList`**: contiguous memory, O(1) index access and fast iteration thanks to CPU caches.
 `LinkedList` wins only in theory (O(1) insert at a known node); in practice reaching the node is O(n) and every node
 is a separate object, so it is almost always slower. For a queue or stack use **`ArrayDeque`**. For maps: **`HashMap`**
@@ -122,7 +500,138 @@ NavigableMap<LocalDate, Rate> rates = new TreeMap<>();
 Rate applicable = rates.floorEntry(invoiceDate).getValue(); // latest rate on or before the date
 ```
 
-#### Q7. `Comparable` vs `Comparator`, and what does PECS mean for generics? {#comparable-comparator-pecs-generics}
+**Going further on the choice:** `HashSet` is a `HashMap` whose elements are the keys (shared dummy value). `Hashtable` is
+the synchronized ancestor (every method locks the whole table) and rejects `null`: replace it with `ConcurrentHashMap`.
+
+| Collection | Access / search | Add | Order | When to use |
+|---|---|---|---|---|
+| `ArrayList` | `get(i)` O(1), `contains` O(n) | end O(1) amortized, middle O(n) | insertion | the default list |
+| `LinkedList` | `get(i)` O(n) | ends O(1) | insertion | almost never: `ArrayDeque` does better |
+| `ArrayDeque` | ends O(1) | O(1) | insertion | stack or queue |
+| `HashMap` / `HashSet` | O(1) average | O(1) | none | lookup by key |
+| `LinkedHashMap` | O(1) | O(1) | insertion (or access: LRU cache) | predictable order |
+| `TreeMap` / `TreeSet` | O(log n) | O(log n) | sorted | ranges: `floorKey`, `subMap`, `headMap` |
+| `PriorityQueue` | `peek` O(1) | `offer`/`poll` O(log n) | heap | top K, scheduling |
+
+Example of reasoning: "I need the last known rate at a given date" -> `TreeMap<LocalDate, BigDecimal>` then
+`floorEntry(date)` in O(log n).
+
+#### Q15. List or Set: how do you choose? {#list-vs-set-choose}
+**Answer:** A `List` is an **ordered, indexed sequence that accepts duplicates**. A `Set` is a collection **without
+duplicates**, without an index, whose order depends on the implementation. Choose `Set` when uniqueness matters or when
+you often test membership (`contains` is O(1) for a `HashSet`, O(n) for an `ArrayList`).
+
+| | `ArrayList` | `HashSet` | `LinkedHashSet` | `TreeSet` |
+|---|---|---|---|---|
+| Duplicates | yes | no | no | no |
+| Order | insertion | none | insertion | sorted |
+| `get(i)` | O(1) | n/a | n/a | n/a |
+| `contains` | O(n) | O(1) average | O(1) average | O(log n) |
+| `null` | yes | one | one | no (NPE) |
+| Equality based on | `equals` | `hashCode` + `equals` | `hashCode` + `equals` | `compareTo` / `Comparator` |
+
+**Example:**
+
+```java
+List<String> isins = List.of("FR001", "US002", "FR001");
+Set<String> unique = new HashSet<>(isins);              // [US002, FR001]: unpredictable order
+Set<String> ordered = new LinkedHashSet<>(isins);       // [FR001, US002]: deduplicated, order kept
+List<String> back = new ArrayList<>(ordered);           // back to a List if you need an index
+List<String> viaStream = isins.stream().distinct().toList();   // same result with a stream
+
+Set<String> blocked = Set.of("RU123", "IR456");
+boolean ok = !blocked.contains(isin);                   // O(1): blacklist, membership check
+```
+
+**Pitfalls:**
+- A `HashSet` is really a `HashMap` whose elements are the keys: without correct `equals`/`hashCode`, duplicates slip
+  through (see [Java Q3](java-core-jvm.md#equals-hashcode-contract-breaks-override)).
+- Changing a field used by `hashCode` after insertion makes the element unfindable.
+- `TreeSet` uses `compareTo`, not `equals`: `new BigDecimal("2.0")` and `"2.00"` are one element there, but two in a
+  `HashSet`.
+- `List.remove(int index)` vs `List.remove(Object o)`: on a `List<Integer>`, `remove(1)` removes index 1, not the value 1.
+
+**Real use:** with JPA, a `@OneToMany` association as a `Set` avoids the `MultipleBagFetchException`, but requires a
+stable `equals`/`hashCode` on the entity.
+
+#### Q16. What are the ways to iterate over a collection, and which to choose? {#ways-to-iterate-collection}
+**Answer:** There are six main ones: the indexed loop, the for-each loop, an explicit `Iterator`, `ListIterator`,
+`forEach` with a lambda, and streams. For a `Map`, iterate over `entrySet()`. **Default: the for-each loop**, the most
+readable and safe for all collections. The others answer a specific need.
+
+**Example:**
+
+```java
+List<Trade> trades = repo.findAll();
+
+// 1. Indexed loop: only if you need the index, and only on a random-access list
+for (int i = 0; i < trades.size(); i++) {
+    System.out.println(i + ": " + trades.get(i));
+}
+
+// 2. For-each: the default choice (compiled to an Iterator for a collection)
+for (Trade t : trades) {
+    process(t);
+}
+
+// 3. Explicit Iterator: to remove during traversal
+for (Iterator<Trade> it = trades.iterator(); it.hasNext(); ) {
+    if (it.next().isCancelled()) it.remove();
+}
+trades.removeIf(Trade::isCancelled);   // modern equivalent, shorter
+
+// 4. ListIterator: traverse both ways, replace or insert in place
+for (ListIterator<String> it = codes.listIterator(); it.hasNext(); ) {
+    it.set(it.next().toUpperCase());
+}
+codes.replaceAll(String::toUpperCase); // modern equivalent
+
+// 5. forEach + lambda: a simple action per element
+trades.forEach(this::publish);
+
+// 6. Stream: to transform, filter, aggregate
+List<String> fxIds = trades.stream()
+        .filter(t -> t.desk().equals("FX"))
+        .map(Trade::id)
+        .toList();
+```
+
+**For a `Map`:**
+
+```java
+// Good: a single lookup per entry
+for (Map.Entry<String, BigDecimal> e : balances.entrySet()) {
+    System.out.println(e.getKey() + " = " + e.getValue());
+}
+balances.forEach((account, balance) -> System.out.println(account + " = " + balance));
+
+// Worse: keySet + get = one extra lookup per key
+for (String account : balances.keySet()) {
+    System.out.println(account + " = " + balances.get(account));
+}
+```
+
+**Which option to choose?**
+
+| Need | Best option |
+|---|---|
+| Simple traversal | for-each |
+| Need the index | indexed loop (on `ArrayList` or array only) |
+| Remove during traversal | `removeIf`, or `Iterator.remove()` |
+| Modify each element in place | `replaceAll`, or `ListIterator.set()` |
+| Transform, filter, aggregate | stream |
+| Keys and values of a `Map` | `entrySet()` or `Map.forEach` |
+| Early exit (`break`, `return`) or checked exception | for-each (impossible in a `forEach` lambda) |
+
+**Pitfalls:**
+- `list.remove(x)` inside a for-each -> `ConcurrentModificationException` (see [Java Q38](java-core-jvm.md#causes-concurrentmodificationexception-correct-fix)).
+- Indexed loop on a `LinkedList`: `get(i)` is O(n), so the traversal becomes O(n²).
+- `forEach` with a lambda accepts neither `break` nor `continue` (`return` = `continue`), nor a modified local variable.
+- Loop performance is equivalent on an `ArrayList`: choose for readability, not speed.
+- Concurrent collections (`CopyOnWriteArrayList`, `ConcurrentHashMap`) have *weakly consistent* iterators: no
+  `ConcurrentModificationException`, but not necessarily the latest changes.
+
+#### Q17. `Comparable` vs `Comparator`, and what does PECS mean for generics? {#comparable-comparator-pecs-generics}
 **Answer:** `Comparable` defines a type's **natural order** inside the class (`compareTo`), and there is only one.
 `Comparator` defines an **external order**, so you can have many (`Comparator.comparing(Order::total).reversed()
 .thenComparing(Order::id)`). Keep `compareTo` consistent with `equals`, or sorted sets and maps behave oddly
@@ -142,11 +651,403 @@ sum(List.of(1, 2.5, 3L));
 fill(new ArrayList<Number>());
 ```
 
+### Versions, JDK & build
+
+#### Q18. What are the Java LTS versions and their headline features, and what is the difference between JDK, JRE and JVM? {#java-lts-versions-features-jdk-jre-jvm}
+**Answer:** **LTS**: 8 (lambdas, streams, `Optional`, `java.time`, `default` methods); 11 (`HttpClient`, `var` in lambdas, `String.isBlank`/`strip`/`lines`, launching a `.java` file directly, removal of the Java EE modules); 17 (records, `sealed` classes, pattern matching for `instanceof`, text blocks, `switch` expressions); 21 (virtual threads, pattern matching in `switch`, record patterns, sequenced collections, generational ZGC); 25 (instance `main` methods and compact source files, `import module`, statements before `super(...)` in constructors, scoped values, compact object headers). **Cadence**: a release every 6 months (March and September), an LTS every 2 years since Java 17; companies move from LTS to LTS. **JVM**: runs the bytecode; **JRE** = JVM + standard libraries; **JDK** = JRE + tools (`javac`, `jar`, `jcmd`, `jfr`…). Since Java 11 Oracle no longer ships a separate JRE: you build a minimal runtime with `jlink`. **OpenJDK vs Oracle JDK**: same source code; OpenJDK is the reference implementation, and Temurin (Eclipse Adoptium), Corretto (Amazon) or Zulu (Azul) are free builds with long support, whereas the Oracle JDK requires a paid licence in production for some versions. **JCP and JEP**: the JCP evolves the specifications; a JEP describes a specific OpenJDK change (JEP 444 for virtual threads).
+
+**Example:**
+
+```java
+// Java 8: lambdas, streams, Optional, java.time
+List<String> desks = trades.stream()
+        .filter(t -> t.notional().signum() > 0)
+        .map(Trade::desk).distinct().collect(Collectors.toList());
+LocalDate valueDate = LocalDate.of(2026, 10, 29).plusDays(2);   // immutable and thread-safe, unlike Date
+
+// Java 11: HttpClient, new String methods
+HttpClient http = HttpClient.newHttpClient();
+HttpResponse<String> resp = http.send(
+        HttpRequest.newBuilder(URI.create("https://api.example.com/rates")).build(),
+        HttpResponse.BodyHandlers.ofString());
+"  ".isBlank();                        // true; and "a\nb".lines(), " x ".strip()
+// $ java Hello.java                   → runs a source file without going through javac
+
+// Java 17: records, sealed, pattern matching for instanceof, switch expression
+if (obj instanceof Trade t && t.notional().signum() > 0) { /* t already typed */ }
+String label = switch (day) { case SATURDAY, SUNDAY -> "weekend"; default -> "weekday"; };
+
+// Java 21: virtual threads, pattern matching in switch, sequenced collections
+Thread.startVirtualThread(() -> System.out.println("hello"));
+List<String> l = List.of("a", "b", "c");
+l.getFirst(); l.getLast(); l.reversed();   // SequencedCollection: finally a common API
+
+// Java 25: compact source file and instance main (the whole file)
+void main() {
+    IO.println("Hello");                   // no class, no static, no String[] args
+}
+```
+
+Minimal runtime with `jlink`:
+
+```bash
+jdeps --print-module-deps app.jar                      # → java.base,java.net.http,java.sql
+jlink --add-modules java.base,java.net.http,java.sql \
+      --strip-debug --no-header-files --no-man-pages --output runtime
+./runtime/bin/java -jar app.jar                        # an image of a few tens of MB instead of a full JDK
+```
+
+
+**Advantages of an LTS:**
+- **Security**: quarterly patches for years (free builds from Temurin, Corretto, Zulu).
+- **Ecosystem**: frameworks, application servers and tools are certified on LTS releases (Spring Boot, Hibernate, APM
+  agents).
+- **Fewer migrations**: one every 2 years instead of every 6 months, which matters when each upgrade goes through
+  approval.
+- **Stability**: an LTS bundles the finalized features of the previous releases; *preview* features stay disabled by
+  default.
+
+**What Java 25 (September 2025) brings compared to 21.** Features finalized in 22 to 25:
+
+| Feature | JEP | Benefit |
+|---|---|---|
+| Unnamed variables `_` | 456 (22) | ignore an unused parameter or exception |
+| Foreign Function & Memory API | 454 (22) | call native code without JNI |
+| Stream gatherers | 485 (24) | custom intermediate operations (windows, groupings) |
+| Virtual threads without pinning on `synchronized` | 491 (24) | no need to replace `synchronized` with `ReentrantLock` |
+| Scoped values | 506 (25) | replaces `ThreadLocal`, suited to virtual threads |
+| `import module` | 511 (25) | import all packages of a module in one line |
+| Compact source files, instance `main` | 512 (25) | scripts and learning without boilerplate |
+| Statements before `super(...)` | 513 (25) | validate arguments before calling the parent constructor |
+| Compact object headers | 519 (25) | header from 12 to 8 bytes: less heap, better locality |
+| AOT cache (ergonomics, profiling) | 514, 515 (25) | faster startup and warm-up |
+| Generational Shenandoah | 521 (25) | more efficient low-latency GC |
+
+**Java 22–25 example:**
+
+```java
+// Unnamed variables (22)
+try { Integer.parseInt(s); } catch (NumberFormatException _) { return false; }
+switch (payment) {
+    case Card _, Cash _ -> handleSimple();
+    case Transfer t -> handleTransfer(t);
+}
+
+// Stream gatherers (24)
+Stream.of(1, 2, 3, 4, 5).gather(Gatherers.windowFixed(2)).toList();   // [[1, 2], [3, 4], [5]]
+
+// Statements before super(...) (25)
+class Trade extends Entity {
+    Trade(String id, Instant createdAt) {
+        if (id.isBlank()) throw new IllegalArgumentException("empty id");   // forbidden before Java 25
+        super(createdAt);
+    }
+}
+
+// Scoped values (25): an immutable context, visible in the whole call stack, released on exit
+static final ScopedValue<String> USER = ScopedValue.newInstance();
+ScopedValue.where(USER, "u123").run(() -> paymentService.handle());   // USER.get() inside handle()
+
+// import module (25)
+import module java.base;              // java.util, java.io, java.time... in one line
+```
+
+```bash
+# Compact headers: must be enabled explicitly in 25
+java -XX:+UseCompactObjectHeaders -jar app.jar
+```
+
+**Still preview in 25** (do not present as finalized): structured concurrency, primitive type patterns, *stable values*.
+
+**To say in conclusion:** "Going from 21 to 25 is a free gain in memory and startup, virtual threads finally usable
+with existing `synchronized` code, and several more years of support."
+
+#### Q19. Maven or Gradle: what are the differences, and what does the same dependency look like? {#maven-vs-gradle}
+**Answer:** Maven is declarative (XML, fixed lifecycle, strong conventions); Gradle is programmable (Kotlin or Groovy DSL), incremental and has a build cache, so it is faster on large projects but gives more freedom. Maven follows a fixed lifecycle (`validate → compile → test → package → verify → install → deploy`), and `mvn verify` runs everything up to `verify`. Gradle runs a task graph (`./gradlew build`), only reruns what changed, and distinguishes `api` (dependency exposed to consumers) from `implementation` (hidden dependency).
+
+**Example:**
+
+```xml
+<!-- pom.xml -->
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <scope>test</scope>
+</dependency>
+```
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation("org.junit.jupiter:junit-jupiter")
+}
+```
+
+**Comparator in practice:** to sort on several criteria, chain comparators; a classic pitfall is subtraction.
+
+```java
+record Trade(String desk, BigDecimal notional, Instant time) {}
+
+trades.sort(Comparator.comparing(Trade::desk)
+        .thenComparing(Trade::notional, Comparator.reverseOrder())
+        .thenComparing(Trade::time));
+// Comparable: the natural order, written in the class (compareTo); Comparator: external orders, as many as you like
+
+// Pitfall: (a, b) -> a.qty - b.qty overflows with large integers or negatives -> Integer.compare(a.qty, b.qty)
+
+// PECS: Producer Extends, Consumer Super
+static <T> void copy(List<? super T> dest, List<? extends T> src) {
+    for (T t : src) dest.add(t);       // src produces Ts (extends), dest consumes Ts (super)
+}
+List<Number> numbers = new ArrayList<>();
+copy(numbers, List.of(1, 2, 3));       // T = Integer, and a List<Number> accepts Integers
+// List<? extends Number>: you can read Numbers from it, but not add to it (except null)
+```
+
+### Modern Java: lambdas & streams
+
+#### Q20. Functional interface or lambda: what is the difference? {#functional-interface-vs-lambda}
+**Answer:** They are not two things at the same level. A **functional interface** is a **type**: an interface with
+**a single abstract method**. A **lambda** is an **expression** that provides an **implementation** of that method. A
+lambda never exists alone: its target type is always a functional interface.
+
+**Example:**
+
+```java
+@FunctionalInterface                  // optional, but the compiler checks there is only one abstract method
+interface FeeRule {
+    BigDecimal apply(BigDecimal amount);                         // the single abstract method
+
+    default FeeRule capped(BigDecimal max) {                     // allowed: default method
+        return amount -> apply(amount).min(max);
+    }
+
+    static FeeRule rate(String rate) {                           // allowed: static method
+        return amount -> amount.multiply(new BigDecimal(rate));
+    }
+
+    boolean equals(Object o);                                    // allowed: Object's methods do not count
+}
+
+// Three ways to implement the same interface
+FeeRule anonymous = new FeeRule() {                              // before Java 8: anonymous class
+    public BigDecimal apply(BigDecimal amount) { return BigDecimal.ONE; }
+};
+FeeRule lambda = amount -> amount.multiply(new BigDecimal("0.015"));
+FeeRule methodRef = BigDecimal::negate;                          // method reference: shortened lambda
+
+FeeRule card = FeeRule.rate("0.015").capped(new BigDecimal("50"));
+card.apply(new BigDecimal("10000"));                             // 50: capped
+```
+
+**The JDK's functional interfaces** (`java.util.function`): `Function<T, R>` (`T -> R`), `Predicate<T>` (`T ->
+boolean`), `Supplier<T>` (`() -> T`), `Consumer<T>` (`T -> void`), `UnaryOperator<T>`, `BinaryOperator<T>`, their `Bi…`
+and primitive variants (`IntPredicate`, no boxing). And the historical ones: `Runnable`, `Callable`, `Comparator`.
+
+**Lambda vs anonymous class:**
+
+| | Lambda | Anonymous class |
+|---|---|---|
+| Target | functional interface only | interface or class, several methods possible |
+| `this` | the enclosing instance | the anonymous instance |
+| State | no fields of its own | can have fields |
+| Compilation | `invokedynamic`, no `.class` file | an `Outer$1.class` file |
+
+**Pitfalls:**
+- Captured variables must be *effectively final*. `int count = 0; list.forEach(x -> count++);` does not compile ->
+  `AtomicInteger`, or better, `list.size()` / a stream.
+- A lambda cannot throw a checked exception if the interface method does not declare it (`Function.apply` declares none).
+- `var f = x -> x * 2;` does not compile: without a target type, the compiler does not know which interface to implement.
+- `Comparator` declares `equals` as abstract and is still functional: public `Object` methods do not count.
+
+#### Q21. Is the `@FunctionalInterface` annotation mandatory? {#functional-interface-annotation-optional}
+**Answer:** No. Any interface with **exactly one abstract method** is functional and accepts a lambda, annotated or not.
+`@FunctionalInterface` is a **good practice**: it documents the intent ("this interface is meant for lambdas") and asks
+the **compiler to check** the rule. If someone later adds a second abstract method, the error lands on the interface
+itself, instead of breaking every lambda that uses it. It is the same principle as `@Override`: optional, but the
+compiler turns a silent mistake into an explicit error. The JDK puts it on `Function`, `Predicate` or `Runnable`.
+
+**Example:**
+
+```java
+// Without the annotation: it works anyway
+interface Validator {
+    boolean validate(Trade t);
+}
+Validator positive = t -> t.notional().signum() > 0;      // compiles
+
+// Six months later, someone adds an abstract method:
+interface Validator {
+    boolean validate(Trade t);
+    String errorMessage();                                // the interface still compiles...
+}
+// ... but every lambda, everywhere in the code (and in teams using the library), breaks:
+// error: incompatible types: Validator is not a functional interface
+
+// With the annotation: the error is immediate, in the right place
+@FunctionalInterface
+interface Validator {
+    boolean validate(Trade t);
+    String errorMessage();
+    // error: Unexpected @FunctionalInterface annotation
+    //   Validator is not a functional interface: multiple non-overriding abstract methods found
+}
+
+// The right evolution: a default method breaks nothing
+@FunctionalInterface
+interface Validator {
+    boolean validate(Trade t);
+    default String errorMessage() { return "invalid trade"; }
+}
+```
+
+**Pitfalls:**
+- Not counted as abstract methods: `default` methods, `static` methods, and redeclared public `Object` methods
+  (`equals`, `toString`).
+- The annotation on a class, abstract class or enum is a compile error: only interfaces can be functional.
+- An interface extending a functional interface stays functional as long as it adds no abstract method.
+- The annotation is `@Documented`: it appears in the Javadoc, which informs API users.
+
+#### Q22. `map` or `flatMap`? And what are `default` methods, `var` and text blocks? {#default-methods-var-text-blocks}
+**Answer:** `map` turns each element into **one** result; `flatMap` turns each element into a **stream** (or an
+`Optional`) and then **flattens** everything by one level. Same logic for `Optional`: `opt.flatMap(this::findOwner)` when
+`findOwner` already returns an `Optional`. `default` methods let an interface evolve without breaking its
+implementations (`List.sort`, `Collection.stream` in Java 8). `var` is local type inference. Text blocks (`"""`) write
+multi-line strings.
+
+**Example:**
+
+```java
+List<List<String>> byDesk = List.of(List.of("T1", "T2"), List.of("T3"));
+byDesk.stream().map(List::stream);                        // Stream<Stream<String>>: one level too many
+byDesk.stream().flatMap(List::stream).toList();           // [T1, T2, T3]: flattened
+
+// default: evolve an interface without breaking its implementations
+interface Priced {
+    BigDecimal price();
+    default BigDecimal priceWithVat() { return price().multiply(new BigDecimal("1.20")); }
+}
+
+var trades = new HashMap<String, List<Trade>>();   // local inference; not allowed on fields, parameters, with null
+var list = new ArrayList<>();                      // pitfall: ArrayList<Object>
+
+String json = """
+        {"id": "T1", "amount": 100.50}
+        """;                                         // common indentation stripped, final newline included
+```
+
+### Concurrency: the basics
+
+#### Q23. Multithreading: how do you create and coordinate threads in Java? {#create-coordinate-threads-basics}
+**Answer:** A **process** has its own memory; its **threads** share the heap and each has its own stack. Multithreading
+is used to run several tasks in parallel (CPU) or to avoid blocking while waiting (I/O). In practice you do not create
+threads by hand: you submit **tasks** to a **pool** (`ExecutorService`), and you protect shared state.
+
+**Ways to launch concurrent work, from the oldest to the most modern:**
+
+```java
+// 1. Extend Thread: avoid (wastes inheritance, mixes task and mechanism)
+class Worker extends Thread { public void run() { /* ... */ } }
+new Worker().start();
+
+// 2. Runnable: the task without a result, separated from the thread
+Thread t = new Thread(() -> System.out.println("hello"));
+t.start();                             // start() creates a new thread; run() would execute in the current thread
+t.join();                              // wait for completion
+
+// 3. Callable + Future: a task that returns a result and may throw a checked exception
+try (ExecutorService pool = Executors.newFixedThreadPool(4)) {
+    Future<BigDecimal> price = pool.submit(() -> pricer.price("FR0000131104"));
+    BigDecimal p = price.get(2, TimeUnit.SECONDS);   // blocking, with a timeout
+}
+
+// 4. CompletableFuture: compose asynchronous tasks without blocking
+CompletableFuture.supplyAsync(() -> clientApi.get(id), pool)
+        .thenApply(Client::name)
+        .exceptionally(ex -> "unknown");
+
+// 5. Virtual threads (Java 21): one lightweight thread per task, ideal for blocking I/O
+try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
+    ids.forEach(id -> executor.submit(() -> clientApi.get(id)));
+}
+```
+
+**Thread lifecycle** (`Thread.State`): `NEW` -> `RUNNABLE` -> (`BLOCKED` waiting for a monitor, `WAITING` /
+`TIMED_WAITING` on `join`, `wait`, `sleep`, `park`) -> `TERMINATED`.
+
+**Coordinate and protect:**
+
+| Need | Tool |
+|---|---|
+| Mutual exclusion | `synchronized`, `ReentrantLock` |
+| Visibility of a flag | `volatile` |
+| Counter, atomic reference | `AtomicInteger`, `AtomicReference`, `LongAdder` |
+| Shared map | `ConcurrentHashMap` (`merge`, `computeIfAbsent`) |
+| Producer / consumer | `BlockingQueue` (`ArrayBlockingQueue`) |
+| Wait for N tasks | `CountDownLatch`, `invokeAll`, `CompletableFuture.allOf` |
+| Limit concurrent access | `Semaphore` (e.g. 10 simultaneous calls to an API) |
+
+**Pitfalls:**
+- `run()` instead of `start()`: no new thread.
+- `sleep` keeps locks; `wait` releases the monitor (and is called inside `synchronized`, in a `while` loop).
+- Forgetting to close an `ExecutorService`: the JVM does not exit (non-daemon threads).
+- An exception in a task submitted with `submit` is captured in the `Future`: without `get()`, it goes unnoticed.
+- Race condition (`count++`), deadlock (locks taken in different orders): see [Java Q40](java-core-jvm.md#race-condition-deadlock-thread-starvation).
+
+**Real use:** parallelizing calls to several services (`CompletableFuture` + dedicated pool), CPU batches (pool sized to
+the number of cores), a high-concurrency I/O web server (virtual threads). See
+[Java Q48, `ExecutorService`](java-core-jvm.md#using-executorservice-creating-raw-thread) and
+[Java Q52, virtual threads](java-core-jvm.md#problem-virtual-threads-project-loom).
+
+### JVM memory: the basics
+
+#### Q24. Heap or stack: what lives where? {#heap-vs-stack}
+**Answer:** The **stack** is per thread: it holds one *frame* per method call, with local variables, primitives and
+**references**. It is freed automatically when the method returns. The **heap** is shared by all threads: it holds **all
+objects** (and arrays), and the garbage collector frees it.
+
+| | Stack | Heap |
+|---|---|---|
+| Content | frames: local variables, primitives, references, return address | objects, arrays, string pool (since Java 7) |
+| Scope | one thread | the whole JVM |
+| Lifetime | that of the method call | until the object is unreachable |
+| Release | automatic, on pop | garbage collector |
+| Size | small, `-Xss` (often 512 KB to 1 MB) | large, `-Xms` / `-Xmx` |
+| Speed | near-free allocation | fast allocation (TLAB), but GC cost |
+| Thread-safety | natural: nothing is shared | to be managed |
+| Error when full | `StackOverflowError` | `OutOfMemoryError: Java heap space` |
+
+**Example:**
+
+```java
+void book(int qty) {                   // qty: primitive, in book's frame (stack)
+    Trade t = new Trade("T1", qty);    // t: reference on the stack; the Trade object: on the heap
+    List<Trade> batch = List.of(t);    // a 2nd reference to the same heap object
+    repo.save(t);                      // new frame pushed for save, popped on return
+}                                      // book's frame popped: the Trade object becomes eligible for GC
+```
+
+**Pitfalls:**
+- "Primitives are on the stack" is only true for **local variables**. An `int` field of an object lives in the object,
+  hence on the heap.
+- Java passes everything **by value**: for an object, the reference is copied. Reassigning the parameter changes nothing
+  for the caller; modifying the object does.
+- The JIT can avoid a heap allocation thanks to *escape analysis* (an object that does not leave the method).
+
+**Real use:** diagnosing: `StackOverflowError` -> recursion; `OutOfMemoryError` -> heap dump and Eclipse MAT. In a
+container, total memory = heap + metaspace + thread stacks + native memory: hence `-XX:MaxRAMPercentage=75` rather than
+100%. Memory area details: [R9](java-core-jvm.md#java-memory-management-different-jvm).
+
 ## 🟡 Senior traps
 
 ### Language & types
 
-#### Q8. Why is `String` immutable, and what is the string pool? {#string-immutable-string-pool}
+#### Q25. Why is `String` immutable, and what is the string pool? {#string-immutable-string-pool}
 **Answer:** Once created, a `String`'s backing character storage is never mutated — every
 "modifying" method (`concat`, `substring`, `replace`) returns a new `String`. This buys thread
 safety without synchronization (safe to share across threads), lets `String` be safely used as a
@@ -178,7 +1079,11 @@ System.out.println(a == c.intern());  // true  — intern() returns the pooled r
 the `new String(...)` caveat — an interviewer will immediately follow up with exactly that line
 to see if the distinction is actually understood, not memorized as one fact.
 
-#### Q9. What's the autoboxing `==` trap with `Integer`? {#autoboxing-trap-integer}
+**Pool details:** `String d = "hel" + "lo";` is a compile-time constant, so `a == d` is `true`, whereas
+`String part = "hel"; a == part + "lo"` is `false` (runtime concatenation, so a new object). `new String("hello")`
+creates 1 or 2 objects: the heap one, plus the `"hello"` literal in the pool if it is not there yet.
+
+#### Q26. What's the autoboxing `==` trap with `Integer`? {#autoboxing-trap-integer}
 **Answer:** The JVM caches boxed `Integer` values from -128 to 127 (`Integer.valueOf`'s internal
 cache, populated at class-init time and guaranteed by the JLS, not just an implementation detail
 you can't rely on), so `Integer a = 100; Integer b = 100; a == b` is `true` — both point at the
@@ -211,7 +1116,7 @@ quirk — the JLS explicitly requires caching -128..127, which means relying on 
 that range isn't even undefined behavior you got lucky with; it's guaranteed to keep working
 right up until a real value crosses the boundary.
 
-#### Q10. What is type erasure, and what does it actually break? {#type-erasure-break}
+#### Q27. What is type erasure, and what does it actually break? {#type-erasure-break}
 **Answer:** Generic type information (`List<String>` vs `List<Integer>`) exists only at compile
 time for type-checking; the compiler erases it to raw types (`List`) with inserted casts, so at
 runtime both are just `List`. This breaks: overloading two methods that differ only by generic
@@ -246,7 +1151,7 @@ runtime" but few can explain the bridge-method mechanism that makes polymorphism
 correctly despite that — it's the difference between reciting the term and understanding what
 the compiler had to do about it.
 
-#### Q11. What does a record's compact canonical constructor buy you that a Lombok `@Data` class doesn't structurally guarantee? {#record-compact-canonical-constructor-buy}
+#### Q28. What does a record's compact canonical constructor buy you that a Lombok `@Data` class doesn't structurally guarantee? {#record-compact-canonical-constructor-buy}
 **Answer:** A record's compact constructor (`record Range(int lo, int hi) { Range { if (lo > hi)
 throw new IllegalArgumentException(); } }`) runs validation *before* fields are assigned, as an
 intrinsic part of the type's only way to be constructed — there's no setter, no second
@@ -280,7 +1185,7 @@ boilerplate" is the wrong mental model — the record's guarantee is structural 
 enforces it), while `@Data`'s immutability (if you even remembered `@Value` instead) is a
 convention that a later setter call or reflection-based framework can silently violate.
 
-#### Q12. How does pattern matching for `switch` combine with sealed types, and why does that matter for exhaustiveness? {#pattern-matching-switch-combine-sealed}
+#### Q29. How does pattern matching for `switch` combine with sealed types, and why does that matter for exhaustiveness? {#pattern-matching-switch-combine-sealed}
 **Answer:** Since Java 21, `switch` can pattern-match on a sealed type's permitted subtypes
 directly: `switch (shape) { case Circle c -> ...; case Square s -> ...; case Triangle t -> ...; }`.
 Because `Shape` is `sealed permits Circle, Square, Triangle`, the compiler knows the complete set
@@ -319,7 +1224,7 @@ double area(Shape shape) {
 like good practice, but it silently reintroduces the exact runtime gap sealed types + exhaustive
 switch were designed to eliminate at compile time.
 
-#### Q13. Where does `Optional` help, and where does using it make the code worse? {#optional-help-using-make-code}
+#### Q30. Where does `Optional` help, and where does using it make the code worse? {#optional-help-using-make-code}
 **Answer:** `Optional<T>` was designed for exactly one job: a *return type* that says "there may
 be no result" so the caller cannot forget to handle absence. It is not meant to replace `null`
 everywhere. Misuses seniors are expected to flag: (1) as a **field** or **method parameter** — it
@@ -360,7 +1265,7 @@ String city = repo.findById(id)
 classic follow-up because the eager version is invisible until the argument has a side effect
 (a duplicate insert, a slow query on every request).
 
-#### Q14. What are the common ways a `Stream` pipeline goes wrong, even when it compiles and "works" in a test? {#common-ways-stream-pipeline-goes}
+#### Q31. What are the common ways a `Stream` pipeline goes wrong, even when it compiles and "works" in a test? {#common-ways-stream-pipeline-goes}
 **Answer:** Five recurring ones. (1) **Laziness**: intermediate operations (`map`, `filter`,
 `peek`) do nothing until a terminal operation runs, so a pipeline with no terminal op silently
 does nothing, and `peek` is a debugging aid, not a place for logic (it can be skipped entirely,
@@ -404,7 +1309,76 @@ Map<String, User> safe = users.stream()
 Interviewers use `toMap`-with-duplicates and parallel-`forEach` specifically because they show
 whether you've debugged streams in production rather than only read a tutorial.
 
-#### Q15. Why is `double` wrong for money, and what are the `BigDecimal` traps once you switch? {#double-wrong-money-bigdecimal-traps}
+#### Q32. How do you group elements with streams? {#stream-grouping-groupingby}
+**Answer:** With `Collectors.groupingBy(classifier)`, which returns a `Map<K, List<T>>`. Its strength is the
+**downstream collector** as the second argument: instead of a list, you can count, sum, extract a field, keep the
+maximum… And a three-argument variant chooses the `Map` type (for example `TreeMap` for a sorted result). `groupingBy`
+is the equivalent of SQL's `GROUP BY`: the classifier is the `GROUP BY` clause, the downstream collector is the
+aggregate function (`COUNT`, `SUM`, `MAX`). But if the data is in a database, do the `GROUP BY` in SQL rather than
+loading everything in memory.
+
+**Example:**
+
+```java
+record Trade(String id, String desk, String currency, BigDecimal notional, Status status) {}
+
+// 1. Simple grouping: Map<String, List<Trade>>
+Map<String, List<Trade>> byDesk = trades.stream()
+        .collect(groupingBy(Trade::desk));
+
+// 2. Count per group: Map<String, Long>
+Map<String, Long> countByDesk = trades.stream()
+        .collect(groupingBy(Trade::desk, counting()));
+
+// 3. Sum BigDecimals per group (never summingDouble for money)
+Map<String, BigDecimal> notionalByDesk = trades.stream()
+        .collect(groupingBy(Trade::desk,
+                 reducing(BigDecimal.ZERO, Trade::notional, BigDecimal::add)));
+
+// 4. Extract a field: Map<String, Set<String>>, the currencies traded per desk
+Map<String, Set<String>> currenciesByDesk = trades.stream()
+        .collect(groupingBy(Trade::desk, mapping(Trade::currency, toSet())));
+
+// 5. The biggest trade per desk: Map<String, Optional<Trade>>
+Map<String, Optional<Trade>> biggest = trades.stream()
+        .collect(groupingBy(Trade::desk, maxBy(comparing(Trade::notional))));
+
+// 6. Result sorted by key: 3rd argument = Map factory
+TreeMap<String, Long> sorted = trades.stream()
+        .collect(groupingBy(Trade::desk, TreeMap::new, counting()));
+
+// 7. Two levels: desk, then status
+Map<String, Map<Status, List<Trade>>> byDeskAndStatus = trades.stream()
+        .collect(groupingBy(Trade::desk, groupingBy(Trade::status)));
+
+// 8. Only two groups (true / false): partitioningBy
+Map<Boolean, List<Trade>> bigOrNot = trades.stream()
+        .collect(partitioningBy(t -> t.notional().compareTo(new BigDecimal("1000000")) > 0));
+```
+
+Imports used: `import static java.util.stream.Collectors.*;` and `import static java.util.Comparator.comparing;`.
+
+**`groupingBy` vs `toMap`:**
+
+```java
+// One value per key (not a list): toMap
+Map<String, Trade> byId = trades.stream().collect(toMap(Trade::id, Function.identity()));
+// Duplicate key -> IllegalStateException; provide a merge function if expected:
+Map<String, BigDecimal> totals = trades.stream()
+        .collect(toMap(Trade::desk, Trade::notional, BigDecimal::add));   // equivalent of case 3
+```
+
+**Pitfalls:**
+- The `Map` returned by `groupingBy` is a `HashMap`: **no order** guaranteed. Use `TreeMap::new` or `LinkedHashMap::new`.
+- `counting()` returns `Long`, not `Integer`.
+- `summingDouble` / `averagingDouble` on amounts: rounding errors. For money, `reducing` with `BigDecimal::add`.
+- A `null` key returned by the classifier -> `NullPointerException`. `partitioningBy` always returns both keys, even
+  empty.
+- In parallel, `groupingByConcurrent` avoids the costly map merge (at the cost of order).
+- To read the result sorted by value (top 3 desks):
+  `countByDesk.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(3)`.
+
+#### Q33. Why is `double` wrong for money, and what are the `BigDecimal` traps once you switch? {#double-wrong-money-bigdecimal-traps}
 **Answer:** `double` is binary floating point: `0.1` has no exact representation, so
 `0.1 + 0.2 == 0.30000000000000004` and errors accumulate across sums, discounts and tax lines —
 a cent off here and there, which reconcilers and auditors *do* care about. `BigDecimal` (or
@@ -445,7 +1419,9 @@ are where financial bugs actually come from.
 
 ### Exceptions & resources
 
-#### Q16. What does `try-with-resources` actually guarantee, and what interface does it rely on? {#try-resources-guarantee-interface-rely}
+**Storing money:** in the database, `NUMERIC(19,4)` (or cents as a `long`), never `FLOAT`/`DOUBLE`.
+
+#### Q34. What does `try-with-resources` actually guarantee, and what interface does it rely on? {#try-resources-guarantee-interface-rely}
 **Answer:** Any resource implementing `AutoCloseable` (or `Closeable`, which extends it and
 narrows `close()` to throw only `IOException`) declared in the `try(...)` parentheses has its
 `close()` called automatically when the block exits — normally or via exception — in **reverse**
@@ -475,7 +1451,7 @@ try (Resource r1 = new Resource("A"); Resource r2 = new Resource("B")) {
 suppressed-exception mechanism, which is exactly the detail that matters when debugging a
 production stack trace that has a "Suppressed:" section a reader skipped past.
 
-#### Q17. Checked vs unchecked exceptions — what's the actual design trade-off? {#checked-unchecked-exceptions-design-trade}
+#### Q35. Checked vs unchecked exceptions — what's the actual design trade-off? {#checked-unchecked-exceptions-design-trade}
 **Answer:** Checked exceptions (subclasses of `Exception` but not `RuntimeException`) must be
 declared or caught — the compiler forces the caller to acknowledge a specific, recoverable
 failure mode (e.g. `IOException`). Unchecked exceptions (`RuntimeException` and its subclasses)
@@ -515,7 +1491,7 @@ names why that's worse than either checked or unchecked exceptions done properly
 
 ### Collections
 
-#### Q18. Walk through what actually happens inside `HashMap.put()` and `.get()`, and explain why a bad `hashCode()` is a real performance bug. {#happens-inside-hashmap-put-get}
+#### Q36. Walk through what actually happens inside `HashMap.put()` and `.get()`, and explain why a bad `hashCode()` is a real performance bug. {#happens-inside-hashmap-put-get}
 **Answer:** `put()` computes `hashCode()`, spreads it with an internal mix function
 (`h ^ (h >>> 16)`, to fold high bits into the low bits so table sizes that are small powers of
 two still get good distribution), and picks a bucket index from that hash modulo the table
@@ -560,7 +1536,7 @@ System.out.println(map.size()); // 2, not 1 — "duplicate" entries for an equal
 broken `equals()`/`hashCode()` contract isn't a slowdown — it's a correctness bug that silently
 duplicates data.
 
-#### Q19. Why is a mutable object with a field-based `hashCode()` dangerous as a `HashMap` key or `HashSet` element? {#mutable-object-field-based-hashcode}
+#### Q37. Why is a mutable object with a field-based `hashCode()` dangerous as a `HashMap` key or `HashSet` element? {#mutable-object-field-based-hashcode}
 **Answer:** A `HashMap`/`HashSet` files an entry into a bucket using the key's `hashCode()` *at
 insertion time* and never recomputes it (Q18). If a field that participates in `hashCode()` /
 `equals()` is mutated afterwards, the entry stays in the old bucket while every later lookup
@@ -608,7 +1584,7 @@ up immediately — the bug only appears when something mutates the object *while
 hashed collection*, often far from where it was inserted, and the symptom (a "ghost" element)
 shows up long after the mutation.
 
-#### Q20. What causes `ConcurrentModificationException`, and what's the correct fix? {#causes-concurrentmodificationexception-correct-fix}
+#### Q38. What causes `ConcurrentModificationException`, and what's the correct fix? {#causes-concurrentmodificationexception-correct-fix}
 **Answer:** Java's collections use a fail-fast iterator backed by a `modCount` field; the
 iterator snapshots `modCount` when created and checks it on every `next()`. Structurally
 modifying the collection (add/remove, not just updating a value via `set()`) outside the
@@ -649,7 +1625,7 @@ names.removeIf(n -> n.equals("Bob"));
 to an index-based loop that skips an element after removal — both hide a real bug instead of
 fixing it (the index-based version silently skips the element after the removed one).
 
-#### Q21. Design a thread-safe, bounded, LRU cache from scratch. What are the real trade-offs? {#design-thread-safe-bounded-lru}
+#### Q39. Design a thread-safe, bounded, LRU cache from scratch. What are the real trade-offs? {#design-thread-safe-bounded-lru}
 **Answer:** A `LinkedHashMap` in access-order mode (`new LinkedHashMap<>(cap, 0.75f, true)`) with
 `removeEldestEntry` overridden to evict past a size threshold gives you LRU semantics almost for
 free, because access-order mode re-links an entry to the tail of the internal doubly-linked list
@@ -694,7 +1670,7 @@ naive lock-everything fix is itself the setup for the follow-up about concurrenc
 
 ### Concurrency & memory model
 
-#### Q22. What are a race condition, a deadlock and thread starvation, and how do you recognise and prevent each? {#race-condition-deadlock-thread-starvation}
+#### Q40. What are a race condition, a deadlock and thread starvation, and how do you recognise and prevent each? {#race-condition-deadlock-thread-starvation}
 **Answer:** They are the three classic ways shared-state concurrency goes wrong, and they fail differently.
 A **race condition** is a bug where the result depends on the unlucky interleaving of threads: the typical shape is
 *check-then-act* (`if (slot.isFree()) slot.book()`) or *read-modify-write* (`count++`, which is three steps, not one).
@@ -730,10 +1706,10 @@ void transfer(Account a, Account b) {
 
 **Why it's a trap:** a race condition can survive for years because it needs real concurrency and rare timing; "it works
 on my machine" proves nothing. And `volatile` or a `ConcurrentHashMap` do not make a *sequence* of operations atomic
-(see [Java Q23](java-core-jvm.md#real-synchronized-volatile)). Database-level equivalents are covered in
+(see [Java Q41](java-core-jvm.md#real-synchronized-volatile)). Database-level equivalents are covered in
 [Persistence Q26](persistence-sql-postgres.md#optimistic-pessimistic-locking-terms-contention).
 
-#### Q23. What's the real difference between `synchronized` and `volatile`? {#real-synchronized-volatile}
+#### Q41. What's the real difference between `synchronized` and `volatile`? {#real-synchronized-volatile}
 **Answer:** `synchronized` provides mutual exclusion (only one thread executes the block at a
 time) **and** a happens-before edge: everything a thread did before releasing a lock is visible
 to the next thread that acquires that same lock, including plain (non-volatile) writes made
@@ -775,11 +1751,11 @@ other thread interleaves between the read and the write.
 this question — volatile only removes stale-read bugs, it does nothing about race conditions on
 compound operations.
 
-#### Q24. What is immutability, and why are immutable objects so useful in concurrent applications? {#immutability-immutable-objects-useful-concurrent}
+#### Q42. What is immutability, and why are immutable objects so useful in concurrent applications? {#immutability-immutable-objects-useful-concurrent}
 **Answer:** An immutable object cannot change after construction: all fields are `final`, set in the constructor, the class
 cannot be subclassed (or is a `record`), and no method exposes internal mutable state. Because nothing can ever change,
 there is nothing to synchronise: any number of threads can read the same instance concurrently without locks, without
-visibility problems (`final` fields are safely published, see [Java Q25](java-core-jvm.md#safe-publication-java-memory-model)) and without defensive copies at
+visibility problems (`final` fields are safely published, see [Java Q43](java-core-jvm.md#safe-publication-java-memory-model)) and without defensive copies at
 every boundary. That removes whole bug classes (races, torn reads, `ConcurrentModificationException`), makes objects safe
 as `HashMap` keys and cache values, and makes reasoning local. The cost is allocation: every "change" creates a new
 object (`LocalDate.plusDays`, `String.concat`), which the JVM handles well for small values but which is wrong for large
@@ -805,7 +1781,7 @@ public record Appointment(String id, String doctorId, Instant start, List<String
 `volatile Appointment current` still needs atomic replacement (`AtomicReference.compareAndSet`) when several threads
 update it.
 
-#### Q25. What is "safe publication" in the Java Memory Model, and why can another thread see a half-constructed object? {#safe-publication-java-memory-model}
+#### Q43. What is "safe publication" in the Java Memory Model, and why can another thread see a half-constructed object? {#safe-publication-java-memory-model}
 **Answer:** Without a happens-before edge between the thread that constructs an object and the
 thread that reads the reference, the JMM lets the reader see the *reference* as non-null while
 some of the object's *fields still hold their default values* — the compiler and CPU are free to
@@ -852,7 +1828,7 @@ because the reordering is hardware- and JIT-dependent. Candidates who say "volat
 flags" miss that its real role is the happens-before edge that makes the *rest* of an object
 visible.
 
-#### Q26. When would you pick `ReentrantLock` (or `StampedLock`) over `synchronized`? {#pick-reentrantlock-stampedlock-synchronized}
+#### Q44. When would you pick `ReentrantLock` (or `StampedLock`) over `synchronized`? {#pick-reentrantlock-stampedlock-synchronized}
 **Answer:** `synchronized` is the right default: it releases the monitor automatically even on
 an exception, cannot be forgotten, and the JVM optimizes it heavily. Reach for
 `java.util.concurrent.locks` only when you need something it cannot express: **`tryLock()` /
@@ -901,7 +1877,7 @@ double distance() {
 difference is usually negligible on modern JVMs. The senior answer is about *capabilities*
 (timeouts, interruption, conditions) and the added responsibility of unlocking correctly.
 
-#### Q27. Can class initialization itself deadlock, and how does a static initializer failure behave afterwards? {#class-initialization-itself-deadlock-static}
+#### Q45. Can class initialization itself deadlock, and how does a static initializer failure behave afterwards? {#class-initialization-itself-deadlock-static}
 **Answer:** Yes. The JVM guarantees each class is initialized exactly once by holding an
 initialization lock while the `static` initializers run (JLS §12.4.2). If class `A`'s static
 initializer needs class `B`, and `B`'s needs `A`, and two different threads trigger `A` and `B`
@@ -938,7 +1914,7 @@ class Settings {
 `NoClassDefFoundError` is the usual red herring in an incident: engineers chase a "missing jar"
 that is actually present, when the real bug is the first, long-scrolled-away initializer error.
 
-#### Q28. Name the thread-safe Singleton implementation strategies, and explain why Bill Pugh / static inner class is generally preferred. {#name-thread-safe-singleton-implementation}
+#### Q46. Name the thread-safe Singleton implementation strategies, and explain why Bill Pugh / static inner class is generally preferred. {#name-thread-safe-singleton-implementation}
 **Answer:** Four common approaches: (1) eager initialization — a `static final` field,
 instantiated at class-load time, simple and thread-safe but always pays the construction cost
 even if unused; (2) synchronized `getInstance()` — correct but serializes every call forever,
@@ -992,9 +1968,9 @@ public enum EnumRegistry {
 interviewer probing further ("what about reflection?") is testing whether you actually know the
 gap, not just the name of the pattern.
 
-*See also:* [Design Patterns Q1](design-patterns.md#problem-singleton-solve-implement-thread) (when a Singleton is the right call at all) and [Design Patterns Q15](design-patterns.md#many-senior-engineers-treat-singleton) (why it is often an anti-pattern).
+*See also:* [Design Patterns Q2](design-patterns.md#problem-singleton-solve-implement-thread) (when a Singleton is the right call at all) and [Design Patterns Q16](design-patterns.md#many-senior-engineers-treat-singleton) (why it is often an anti-pattern).
 
-#### Q29. Why are `ThreadLocal`s a poor fit for modern concurrent code, and what does `ScopedValue` change? {#threadlocal-poor-fit-modern-concurrent}
+#### Q47. Why are `ThreadLocal`s a poor fit for modern concurrent code, and what does `ScopedValue` change? {#threadlocal-poor-fit-modern-concurrent}
 **Answer:** A `ThreadLocal` is a mutable, unscoped per-thread slot: anything can `set()` it, it
 lives until someone remembers to `remove()` it, and on a pooled thread it silently leaks the
 previous request's value into the next one (Q37). It also costs memory per thread, which stops
@@ -1038,7 +2014,7 @@ abstraction, not just recite the leak.
 
 ### Executors & async
 
-#### Q30. What's the difference between using `ExecutorService` and creating raw `Thread` objects, and what's a common pitfall with the common fork-join pool? {#using-executorservice-creating-raw-thread}
+#### Q48. What's the difference between using `ExecutorService` and creating raw `Thread` objects, and what's a common pitfall with the common fork-join pool? {#using-executorservice-creating-raw-thread}
 **Answer:** `ExecutorService` decouples task submission from thread management — you submit
 `Runnable`s or `Callable`s to a pool with a bounded (or virtual-thread-per-task) size, get back
 `Future`s, and the pool handles reuse, queuing, and shutdown; raw `Thread` creation gives you none
@@ -1071,7 +2047,7 @@ List<Future<String>> futures = urls.stream()
 unrelated, seemingly random slowdown in a completely different part of the application that also
 happens to use `parallelStream()` or default-async `CompletableFuture`.
 
-#### Q31. What is the difference between CPU-bound and I/O-bound workloads, and how does it change your thread-pool sizing? {#cpu-bound-o-bound-workloads}
+#### Q49. What is the difference between CPU-bound and I/O-bound workloads, and how does it change your thread-pool sizing? {#cpu-bound-o-bound-workloads}
 **Answer:** A **CPU-bound** task keeps a core busy computing (parsing, hashing, compression, report generation): its
 speed is limited by the number of cores, so more threads than cores only adds context-switching. An **I/O-bound** task
 spends most of its time *waiting* (HTTP call, SQL query, disk, message broker): the thread is blocked and the CPU idle, so
@@ -1080,9 +2056,9 @@ you can run many more threads than cores to keep the hardware busy. The classic 
 get about 80 threads, whereas a pure CPU task gets about 8 (or `cores + 1`). In practice you do not mix them: give CPU work
 a small fixed pool (or `ForkJoinPool.commonPool()` / parallel streams) and blocking I/O its own, larger, *bounded* pool, so a
 slow dependency cannot starve computation or exhaust every thread. Virtual threads change the I/O side: you can create one
-per blocking task and stop sizing the pool by hand (see [Java Q33](java-core-jvm.md#problem-virtual-threads-project-loom)), but they do nothing for CPU-bound
+per blocking task and stop sizing the pool by hand (see [Java Q52](java-core-jvm.md#problem-virtual-threads-project-loom)), but they do nothing for CPU-bound
 work, which is still limited by cores. Measure before tuning: CPU near 100% with a short run queue means CPU-bound; low CPU
-with many `WAITING` threads and growing latency means I/O-bound (see [Java Q40](java-core-jvm.md#profile-slow-cpu-hungry-java) for profiling).
+with many `WAITING` threads and growing latency means I/O-bound (see [Java Q59](java-core-jvm.md#profile-slow-cpu-hungry-java) for profiling).
 
 **Example:**
 
@@ -1099,9 +2075,58 @@ CompletableFuture.supplyAsync(() -> patientApi.fetch(id), ioPool)         // wai
 
 **Why it's a trap:** using one shared pool for everything lets a burst of slow HTTP calls occupy every thread so that
 CPU work (and health checks) starve; and `newCachedThreadPool` for I/O has no upper bound, so a slow downstream turns into
-an `OutOfMemoryError: unable to create native thread`. See [Java Q30](java-core-jvm.md#using-executorservice-creating-raw-thread) for the executor pitfalls.
+an `OutOfMemoryError: unable to create native thread`. See [Java Q48](java-core-jvm.md#using-executorservice-creating-raw-thread) for the executor pitfalls.
 
-#### Q32. Walk through `thenApply` vs `thenCompose` vs `thenCombine` on `CompletableFuture`, and name a common pitfall. {#thenapply-thencompose-thencombine-completablefuture-name}
+#### Q50. Parallel streams: how do they work, and when should you use them? {#parallel-streams-when-worth-it}
+**Answer:** `parallelStream()` (or `.parallel()`) splits the source into chunks (via a `Spliterator`), processes them on
+several threads of the **`ForkJoinPool.commonPool()`** (size = number of cores − 1, plus the calling thread), then
+combines the results. It pays off **only** for a large amount of **CPU** work, on an easily split source, with
+operations that have **no shared state**. In every other case it is slower or wrong. By default stay sequential: go
+parallel for heavy CPU work on a large collection, after measuring, and never for network calls.
+
+**Example:**
+
+```java
+// Good candidate: many elements, CPU work, splittable source, no shared mutation
+BigDecimal totalRisk = positions.parallelStream()          // ArrayList: O(1) splitting
+        .map(riskEngine::computeVaR)                         // heavy, pure computation
+        .reduce(BigDecimal.ZERO, BigDecimal::add);           // associative operation, correct identity
+
+// Wrong: non-thread-safe shared state
+List<String> out = new ArrayList<>();
+names.parallelStream().map(String::toUpperCase).forEach(out::add);   // lost elements or ArrayIndexOutOfBoundsException
+List<String> ok = names.parallelStream().map(String::toUpperCase).toList();   // the collector handles the merge
+
+// Order: forEach does not respect order in parallel
+IntStream.range(0, 5).parallel().forEach(System.out::print);         // e.g. 31042
+IntStream.range(0, 5).parallel().forEachOrdered(System.out::print);  // 01234, but you lose part of the gain
+```
+
+**When it pays off: the grid to give.**
+
+| Criterion | Favorable | Unfavorable |
+|---|---|---|
+| Volume × cost per element | large (rule of thumb: N × Q > 10,000) | a few hundred simple elements |
+| Nature of the work | pure CPU | blocking I/O (HTTP, database, files) |
+| Source | `ArrayList`, array, `IntStream.range` | `LinkedList`, `Stream.iterate`, `BufferedReader.lines` |
+| Operations | stateless, associative | `sorted`, `distinct`, `limit`, `findFirst` on an ordered source |
+| Context | batch, isolated computation | web server: the common pool is shared by the whole JVM |
+
+**Pitfalls:**
+- **I/O in a parallel stream**: the few common-pool threads stay blocked, and all other parallel streams and
+  `CompletableFuture`s without an explicit application pool wait.
+- **Badly written `reduce`**: the identity must be neutral. `reduce(1, Integer::sum)` in parallel adds 1 per chunk. The
+  function must be associative (no subtraction).
+- **Lost thread context**: `@Transactional`, `SecurityContext`, log MDC and `ThreadLocal` do not follow onto the pool
+  threads.
+- **Measure** before concluding (JMH): the cost of splitting and merging often exceeds the gain.
+- Custom pool: `customPool.submit(() -> list.parallelStream()...).get()` works, but it is an implementation detail. For
+  I/O, use `CompletableFuture`s on a dedicated pool or virtual threads instead.
+
+See [Java Q31, stream pitfalls](java-core-jvm.md#common-ways-stream-pipeline-goes) and
+[R7, default pool](java-core-jvm.md#completablefuture-create-own-thread-pool).
+
+#### Q51. Walk through `thenApply` vs `thenCompose` vs `thenCombine` on `CompletableFuture`, and name a common pitfall. {#thenapply-thencompose-thencombine-completablefuture-name}
 **Answer:** `thenApply` transforms the result with a plain function (`T -> U`) — use it when the
 next step isn't itself async. `thenCompose` flattens a step that *returns* another
 `CompletableFuture` (`T -> CompletableFuture<U>`) — the async equivalent of `flatMap`; using
@@ -1135,7 +2160,10 @@ CompletableFuture<Dashboard> dashboard =
 it's a type-shape bug, not a syntax error, so it only surfaces when a caller tries to use the
 result and gets a `CompletableFuture` where they expected the actual value.
 
-#### Q33. What problem do virtual threads (Project Loom) actually solve, and where do they still fall over? {#problem-virtual-threads-project-loom}
+**Timeouts and fallback:** `future.orTimeout(2, TimeUnit.SECONDS).exceptionally(ex -> fallback)` bounds the wait and
+supplies a fallback value if the call fails or times out.
+
+#### Q52. What problem do virtual threads (Project Loom) actually solve, and where do they still fall over? {#problem-virtual-threads-project-loom}
 **Answer:** Platform threads are thin wrappers around OS threads — expensive to create
 (megabyte-scale stacks) and limited in number (thousands, not millions), which is why
 high-concurrency I/O-bound servers historically reached for reactive/async programming
@@ -1172,7 +2200,7 @@ try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
 "what could go wrong?" is checking whether you know the two concrete failure modes, not just the
 headline benefit.
 
-#### Q34. When would you choose virtual threads over a reactive stack (WebFlux) for a high-concurrency I/O-bound service, and vice versa? {#virtual-threads-reactive-stack-webflux}
+#### Q53. When would you choose virtual threads over a reactive stack (WebFlux) for a high-concurrency I/O-bound service, and vice versa? {#virtual-threads-reactive-stack-webflux}
 **Answer:** Virtual threads (Q33) win when the codebase, its libraries, and its debugging tooling
 assume blocking, synchronous code — most JDBC drivers, most existing business logic, stack traces
 that read top-to-bottom — and you want reactive-scale concurrency without a full reactive
@@ -1211,7 +2239,7 @@ instead of picking a universal winner.
 
 ### JVM memory & GC
 
-#### Q35. Explain reachability analysis and GC roots, and name two garbage collection algorithms. {#reachability-analysis-gc-roots-name}
+#### Q54. Explain reachability analysis and GC roots, and name two garbage collection algorithms. {#reachability-analysis-gc-roots-name}
 **Answer:** The JVM doesn't use reference counting; it periodically traces reachability from a
 fixed set of **GC roots** — local variables and parameters on the stack of each live thread,
 static fields, JNI references held by native code, and a few others (active monitors, JVM
@@ -1252,7 +2280,7 @@ void demo() {
 Objective-C) sometimes assume Java has the same cycle-leak problem those languages have without
 a cycle collector — Java's tracing GC never had that problem in the first place.
 
-#### Q36. Walk through choosing between G1, ZGC, and Shenandoah for a latency-sensitive service. {#choosing-g1-zgc-shenandoah-latency}
+#### Q55. Walk through choosing between G1, ZGC, and Shenandoah for a latency-sensitive service. {#choosing-g1-zgc-shenandoah-latency}
 **Answer:** Start from the actual constraint, not the collector name: G1 is the safe default —
 mature, well-understood, region-based, tunable pause-time goals (`-XX:MaxGCPauseMillis`) — and is
 fine for most services where "occasional tens-of-milliseconds pause" is acceptable. If the
@@ -1288,7 +2316,7 @@ service's actual latency SLO is a red flag — a batch job with no latency requi
 nothing from ZGC and pays its overhead for free, while a service with a genuine sub-10ms budget
 that stays on G1 "because it's the default" is under-serving its own requirement.
 
-#### Q37. Java has garbage collection — how does a memory leak still happen? {#java-has-garbage-collection-memory}
+#### Q56. Java has garbage collection — how does a memory leak still happen? {#java-has-garbage-collection-memory}
 **Answer:** GC only reclaims *unreachable* objects; a "leak" in Java is really unintentional
 reachability — something still holds a reference to objects no one needs anymore, so they never
 become eligible for collection. Classic causes: a `static` collection (cache, listener list) that
@@ -1320,7 +2348,10 @@ class RequestContext {
 the interviewer wants to hear that a leak is a reachability bug the *application* owns, not
 something a garbage collector could ever be expected to detect or fix.
 
-#### Q38. What's the difference between `StackOverflowError` and `OutOfMemoryError`, and where does each actually come from? {#stackoverflowerror-outofmemoryerror-each-come}
+**Diagnosing a leak:** `jcmd <pid> GC.heap_dump /tmp/heap.hprof`, then Eclipse MAT (*dominator tree* and *Leak Suspects*).
+Typical signal: Old Gen rising after every full GC.
+
+#### Q57. What's the difference between `StackOverflowError` and `OutOfMemoryError`, and where does each actually come from? {#stackoverflowerror-outofmemoryerror-each-come}
 **Answer:** Both are `Error`s (not `Exception`s — the JVM is signaling something the application
 generally shouldn't try to recover from), but they come from different memory regions.
 `StackOverflowError` happens when a single thread's call stack exceeds its fixed size — almost
@@ -1354,11 +2385,40 @@ while (true) {
 size" as a universal fix for both — that treats the symptom, not the region-specific root cause,
 and both errors keep recurring (just later) if the underlying algorithm is genuinely unbounded.
 
+**Typical causes of a `StackOverflowError`:**
+
+```java
+// 1. Recursion without a base case
+static int depth(int n) { return depth(n + 1); }
+
+// 2. Correct recursion that is too deep: a linked list of a million nodes
+static int length(ListNode n) { return n == null ? 0 : 1 + length(n.next); }
+
+// Fix: iterative version, constant stack depth
+static int lengthIter(ListNode n) {
+    int len = 0;
+    for (; n != null; n = n.next) len++;
+    return len;
+}
+
+// 3. The most frequent real case: JPA bidirectional relationship + generated toString/equals/JSON
+@Entity class Order  { @OneToMany(mappedBy = "order") List<OrderLine> lines; /* toString() includes lines */ }
+@Entity class OrderLine { @ManyToOne Order order; /* toString() includes order */ }
+// order.toString() -> line.toString() -> order.toString() -> ... -> StackOverflowError
+// Jackson: "Infinite recursion (StackOverflowError)" -> @JsonManagedReference / @JsonBackReference, or a DTO
+```
+
+- Java does **not** optimize tail recursion: even "tail" recursion consumes one frame per call.
+- Raising `-Xss` only postpones the problem, and multiplies the reserved memory by the number of threads.
+- The stack trace is truncated (1,024 lines by default): look for the repeating pattern.
+- Lombok `@Data` / `@ToString` on bidirectional entities: exclude the inverse side (`@ToString.Exclude`). Deep tree
+  traversal: explicit stack (`ArrayDeque`). See also [Scenario S10](java-core-jvm.md#newly-deployed-feature-crashes-stackoverflowerror).
+
 ## 🔴 Expert / Open
 
 ### JVM internals & performance
 
-#### Q39. What does the JIT compiler do, and what are escape analysis and deoptimization? {#jit-compiler-escape-analysis-deoptimization}
+#### Q58. What does the JIT compiler do, and what are escape analysis and deoptimization? {#jit-compiler-escape-analysis-deoptimization}
 **Answer:** The JVM starts by **interpreting** bytecode and profiling it. Hot methods are compiled by **C1** (fast,
 light optimization), then the hottest by **C2** (or Graal) with aggressive optimizations based on the observed
 profile: **inlining** (the most important one, it enables the rest), loop unrolling, and devirtualizing interface calls
@@ -1376,7 +2436,7 @@ misleading (dead-code elimination, no warm-up); and megamorphic call sites (many
    1890  412   4   com.acme.Pricing::finalPrice   made not entrant   <- deoptimized
 ```
 
-#### Q40. How do you profile a slow or CPU-hungry Java service in production? {#profile-slow-cpu-hungry-java}
+#### Q59. How do you profile a slow or CPU-hungry Java service in production? {#profile-slow-cpu-hungry-java}
 **Answer:** Start from metrics (CPU, GC pause time, allocation rate, thread pools) to know which resource is
 saturated. Then use **low-overhead profilers** you can run in production: **Java Flight Recorder** (built into the
 JDK, about 1% overhead: `jcmd <pid> JFR.start duration=60s filename=rec.jfr`, then open it in JDK Mission Control)
@@ -1394,7 +2454,7 @@ flame graph: 41% in com.fasterxml.jackson...serialize  <- serializing a 5 MB res
 ./asprof -e alloc -d 30 -f alloc.html <pid>
 ```
 
-#### Q41. GraalVM native image vs a regular JVM — when is it worth it? {#graalvm-native-image-regular-jvm}
+#### Q60. GraalVM native image vs a regular JVM — when is it worth it? {#graalvm-native-image-regular-jvm}
 **Answer:** Native image compiles the application ahead of time into a standalone executable under a **closed-world
 assumption**: everything reachable must be known at build time. Gains: startup in tens of milliseconds and a much lower
 memory footprint, which fits serverless functions, CLIs and scale-to-zero workloads. Costs: long builds, reflection,
@@ -1404,7 +2464,7 @@ a different runtime to debug and monitor. For long-running services on Kubernete
 Sharing (AppCDS)**, **CRaC** checkpoint/restore, or the Leyden AOT cache in recent JDKs often gives most of the
 startup win with fewer constraints.
 
-#### Q42. How does class loading work, and what does JPMS (modules) add? {#class-loading-jpms-modules-add}
+#### Q61. How does class loading work, and what does JPMS (modules) add? {#class-loading-jpms-modules-add}
 **Answer:** Classes are loaded lazily by a hierarchy of class loaders: **bootstrap** (core JDK), **platform**, and
 **application** (your classpath), using **parent delegation** (ask the parent first). Application servers, Spring Boot
 fat jars and plugin systems add their own loaders. A class is identified by its name **and** its loader, which is why
@@ -1425,7 +2485,7 @@ module com.acme.billing {
 }
 ```
 
-#### Q43. Why do native images use so little memory and start so fast, and what do you give up? {#native-images-little-memory-start}
+#### Q62. Why do native images use so little memory and start so fast, and what do you give up? {#native-images-little-memory-start}
 **Answer:** A normal JVM does at runtime what a native image did once at build time. At startup the JVM loads and
 verifies classes, interprets bytecode, profiles it, and compiles hot methods with C1/C2 on background threads; that
 costs time (hundreds of ms to seconds) and memory (Metaspace for class metadata, the JIT code cache, profiling data,
@@ -1450,7 +2510,7 @@ java -jar app.jar          # startup ~2.5 s   RSS ~380 MB
 ps -o rss= -p <pid>        # resident memory in KB
 ```
 
-#### Q44. How do you build a Spring Boot 3 application as a native image, step by step? {#build-spring-boot-3-application}
+#### Q63. How do you build a Spring Boot 3 application as a native image, step by step? {#build-spring-boot-3-application}
 **Answer:**
 
 1. **Install a GraalVM JDK** (21+ for Boot 3.x) and check it: `sdk install java <graalvm-version>`, then

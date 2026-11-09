@@ -27,9 +27,28 @@ GET    /orders/999            -> 404 Not Found
 POST   /orders {"qty": -1}    -> 422 Unprocessable Content
 ```
 
+#### Q2. Que montre `curl -v` d'un appel HTTPS, étape par étape ? {#curl-verbose-https-request-steps}
+**Réponse :** `curl -v` rend visible tout ce qui se passe entre la saisie d'une URL et la réponse : résolution DNS, connexion TCP (ou QUIC pour HTTP/3), handshake TLS (vérification du certificat : nom, dates, chaîne jusqu'à une autorité de confiance ; échange de clés), requête HTTP, puis réponse. HTTP/2 multiplexe les requêtes sur une seule connexion TCP ; HTTP/3 passe sur QUIC (UDP) pour supprimer le blocage en tête de ligne de TCP.
+
+**Exemple :**
+
+```text
+$ curl -v https://api.example.com/trades/T1
+*   Trying 203.0.113.10:443...                          ← DNS résolu, ouverture de la connexion TCP
+* Connected to api.example.com
+* SSL connection using TLSv1.3 / TLS_AES_256_GCM_SHA384 ← handshake TLS terminé, clés de session échangées
+* Server certificate: subject: CN=api.example.com       ← certificat vérifié (nom, dates, chaîne jusqu'à une AC de confiance)
+> GET /trades/T1 HTTP/2                                 ← requête HTTP
+> Host: api.example.com
+> Authorization: Bearer eyJhbGciOi...
+< HTTP/2 200                                            ← réponse
+< content-type: application/json
+< cache-control: max-age=60
+```
+
 ### Containers
 
-#### Q2. Qu'est-ce qu'un container, et en quoi diffère-t-il fondamentalement d'une machine virtuelle ? {#container-fundamentally-differ-virtual-machine}
+#### Q3. Qu'est-ce qu'un container, et en quoi diffère-t-il fondamentalement d'une machine virtuelle ? {#container-fundamentally-differ-virtual-machine}
 Un container empaquette une application avec ses dépendances et partage le kernel de la machine hôte —
 c'est un processus isolé (via les namespaces Linux pour l'isolation et les cgroups pour les limites de ressources),
 et non un système d'exploitation séparé, ce qui le rend léger (démarre en millisecondes à secondes,
@@ -50,7 +69,7 @@ $ docker exec web uname -r             # affiche la version du noyau de l'HÔTE
 $ cat /sys/fs/cgroup/system.slice/docker-*/memory.max   # limite cgroup : 268435456
 ```
 
-#### Q3. Expliquez comment fonctionnent les layers d'image Docker et le cache de build. {#docker-image-layers-build-caching}
+#### Q4. Expliquez comment fonctionnent les layers d'image Docker et le cache de build. {#docker-image-layers-build-caching}
 Chaque instruction d'un Dockerfile (`RUN`, `COPY`, `ADD`) crée un nouveau layer immuable empilé sur
 le précédent, et Docker met chaque layer en cache — si l'instruction d'un layer et ses entrées n'ont pas
 changé depuis le dernier build, Docker réutilise le layer en cache au lieu de le ré-exécuter, et
@@ -76,7 +95,7 @@ CMD ["node", "dist/server.js"]
 # Inversez l'ordre (COPY . . d'abord) et chaque modification relance npm ci
 ```
 
-#### Q4. Volumes Docker vs bind mounts vs layer inscriptible du container — où doivent vivre les données ? {#docker-volumes-bind-mounts-container}
+#### Q5. Volumes Docker vs bind mounts vs layer inscriptible du container — où doivent vivre les données ? {#docker-volumes-bind-mounts-container}
 Le filesystem propre d'un container est un mince **layer inscriptible** au-dessus des layers d'image en lecture seule : il
 démarre vite, mais tout ce qu'il contient disparaît quand le container est supprimé, et les écritures lourdes
 via le storage driver en copy-on-write sont plus lentes qu'avec un vrai volume. Tout ce qui doit
@@ -110,7 +129,7 @@ docker run --rm --tmpfs /run/secrets:rw,size=1m my-app
 
 ### Kubernetes
 
-#### Q5. Qu'est-ce qu'un Pod Kubernetes, et pourquoi Kubernetes n'exécute-t-il pas simplement les containers directement ? {#kubernetes-pod-doesn-kubernetes-just}
+#### Q6. Qu'est-ce qu'un Pod Kubernetes, et pourquoi Kubernetes n'exécute-t-il pas simplement les containers directement ? {#kubernetes-pod-doesn-kubernetes-just}
 Un Pod est la plus petite unité déployable dans Kubernetes — un ou plusieurs containers toujours
 schedulés ensemble sur le même node, qui partagent un network namespace (ils peuvent donc se joindre via
 `localhost` et partagent une seule IP), et peuvent partager des volumes de stockage. Kubernetes ne gère pas les containers
@@ -140,7 +159,7 @@ spec:
 # l'app joint le sidecar via localhost ; les deux sont planifiés et scalés comme une seule unité
 ```
 
-#### Q6. Un pod ne fonctionne pas — quelles sont vos premières commandes `kubectl`, dans l'ordre ? {#pod-isn-working-first-kubectl}
+#### Q7. Un pod ne fonctionne pas — quelles sont vos premières commandes `kubectl`, dans l'ordre ? {#pod-isn-working-first-kubectl}
 Allez de « dans quel état est-il ? » à « pourquoi ? » sans deviner. `kubectl get pods -o wide` montre le statut,
 les restarts, le node et l'IP : le statut restreint déjà le champ (`Pending` = problème de scheduling,
 `ImagePullBackOff` = image ou credentials du registry, `CrashLoopBackOff` = le processus démarre et meurt,
@@ -176,7 +195,7 @@ $ kubectl debug -it api-7d9f-x2k --image=busybox --target=app   # pas de shell d
 
 ### Observabilité
 
-#### Q7. Quels sont les trois piliers de l'observabilité, et qu'est-ce que chacun vous apprend réellement ? {#three-pillars-observability-each-one}
+#### Q8. Quels sont les trois piliers de l'observabilité, et qu'est-ce que chacun vous apprend réellement ? {#three-pillars-observability-each-one}
 Les **Logs** sont des événements discrets et horodatés — ce qui s'est passé précisément, avec du détail (un message
 d'erreur, les paramètres d'une requête donnée) — idéaux pour creuser une occurrence précise
 quand on sait déjà à peu près où regarder. Les **Metrics** sont des mesures numériques agrégées dans
@@ -204,7 +223,7 @@ log (un événement) : « que s'est-il passé exactement ? »
 {"ts":"14:02:07","level":"error","trace_id":"4bf92f35","msg":"pool timeout after 2000ms"}
 ```
 
-#### Q8. Que disent les latences p50, p95 et p99, et pourquoi la moyenne est-elle trompeuse ? {#p50-p95-p99-latency-average}
+#### Q9. Que disent les latences p50, p95 et p99, et pourquoi la moyenne est-elle trompeuse ? {#p50-p95-p99-latency-average}
 **Réponse :** Un percentile répond à « sous quelle latence reste *cette fraction* des requêtes ? ». Le **p50** (médiane) est
 la requête typique ; le **p95** signifie qu'une requête sur 20 est plus lente ; le **p99**, une sur 100. La **moyenne**
 cache la forme de la distribution : la latence est presque jamais une cloche mais une distribution à longue queue, donc
@@ -212,7 +231,7 @@ quelques requêtes à 5 secondes bougent à peine une moyenne de 120 ms tout en 
 latence de queue compte plus qu'il n'y paraît à cause du *fan-out et de la répétition* : une page qui appelle 10 services
 ayant chacun 1 % de queue lente est lente pour environ 10 % des chargements, et un utilisateur qui fait 50 requêtes dans une
 session tombera presque sûrement sur une requête p99. Les percentiles pilotent aussi les **SLO** (« 99 % des appels de
-réservation sous 500 ms sur 30 jours ») et les **budgets d'erreur** (voir [Full Stack Q35](fullstack-devops-k8s.md#slos-error-budgets-drive-release)). Règles
+réservation sous 500 ms sur 30 jours ») et les **budgets d'erreur** (voir [Full Stack Q38](fullstack-devops-k8s.md#slos-error-budgets-drive-release)). Règles
 pratiques : (1) mesurez des **histogrammes côté serveur** (Micrometer `publishPercentileHistogram`, Prometheus
 `histogram_quantile`) et ne moyennez jamais des percentiles entre instances : agrégez les buckets, puis calculez le
 quantile ; (2) regardez p50, p95 et p99 ensemble : p50 en hausse signifie que tout est plus lent (CPU, algorithme), p50 stable
@@ -242,7 +261,7 @@ cachent les timeouts jamais terminés : suivez erreurs et latence ensemble.
 
 ### Conception d'API & sécurité
 
-#### Q9. Comment versionner une API REST sans casser les clients existants ? {#version-rest-api-breaking-existing}
+#### Q10. Comment versionner une API REST sans casser les clients existants ? {#version-rest-api-breaking-existing}
 **Réponse :** La discipline de base consiste à distinguer les changements rétrocompatibles (ajout d'un nouveau
 champ optionnel, ajout d'un nouvel endpoint) — qui ne nécessitent pas d'incrément de version, puisque les anciens clients
 ignorent simplement les champs qu'ils ne connaissent pas — des breaking changes (suppression/renommage d'un champ,
@@ -268,7 +287,7 @@ chaque client à migrer explicitement pour quelque chose qui était rétrocompat
 — une réponse senior traite le versioning comme le dernier recours pour les changements réellement cassants, pas comme la
 réponse par défaut à toute modification de schéma.
 
-#### Q10. Que signifie l'idempotence pour une API REST, et pourquoi `POST` nécessite-t-il un traitement spécial ? {#idempotency-rest-api-post-need}
+#### Q11. Que signifie l'idempotence pour une API REST, et pourquoi `POST` nécessite-t-il un traitement spécial ? {#idempotency-rest-api-post-need}
 **Réponse :** Une opération idempotente produit le même état final quel que soit le nombre de fois où elle est
 appliquée — `GET`, `PUT` et `DELETE` sont idempotents par définition/convention (appeler
 `DELETE /orders/123` cinq fois laisse le même état final que l'appeler une fois), mais `POST`
@@ -294,11 +313,11 @@ a déjà été traitée et renvoie le résultat d'origine au lieu de créer un s
 quelle que soit la méthode HTTP — rejouer un `POST` sans clé d'idempotence peut créer silencieusement
 des ressources en double précisément quand le client essaie d'être résilient.
 
-#### Q11. Quels sont les algorithmes courants de rate-limiting d'API, et quel est le compromis entre eux ? {#common-api-rate-limiting-algorithms}
+#### Q12. Quels sont les algorithmes courants de rate-limiting d'API, et quel est le compromis entre eux ? {#common-api-rate-limiting-algorithms}
 **Réponse :** Traité dans [System Design Q15](system-design.md#compare-rate-limiting-algorithms-one) (fenêtre fixe/glissante, token et leaky bucket, où stocker les compteurs) et [System Design Q43](system-design.md#design-rate-limiter-distributed-system) (limiteur distribué à l'échelle).
 Règle pratique : un token bucket pour un trafic d'API naturellement en rafales, et éviter une simple fenêtre fixe, qui laisse passer une rafale ×2 à la frontière de fenêtre.
 
-#### Q12. Pourquoi une requête navigateur échoue-t-elle avec une erreur CORS alors que l'API fonctionne dans curl, et comment les preflights et les cookies (`SameSite`) changent-ils la donne ? {#browser-request-fail-cors-error}
+#### Q13. Pourquoi une requête navigateur échoue-t-elle avec une erreur CORS alors que l'API fonctionne dans curl, et comment les preflights et les cookies (`SameSite`) changent-ils la donne ? {#browser-request-fail-cors-error}
 **Réponse :** CORS est appliqué par le **navigateur**, pas par le serveur ni le réseau : `curl` et les appels serveur-à-serveur ne
 le voient jamais. Quand une page sur `https://app.example.com` appelle `https://api.example.com`, le navigateur ne laisse
 JavaScript lire la réponse que si l'API renvoie les headers `Access-Control-Allow-Origin` correspondants. Pour les
@@ -343,7 +362,7 @@ avec credentials permet à n'importe quel site d'appeler l'API en tant qu'utilis
 contrôle de sécurité contre les clients non-navigateurs ni contre le CSRF — il ne fait qu'assouplir la same-origin policy, donc l'authentification et
 les protections CSRF restent nécessaires.
 
-#### Q13. JWT dans `localStorage`, JWT dans un cookie `HttpOnly`, ou session côté serveur — quels compromis et quels pièges ? {#jwt-localstorage-jwt-httponly-cookie}
+#### Q14. JWT dans `localStorage`, JWT dans un cookie `HttpOnly`, ou session côté serveur — quels compromis et quels pièges ? {#jwt-localstorage-jwt-httponly-cookie}
 **Réponse :** Une **session côté serveur** stocke l'état (utilisateur, rôles) sur le serveur et donne au navigateur un id opaque dans un
 cookie : la révocation est triviale (supprimer la session), le client ne détient jamais de claims, mais cela nécessite un
 stockage partagé (Redis) en cas de scale out. Un **JWT** est un token signé et autonome, vérifié sans lookup, ce qui
@@ -374,7 +393,7 @@ prise de contrôle de compte. La bonne réponse nomme le modèle de menace (XSS 
 
 Voir aussi : [Sécurité Q14](security.md#browser-app-store-tokens-bff) pour le pattern BFF et [Sécurité Q11](security.md#revoke-jwt-refresh-tokens-fit) pour la révocation.
 
-#### Q14. OpenAPI contract-first ou code-first, et comment garder le client React synchronisé avec l'API Spring ? {#contract-first-code-first-openapi}
+#### Q15. OpenAPI contract-first ou code-first, et comment garder le client React synchronisé avec l'API Spring ? {#contract-first-code-first-openapi}
 **Réponse :** Le **code-first** génère la spécification OpenAPI depuis les controllers (springdoc-openapi) : c'est
 rapide et la spec ne peut pas dériver du code, mais la conception de l'API est dictée par des annotations Java et
 revue tardivement. Le **contract-first** écrit d'abord la spec, la revoit avec les consommateurs, puis génère les
@@ -397,7 +416,7 @@ CI frontend : npx openapi-typescript openapi.json -o src/api/schema.d.ts && tsc 
 changé la semaine dernière ; la sûreté de typage est une illusion tant que les types ne sont pas générés depuis le vrai
 contrat.
 
-#### Q15. Comment gérer l'upload et le téléchargement de gros fichiers dans une application Spring + React ? {#handle-large-file-uploads-downloads}
+#### Q16. Comment gérer l'upload et le téléchargement de gros fichiers dans une application Spring + React ? {#handle-large-file-uploads-downloads}
 **Réponse :** Évitez autant que possible de faire passer les gros fichiers par les serveurs d'API. Le pattern qui passe
 à l'échelle est le **dépôt direct dans le stockage via des URLs présignées** : le client demande une URL d'upload à
 l'API (qui vérifie l'autorisation, la taille et le type, et enregistre un upload en attente), envoie directement vers
@@ -422,7 +441,7 @@ qu'il traitait.
 
 ### Docker
 
-#### Q16. Pourquoi l'ordre des instructions du Dockerfile compte-t-il à la fois pour l'efficacité du cache et pour la taille finale de l'image, et que résout un build multi-stage ? {#dockerfile-instruction-order-matter-both}
+#### Q17. Pourquoi l'ordre des instructions du Dockerfile compte-t-il à la fois pour l'efficacité du cache et pour la taille finale de l'image, et que résout un build multi-stage ? {#dockerfile-instruction-order-matter-both}
 **Réponse :** Selon les mécanismes de cache de la Q3, les instructions doivent être ordonnées de la moins fréquemment
 modifiée (installation des dépendances OS/système) à la plus fréquemment modifiée (copie du
 source de l'application), afin que les changements de code courants n'invalident que les derniers layers, pas tout le build.
@@ -455,7 +474,7 @@ Dockerfile single-stage livre silencieusement toute la toolchain de build (et sa
 production, un problème qui semble purement cosmétique (taille de l'image) jusqu'à ce qu'il devienne un vrai problème de sécurité ou de
 coût.
 
-#### Q17. Expliquez comment diagnostiquer un container Docker qui se termine avec le code 137. {#diagnosing-docker-container-exits-code}
+#### Q18. Expliquez comment diagnostiquer un container Docker qui se termine avec le code 137. {#diagnosing-docker-container-exits-code}
 **Réponse :** Le code de sortie 137 vaut 128 + 9 (`SIGKILL`, signal 9) — le processus principal du container a été
 terminé de force par une cause externe, et non arrêté proprement par sa propre logique, et les logs sont
 souvent vides précisément parce qu'un `SIGKILL` ne laisse aucune chance au processus de flusher ou de logger quoi que ce soit
@@ -481,7 +500,7 @@ log vide après une sortie 137 est la signature *attendue* d'un `SIGKILL`, pas u
 `OOMKilled` dans `docker inspect` d'abord est plus rapide que de fouiller des logs applicatifs qui
 n'allaient jamais rien contenir.
 
-#### Q18. Pourquoi une application peut-elle échouer uniquement dans un container Docker, mais fonctionner très bien exécutée directement sur l'hôte ? {#might-application-fail-only-inside}
+#### Q19. Pourquoi une application peut-elle échouer uniquement dans un container Docker, mais fonctionner très bien exécutée directement sur l'hôte ? {#might-application-fail-only-inside}
 **Réponse :** Causes courantes : une référence codée en dur à `localhost` qui signifiait « cette même machine » sur
 l'hôte mais qui, dans un container, désigne le network namespace isolé du container lui-même plutôt
 qu'un autre service que le container doit joindre (ce qui nécessite plutôt un nom de service/alias réseau de container,
@@ -507,7 +526,7 @@ même en exécutant exactement le même code applicatif et le même binaire que 
 
 ### Workloads Kubernetes
 
-#### Q19. Quelle est la différence entre les probes liveness, readiness et startup de Kubernetes, et que se passe-t-il quand elles sont mal configurées ? {#kubernetes-liveness-readiness-startup-probes}
+#### Q20. Quelle est la différence entre les probes liveness, readiness et startup de Kubernetes, et que se passe-t-il quand elles sont mal configurées ? {#kubernetes-liveness-readiness-startup-probes}
 **Réponse :** **Liveness** répond à « ce container est-il vivant, ou doit-il être redémarré » — son échec
 pousse Kubernetes à tuer et redémarrer le container. **Readiness** répond à « ce container peut-il
 actuellement servir du trafic » — son échec retire le pod des endpoints de load-balancing du Service
@@ -539,7 +558,7 @@ readiness traite deux questions différentes — « ceci doit-il être redémarr
 trafic » — comme une seule ; une liveness probe agressive construite comme un check de readiness peut redémarrer un
 pod sain mais occupé, transformant un pic de charge en panne auto-infligée.
 
-#### Q20. Que se passe-t-il si un Pod Kubernetes n'a ni resource requests ni limits ? {#happens-kubernetes-pod-has-resource}
+#### Q21. Que se passe-t-il si un Pod Kubernetes n'a ni resource requests ni limits ? {#happens-kubernetes-pod-has-resource}
 **Réponse :** Sans **request** (la quantité que le scheduler réserve pour ce pod sur un node), le
 scheduler n'a aucune base réelle pour empiler les pods de façon sensée, et un pod sans requests est traité
 comme de plus basse priorité (classe QoS `BestEffort`) — le premier à être évincé sous pression mémoire du node,
@@ -565,7 +584,7 @@ resources:
 entrée de scheduling obligatoire — « ça marche très bien sans en dev » est vrai jusqu'à ce que la vraie contention
 sur les nodes expose les deux modes de défaillance à la fois (éviction inéquitable, noisy-neighbor).
 
-#### Q21. Comment le Horizontal Pod Autoscaler (HPA) décide-t-il de scaler, et quelle est une mauvaise configuration courante ? {#horizontal-pod-autoscaler-hpa-decide}
+#### Q22. Comment le Horizontal Pod Autoscaler (HPA) décide-t-il de scaler, et quelle est une mauvaise configuration courante ? {#horizontal-pod-autoscaler-hpa-decide}
 **Réponse :** Le HPA compare périodiquement une métrique cible (couramment l'utilisation CPU ou mémoire, ou
 une métrique custom comme la profondeur de file de requêtes) à une valeur cible configurée, et calcule un
 nombre de replicas souhaité à peu près proportionnel à l'écart entre l'usage courant et la cible. Une mauvaise
@@ -593,7 +612,7 @@ l'utilisation — il ne scalera jamais depuis cet état, quelle que soit la char
 CPU sans CPU request défini, ou qui scale sur le CPU pour un service réellement I/O-bound, peut silencieusement
 ne jamais se déclencher, et cet écart reste invisible jusqu'à ce qu'un vrai pic de trafic le révèle.
 
-#### Q22. Expliquez un rolling update Kubernetes et comment `maxSurge`/`maxUnavailable` interagissent avec le graceful shutdown. {#kubernetes-rolling-update-maxsurge-maxunavailable}
+#### Q23. Expliquez un rolling update Kubernetes et comment `maxSurge`/`maxUnavailable` interagissent avec le graceful shutdown. {#kubernetes-rolling-update-maxsurge-maxunavailable}
 **Réponse :** Un rolling update remplace les pods de l'ancienne version par des pods de la nouvelle version de façon incrémentale plutôt
 qu'en une seule fois : `maxSurge` contrôle combien de pods supplémentaires au-delà du nombre souhaité peuvent être créés
 temporairement pendant le rollout (plus haut = rollout plus rapide, plus de marge de ressources nécessaire), et
@@ -621,7 +640,7 @@ terminationGracePeriodSeconds: 30
 délai `preStop`, le pod peut cesser d'accepter les connexions avant que le Service ait fini de le retirer
 de sa liste d'endpoints, provoquant une rafale d'erreurs à chaque déploiement.
 
-#### Q23. Pourquoi l'adresse IP d'un Pod Kubernetes n'est-elle pas une valeur stable sur laquelle s'appuyer, et que fournit un Service à la place ? {#isn-kubernetes-pod-ip-address}
+#### Q24. Pourquoi l'adresse IP d'un Pod Kubernetes n'est-elle pas une valeur stable sur laquelle s'appuyer, et que fournit un Service à la place ? {#isn-kubernetes-pod-ip-address}
 **Réponse :** Les pods sont éphémères par conception — un Deployment peut recréer un pod (lors d'un crash, d'un rolling
 update, d'une panne de node) à tout moment, et le nouveau pod reçoit une nouvelle adresse IP ; coder en dur ou mettre en cache
 une IP de pod où que ce soit finira forcément par casser. Un **Service** fournit une IP virtuelle stable
@@ -648,7 +667,7 @@ spec:
 tests » — les IPs de pod changent forcément au prochain reschedule, et le code qui suppose le
 contraire fonctionne jusqu'au premier rolling update ou à la première panne de node.
 
-#### Q24. Comment garder un service Kubernetes disponible pendant les node drains et les pannes de zone (PodDisruptionBudget, anti-affinity, topology spread) ? {#keep-kubernetes-service-available-during}
+#### Q25. Comment garder un service Kubernetes disponible pendant les node drains et les pannes de zone (PodDisruptionBudget, anti-affinity, topology spread) ? {#keep-kubernetes-service-available-during}
 **Réponse :** Trois types de pannes différents nécessitent trois outils différents. Les **disruptions volontaires** — un node drain pour
 une mise à jour, un scale-down du cluster autoscaler — évincent des pods délibérément ; un **PodDisruptionBudget** (`minAvailable` ou
 `maxUnavailable`) indique à l'eviction API de refuser une éviction qui ferait passer le service sous le budget, de sorte que
@@ -683,7 +702,7 @@ topologySpreadConstraints:
 ou « durcissent » avec un PDB trop strict qui bloquera plus tard toutes les mises à jour du cluster à 2 h du matin. La haute disponibilité est une propriété de la
 *politique de placement et de disruption*, pas du nombre de replicas.
 
-#### Q25. Quelle est la différence entre un ConfigMap et un Secret Kubernetes, et quelle est l'idée fausse courante sur la sécurité des Secrets ? {#kubernetes-configmap-secret-common-misunderstanding}
+#### Q26. Quelle est la différence entre un ConfigMap et un Secret Kubernetes, et quelle est l'idée fausse courante sur la sécurité des Secrets ? {#kubernetes-configmap-secret-common-misunderstanding}
 **Réponse :** Les deux stockent de la configuration clé-valeur injectée dans les pods (en variables d'environnement ou en
 fichiers montés) ; la distinction voulue est qu'un ConfigMap contient de la configuration non sensible et
 un Secret des données sensibles (credentials, tokens, clés). L'idée fausse courante : les valeurs d'un
@@ -707,7 +726,7 @@ SuperSecretPassword123
 sans chiffrement au repos ni RBAC strict, un Secret est à un `kubectl get` du texte en clair pour
 quiconque a un accès en lecture au cluster.
 
-#### Q26. Quel problème Helm résout-il par rapport aux manifests Kubernetes bruts ? {#problem-helm-solve-raw-kubernetes}
+#### Q27. Quel problème Helm résout-il par rapport aux manifests Kubernetes bruts ? {#problem-helm-solve-raw-kubernetes}
 **Réponse :** Les manifests YAML bruts dupliquent du boilerplate entre environnements (dev/staging/prod ayant chacun
 besoin de fichiers Deployment/Service/ConfigMap quasi identiques ne différant que par une poignée de valeurs)
 et n'ont aucune notion intégrée de « release » — pas de moyen simple d'installer, mettre à jour ou rollback un
@@ -731,9 +750,7 @@ $ helm rollback orders 4   # retour à la révision 4 de la release, une seule c
 ajoute une vraie complexité sans bénéfice correspondant — sa valeur n'apparaît que lorsque le
 même chart est déployé dans plusieurs environnements ou plusieurs fois avec de réelles variations.
 
-### Delivery & debugging
-
-#### Q27. De quelles étapes un bon pipeline CI/CD a-t-il besoin, et que signifie « fail fast » dans ce contexte ? {#stages-solid-ci-cd-pipeline}
+#### Q28. De quelles étapes un bon pipeline CI/CD a-t-il besoin, et que signifie « fail fast » dans ce contexte ? {#stages-solid-ci-cd-pipeline}
 **Réponse :** Grosso modo, par ordre croissant de coût/temps : lint/analyse statique et tests unitaires rapides d'abord
 (les moins chers, ils attrapent les erreurs les plus courantes en quelques secondes), puis une étape de build/compilation, puis
 des tests d'intégration (plus lents, ils ont besoin de vraies dépendances comme une base de données), puis le scan de sécurité/dépendances,
@@ -756,7 +773,42 @@ stages: [lint, unit-test, build, integration-test, security-scan, deploy-staging
 leur coût — une étape coûteuse de tests d'intégration exécutée avant un check de lint bon marché gaspille des minutes de CI
 et du temps de feedback développeur à chaque changement dont le lint échoue.
 
-#### Q28. Comparez les stratégies de déploiement blue-green, canary et rolling. {#compare-blue-green-canary-rolling}
+#### Q29. GitLab CI, Nexus, Ansible : à quoi sert chacun dans la chaîne de livraison ? {#gitlab-ci-nexus-ansible-delivery-chain}
+**Réponse :** **GitLab CI** : pipeline décrit dans `.gitlab-ci.yml` avec `stages`, `jobs`, `rules`, `cache` (dépôt Maven local), `artifacts` (jar, rapports de tests), `services` (par exemple un Elasticsearch pour les tests d'intégration) et des runners Docker. **Nexus** : gestionnaire de dépôts d'artefacts, **proxy** de Maven Central (builds plus rapides, résistance aux pannes externes), dépôt **releases** (immuable) et **snapshots**, registre Docker privé ; le build publie avec `mvn deploy` et `distributionManagement` dans le `pom.xml`, identifiants dans `settings.xml`, jamais dans le dépôt Git. **Ansible** : configuration de serveurs **sans agent** (SSH), **idempotente** : un *playbook* décrit l'état voulu (paquets, fichiers, services) et on peut le relancer sans effet de bord ; inventaire (hôtes par groupe), rôles réutilisables, variables, `ansible-vault` pour les secrets. Cas typique : installer et configurer un cluster Elasticsearch sur des VM (réglages `sysctl`, `jvm.options`, `elasticsearch.yml`, redémarrage nœud par nœud en *rolling*). **Terraform vs Ansible** : Terraform **crée** l'infrastructure (VM, réseaux, buckets), Ansible **configure** ce qui tourne dessus ; ils se complètent.
+
+**Exemple :**
+
+```yaml
+stages: [build, test, package, deploy]
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  key: { files: [pom.xml] }
+  paths: [.m2/repository]
+
+test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  services:
+    - name: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+      alias: es
+      variables: { discovery.type: single-node, xpack.security.enabled: "false" }
+  script: mvn -B verify -Des.url=http://es:9200
+  artifacts:
+    reports: { junit: target/surefire-reports/*.xml }
+
+package:
+  stage: package
+  image: maven:3.9-eclipse-temurin-21
+  script: mvn -B deploy -DskipTests -s ci-settings.xml   # publie vers Nexus
+  rules: [ { if: $CI_COMMIT_TAG } ]
+```
+
+### Delivery & debugging
+
+#### Q30. Comparez les stratégies de déploiement blue-green, canary et rolling. {#compare-blue-green-canary-rolling}
 **Réponse :** Le **Rolling** (le défaut de Kubernetes, Q22) remplace incrémentalement les anciens pods par des nouveaux
 — simple, économe en ressources (pas besoin de faire tourner deux environnements complets simultanément), mais le rollback
 consiste à défaire la mise à jour de la même façon incrémentale, et une mauvaise version sert *une partie* du
@@ -785,7 +837,7 @@ sans tenir compte de son coût réel — la double infrastructure et la charge d
 l'exigence de coexistence sûre des deux versions du canary — peut être pire
 qu'un rolling update bien testé pour un système qui n'a pas réellement besoin de cette sécurité supplémentaire.
 
-#### Q29. Comment utiliser `git bisect` pour trouver quel commit a introduit une régression ? {#git-bisect-find-commit-introduced}
+#### Q31. Comment utiliser `git bisect` pour trouver quel commit a introduit une régression ? {#git-bisect-find-commit-introduced}
 **Réponse :** `git bisect start`, puis marquez un commit connu comme mauvais (`git bisect bad <hash>`, souvent simplement
 `HEAD` ou l'état cassé actuel) et un commit connu comme bon (`git bisect good <hash>`, un point
 antérieur à l'existence du bug) — git checkout le commit médian entre les deux, vous le testez et
@@ -810,9 +862,25 @@ bisecter gaspille exactement l'avantage en log n que bisect offre gratuitement �
 `git bisect run` au profit de cycles manuels de checkout/test transforme un processus scriptable en 8 étapes en un
 processus manuel lent et sujet aux erreurs.
 
+#### Q32. Merge ou rebase : quelle différence, et Git Flow ou trunk-based ? {#git-merge-vs-rebase-git-flow-trunk-based}
+**Réponse :** `merge` conserve l'historique réel avec un commit de fusion ; `rebase` réécrit les commits pour obtenir un historique linéaire (nouveaux hash). Règle : on rebase sa branche locale sur `main` pour la mettre à jour, **jamais** une branche que d'autres ont déjà récupérée ; en cas d'erreur, `git reflog` retrouve l'état d'avant. **Git Flow** utilise des branches longues (`develop`, `release`, `hotfix`), adaptées aux livraisons planifiées ; le **trunk-based** repose sur des branches courtes fusionnées souvent et sur des feature flags, adapté au déploiement continu.
+
+**Exemple :**
+
+```text
+git merge feature                      git rebase main (sur feature), puis git merge --ff-only feature
+*   M  Merge branch 'feature'          * C'  feature : commit 2   (nouveaux hash : commits réécrits)
+|\                                     * B'  feature : commit 1
+| * C  feature : commit 2              * D   main : commit
+| * B  feature : commit 1              * A
+* | D  main : commit
+|/
+* A
+```
+
 ### Observabilité
 
-#### Q30. Mettez en pratique les trois piliers de l'observabilité — à quoi ressemble concrètement le « bon » pour chacun ? {#put-three-pillars-observability-practice}
+#### Q33. Mettez en pratique les trois piliers de l'observabilité — à quoi ressemble concrètement le « bon » pour chacun ? {#put-three-pillars-observability-practice}
 **Réponse :** **Structured logging** : émettre les logs sous forme de données structurées (JSON, pas du texte libre) avec
 des champs cohérents (un ID de requête/trace, le nom du service, la sévérité) afin qu'ils soient consultables et
 corrélables entre services, et pas seulement lisibles par un humain un à un. **Metrics** : la méthode RED
@@ -835,15 +903,15 @@ des logs non structurés et intraçables, sans trace ID partagé entre services,
 des timestamps à travers une douzaine de services pendant un incident, exactement le mode de défaillance de
 diagnostic lent que le structured logging plus le tracing existent pour éliminer.
 
-#### Q31. La latence de l'API bondit juste après un déploiement. Que vérifiez-vous, et dans quel ordre ? {#api-latency-jumps-right-after}
+#### Q34. La latence de l'API bondit juste après un déploiement. Que vérifiez-vous, et dans quel ordre ? {#api-latency-jumps-right-after}
 **Réponse :** Traitez-le comme un incident : **stabiliser d'abord, diagnostiquer ensuite.** (1) **Confirmer et délimiter** :
 est-ce réel et corrélé au déploiement (superposez les marqueurs de déploiement sur les courbes p50/p95/p99 et de taux
 d'erreur), quels endpoints, quels pods/régions/tenants, depuis quand ? (2) **Réduire le rayon d'impact** : si la corrélation
 est claire et l'impact utilisateur réel, faites un rollback ou arrêtez le canary tout de suite (voir
-[Full Stack Q28](fullstack-devops-k8s.md#compare-blue-green-canary-rolling)) ; l'enquête se poursuit sur la version revenue en arrière et sur la version
+[Full Stack Q30](fullstack-devops-k8s.md#compare-blue-green-canary-rolling)) ; l'enquête se poursuit sur la version revenue en arrière et sur la version
 défaillante gardée en préproduction. (3) **Comparer ce qui a changé** : le diff de code, mais aussi les montées de version
 de dépendances/JVM/image de base, la configuration et les feature flags, une migration de base (nouvelle colonne sans index,
-plan de requête modifié, verrou tenu pendant la migration, voir [Persistence Q37](persistence-sql-postgres.md#safe-process-schema-migration-production)) et
+plan de requête modifié, verrou tenu pendant la migration, voir [Persistence Q40](persistence-sql-postgres.md#safe-process-schema-migration-production)) et
 l'infrastructure (nombre de réplicas, limites CPU/mémoire). (4) **Suivre la requête avec les trois piliers** : les métriques
 disent *où* (métriques RED par endpoint, USE par ressource : CPU, tas, pause GC, file du pool de threads, attente du pool de
 connexions, latence BD) ; les traces montrent *quel span* a grossi (un appel SQL lent, un nouveau N+1, un nouvel appel aval,
@@ -874,7 +942,7 @@ lent, un mauvais pod), pas un ralentissement global : la première question est 
 
 ### Delivery
 
-#### Q32. Concevez un pipeline CI/CD et une stratégie de déploiement pour un service de paiement critique qui exige zéro downtime et un rollback rapide. {#design-ci-cd-pipeline-deployment}
+#### Q35. Concevez un pipeline CI/CD et une stratégie de déploiement pour un service de paiement critique qui exige zéro downtime et un rollback rapide. {#design-ci-cd-pipeline-deployment}
 Pipeline : analyse statique rapide et tests unitaires d'abord (fail fast, Q27), puis tests d'intégration
 contre une vraie base de données (containerisée, éphémère) et les mocks aval critiques, puis un
 scan de sécurité/dépendances (les services de paiement sont une cible naturelle pour les attaques de supply chain, ce qui rend le scan de
@@ -884,7 +952,7 @@ environnement plutôt que reconstruit par environnement (éliminant « buildé d
 classe de défaillance). Stratégie de déploiement : canary (Q28) spécifiquement pour un service critique de paiement,
 en routant d'abord un petit pourcentage du trafic réel et en surveillant le taux d'erreur/la latence par rapport à des seuils de rollback
 stricts et automatisés (pas seulement le jugement humain) avant d'augmenter progressivement le trafic
-— combiné à la discipline de migration additive de la [Persistence Q44](persistence-sql-postgres.md#safely-add-null-column-50) pour que le schéma de base de données soit
+— combiné à la discipline de migration additive de la [Persistence Q47](persistence-sql-postgres.md#safely-add-null-column-50) pour que le schéma de base de données soit
 compatible avec l'ancienne et la nouvelle version pendant toute la fenêtre du canary. Le rollback doit être une
 commande unique, rapide et testée (rediriger le trafic vers la version précédente, c'est pourquoi les
 pods de la version précédente ne sont souvent pas détruits immédiatement après un rollout, précisément pour rendre le
@@ -913,7 +981,7 @@ jobs:
 # Rollback : kubectl argo rollouts undo pay (ancien ReplicaSet encore actif)
 ```
 
-#### Q33. Comment concevriez-vous la promotion d'environnement (dev → staging → production) pour que ce que vous avez testé soit exactement ce que vous livrez ? {#design-environment-promotion-dev-staging}
+#### Q36. Comment concevriez-vous la promotion d'environnement (dev → staging → production) pour que ce que vous avez testé soit exactement ce que vous livrez ? {#design-environment-promotion-dev-staging}
 Le principe est **build once, promote the same artifact** : le pipeline CI construit une image de container immuable par commit,
 la tague avec le SHA du commit (jamais `latest`), la pousse et la signe ; chaque environnement
 déploie ensuite *ce digest* et ne diffère que par la **configuration** injectée au moment du déploiement (fichiers de values, ConfigMaps, secrets issus d'un
@@ -944,7 +1012,7 @@ Même chart, même digest ; seules les values diffèrent. Rollback = git revert 
 
 ### Fiabilité & observabilité
 
-#### Q34. Concevez de zéro la stack d'observabilité d'une nouvelle plateforme de microservices. {#design-observability-stack-new-microservices}
+#### Q37. Concevez de zéro la stack d'observabilité d'une nouvelle plateforme de microservices. {#design-observability-stack-new-microservices}
 Standardisez l'instrumentation *avant* que les services ne se multiplient — adoptez OpenTelemetry comme standard
 commun à tous les services pour les traces et les metrics dès le premier jour (rétrofiter un tracing cohérent
 sur un parc déjà fragmenté et important coûte bien plus cher que de partir cohérent), avec
@@ -981,7 +1049,7 @@ service:
     logs:    { receivers: [otlp], exporters: [loki] }
 ```
 
-#### Q35. Comment les SLOs et les error budgets peuvent-ils piloter les décisions de release, et que faire quand le budget est épuisé ? {#slos-error-budgets-drive-release}
+#### Q38. Comment les SLOs et les error budgets peuvent-ils piloter les décisions de release, et que faire quand le budget est épuisé ? {#slos-error-budgets-drive-release}
 Un **SLI** est un indicateur mesuré de la qualité visible par l'utilisateur (la fraction de requêtes qui réussissent et se terminent en moins de 300 ms), un
 **SLO** est la cible associée sur une fenêtre (99,9 % sur 30 jours), et l'**error budget** est la défaillance autorisée restante
 (0,1 % ≈ 43 minutes d'indisponibilité totale par mois). Le budget transforme le débat « livrer plus vite » vs « être plus fiable » en une règle partagée et fondée sur les données :
@@ -1006,14 +1074,14 @@ taux d'erreur 0,1 %  => burn 1x    => le budget dure exactement 30 jours => tick
 Budget épuisé -> gel des releases non critiques jusqu'à récupération
 ```
 
-#### Q36. Racontez-moi comment réduire le p95 d'un endpoint de 9 secondes à 250 ms : comment trouvez-vous le goulot, le corrigez-vous et le prouvez-vous ? {#reducing-endpoint-p95-latency-9}
+#### Q39. Racontez-moi comment réduire le p95 d'un endpoint de 9 secondes à 250 ms : comment trouvez-vous le goulot, le corrigez-vous et le prouvez-vous ? {#reducing-endpoint-p95-latency-9}
 **Réponse :** C'est l'histoire classique de « le gain de performance » ; structurez-la en **mesurer → faire une hypothèse →
 changer une seule chose → remesurer**, jamais « je l'ai optimisé ». (1) **Définir la cible et la référence** : p95 de 9 s sous
 charge réaliste, SLO 300 ms ; reproduisez-le avec un test de charge sur un jeu de données proche de la production (sinon vous
 optimisez la mauvaise chose). (2) **Trouver le goulot, sans deviner** : le tracing montre que la requête passe 8,4 s à un seul
 endroit ; un flame graph (JFR / async-profiler) et le journal des requêtes lentes / `pg_stat_statements` /
 `EXPLAIN (ANALYZE, BUFFERS)` désignent le coupable (voir [Persistence Q24](persistence-sql-postgres.md#read-analyze-output-diagnose-slow) et
-[Java Q40](java-core-jvm.md#profile-slow-cpu-hungry-java)). Constats typiques, par fréquence : un **N+1** (1 + 800 requêtes, voir
+[Java Q59](java-core-jvm.md#profile-slow-cpu-hungry-java)). Constats typiques, par fréquence : un **N+1** (1 + 800 requêtes, voir
 [Persistence Q29](persistence-sql-postgres.md#n-1-query-problem-name)), un **index manquant ou inutilisable** (seq scan sur des millions de lignes),
 du chargement et du filtrage **en mémoire** au lieu de SQL, un **énorme payload non paginé**, des **appels aval en série** qui
 pourraient être parallèles ou en cache, une **attente de verrou/pool** (famine du pool de connexions) ou le **coût de
@@ -1058,7 +1126,7 @@ Requêtes BD  801        3          3           2              1
 de la chance. Les intervieweurs sondent aussi ce que vous n'avez *pas* fait (pas de cache prématuré, pas de réécriture) et ce
 que le correctif a coûté.
 
-#### Q37. Expliquez comment déboguer de bout en bout un problème « ça marche sur ma machine, ça échoue en CI/production ». {#debugging-machine-fails-ci-production}
+#### Q40. Expliquez comment déboguer de bout en bout un problème « ça marche sur ma machine, ça échoue en CI/production ». {#debugging-machine-fails-ci-production}
 Commencez par établir exactement *où* la divergence se produit — reproduisez l'échec directement dans
 l'environnement cible si c'est possible (ne déboguez pas à l'aveugle à partir des seuls logs si vous pouvez obtenir
 un shell dans le container/pod en échec). Comparez systématiquement les deux environnements selon les axes
@@ -1091,7 +1159,7 @@ git bisect start HEAD v1.8.0 && git bisect run ./ci-repro.sh
 
 ### Sécurité
 
-#### Q38. Comment gérer les secrets applicatifs dans Kubernetes — Kubernetes Secrets, Vault, ou un external secrets operator ? {#application-secrets-managed-kubernetes-kubernetes}
+#### Q41. Comment gérer les secrets applicatifs dans Kubernetes — Kubernetes Secrets, Vault, ou un external secrets operator ? {#application-secrets-managed-kubernetes-kubernetes}
 Partez des menaces : secrets commités dans Git, secrets lisibles par quiconque a accès au cluster, credentials de longue durée qui ne sont jamais renouvelés,
 et absence de piste d'audit. Les objets Kubernetes `Secret` simples sont en base64, pas chiffrés (Q25) : ils nécessitent un chiffrement au repos
 (provider KMS), un RBAC strict (qui peut `get secrets` dans un namespace), et ils doivent quand même *provenir* de quelque part — les commiter
@@ -1124,7 +1192,7 @@ spec:
 
 ### Temps réel
 
-#### Q39. Polling, Server-Sent Events ou WebSockets — comment pousser des mises à jour vers le navigateur, et comment cela passe-t-il à l'échelle ? {#polling-server-sent-events-websockets}
+#### Q42. Polling, Server-Sent Events ou WebSockets — comment pousser des mises à jour vers le navigateur, et comment cela passe-t-il à l'échelle ? {#polling-server-sent-events-websockets}
 **Réponse :** Le **polling** (ou long polling) est le plus simple et fonctionne partout ; il suffit quand des mises à
 jour toutes les 10–30 s sont acceptables. Les **Server-Sent Events** sont un flux unidirectionnel du serveur vers le
 navigateur en HTTP simple : reconnexion automatique avec `Last-Event-ID`, passage facile des proxies, adaptés aux
@@ -1503,7 +1571,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 - **Diagnostic :** Les versions canary (nouvelle) et stable (ancienne) tournent simultanément et ne sont
   en fait pas compatibles entre elles à une frontière partagée — typiquement un changement de contrat
-  d'API/de schéma, ou un schéma de base de données partagé que seule l'une des deux versions attend (territoire de la [Persistence Q44](persistence-sql-postgres.md#safely-add-null-column-50), mais révélé par un canary plutôt que par un rolling update) — de sorte que le comportement précis
+  d'API/de schéma, ou un schéma de base de données partagé que seule l'une des deux versions attend (territoire de la [Persistence Q47](persistence-sql-postgres.md#safely-add-null-column-50), mais révélé par un canary plutôt que par un rolling update) — de sorte que le comportement précis
   dépend de la version du pod qui a traité une requête donnée ou de la version dont l'hypothèse
   sur l'état partagé a été violée.
 - **Exemple :**
@@ -1609,7 +1677,7 @@ Flux<ServerSentEvent<OrderStatus>> events(@PathVariable long id) {
 
 - **Résolution :** Soit faire aussi un rollback de la migration de base de données (risqué et pas toujours possible si
   des données ont été écrites entre-temps dans la forme du nouveau schéma), soit — l'approche la plus sûre —
-  redessiner la migration pour qu'elle soit additive et rétrocompatible dès le départ (pattern de la [Persistence Q44](persistence-sql-postgres.md#safely-add-null-column-50)), afin que l'ancienne version de l'application continue de fonctionner correctement contre le schéma
+  redessiner la migration pour qu'elle soit additive et rétrocompatible dès le départ (pattern de la [Persistence Q47](persistence-sql-postgres.md#safely-add-null-column-50)), afin que l'ancienne version de l'application continue de fonctionner correctement contre le schéma
   déjà migré sans nécessiter de rollback au niveau de la base de données.
 - **Prévention :** Traitez « cette migration est-elle sûre pour que la version applicative précédente continue de
   tourner dessus, en cas de rollback » comme une question obligatoire pour toute migration livrée

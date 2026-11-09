@@ -439,7 +439,7 @@ int minRooms(int[][] meetings) {
 `Integer.compare` / `comparingInt`); mutating the input array when the caller still needs it.
 
 **Practice:** insert interval, non-overlapping intervals (greedy), interval list intersections, employee free time,
-find free slots in a calendar ([Live Coding Q21](../interviews/coding.md#given-practitioner-working-hours-existing)).
+find free slots in a calendar ([Live Coding Q28](../interviews/coding.md#given-practitioner-working-hours-existing)).
 
 ### Heap / top K {#heap-top-k}
 
@@ -847,7 +847,7 @@ ListNode removeNthFromEnd(ListNode head, int n) {
 null checks on `n` larger than the length.
 
 **Practice:** reorder list, add two numbers, intersection of two lists, copy list with random pointer, LRU cache
-([Live Coding Q17](../interviews/coding.md#implement-lru-cache-o-1)).
+([Live Coding Q24](../interviews/coding.md#implement-lru-cache-o-1)).
 
 ### Trees {#trees}
 
@@ -1222,7 +1222,7 @@ validation of negative amounts and overdraft; an outside-in acceptance test firs
 | Java 21 sequenced | `getFirst()`, `getLast()`, `removeLast()`, `reversed()` | On `List`, `Deque`, `LinkedHashMap` |
 | Big numbers | `long`, `Math.addExact`, `BigInteger` | Overflow is a classic follow-up question |
 
-Collection internals and their complexities: [Java Q6](../interviews/java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap).
+Collection internals and their complexities: [Java Q14](../interviews/java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap).
 
 **Traps:** `Integer == Integer` above 127; `(a, b) -> a - b` comparators overflow; `Arrays.asList` is fixed-size;
 `List.of` is immutable and refuses `null`; `char + int` is an `int`; `s.split(".")` needs `"\\."`; recursion depth

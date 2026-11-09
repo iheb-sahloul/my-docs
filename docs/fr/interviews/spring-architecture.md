@@ -137,6 +137,20 @@ class App {}
 // Voir ce qui a été appliqué : java -jar app.jar --debug   (affiche le rapport d'évaluation des conditions)
 ```
 
+Ce que fait Spring Boot, en simplifié (proche de `DataSourceAutoConfiguration`) : une auto-configuration est une classe `@AutoConfiguration` à conditions, déclarée dans `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`. Ajouter `spring-boot-starter-data-jpa` suffit à avoir Hibernate, un pool HikariCP et une `DataSource` configurés ; on reprend la main en déclarant son propre bean (`@ConditionalOnMissingBean`). Rapport complet : `--debug` ou `GET /actuator/conditions`.
+
+```java
+@AutoConfiguration
+@ConditionalOnClass(DataSource.class)              // seulement si une classe JDBC est sur le classpath
+class MyDataSourceAutoConfiguration {
+    @Bean
+    @ConditionalOnMissingBean                       // seulement si l'application n'a pas déclaré le sien
+    DataSource dataSource(DataSourceProperties props) {
+        return props.initializeDataSourceBuilder().build();   // url, user, password lus dans application.yml
+    }
+}
+```
+
 #### Q6. `@Value` vs `@ConfigurationProperties` — quand utiliser lequel ? {#value-configurationproperties}
 `@Value("${app.timeout}")` injecte une propriété dans un champ et convient pour une valeur unique
 isolée ou pour une expression SpEL. Dès qu'on a un *groupe* de paramètres liés,
@@ -297,7 +311,7 @@ refait surface plus tard sous forme de bug plus subtil si l'un des beans fait un
 partir du classpath et charge les `ApplicationContextInitializer` et `ApplicationListener` déclarés dans
 `META-INF/spring.factories` ; (2) prépare l'`Environment` : lit `application.yml`, les profils, les variables
 d'environnement et les arguments de ligne de commande selon leur ordre de priorité (voir
-[Spring Q25](spring-architecture.md#precedence-order-across-different-ways)) ; (3) affiche la bannière et crée l'`ApplicationContext` ; (4) **charge les
+[Spring Q29](spring-architecture.md#precedence-order-across-different-ways)) ; (3) affiche la bannière et crée l'`ApplicationContext` ; (4) **charge les
 définitions de beans** : `@ComponentScan` trouve les classes `@Component`/`@Service`/`@Repository`, les classes
 `@Configuration` sont analysées, et les classes d'auto-configuration listées dans
 `META-INF/spring/...AutoConfiguration.imports` sont évaluées selon des règles `@Conditional...` (un bean `DataSource`
@@ -329,7 +343,7 @@ public class App {
 
 **Pourquoi c'est un piège :** mettre des appels distants dans un `@PostConstruct` empêche l'application de démarrer (ou
 de devenir prête) quand une dépendance est en panne, et une sonde liveness Kubernetes qui démarre avant la fin de l'étape 7
-tue le pod en boucle (voir [Full Stack Q19](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes)). Utilisez readiness pour « prêt à recevoir du
+tue le pod en boucle (voir [Full Stack Q20](fullstack-devops-k8s.md#kubernetes-liveness-readiness-startup-probes)). Utilisez readiness pour « prêt à recevoir du
 trafic », pas liveness.
 
 #### Q12. Quels design patterns apparaissent naturellement dans le fonctionnement de Spring lui-même ? {#design-patterns-show-up-naturally}
@@ -655,9 +669,299 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 (`@Value("#{target.firstName + ' ' + target.lastName}")`) charge quand même l'entité complète : on perd le bénéfice en
 croyant l'avoir.
 
+### Spring Batch
+
+#### Q22. Comment fonctionne Spring Batch ? {#spring-batch-how-it-works}
+**Réponse :** Spring Batch est un framework de **traitements par lots** : lire un gros volume de données, le transformer, l'écrire, de façon **transactionnelle, reprenable et traçable**. Un **`Job`** est une suite de **`Step`**. Le step le plus courant est orienté **chunk** : un `ItemReader` lit les éléments un par un, un `ItemProcessor` les transforme ou les filtre (`null` = filtré), et un `ItemWriter` les écrit **par paquets de N** (le *chunk*), avec **un commit par chunk**. Après chaque commit, l'état d'avancement est enregistré dans le **`JobRepository`** (tables `BATCH_*`) : c'est ce qui permet de **reprendre** un job planté là où il s'était arrêté. Le step alternatif est la **tasklet** (une action unique : déplacer un fichier, purger une table, appeler une procédure stockée ; une transaction par appel, reprise tout ou rien).
+
+| Concept | Rôle |
+|---|---|
+| `Job` | le traitement complet (ex. « import des trades du jour »), composé de steps |
+| `Step` | une étape indépendante : **chunk** ou **tasklet** |
+| `JobParameters` | les paramètres d'exécution (fichier, date de valeur) |
+| `JobInstance` | un job **logique** = nom du job + paramètres identifiants (« l'import du 03/11 ») |
+| `JobExecution` | une **tentative** d'exécution d'une instance (1er essai FAILED, 2e essai COMPLETED) |
+| `StepExecution` | une tentative d'un step, avec ses compteurs : `readCount`, `writeCount`, `filterCount`, `skipCount`, `commitCount` |
+| `ExecutionContext` | une map clé/valeur persistée à chaque commit (ex. position du reader), relue au redémarrage |
+| `JobRepository` | stocke tout en base : `BATCH_JOB_INSTANCE`, `BATCH_JOB_EXECUTION`, `BATCH_JOB_EXECUTION_PARAMS`, `BATCH_STEP_EXECUTION`, `BATCH_*_EXECUTION_CONTEXT` |
+| `JobLauncher` / `JobOperator` | lance (et arrête, redémarre) un job avec ses paramètres |
+
+**Exemple :** la boucle d'un step chunk (taille 500), puis un job complet (Spring Batch 5 / Spring Boot 3) : un CSV de trades → validation et arrondi → insertion en base, puis archivage du fichier.
+
+```text
+tant que read() ne renvoie pas null :
+  ┌──────────────── une transaction ────────────────┐
+  │ read()    x500  → TradeLine, TradeLine, ...     │  élément par élément
+  │ process() x500  → Trade, ou null (= filtré)     │  élément par élément
+  │ write(Chunk<Trade>)  une seule fois             │  INSERT en batch JDBC
+  │ JobRepository : compteurs + ExecutionContext    │
+  └─────────────────── commit ──────────────────────┘
+exception non gérée → rollback du chunk courant, step FAILED,
+les chunks déjà commités restent en base
+```
+
+```text
+id,desk,currency,notional
+T1,RATES,EUR,1000000.004
+T2,FX,USD,-50
+T3,FX,USD,250000
+```
+
+```java
+record TradeLine(String id, String desk, String currency, BigDecimal notional) {}
+record Trade(String id, String desk, String currency, BigDecimal notional) {}
+
+@Configuration
+class TradeImportJobConfig {
+
+    @Bean
+    Job tradeImportJob(JobRepository repo, Step importStep, Step archiveStep) {
+        return new JobBuilder("tradeImportJob", repo)
+                .start(importStep)                      // step 1 : chunk
+                .next(archiveStep)                      // step 2 : tasklet, seulement si le 1 est COMPLETED
+                .build();
+    }
+
+    @Bean
+    Step importStep(JobRepository repo, PlatformTransactionManager tx,
+                    FlatFileItemReader<TradeLine> reader, JdbcBatchItemWriter<Trade> writer) {
+        return new StepBuilder("importStep", repo)
+                .<TradeLine, Trade>chunk(500, tx)       // un commit tous les 500 éléments
+                .reader(reader)
+                .processor(this::toTrade)
+                .writer(writer)
+                .build();
+    }
+
+    // Processor : transforme, ou renvoie null pour filtrer (compté dans filterCount, jamais écrit)
+    Trade toTrade(TradeLine l) {
+        if (l.notional().signum() <= 0) return null;
+        return new Trade(l.id(), l.desk(), l.currency(), l.notional().setScale(2, RoundingMode.HALF_EVEN));
+    }
+
+    @Bean
+    @StepScope                                          // bean créé au démarrage du step : jobParameters disponibles
+    FlatFileItemReader<TradeLine> reader(@Value("#{jobParameters['file']}") String file) {
+        return new FlatFileItemReaderBuilder<TradeLine>()
+                .name("tradeReader")                    // préfixe des clés sauvegardées pour la reprise
+                .resource(new FileSystemResource(file))
+                .linesToSkip(1)                         // en-tête
+                .delimited().names("id", "desk", "currency", "notional")
+                .targetType(TradeLine.class)            // mapping vers le record
+                .build();
+    }
+
+    @Bean
+    JdbcBatchItemWriter<Trade> writer(DataSource ds) {
+        return new JdbcBatchItemWriterBuilder<Trade>()
+                .dataSource(ds)
+                .sql("""
+                     INSERT INTO trade (id, desk, currency, notional) VALUES (?, ?, ?, ?)
+                     ON CONFLICT (id) DO UPDATE SET notional = EXCLUDED.notional""")   // idempotent (voir reprise)
+                .itemPreparedStatementSetter((t, ps) -> {
+                    ps.setString(1, t.id());
+                    ps.setString(2, t.desk());
+                    ps.setString(3, t.currency());
+                    ps.setBigDecimal(4, t.notional());
+                })
+                .build();                               // les 500 INSERT partent en un seul batch JDBC
+    }
+
+    @Bean
+    Step archiveStep(JobRepository repo, PlatformTransactionManager tx) {
+        return new StepBuilder("archiveStep", repo)
+                .tasklet((contribution, chunkContext) -> {
+                    String file = (String) chunkContext.getStepContext().getJobParameters().get("file");
+                    Files.move(Path.of(file), Path.of(file + ".done"));
+                    return RepeatStatus.FINISHED;       // CONTINUABLE = rappeler la tasklet
+                }, tx)
+                .build();
+    }
+}
+```
+
+```java
+// Lancement programmatique (ou par Spring Boot au démarrage, voir la question sur la performance)
+JobParameters params = new JobParametersBuilder()
+        .addString("file", "/data/in/trades-2026-11-03.csv")
+        .addLocalDate("businessDate", LocalDate.of(2026, 11, 3))
+        .toJobParameters();
+JobExecution exec = jobLauncher.run(tradeImportJob, params);
+exec.getStatus();                     // COMPLETED ; T2 filtré : readCount=3, filterCount=1, writeCount=2
+```
+
+**Pourquoi c'est un piège :** Spring Batch **n'est pas un ordonnanceur** : le déclenchement vient de cron, Control-M, Autosys, un `@Scheduled` ou un CronJob Kubernetes. Sans **`@StepScope`**, `#{jobParameters[...]}` n'est pas résolu (le bean est créé au démarrage, avant tout job). Avec Spring Boot 3, `@EnableBatchProcessing` **désactive** l'auto-configuration de Batch (lancement au démarrage, création du schéma) : ne pas le mettre par réflexe. Le `JobRepository` exige une base pour les tables `BATCH_*` : `spring.batch.jdbc.initialize-schema=always` en dev, scripts versionnés (Flyway, Liquibase) en prod. Spring Batch 6 (Spring Boot 4) déprécie `JobLauncher` au profit de `JobOperator` et rend le transaction manager optionnel dans `chunk(...)` (à vérifier selon la version). Usage réel (banque) : import des trades et positions en fin de journée, calcul de P&L ou de risque la nuit, reportings réglementaires, purge et archivage, toujours avec un rapport d'exécution (compteurs du `StepExecution`) et un code retour lu par l'ordonnanceur.
+
+#### Q23. Comment Spring Batch gère-t-il les erreurs et la reprise (restart, skip, retry) ? {#spring-batch-restart-skip-retry}
+**Réponse :** Trois mécanismes. **La reprise (*restart*)** : relancer un job FAILED avec les **mêmes paramètres** crée une nouvelle `JobExecution` de la **même `JobInstance`**, qui saute les steps déjà COMPLETED et repart du **dernier chunk commité** grâce à l'`ExecutionContext`. **Le skip** : ignorer un élément en erreur (ligne mal formée) jusqu'à une limite, au lieu de faire échouer tout le job. **Le retry** : réessayer un élément sur une erreur transitoire (deadlock, timeout réseau).
+
+| Mécanisme | Quand | Effet |
+|---|---|---|
+| Restart | panne en cours de job (base, réseau, JVM tuée) | reprise au dernier commit, sans retraiter ce qui est fait |
+| Skip | donnée invalide, **non transitoire** | élément écarté et tracé, le job continue |
+| Retry | erreur **transitoire** | même élément réessayé N fois |
+| Flow conditionnel | réaction à un statut | step d'alerte, de compensation ou de nettoyage |
+
+**Exemple :**
+
+```text
+Run 1  (file=trades-03-11.csv)  JobInstance #42, JobExecution #100
+  chunk 1 (lignes 1-500)    commit   → ExecutionContext : tradeReader.read.count = 500
+  chunk 2 (lignes 501-1000) commit   → tradeReader.read.count = 1000
+  chunk 3 → base indisponible        → rollback du chunk 3, step FAILED, job FAILED
+
+Run 2  (mêmes paramètres)       JobInstance #42, JobExecution #101
+  le reader relit read.count = 1000 et reprend à la ligne 1001
+  ... COMPLETED
+
+Run 3  (mêmes paramètres)       → JobInstanceAlreadyCompleteException : l'import du 03/11 est déjà fait
+```
+
+```java
+// Un nouveau run "propre" à chaque lancement (job sans paramètre métier, ex. une purge) :
+new JobBuilder("purgeJob", repo).incrementer(new RunIdIncrementer()).start(purgeStep).build();
+
+// Contrôles fins + skip et retry
+new StepBuilder("importStep", repo)
+        .<TradeLine, Trade>chunk(500, tx)
+        .reader(reader).processor(this::toTrade).writer(writer)
+        .startLimit(3)                      // au-delà de 3 tentatives, le step refuse de redémarrer
+        .allowStartIfComplete(false)        // défaut : un step COMPLETED n'est pas rejoué
+        .faultTolerant()
+        .skip(FlatFileParseException.class)            // ligne illisible
+        .skip(ValidationException.class)               // règle métier non respectée
+        .skipLimit(100)                                // au 101e skip, le step échoue
+        .retry(TransientDataAccessException.class)     // deadlock, timeout...
+        .retryLimit(3)
+        .listener(new SkipListener<TradeLine, Trade>() {
+            @Override public void onSkipInRead(Throwable t)                 { log.warn("Ligne illisible", t); }
+            @Override public void onSkipInProcess(TradeLine l, Throwable t) { rejects.save(l.id(), t.getMessage()); }
+            @Override public void onSkipInWrite(Trade tr, Throwable t)      { rejects.save(tr.id(), t.getMessage()); }
+        })
+        .build();
+
+// Enchaînement conditionnel et listener de job
+new JobBuilder("tradeImportJob", repo)
+        .start(importStep)
+            .on("FAILED").to(alertStep)             // en cas d'échec : alerte (mail, ticket)
+        .from(importStep)
+            .on("*").to(archiveStep)                // sinon : archivage
+        .end()
+        .listener(new JobExecutionListener() {
+            @Override public void afterJob(JobExecution e) {
+                log.info("{} : {} en {}", e.getJobInstance().getJobName(), e.getStatus(),
+                         Duration.between(e.getStartTime(), e.getEndTime()));
+            }
+        })
+        .build();
+```
+
+**Pourquoi c'est un piège :** (1) **Idempotence** : au restart, un chunk à moitié traité est rejoué ; un writer qui fait `INSERT` sans clé ou envoie un message crée des **doublons**. Écrire en *upsert* (`MERGE`, `ON CONFLICT`) ou dédoublonner côté consommateur. (2) **Erreur dans le writer** : Spring Batch ne sait pas quel élément du chunk est fautif, il fait un rollback puis **rejoue le chunk élément par élément** (un commit par élément) pour isoler le coupable ; le processor est donc rappelé et doit être sans effet de bord. (3) **Reader non reprenable** : sans `name`, avec `saveState(false)`, ou sur une source qui change entre deux runs (table sans `ORDER BY` stable), la reprise se fait au mauvais endroit. (4) Ne pas mettre en *skip* une erreur technique (base tombée) : on « réussirait » un job vide. Le skip est pour les données, le retry pour les pannes passagères. Usage réel : un fichier de 2 millions de trades avec 30 lignes corrompues les écarte dans une table de rejets ; si la base tombe à 80 %, la production relance le même job et il reprend à 80 %.
+
+#### Q24. Gros volumes : comment rendre un batch Spring Batch performant et le paralléliser ? {#spring-batch-performance-partitioning}
+**Réponse :** D'abord **régler le mono-thread** : taille de chunk, lecture paginée ou par curseur, écriture en batch JDBC, pas de requête par élément dans le processor. Ensuite, quatre niveaux de parallélisme : **step multi-threadé** (plusieurs chunks en parallèle), **steps parallèles** (`split`), **partitionnement** (données découpées en plages traitées par des copies du step, en local ou sur plusieurs JVM, l'option la plus utilisée), et **remote chunking** (le manager lit, des workers traitent et écrivent via une file de messages).
+
+| Levier | Règle |
+|---|---|
+| Taille du chunk | 100 à 1 000 en général : trop petit = trop de commits ; trop grand = transactions longues, rollbacks coûteux, mémoire |
+| Lecture | `JdbcPagingItemReader` (une requête par page, thread-safe, reprenable) ou `JdbcCursorItemReader` (curseur ouvert, très rapide, mono-thread) avec `fetchSize` |
+| Écriture | `JdbcBatchItemWriter` ; avec JPA, `hibernate.jdbc.batch_size` sinon chaque `INSERT` part seul |
+| Processor | jamais une requête par élément (N+1) : enrichir dans le SQL du reader ou charger les référentiels en cache avant le step |
+| `pageSize` / `fetchSize` | alignés sur la taille du chunk |
+
+| Option | Principe | Reprise | Piège |
+|---|---|---|---|
+| Step multi-threadé | `.taskExecutor(...)` sur un step chunk | perdue (ordre non garanti) | reader non thread-safe (`FlatFileItemReader`) : `SynchronizedItemStreamReader`, `saveState(false)` |
+| Steps parallèles | `split(taskExecutor).add(flowA, flowB)` | par step | seulement des steps sans dépendance entre eux |
+| Partitionnement | `Partitioner` + `gridSize`, un worker par plage (desk, plage d'id, fichier) | par partition | partitions déséquilibrées : le job dure autant que la plus grosse |
+| Remote chunking | le manager lit, envoie par JMS/Kafka/RabbitMQ, les workers traitent et écrivent | gérée par le manager | le réseau devient le goulot ; utile si le traitement coûte bien plus que la lecture |
+
+**Exemple :** partitionnement par plage d'id.
+
+```java
+@Bean
+Step positionManagerStep(JobRepository repo, Step positionWorkerStep, Partitioner byIdRange) {
+    return new StepBuilder("positionManagerStep", repo)
+            .partitioner("positionWorkerStep", byIdRange)
+            .step(positionWorkerStep)
+            .gridSize(8)                                   // 8 partitions
+            .taskExecutor(new VirtualThreadTaskExecutor("batch-"))   // ou un ThreadPoolTaskExecutor borné
+            .build();
+}
+
+@Bean
+Partitioner byIdRange(JdbcTemplate jdbc) {
+    return gridSize -> {
+        long min = jdbc.queryForObject("SELECT MIN(id) FROM position", Long.class);
+        long max = jdbc.queryForObject("SELECT MAX(id) FROM position", Long.class);
+        long size = (max - min) / gridSize + 1;
+        Map<String, ExecutionContext> partitions = new HashMap<>();
+        for (int i = 0; i < gridSize; i++) {
+            ExecutionContext ctx = new ExecutionContext();
+            ctx.putLong("minId", min + i * size);
+            ctx.putLong("maxId", min + (i + 1) * size - 1);
+            partitions.put("partition" + i, ctx);
+        }
+        return partitions;
+    };
+}
+
+@Bean
+@StepScope                                                 // une instance de reader par partition
+JdbcPagingItemReader<Position> positionReader(DataSource ds,
+        @Value("#{stepExecutionContext['minId']}") Long minId,
+        @Value("#{stepExecutionContext['maxId']}") Long maxId) {
+    return new JdbcPagingItemReaderBuilder<Position>()
+            .name("positionReader")
+            .dataSource(ds)
+            .selectClause("SELECT id, account, isin, quantity")
+            .fromClause("FROM position")
+            .whereClause("WHERE id BETWEEN :minId AND :maxId")
+            .parameterValues(Map.of("minId", minId, "maxId", maxId))
+            .sortKeys(Map.of("id", Order.ASCENDING))       // tri stable obligatoire pour paginer
+            .pageSize(1000)
+            .rowMapper(new DataClassRowMapper<>(Position.class))
+            .build();
+}
+```
+
+Lancement et exploitation : Spring Boot lance le job au démarrage puis l'application s'arrête.
+
+```properties
+spring.batch.job.name=tradeImportJob
+```
+
+```bash
+# Lancé par l'ordonnanceur ; paramètres en arguments, code retour ≠ 0 si le job échoue
+java -jar trade-batch.jar file=/data/in/trades-2026-11-03.csv businessDate=2026-11-03,java.time.LocalDate
+```
+
+```java
+public static void main(String[] args) {
+    // propage le statut du job en code retour du processus, lu par Control-M / Autosys
+    System.exit(SpringApplication.exit(SpringApplication.run(TradeBatchApplication.class, args)));
+}
+```
+
+**Pourquoi c'est un piège :** le pool de connexions doit suivre (8 partitions = au moins 8 connexions, plus celles du `JobRepository`). Paralléliser un batch limité par la base ne sert à rien : mesurer d'abord (temps de lecture, de traitement, d'écriture via les `StepExecution` ou Micrometer). Ordre à suivre : mono-thread bien réglé, puis partitionnement local, et seulement ensuite le distribué. Usage réel : valorisation nocturne de millions de positions, partitionnement par desk ou plage d'id sur 8 à 16 threads, table de rejets, et code retour qui bloque la chaîne suivante de l'ordonnanceur en cas d'échec.
+
+#### Q25. Batch « avec ou sans framework » : quand Spring Batch vaut-il le coup ? {#spring-batch-vs-plain-code}
+**Réponse :** Spring Batch apporte : **reprise** après échec (état en base), historique des exécutions, skip/retry déclaratifs, partitionnement, paramètres de job et protection contre une double exécution. Il coûte : un schéma de métadonnées, un modèle à apprendre, de la verbosité. Répondre par les critères (reprise, volume, durée, audit), pas par préférence.
+
+| Situation | Choix |
+|---|---|
+| Import quotidien de 50 millions de lignes, doit reprendre là où il s'est arrêté, audité | Spring Batch |
+| Traitement idempotent et court (ex. réindexation complète de 200 000 documents en 3 minutes) | Code simple : en cas d'échec, on relance tout |
+| Flux continu de modifications | Ni l'un ni l'autre : consommateur de messages (Kafka) |
+| Transformations de données entre de nombreux systèmes, équipe non Java | ETL (Talend) ou Logstash |
+
+**Ce que doit avoir un batch « sans framework » performant :** lecture en streaming, lots de taille fixe, file bornée, idempotence, journal de progression (dernier ID traité) pour reprendre, métriques (débit, erreurs), code retour non nul en cas d'échec pour l'ordonnanceur.
+
+**Pourquoi c'est un piège :** répondre « toujours Spring Batch » ou « jamais de framework » : c'est une question d'esprit critique, la bonne réponse pèse reprise, volume, durée et audit contre le coût du schéma de métadonnées et de l'apprentissage.
+
 ### Async & threading
 
-#### Q22. Pourquoi les méthodes `@Async` perdent-elles le contexte Spring Security ? {#async-methods-lose-spring-security}
+#### Q26. Pourquoi les méthodes `@Async` perdent-elles le contexte Spring Security ? {#async-methods-lose-spring-security}
 **Réponse :** `@Async` exécute la méthode sur un thread différent issu du pool d'un task executor, et
 par défaut le contexte de Spring Security est conservé dans un `ThreadLocal` lié au thread de la requête *d'origine*
 — donc le nouveau thread async ne l'a tout simplement pas, et tout contrôle de sécurité dans la
@@ -689,7 +993,7 @@ sécurité pour un contrôle d'autorisation peut finir par refuser (ou, pire, au
 l'accès sur la base d'un contexte vide, et le bug n'apparaît que dans le chemin async, jamais dans un
 test synchrone de la même logique.
 
-#### Q23. Quels sont les comportements par défaut des pools de threads de `@Async` et `@Scheduled`, et en quoi sont-ils inadaptés à la production ? {#default-thread-pool-behaviours-async}
+#### Q27. Quels sont les comportements par défaut des pools de threads de `@Async` et `@Scheduled`, et en quoi sont-ils inadaptés à la production ? {#default-thread-pool-behaviours-async}
 **Réponse :** Les deux annotations ressemblent à « exécute ça ailleurs » mais viennent avec des défauts dangereux.
 Les méthodes `@Scheduled` s'exécutent sur un scheduler avec un **seul thread** par défaut
 (`spring.task.scheduling.pool.size=1`) : un job lent — ou un job `fixedRate` qui prend plus de temps
@@ -740,7 +1044,7 @@ font mal qu'avec un job lent, un pic de travail ou une panne, c'est-à-dire en p
 (jobs en retard, mémoire qui grossit, exceptions qui disparaissent) éloignent des annotations qui
 les ont causés.
 
-#### Q24. Quel est le modèle d'exécution de WebFlux, et que se passe-t-il si on y appelle du code bloquant ? {#webflux-execution-model-happens-call}
+#### Q28. Quel est le modèle d'exécution de WebFlux, et que se passe-t-il si on y appelle du code bloquant ? {#webflux-execution-model-happens-call}
 **Réponse :** WebFlux tourne sur un petit nombre de **threads d'event loop** (Netty, environ un par cœur CPU). Une
 requête est un pipeline d'opérateurs `Mono`/`Flux` ; rien ne s'exécute tant que personne ne souscrit, et pendant
 l'attente d'I/O aucun thread n'est occupé. Quelques threads servent ainsi de nombreuses connexions simultanées, avec de
@@ -749,7 +1053,7 @@ bloquer un thread d'event loop**. Un appel JDBC, `RestTemplate`, `Thread.sleep` 
 bloque toutes les requêtes partageant cette boucle. Utilisez des drivers réactifs (R2DBC, `WebClient`, Mongo/Redis
 réactifs), ou isolez les appels bloquants inévitables avec `subscribeOn(Schedulers.boundedElastic())`. **BlockHound**
 détecte les appels bloquants en test. Avec les virtual threads, beaucoup d'équipes restent désormais sur Spring MVC ;
-voir [Java Q34](java-core-jvm.md#virtual-threads-reactive-stack-webflux) pour ce compromis.
+voir [Java Q53](java-core-jvm.md#virtual-threads-reactive-stack-webflux) pour ce compromis.
 
 **Exemple :**
 
@@ -766,7 +1070,7 @@ explose sur tous les endpoints à la fois parce que quatre threads d'event loop 
 
 ### Configuration & operations
 
-#### Q25. Quel est l'ordre de précédence entre les différentes façons de configurer une application Spring Boot ? {#precedence-order-across-different-ways}
+#### Q29. Quel est l'ordre de précédence entre les différentes façons de configurer une application Spring Boot ? {#precedence-order-across-different-ways}
 **Réponse :** De la priorité la plus haute à la plus basse (en gros) : arguments de ligne de commande,
 propriété d'environnement `SPRING_APPLICATION_JSON`, attributs JNDI, propriétés système Java, variables
 d'environnement de l'OS, `application-{profile}.properties/yml` spécifiques au profil, le
@@ -789,7 +1093,7 @@ est l'une des plaintes de debug de configuration les plus courantes, et la vraie
 toujours une source de priorité supérieure qui écrase silencieusement le fichier que quelqu'un a édité — la solution est
 de connaître assez bien l'ordre pour vérifier d'abord la bonne couche au lieu de deviner.
 
-#### Q26. Quels endpoints Actuator comptent en production, et lesquels faut-il faire attention à exposer ? {#actuator-endpoints-matter-production-careful}
+#### Q30. Quels endpoints Actuator comptent en production, et lesquels faut-il faire attention à exposer ? {#actuator-endpoints-matter-production-careful}
 **Réponse :** `/actuator/health` (liveness/readiness pour les orchestrateurs), `/actuator/metrics`
 (alimente Prometheus/le monitoring), `/actuator/info` (métadonnées de build/version), `/actuator/loggers`
 (change les niveaux de log à chaud sans redéploiement — précieux en plein incident), `/actuator/prometheus` si
@@ -818,7 +1122,7 @@ management:
 que quelqu'un ajoute `include: "*"` par commodité pendant le debug (et oublie de le retirer),
 `/actuator/env` peut divulguer des mots de passe de base de données et des clés d'API directement sur Internet.
 
-#### Q27. Comment utiliser les profils Spring, et quels sont les mauvais usages courants ? {#spring-profiles-common-misuses}
+#### Q31. Comment utiliser les profils Spring, et quels sont les mauvais usages courants ? {#spring-profiles-common-misuses}
 **Réponse :** Les profils changent la **configuration** par environnement ou par capacité : fichiers
 `application-{profile}.yml`, documents `spring.config.activate.on-profile`, et `@Profile` sur des beans pour des
 implémentations réellement différentes (par exemple une fausse passerelle de paiement en `local`). Activez-les avec
@@ -844,7 +1148,7 @@ logging.structured.format.console: ecs
 **Pourquoi c'est un piège :** un bean `@Profile("!prod")` qui désactive la sécurité ou injecte des données de test est
 à une variable d'environnement erronée de la production.
 
-#### Q28. Comment instrumenter un service Spring Boot avec Micrometer, et quel est le piège de la cardinalité ? {#instrument-spring-boot-service-micrometer}
+#### Q32. Comment instrumenter un service Spring Boot avec Micrometer, et quel est le piège de la cardinalité ? {#instrument-spring-boot-service-micrometer}
 **Réponse :** Spring Boot Actuator auto-configure **Micrometer** : temps des serveurs et clients HTTP, métriques JVM,
 pools, caches et Kafka, exportées vers Prometheus, Datadog ou OTLP. Ajoutez des métriques métier avec `Counter`,
 `Timer` et `DistributionSummary` (ou `@Timed`/`@Counted`), et utilisez l'**Observation API** (`@Observed`,
@@ -872,7 +1176,7 @@ grandit.
 
 ### Web API
 
-#### Q29. Comment gérer les exceptions globalement dans une API REST Spring Boot ? {#handle-exceptions-globally-spring-boot}
+#### Q33. Comment gérer les exceptions globalement dans une API REST Spring Boot ? {#handle-exceptions-globally-spring-boot}
 **Réponse :** Avec `@ControllerAdvice` (ou `@RestControllerAdvice`) plus `@ExceptionHandler`,
 en centralisant la gestion des erreurs au lieu de disperser des blocs try/catch dans les contrôleurs.
 
@@ -902,7 +1206,7 @@ un nom de classe interne) au client — un handler fourre-tout qui retourne
 `ex.getMessage()` directement à l'appelant est un bug courant de divulgation d'information caché derrière
 ce qui ressemble à une gestion d'erreurs centralisée « propre ».
 
-#### Q30. Comment configurer CORS correctement, et quel est le piège de la combinaison d'une origine wildcard et des credentials ? {#configure-cors-correctly-trap-combining}
+#### Q34. Comment configurer CORS correctement, et quel est le piège de la combinaison d'une origine wildcard et des credentials ? {#configure-cors-correctly-trap-combining}
 **Réponse :** Le configurer globalement via un `WebMvcConfigurer`, ou par contrôleur avec
 `@CrossOrigin`. Les navigateurs rejettent (et Spring lui-même rejette à la configuration) la combinaison de
 `allowedOrigins("*")` avec `allowCredentials(true)` — une origine wildcard plus cookies/credentials
@@ -929,9 +1233,9 @@ se rabat sur `allowedOrigins("*")` comme correction la plus rapide — ce qui es
 combinaison qui soit échoue net (avec credentials) soit ouvre silencieusement l'API à n'importe quelle
 origine (sans credentials, mais avec des données sensibles retournées quand même).
 
-*Voir aussi :* [Full Stack Q12](fullstack-devops-k8s.md#browser-request-fail-cors-error) pour le côté navigateur : preflights, cookies `SameSite`, et pourquoi curl ne voit jamais CORS.
+*Voir aussi :* [Full Stack Q13](fullstack-devops-k8s.md#browser-request-fail-cors-error) pour le côté navigateur : preflights, cookies `SameSite`, et pourquoi curl ne voit jamais CORS.
 
-#### Q31. Pourquoi `@Valid` ne valide-t-il pas automatiquement les objets imbriqués, et quelle est la correction ? {#doesn-valid-automatically-validate-nested}
+#### Q35. Pourquoi `@Valid` ne valide-t-il pas automatiquement les objets imbriqués, et quelle est la correction ? {#doesn-valid-automatically-validate-nested}
 **Réponse :** `@Valid` sur un paramètre de contrôleur valide les champs propres de cet objet, mais la
 validation ne se propage **pas** automatiquement dans un champ objet imbriqué — un champ imbriqué a aussi
 besoin de sa propre annotation `@Valid`, sinon Bean Validation ignore silencieusement sa validation, en
@@ -969,7 +1273,7 @@ tout intercepté.
 
 ### Design & resilience
 
-#### Q32. Comment structurer concrètement une application Spring Boot hexagonale en packages ? {#structure-hexagonal-spring-boot-application}
+#### Q36. Comment structurer concrètement une application Spring Boot hexagonale en packages ? {#structure-hexagonal-spring-boot-application}
 **Réponse :** Une organisation courante : un package `domain` en Java pur (pas de Spring, pas d'annotations JPA)
 contenant les entités et les règles métier ; un package `application` avec les classes de use case/service et
 les interfaces de **ports** dont elles dépendent (`OrderRepository`, `PaymentGateway`) ; et un
@@ -996,7 +1300,7 @@ pression de deadline d'importer `jakarta.persistence.Entity` directement dans `d
 « juste cette fois », et sans une règle ArchUnit qui l'attrape en CI, cette exception unique
 devient discrètement la nouvelle norme en quelques sprints.
 
-#### Q33. Concevez la sélection du type de paiement pour un système supportant Carte de crédit, PayPal et Bitcoin, sans que le code client sache quelle classe concrète instancier. {#design-payment-type-selection-system}
+#### Q37. Concevez la sélection du type de paiement pour un système supportant Carte de crédit, PayPal et Bitcoin, sans que le code client sache quelle classe concrète instancier. {#design-payment-type-selection-system}
 **Réponse :** Utiliser le pattern Factory : une `PaymentFactory` avec une méthode comme
 `createPayment(String type)` qui décide en interne quelle sous-classe concrète de `Payment`
 instancier et retourner. Le client demande simplement à la factory « l'implémentation de paiement dont il
@@ -1033,11 +1337,11 @@ registre de beans nommés/typés — la réponse idiomatique Spring remplace une
 maintenir par une `Map` que le conteneur remplit gratuitement, et un recruteur qui demande « comment feriez-vous
 cela spécifiquement dans Spring » vérifie cette reconnaissance.
 
-#### Q34. Quand recourir au pattern Strategy avec des beans Spring plutôt qu'à un simple `if`/`switch` ? {#strategy-pattern-spring-beans-simple}
-**Réponse :** Le critère au niveau du pattern (l'ensemble des branches grandit-il, et chaque branche est-elle substantielle ?) est traité dans [Design Patterns Q17](design-patterns.md#introducing-strategy-add-more-complexity).
+#### Q38. Quand recourir au pattern Strategy avec des beans Spring plutôt qu'à un simple `if`/`switch` ? {#strategy-pattern-spring-beans-simple}
+**Réponse :** Le critère au niveau du pattern (l'ensemble des branches grandit-il, et chaque branche est-elle substantielle ?) est traité dans [Design Patterns Q18](design-patterns.md#introducing-strategy-add-more-complexity).
 Angle Spring : injecter `List<Strategy>` et en choisir une via un prédicat `supports()`, ou injecter `Map<String, Strategy>` indexée par nom de bean (Q33). Un nouveau comportement devient alors un nouveau `@Component`, et le dispatcher ne change jamais.
 
-#### Q35. Qu'est-ce que le pattern circuit breaker, et quand un service en a-t-il réellement besoin ? {#circuit-breaker-pattern-service-need}
+#### Q39. Qu'est-ce que le pattern circuit breaker, et quand un service en a-t-il réellement besoin ? {#circuit-breaker-pattern-service-need}
 **Réponse :** Un circuit breaker enveloppe les appels vers une dépendance susceptible d'échouer et suit leur
 taux d'échec ; dès que les échecs dépassent un seuil, il « s'ouvre » et échoue rapidement (sans même
 tenter l'appel) pendant une période de refroidissement, puis autorise un nombre limité d'appels d'essai
@@ -1074,7 +1378,7 @@ en cascade (un pool de threads partagé, cf. S8) laisse le vrai risque sans rép
 
 ### Architecture & extensibility
 
-#### Q36. Comment migreriez-vous un monolithe existant vers une architecture hexagonale de façon incrémentale, sans réécriture big-bang ? {#migrate-existing-monolith-hexagonal-architecture}
+#### Q40. Comment migreriez-vous un monolithe existant vers une architecture hexagonale de façon incrémentale, sans réécriture big-bang ? {#migrate-existing-monolith-hexagonal-architecture}
 Commencer par les coutures qui existent déjà naturellement — choisir un module borné et bien compris
 (souvent celui qui change le plus souvent, puisque c'est là que le bénéfice se cumule le plus vite) et définir
 ses ports en premier : de quoi ce module a-t-il besoin du monde extérieur, et qu'offre-t-il ? Déplacer
@@ -1102,7 +1406,7 @@ interface InvoiceStore { Invoice load(long id); }                 // nouveau por
     .should().dependOnClassesThat().resideInAnyPackage("org.springframework..", "jakarta.persistence..");
 ```
 
-#### Q37. Concevez un système d'extension de type plugin dans Spring afin qu'un nouveau comportement puisse être ajouté sans modifier le code existant. {#design-plugin-style-extension-system}
+#### Q41. Concevez un système d'extension de type plugin dans Spring afin qu'un nouveau comportement puisse être ajouté sans modifier le code existant. {#design-plugin-style-extension-system}
 Définir une interface (un port) représentant le point d'extension — par ex. `NotificationChannel` avec
 `send(Notification)` et `supports(ChannelType)`. Laisser le component scanning de Spring collecter chaque
 implémentation automatiquement via `List<NotificationChannel>` injectée dans un bean dispatcher,
@@ -1136,9 +1440,9 @@ class Notifier {
 // Ajouter PushChannel = un nouveau @Component ; Notifier reste inchangé.
 ```
 
-*Voir aussi :* [Design Patterns Q21](design-patterns.md#design-plugin-architecture-using-strategy) pour la conception Strategy + Factory + registre, indépendante du framework.
+*Voir aussi :* [Design Patterns Q22](design-patterns.md#design-plugin-architecture-using-strategy) pour la conception Strategy + Factory + registre, indépendante du framework.
 
-#### Q38. Comment décidez-vous entre une préoccupation transverse basée sur l'AOP (comme `@Transactional`, `@Cacheable` ou une annotation personnalisée) et son écriture explicite dans le corps de la méthode ? {#decide-aop-based-cross-cutting}
+#### Q42. Comment décidez-vous entre une préoccupation transverse basée sur l'AOP (comme `@Transactional`, `@Cacheable` ou une annotation personnalisée) et son écriture explicite dans le corps de la méthode ? {#decide-aop-based-cross-cutting}
 L'AOP mérite son coût quand la préoccupation est réellement orthogonale à la logique métier et s'applique
 uniformément à de nombreuses méthodes avec la même règle — transactions, cache et journalisation d'audit sont
 les cas d'école car le « comment » est identique partout où ils sont utilisés et l'annotation rend
@@ -1168,7 +1472,7 @@ BigDecimal price(Order o) {
 // La forme annotée cacherait l'exception VIP dans un SpEL `condition = "!#o.vip"` que peu de gens trouveront.
 ```
 
-#### Q39. Comment utiliser les événements applicatifs dans un monolithe Spring, et quel est le piège de `@TransactionalEventListener` ? {#application-events-inside-spring-monolith}
+#### Q43. Comment utiliser les événements applicatifs dans un monolithe Spring, et quel est le piège de `@TransactionalEventListener` ? {#application-events-inside-spring-monolith}
 `ApplicationEventPublisher` permet à un service d'annoncer « OrderPlaced » sans savoir qui s'y intéresse
 (email, inventaire, analytics), ce qui découple les modules dans un monolithe et constitue le
 tremplin naturel vers les ports hexagonaux (Q32, Q36) et, plus tard, le messaging. Un simple `@EventListener`
@@ -1215,7 +1519,7 @@ class Mailer {
 
 ### Multi-tenancy & security
 
-#### Q40. Comment concevriez-vous la multi-tenancy dans une application Spring Boot / JPA, et quels sont les pièges ? {#design-multi-tenancy-spring-boot}
+#### Q44. Comment concevriez-vous la multi-tenancy dans une application Spring Boot / JPA, et quels sont les pièges ? {#design-multi-tenancy-spring-boot}
 Il existe trois modèles d'isolation, et le choix est une décision métier avant d'être technique.
 **Database-per-tenant** offre l'isolation la plus forte, la sauvegarde/restauration par tenant et le
 contrôle des voisins bruyants, mais coûte un pool de connexions par tenant et une charge opérationnelle qui
@@ -1236,7 +1540,7 @@ exactement comme le `SecurityContext` (Q22) ; un job en arrière-plan doit posit
 dans un `finally`. (2) **Les caches** — les clés `@Cacheable` doivent inclure l'id du tenant sinon le tenant A lit
 la valeur en cache du tenant B (voir Q20 pour le piège apparenté de l'objet en cache). (3) **Le dimensionnement des pools** avec
 des pools par tenant. (4) **Les migrations** doivent être exécutées sur tous les schémas/bases et être rejouables
-(Flyway par tenant, [Persistence Q37](persistence-sql-postgres.md#safe-process-schema-migration-production)). (5) **Les tests** : un test automatisé qui demande la même
+(Flyway par tenant, [Persistence Q40](persistence-sql-postgres.md#safe-process-schema-migration-production)). (5) **Les tests** : un test automatisé qui demande la même
 ressource en tant que deux tenants et vérifie l'isolation est le seul filet de régression fiable. Je commencerais
 par le design schéma partagé + RLS sauf si un contrat client exige une isolation physique, et
 je garderais le résolveur de tenant derrière une seule interface afin qu'un gros client puisse plus tard être déplacé vers sa propre
@@ -1266,7 +1570,7 @@ CREATE POLICY tenant_isolation ON invoice USING (tenant_id = current_setting('ap
 -- par transaction : SELECT set_config('app.tenant', 'acme', true);
 ```
 
-#### Q41. L'autorisation doit-elle vivre dans des règles d'URL, dans la method security, ou les deux ? {#authorization-live-url-rules-method}
+#### Q45. L'autorisation doit-elle vivre dans des règles d'URL, dans la method security, ou les deux ? {#authorization-live-url-rules-method}
 Les deux, car elles protègent contre des erreurs différentes. Les règles d'URL dans la
 `SecurityFilterChain` (`authorizeHttpRequests`) sont grossières, centralisées et évaluées *avant*
 l'exécution de tout contrôleur : « tout ce qui est sous `/admin/**` requiert `ROLE_ADMIN` », « `/actuator/**` est
@@ -1434,7 +1738,7 @@ class OrderService {
 <details markdown="1">
 <summary>Afficher diagnostic, résolution & prévention</summary>
 
-- **Diagnostic :** Distinguer l'épuisement de ressources (heap — [Java S1](java-core-jvm.md#production-service-throws-outofmemoryerror-java) ; pool de threads —   [Java Q30](java-core-jvm.md#using-executorservice-creating-raw-thread), S7 ci-dessous ; pool de connexions — S7 ci-dessous) d'un vrai bug qui ne se déclenche
+- **Diagnostic :** Distinguer l'épuisement de ressources (heap — [Java S1](java-core-jvm.md#production-service-throws-outofmemoryerror-java) ; pool de threads —   [Java Q48](java-core-jvm.md#using-executorservice-creating-raw-thread), S7 ci-dessous ; pool de connexions — S7 ci-dessous) d'un vrai bug qui ne se déclenche
   que sous concurrence (une race condition, le piège de l'état mutable du singleton de Q9). Les métriques et un
   thread dump pris *pendant* l'incident (pas après le redémarrage, qui fait perdre les preuves) permettent de distinguer
   cela rapidement.
@@ -1577,7 +1881,7 @@ class OrderService {
   les métriques active/idle/pending du pool de connexions pour que l'épuisement soit visible comme une tendance avant qu'il
   ne devienne une panne.
 
-*Voir aussi :* [Persistence Q34](persistence-sql-postgres.md#size-hikaricp-connection-pool-common) (dimensionnement du pool) et [Persistence S4](persistence-sql-postgres.md#requests-fail-database-own-too) (la limite de connexions de la base elle-même).
+*Voir aussi :* [Persistence Q37](persistence-sql-postgres.md#size-hikaricp-connection-pool-common) (dimensionnement du pool) et [Persistence S4](persistence-sql-postgres.md#requests-fail-database-own-too) (la limite de connexions de la base elle-même).
 
 </details>
 
@@ -1591,7 +1895,7 @@ class OrderService {
 <summary>Afficher diagnostic, résolution & prévention</summary>
 
 - **Diagnostic :** C'est le schéma classique de défaillance en cascade — les appelants se bloquent en attendant la
-  dépendance lente, épuisant un pool de threads partagé ([Java Q30](java-core-jvm.md#using-executorservice-creating-raw-thread)) dont dépendent aussi d'autres chemins de requête
+  dépendance lente, épuisant un pool de threads partagé ([Java Q48](java-core-jvm.md#using-executorservice-creating-raw-thread)) dont dépendent aussi d'autres chemins de requête
   sains, si bien que la lenteur d'une dépendance fait tomber la capacité de tout le reste.
 - **Exemple :**
 
@@ -2149,7 +2453,7 @@ class OrderService {
   ```
 
   Puis se demander si WebFlux était le bon choix : avec une stack JDBC bloquante, Spring MVC
-  sur virtual threads offre la concurrence sans le modèle de programmation réactive ([Java Q34](java-core-jvm.md#virtual-threads-reactive-stack-webflux)). Vérifier avec un test de charge comparant le p99 avant/après et BlockHound au vert en CI.
+  sur virtual threads offre la concurrence sans le modèle de programmation réactive ([Java Q53](java-core-jvm.md#virtual-threads-reactive-stack-webflux)). Vérifier avec un test de charge comparant le p99 avant/après et BlockHound au vert en CI.
 
 - **Prévention :** Ne choisir le réactif que lorsque *tout* le chemin (driver inclus) est non bloquant ;
   exécuter BlockHound dans la suite de tests d'intégration ; documenter sur quel thread s'exécute chaque couche.

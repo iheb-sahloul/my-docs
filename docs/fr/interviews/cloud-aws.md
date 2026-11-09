@@ -128,7 +128,7 @@ sur `*` transforme un bug dans un petit service en fuite de données de tous les
 Store** en SecureString (moins cher, pour la configuration et les secrets sans rotation), chiffrés avec **KMS**. Le
 rôle du workload n'a le droit de lire que ses propres secrets. Ils arrivent à l'application via les `secrets` de la task
 definition ECS, l'External Secrets Operator ou le Secrets Store CSI driver de Kubernetes
-([Full Stack Q38](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes)), ou Spring Cloud AWS qui les lit au démarrage. Mieux encore, supprimez le
+([Full Stack Q41](fullstack-devops-k8s.md#application-secrets-managed-kubernetes-kubernetes)), ou Spring Cloud AWS qui les lit au démarrage. Mieux encore, supprimez le
 secret : l'**authentification IAM de RDS** utilise le rôle au lieu d'un mot de passe.
 
 **Exemple :**

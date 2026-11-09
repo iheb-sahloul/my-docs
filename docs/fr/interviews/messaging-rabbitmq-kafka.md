@@ -990,9 +990,33 @@ void on(ConsumerRecord<String, PaymentRequest> rec, Acknowledgment ack) {
 
 *Voir aussi :* [System Design Q41](system-design.md#design-payment-flow-never-charge) pour le côté HTTP : clés d'idempotence et timeouts client.
 
+#### Q30. Concevez un consommateur Kafka qui indexe dans Elasticsearch. {#design-kafka-consumer-indexing-elasticsearch}
+**Réponse :** **Clé de partition = ID du document** : tous les changements d'un même produit sont ordonnés. **Consommation par lots** (`max.poll.records` ~500) → un bulk par lot → **commit des offsets après** un bulk réussi (at-least-once) ; le rejeu est sans danger car l'indexation par ID est idempotente. **Version** : utiliser la version de la source (`version_type=external`) pour qu'un ancien événement rejoué n'écrase pas un document plus récent. **Erreurs** : 429/timeout → retry avec backoff ; document invalide (400) → **DLT** (dead-letter topic) avec la raison, et on continue. Alternative sans code : Kafka Connect avec le connecteur Elasticsearch Sink, bon choix si la transformation est simple ; le code reste préférable quand le document agrège plusieurs sources. Voir Q13 (consommateur idempotent), Q17 (commit des offsets), Q20 (consommateur lent et rebalance), Q22 (lag), Q24 (poison pill), Q25 (retries et backoff).
+
+**Exemple :**
+
+```java
+@KafkaListener(topics = "product-changes", batch = "true")
+void onChanges(List<ConsumerRecord<String, ProductChanged>> records) throws IOException {
+    BulkRequest.Builder br = new BulkRequest.Builder().index("products");
+    for (var rec : records) {
+        ProductChanged e = rec.value();
+        if (e.deleted()) {
+            br.operations(op -> op.delete(d -> d.id(e.sku())
+                .version(e.version()).versionType(VersionType.External)));
+        } else {
+            br.operations(op -> op.index(i -> i.id(e.sku()).document(ProductDoc.from(e))
+                .version(e.version()).versionType(VersionType.External)));
+        }
+    }
+    BulkResponse r = es.bulk(br.build());
+    handleItemErrors(r, records);   // 409 (version plus ancienne) = normal, ignorer ; 400 = DLT ; 429 = exception → retry du lot
+}   // offsets commités par le container après retour sans exception (AckMode.BATCH)
+```
+
 ### Workflows et conception d'événements
 
-#### Q30. Concevez une saga pour commande → paiement → réservation de stock → expédition. Choisissez orchestration ou choreography et expliquez les compensations. {#design-saga-order-payment-inventory}
+#### Q31. Concevez une saga pour commande → paiement → réservation de stock → expédition. Choisissez orchestration ou choreography et expliquez les compensations. {#design-saga-order-payment-inventory}
 > **En clair :** Choisir l'orchestration pour un flux linéaire : un coordinateur appelle chaque étape et exécute les annulations (compensations) en sens inverse en cas d'échec.
 
 L'orchestration est le meilleur choix ici précisément parce que le flux a une chaîne de
@@ -1020,7 +1044,7 @@ cas nominal:  createOrder(PENDING) -> authorizePayment -> reserveStock -> schedu
            -> order = FAILED               # l'expédition n'est jamais appelée
 ```
 
-#### Q31. Comparez dual writes, outbox par polling et CDC basé sur les logs (Debezium) pour publier des événements de façon fiable. Quand utiliser lequel ? {#compare-dual-writes-polling-outbox}
+#### Q32. Comparez dual writes, outbox par polling et CDC basé sur les logs (Debezium) pour publier des événements de façon fiable. Quand utiliser lequel ? {#compare-dual-writes-polling-outbox}
 > **En clair :** Le dual write peut perdre des données. L'outbox par polling est simple. Le CDC sur les logs (Debezium) passe mieux à l'échelle mais demande plus d'exploitation.
 
 Un **dual write** — commiter en base, puis publier vers le broker dans la même méthode — est
@@ -1060,7 +1084,7 @@ select * from outbox where published_at is null order by id limit 100 for update
 -- publier sur le broker, puis : update outbox set published_at = now() where id = ...
 ```
 
-#### Q32. Un événement doit-il porter les données, ou seulement dire que quelque chose s'est produit ? Comparez notification events, event-carried state transfer et event sourcing. {#event-carry-data-only-say}
+#### Q33. Un événement doit-il porter les données, ou seulement dire que quelque chose s'est produit ? Comparez notification events, event-carried state transfer et event sourcing. {#event-carry-data-only-say}
 > **En clair :** Notification : « il s'est passé quelque chose ». Transfert d'état : l'événement porte les données. Event sourcing : les événements sont la source de vérité.
 
 Ce sont trois contrats différents, et les confondre est une source fréquente de couplage. Un
@@ -1097,7 +1121,7 @@ nommerais explicitement la cohérence que chaque consumer peut tolérer.
 
 ### Décisions de plateforme
 
-#### Q33. Quand migrer de RabbitMQ vers Kafka est-il réellement justifié, et que coûte cette migration ? {#migrating-rabbitmq-kafka-justified-migration}
+#### Q34. Quand migrer de RabbitMQ vers Kafka est-il réellement justifié, et que coûte cette migration ? {#migrating-rabbitmq-kafka-justified-migration}
 > **En clair :** Migrer vers Kafka seulement pour le rejeu, un très gros débit ou de nombreux lecteurs indépendants. Prévoir refonte, nouvelles compétences et période de migration.
 
 Justifié quand le besoin moteur est devenu l'un de ceux-ci : une capacité de
@@ -1127,7 +1151,7 @@ Passer à Kafka quand: 3 équipes ont besoin du même flux à leur rythme
 Étape de migration: double publication un temps, migration des consommateurs un par un, puis arrêt de RabbitMQ
 ```
 
-#### Q34. Comment répliqueriez-vous des données Kafka entre régions, et à quoi devez-vous renoncer ? {#replicate-kafka-data-across-regions}
+#### Q35. Comment répliqueriez-vous des données Kafka entre régions, et à quoi devez-vous renoncer ? {#replicate-kafka-data-across-regions}
 > **En clair :** Copier les données entre régions avec MirrorMaker ou équivalent. On perd l'ordre strict entre régions et on accepte délai et doublons.
 
 Les clusters Kafka sont conçus pour vivre dans une seule région (liens à faible latence entre
@@ -1167,7 +1191,7 @@ sync.group.offsets.enabled = true     # traduire les offsets committés (imparfa
 # le topic côté eu s'appelle us.orders  (le préfixe d'origine évite les boucles)
 ```
 
-#### Q35. Quand utiliser Kafka Streams (ou ksqlDB) plutôt qu'un simple consommateur ? {#kafka-streams-ksqldb-instead-plain}
+#### Q36. Quand utiliser Kafka Streams (ou ksqlDB) plutôt qu'un simple consommateur ? {#kafka-streams-ksqldb-instead-plain}
 > **En clair :** Un consommateur classique suffit pour « lire, traiter, enregistrer ». Kafka Streams sert quand il faut des jointures, fenêtres ou agrégations sur un flux.
 
 **Réponse :** Un simple `@KafkaListener` suffit pour « consommer, appeler un service, écrire en base ». **Kafka
@@ -1197,7 +1221,10 @@ builder.stream("payments", Consumed.with(Serdes.String(), paymentSerde))
 **Pourquoi c'est un piège :** construire à la main des comptages fenêtrés dans un consommateur avec une map en mémoire
 fonctionne jusqu'au premier rebalance ou redémarrage, où l'état est perdu ou compté deux fois.
 
-#### Q36. Comment publier les événements du cycle de vie d'un rendez-vous (réservé, déplacé, annulé) pour que les consommateurs les traitent dans l'ordre et une seule fois ? {#publish-appointment-lifecycle-events-booked}
+#### Q37. Talend, Apache Camel, Logstash, code maison : quand utiliser quoi pour intégrer des flux de données ? {#etl-talend-camel-logstash-custom-code}
+**Réponse :** **Talend** (ETL graphique, génère du Java) : flux de données entre bases et fichiers, équipes data, beaucoup de connecteurs ; lourd à versionner et à tester. **Apache Camel** (bibliothèque Java d'intégration, *Enterprise Integration Patterns*) : routes déclaratives `from("file:in").split().to("kafka:topic")`, 300+ composants, s'intègre à Spring Boot ; bon pour orchestrer des échanges entre systèmes hétérogènes. **Logstash** : logs et événements vers Elasticsearch. **Code Spring Boot / Spring Batch** : logique métier complexe, tests unitaires, besoin de contrôle. Critère de choix : qui maintiendra le flux, comment on le teste, et la complexité de la transformation.
+
+#### Q38. Comment publier les événements du cycle de vie d'un rendez-vous (réservé, déplacé, annulé) pour que les consommateurs les traitent dans l'ordre et une seule fois ? {#publish-appointment-lifecycle-events-booked}
 **Réponse :** Écrivez l'événement dans une table **outbox** dans la même transaction que le changement du rendez-vous ([Q27](messaging-rabbitmq-kafka.md#outbox-pattern-problem-solve)), et laissez un relais ou du CDC le publier dans Kafka. Choisissez la **clé** selon l'ordre dont les consommateurs ont besoin : `appointment_id` garantit l'ordre par rendez-vous (réservé → déplacé → annulé) et répartit bien la charge ; `practitioner_id` donne l'ordre par agenda mais peut créer des partitions chaudes pour les centres très chargés. Chaque événement porte un `event_id` (pour la déduplication) et une `version` par rendez-vous, afin qu'un consommateur puisse écarter les événements périmés ou en double, même après un rejeu ou un changement de clé. Utilisez un schema registry avec une évolution rétrocompatible, car de nombreuses équipes consomment ces événements.
 
 **Exemple :**
@@ -1218,7 +1245,7 @@ if (event.version() <= readModel.versionOf(event.appointmentId())) return;
 
 **Pourquoi c'est un piège :** publier dans Kafka dans la transaction (ou après) sans outbox perd des événements ou publie des événements pour des changements annulés par un rollback. Utiliser `patient_id` comme clé « parce que ça semble naturel » casse l'ordre par rendez-vous dont dépendent les consommateurs de rappels et de facturation.
 
-#### Q37. Un consommateur envoie des SMS de rappel de rendez-vous. Comment éviter d'envoyer deux fois le même SMS ? {#consumer-sends-appointment-reminder-sms}
+#### Q39. Un consommateur envoie des SMS de rappel de rendez-vous. Comment éviter d'envoyer deux fois le même SMS ? {#consumer-sends-appointment-reminder-sms}
 **Réponse :** Kafka plus un fournisseur SMS externe ne peuvent pas garantir l'exactly-once de bout en bout : la livraison est **au moins une fois**, donc le consommateur doit être **idempotent**. Enregistrez en base une clé unique par effet de bord, `(appointment_id, reminder_type)`, avec un état : insérez `SENDING` (une violation de contrainte d'unicité signifie que c'est déjà traité, donc on saute), appelez le fournisseur avec cette clé comme clé d'idempotence s'il en accepte une, puis marquez `SENT` et commitez l'offset. Si le processus plante entre l'appel au fournisseur et `SENT`, une relance trouve `SENDING` et demande au fournisseur le statut du message au lieu d'envoyer à l'aveugle. Revérifiez aussi que le rendez-vous est toujours actif juste avant l'envoi. La fenêtre de doublon devient minuscule et explicite, au lieu de se produire à chaque rebalance. Voir [S13](messaging-rabbitmq-kafka.md#users-receive-same-notification-email).
 
 **Exemple :**
@@ -1822,7 +1849,7 @@ void onReminderDue(ReminderDue e) {
   faible, et quand elle se rétablit elle est immédiatement écrasée par le backlog plus les retries —
   une **retry storm**. Comme toutes les instances ont échoué au même instant, leurs tentatives de
   retry sont elles aussi synchronisées. Vérifier : pas de backoff, pas de jitter, pas de plafond de
-  tentatives, requeue avec `requeue=true` à chaque échec, et pas de circuit breaker ([Spring Q35](spring-architecture.md#circuit-breaker-pattern-service-need)).
+  tentatives, requeue avec `requeue=true` à chaque échec, et pas de circuit breaker ([Spring Q39](spring-architecture.md#circuit-breaker-pattern-service-need)).
 - **Exemple :**
 
   ```java

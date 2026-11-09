@@ -445,7 +445,7 @@ int minRooms(int[][] meetings) {
 (utilisez `Integer.compare` / `comparingInt`) ; modifier le tableau d'entrée alors que l'appelant en a encore besoin.
 
 **Pour s'entraîner :** insert interval, non-overlapping intervals (glouton), interval list intersections, employee
-free time, créneaux libres dans un agenda ([Live coding Q21](../interviews/coding.md#given-practitioner-working-hours-existing)).
+free time, créneaux libres dans un agenda ([Live coding Q28](../interviews/coding.md#given-practitioner-working-hours-existing)).
 
 ### Tas / top K {#heap-top-k}
 
@@ -858,7 +858,7 @@ ListNode removeNthFromEnd(ListNode head, int n) {
 nœud factice) ; contrôles de null quand `n` dépasse la longueur.
 
 **Pour s'entraîner :** reorder list, add two numbers, intersection of two lists, copy list with random pointer, cache
-LRU ([Live coding Q17](../interviews/coding.md#implement-lru-cache-o-1)).
+LRU ([Live coding Q24](../interviews/coding.md#implement-lru-cache-o-1)).
 
 ### Arbres {#trees}
 
@@ -1248,7 +1248,7 @@ puis les tests unitaires.
 | Collections séquencées Java 21 | `getFirst()`, `getLast()`, `removeLast()`, `reversed()` | Sur `List`, `Deque`, `LinkedHashMap` |
 | Grands nombres | `long`, `Math.addExact`, `BigInteger` | Le débordement est une relance classique |
 
-Fonctionnement interne et complexités des collections : [Java Q6](../interviews/java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap).
+Fonctionnement interne et complexités des collections : [Java Q14](../interviews/java-core-jvm.md#arraylist-linkedlist-hashmap-treemap-linkedhashmap).
 
 **Pièges :** `Integer == Integer` au-delà de 127 ; les comparateurs `(a, b) -> a - b` débordent ; `Arrays.asList` est
 de taille fixe ; `List.of` est immuable et refuse `null` ; `char + int` donne un `int` ; `s.split(".")` exige
