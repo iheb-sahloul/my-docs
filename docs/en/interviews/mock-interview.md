@@ -136,17 +136,6 @@ with visibility.
 - [ ] I can explain a back-of-envelope capacity estimate on a whiteboard. ([Q2](system-design.md#back-envelope-numbers-know-heart))
 - [ ] I can explain design a distributed rate limiter. ([Q43](system-design.md#design-rate-limiter-distributed-system))
 
-### Leadership
-
-- [ ] I can explain push back on a senior stakeholder's decision without damaging the relationship. ([Q3](leadership-behavioral.md#push-back-technical-decision-coming))
-- [ ] I can explain handle a design review where two seniors strongly disagree. ([Q4](leadership-behavioral.md#tech-lead-handle-design-review))
-- [ ] I can explain how to run incident command: roles, mitigate first, update cadence. ([Q8](leadership-behavioral.md#run-incident-command-during-major))
-- [ ] I can explain how to write an RFC/ADR that gets decided. ([Q9](leadership-behavioral.md#write-rfc-adr-team-decides))
-- [ ] I can explain how to run a fair, rubric-based interview loop. ([Q10](leadership-behavioral.md#structure-hiring-interviewing-decisions-consistent))
-- [ ] I can explain how I delegate and how I say no with a trade-off. ([Q11](leadership-behavioral.md#delegate-well-say-damaging-relationship))
-- [ ] I can explain a 30/60/90 onboarding plan for a new engineer. ([Q12](leadership-behavioral.md#onboard-new-engineer-productive-quickly))
-- [ ] I can explain how I manage up with a weekly update. ([Q13](leadership-behavioral.md#manage-up-keeping-manager-informed))
-
 ### AI-assisted development
 
 - [ ] I can explain the agentic loop and what `stop_reason` drives. ([Q1](claude-code.md#basic-agentic-loop-stop-reason))
@@ -166,8 +155,7 @@ Use it when you have three days, not three weeks. Each block is a timer: stop wh
 | 1 | Live coding | 60 min | Two timed problems: one hashing/two-pointer ([Q4](coding.md#hash-map-turn-o-n2), [Q8](coding.md#two-pointer-sliding-window-patterns)), one design ([Q24](coding.md#implement-lru-cache-o-1)) |
 | 2 | Design | 90 min | One full system design in 45 min ([Q1](system-design.md#steps-follow-system-design-interview)), then review against the answer |
 | 2 | Platform | 60 min | DevOps/K8s, security and testing quizzes aloud |
-| 2 | Behavioral | 60 min | Write 6 STAR stories from the [story bank](leadership-behavioral.md#star-story-bank) and say each in 2 minutes |
-| 3 | Mock interview | 60 min | Full run with a friend or a recording: intro (B1), 2 technical, 1 coding, 1 behavioral, your questions (B26) |
+| 3 | Mock interview | 60 min | Full run with a friend or a recording: 2 technical, 1 coding, 1 system design, your questions |
 | 3 | Fix weak spots | 60 min | Re-read only the items scored below 2 |
 | 3 | Stop | rest | Check logistics, sleep early |
 

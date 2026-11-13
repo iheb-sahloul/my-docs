@@ -2000,6 +2000,67 @@ Questions that come up often in interviews on this topic (a typical set, not tie
 #### R3. `type` vs `interface` in TypeScript. {#type-interface-typescript}
 **Answer:** Both describe object shapes. `interface` can be extended and merged (declaration merging) and gives clearer errors; `type` also handles unions, intersections, tuples and mapped types. A common rule: `interface` for public object contracts, `type` for unions and compositions; be consistent in a codebase.
 
+### JavaScript fundamentals
+
+#### R4. Explain the JavaScript event loop and how async tasks run. {#js-event-loop-async-tasks}
+**Answer:** JavaScript runs on **one thread** with a **call stack**. Async work (timers, network, DOM events) is handled by the host (browser/Node), which queues a callback when done. The **event loop** repeatedly checks: if the call stack is empty, run **all microtasks** first (Promise `.then`/`catch`, `await` continuations, `queueMicrotask`), then take **one macrotask** (`setTimeout`, `setInterval`, I/O, UI events) from the task queue, then (in browsers) render, and loop. So `Promise.resolve().then(a); setTimeout(b, 0)` always runs `a` before `b`. Consequences: a long synchronous task blocks rendering and all callbacks (split work, `requestIdleCallback`, Web Workers); `setTimeout(fn, 0)` isn't immediate; and a promise chain that keeps scheduling microtasks can starve rendering.
+
+#### R5. Debouncing vs throttling: what is the difference and when do you use each? {#debounce-vs-throttle}
+**Answer:** **Debounce** waits until events *stop* for N ms, then fires once (the timer resets on each event): search-as-you-type, validating a field after the user pauses, saving a draft, window-resize end. **Throttle** fires at most once per N ms *while* events keep coming: scroll/mousemove handlers, drag, rate-limiting button clicks, analytics sampling. Use debounce when only the final value matters, throttle when you need regular updates during a continuous stream. Both reduce work; in React keep the debounced function stable (`useMemo`/`useRef`) or debounce the *value* with a hook, and cancel on unmount.
+
+#### R6. Loose (`==`) vs strict (`===`) equality: what differs, and is there a performance impact? {#loose-vs-strict-equality}
+**Answer:** `===` compares value **and type** with no conversion. `==` applies **type coercion** first (`0 == '0'`, `null == undefined`, `[] == false` are all true), whose rules are surprising and a bug source. Prefer `===` always (the one common `==` idiom is `x == null` to test both `null` and `undefined`). Performance: modern engines optimise both; `===` can be marginally faster when types match since no coercion occurs, but the difference is negligible and never a reason to choose: correctness and readability decide. Use `Object.is` when you need `NaN`/`-0` semantics (React uses it to compare state).
+
+#### R7. How do you debug complex async code, and how would you write a custom event emitter? {#debug-async-code-custom-event-emitter}
+**Answer:** **Debugging**: prefer `async/await` with `try/catch` for readable stacks; enable async stack traces in DevTools; set breakpoints (incl. "pause on exceptions"); name promises/log with correlation ids; watch for unhandled rejections (`unhandledrejection`), missing `await`, `forEach` with async callbacks (use `for…of`/`Promise.all`), races (use `AbortController` to cancel stale requests), and inspect the Network and Performance panels. **Event emitter**:
+
+```js
+class Emitter {
+  #h = new Map();
+  on(e, fn)  { (this.#h.get(e) ?? this.#h.set(e, new Set()).get(e)).add(fn); return () => this.off(e, fn); }
+  off(e, fn) { this.#h.get(e)?.delete(fn); }
+  once(e, fn){ const w = (...a) => { this.off(e, w); fn(...a); }; return this.on(e, w); }
+  emit(e, ...a) { [...(this.#h.get(e) ?? [])].forEach(fn => fn(...a)); }
+}
+```
+
+`on` returns an unsubscribe function; `emit` iterates over a copy so handlers can unsubscribe safely.
+
+#### R8. What happens when you deep clone with `JSON.parse(JSON.stringify(obj))`? {#deep-clone-json-parse-stringify-pitfalls}
+**Answer:** It works for plain JSON-like data but silently **loses or breaks** other values: `undefined`, functions and `Symbol`s are dropped; `Date` becomes a string; `Map`/`Set` become `{}`; `NaN`/`Infinity` become `null`; `-0` becomes `0`; class instances lose their prototype/methods; **circular references throw** a `TypeError`; `BigInt` throws; and it's slow for big objects. Use **`structuredClone(obj)`** (built-in: handles `Date`, `Map`, `Set`, typed arrays, circular refs; still can't clone functions or class prototypes) or a library (`lodash.cloneDeep`) when you need more. Often the better answer is to avoid deep clones and use **immutable updates** (spread, `Immer`) copying only the changed path.
+
+#### R9. How do you optimise large `map`/`filter`/`reduce` operations? {#optimise-large-map-filter-reduce}
+**Answer:** First **measure** (profiler, `performance.now`) — arrays under tens of thousands of items rarely need tuning. Then: **fuse passes** (one `reduce` or a single `for…of` loop instead of `filter().map().filter()` creating intermediate arrays); **short-circuit** with `some`/`find`/`every`; use a `Map`/`Set` for lookups instead of nested loops or `includes` (O(n²) → O(n)); avoid allocating objects in hot loops; use typed arrays for numeric data; **memoise** results (`useMemo`) and avoid recomputing on every render; **chunk** heavy work (yield with `setTimeout`/`scheduler.yield`) or move it to a **Web Worker** so the UI stays responsive; paginate/virtualise rendering and process server-side when the dataset is huge.
+
+### React internals & patterns
+
+#### R10. What is the difference between a React node, element and component, and what are Fragments, Portals and `forwardRef` for? {#react-node-element-component-fragments-portals-forwardref}
+**Answer:** A **component** is a function (or class) that returns UI. An **element** is the plain object that describes what to render (`{type, props}`, what JSX produces: `<Button/>` is an element of type `Button`). A **node** is anything React can render: an element, string, number, `null`/boolean (renders nothing), or an array of nodes. **Fragments** (`<>…</>`) group siblings without an extra DOM node (valid HTML, e.g. in tables/flex; use `<Fragment key>` in lists). **Portals** (`createPortal(child, domNode)`) render children into another DOM node (modals, tooltips escaping `overflow`/z-index) while keeping React tree behaviour (context and events bubble through the React tree). **`forwardRef`** lets a component pass a `ref` to an inner DOM node so a parent can focus/measure it (React 19 allows `ref` as a normal prop). `useId` generates stable unique ids for accessibility attributes, consistent between server and client.
+
+#### R11. What are higher-order components, the Flux pattern with one-way data flow, and presentational vs container components? {#react-hoc-flux-presentational-container}
+**Answer:** A **HOC** is a function that takes a component and returns an enhanced one (`withAuth(Page)`), reusing cross-cutting logic; today **custom hooks** replace most HOCs (less wrapper nesting, clearer props, better typing). **Flux** is an architecture where data flows one way: **action → dispatcher/reducer → store → view**, and views dispatch new actions instead of mutating state; Redux, `useReducer` and Zustand follow it, giving predictable, debuggable state changes (time-travel, logging). React's own rule is the same idea: props flow down, events flow up. **Presentational** components render UI from props and have no data logic (easy to test/reuse in Storybook); **container** components fetch data/own state and pass it down. The split is a guideline, now often achieved with hooks (a custom hook = the container logic) rather than separate wrapper components.
+
+#### R12. How do you reset a component's state, why must state never be mutated, and what happens inside React when state updates? {#react-reset-state-avoid-mutating-state-what-happens-on-update}
+**Answer:** **Reset**: give the component a different **`key`** (`<Form key={userId}/>`): React unmounts the old instance and mounts a fresh one with initial state; or reset explicitly via a state setter/`useReducer` action. **Never mutate state** (`arr.push(x); setArr(arr)`): React compares by `Object.is`, so the same reference means "no change" and the update is skipped or memoised children don't re-render; it also breaks concurrent rendering, time-travel and effect dependency checks. Always create new values (`[...arr, x]`, `{...obj, a: 1}`, Immer). **On a state update**: `setState` schedules a render (batched with other updates in the same event); React **re-runs the component function** to produce a new element tree, **diffs** it against the previous one (reconciliation, using type and `key`), computes minimal changes, then **commits** them to the DOM in one go, runs layout effects, lets the browser paint, then runs passive `useEffect`s.
+
+### Frontend design exercises
+
+#### R13. Design a reusable validated form component, a searchable multi-select dropdown and a `useDebounce` hook. {#design-reusable-form-dropdown-debounce-hook}
+**Answer:** **Form**: don't hard-code fields; accept a schema (Zod/Yup) and a field config, use **React Hook Form** (uncontrolled inputs → few re-renders) with `zodResolver`, render errors next to fields with `aria-invalid`/`aria-describedby`, validate on blur/submit, disable submit while pending, and expose `onSubmit(values)`. **Searchable multi-select**: a controlled component with `value: string[]`, `options`, `onChange`; internal state for query/open/highlight; filter options (debounced, or async via a `loadOptions` prop); keyboard support (arrows, Enter, Esc, Backspace to remove a chip) with the **combobox/listbox ARIA pattern**; virtualise long lists; close on outside click. **Debounce hook**:
+
+```tsx
+function useDebounce<T>(value: T, ms = 300) {
+  const [v, setV] = useState(value);
+  useEffect(() => { const t = setTimeout(() => setV(value), ms); return () => clearTimeout(t); }, [value, ms]);
+  return v;
+}
+```
+
+The cleanup cancels the pending timer on change/unmount, which is what makes it correct. Keep each piece controlled, typed with generics and accessible by default.
+
+#### R14. Architect a scalable dashboard with 100+ pages, a component library shared by several teams, and a frontend serving 1M+ daily users. {#architect-dashboard-component-library-1m-users}
+**Answer:** **Dashboard with 100+ pages**: route-based **code splitting** (`lazy` + `Suspense`), a feature-folder structure with enforced module boundaries, a shared **design system** and typed API client, server state in **React Query** (cache, dedupe, invalidation) and minimal global client state, a layout/permissions shell, widget-level error boundaries, and virtualised tables. **Component library for many teams**: a separate versioned package (monorepo + Changesets) with **design tokens**, accessible primitives (Radix/Headless UI), strict TypeScript types, Storybook as docs and visual tests, semantic versioning and deprecation policy, tree-shakeable ESM, and contribution/ownership rules. **1M+ daily users**: static assets on a **CDN** with hashed immutable filenames, **SSR/SSG/ISR** for first paint and SEO, performance budgets and Core Web Vitals monitoring (RUM), image/font optimisation, aggressive caching with stale-while-revalidate, a BFF to aggregate APIs, graceful degradation and error reporting (Sentry), feature flags with progressive rollout, and **micro-frontends only** if team autonomy demands it.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

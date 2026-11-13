@@ -166,6 +166,18 @@ GET /api/products/search?q=electric+bike&brand=decathlon&brand=btwin&price_min=3
 
 </details>
 
+## 🗣️ Reported interview questions
+
+Questions reported from real interviews, grouped by topic. Each has a short model answer: expand it with the detailed questions and scenarios above, and say the answer aloud.
+
+### HTTP & API design
+
+#### R1. What is the difference between HTTP 500, 502, 503 and 504? {#http-500-502-503-504}
+**Answer:** **500 Internal Server Error**: the server hit an unexpected bug or unhandled exception. **502 Bad Gateway**: a gateway/proxy got an *invalid* response from the upstream (the app crashed, or closed the connection). **503 Service Unavailable**: the server is *deliberately or temporarily* unable to serve (overloaded, starting up, in maintenance, circuit open); usually with `Retry-After`. **504 Gateway Timeout**: the gateway got *no response in time* from the upstream (slow app, DB, downstream call). Diagnosis: 500 → application logs; 502/504 → compare proxy timeouts vs app latency, check upstream health; 503 → capacity, readiness, rate limiting. 5xx should be retried with backoff only when the call is idempotent.
+
+#### R2. How do you design a scalable REST API? {#design-scalable-rest-api}
+**Answer:** Make it **stateless** (no server session, so any instance can serve any request and you scale horizontally behind a load balancer). Model resources and use correct verbs/status codes; **paginate** every collection (keyset for big data) and allow field selection/filters; make writes **idempotent** (`Idempotency-Key`) so clients can retry; use **HTTP caching** (`ETag`, `Cache-Control`) and a CDN for reads; add **rate limiting** and timeouts; keep handlers non-blocking or bounded, and offload slow work to a queue (return `202 Accepted` + status URL). Scale the data tier too (indexes, read replicas, cache), version the API, compress responses, and observe it (latency percentiles, error rate, saturation). Measure first: the bottleneck is usually the database, not the controller.
+
 ## 🎤 Oral quiz
 
 Answer each question **aloud in 2–3 minutes** without looking: context → options → decision → trade-offs. Then re-read the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall.

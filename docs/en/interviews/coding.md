@@ -1147,6 +1147,356 @@ Questions that come up often in interviews on this topic (a typical set, not tie
 #### R3. Is a string a palindrome, ignoring case and non-alphanumeric characters? {#string-palindrome-ignoring-case-non}
 **Answer:** Two pointers `i`, `j` from both ends; skip characters where `!Character.isLetterOrDigit`, compare lower-cased, move inward. O(n) time, O(1) space; do not build a cleaned copy unless asked.
 
+### Arrays, strings, hashing
+
+#### R4. Find the second highest number (or the Nth highest salary, or the top 3). {#second-nth-highest-number-salary}
+**Answer:** One pass tracking the two largest values is O(n) with O(1) space (a `Set`/sort is simpler but O(n log n)). Handle duplicates and arrays with fewer than 2 distinct values:
+
+```java
+static OptionalInt secondHighest(int[] a) {
+    long max = Long.MIN_VALUE, second = Long.MIN_VALUE;
+    for (int x : a) {
+        if (x > max) { second = max; max = x; }
+        else if (x < max && x > second) second = x;   // skips duplicates of max
+    }
+    return second == Long.MIN_VALUE ? OptionalInt.empty() : OptionalInt.of((int) second);
+}
+```
+For the **Nth highest** or **top 3**: keep a **min-heap of size N** (`PriorityQueue`), pushing each value and polling when size > N: O(n log N); the heap's root is the Nth highest. With streams: `list.stream().distinct().sorted(Comparator.reverseOrder()).skip(n-1).findFirst()`. In SQL: `SELECT DISTINCT salary FROM emp ORDER BY salary DESC OFFSET n-1 LIMIT 1` (or `DENSE_RANK()`).
+
+#### R5. Find the common elements of two lists, and remove duplicates with streams. {#common-elements-two-lists-remove-duplicates-streams}
+**Answer:** Put one list in a `HashSet` and keep the elements of the other that it contains: O(n + m) instead of O(n·m):
+
+```java
+Set<Integer> seen = new HashSet<>(a);
+List<Integer> common = b.stream().filter(seen::contains).distinct().toList();
+// or: Set<Integer> r = new HashSet<>(a); r.retainAll(new HashSet<>(b));
+
+List<Integer> unique = list.stream().distinct().toList();          // keeps first occurrences, order kept
+Set<Integer> uniqueOrdered = new LinkedHashSet<>(list);            // same without streams
+```
+`distinct()` relies on `equals`/`hashCode`, so custom objects need both. To find which values are *duplicated*, use `Collectors.groupingBy(identity(), counting())` and keep counts > 1.
+
+#### R6. Find the first repeated character, and count character or word frequency while keeping insertion order. {#first-repeated-char-character-word-frequency}
+**Answer:** Use a `LinkedHashMap` so iteration follows insertion order, and `merge` to count:
+
+```java
+static Character firstRepeated(String s) {
+    Set<Character> seen = new HashSet<>();
+    for (char c : s.toCharArray()) if (!seen.add(c)) return c;   // add() is false when already present
+    return null;
+}
+
+Map<Character, Integer> freq = new LinkedHashMap<>();
+for (char c : s.toCharArray()) freq.merge(c, 1, Integer::sum);
+
+Map<String, Long> words = Arrays.stream(text.toLowerCase().split("\\W+"))
+    .collect(Collectors.groupingBy(w -> w, LinkedHashMap::new, Collectors.counting()));
+```
+All O(n) time, O(k) space for k distinct keys. For the *first non-repeated* character, iterate the `LinkedHashMap` and return the first entry with count 1.
+
+#### R7. Group Anagrams: `["eat","tea","tan","ate","nat","bat"]`. {#group-anagrams}
+**Answer:** Anagrams share the same **canonical key**: the sorted letters (or a 26-count signature). Group by it in a map: O(n·k log k) with sorting (k = word length), O(n·k) with count keys.
+
+```java
+static List<List<String>> groupAnagrams(String[] words) {
+    Map<String, List<String>> groups = new HashMap<>();
+    for (String w : words) {
+        char[] c = w.toCharArray();
+        Arrays.sort(c);
+        groups.computeIfAbsent(new String(c), k -> new ArrayList<>()).add(w);
+    }
+    return new ArrayList<>(groups.values());
+}
+// [[eat, tea, ate], [tan, nat], [bat]]
+```
+The key insight is choosing a key that is equal for all members of a group, then a single hash pass does the rest.
+
+#### R8. K Most Frequent Words (by frequency, then lexicographically). {#k-most-frequent-words}
+**Answer:** Count with a map, then pick the top K with a heap ordered by *frequency ascending, then word descending* so the "worst" is always at the root and gets evicted: O(n log k).
+
+```java
+static List<String> topK(String[] words, int k) {
+    Map<String, Integer> cnt = new HashMap<>();
+    for (String w : words) cnt.merge(w, 1, Integer::sum);
+
+    PriorityQueue<Map.Entry<String, Integer>> pq = new PriorityQueue<>(
+        Comparator.<Map.Entry<String, Integer>>comparingInt(Map.Entry::getValue)
+                  .thenComparing(Map.Entry::getKey, Comparator.reverseOrder()));
+    for (var e : cnt.entrySet()) { pq.add(e); if (pq.size() > k) pq.poll(); }
+
+    LinkedList<String> res = new LinkedList<>();
+    while (!pq.isEmpty()) res.addFirst(pq.poll().getKey());
+    return res;
+}
+```
+The simpler alternative is `sorted(byFreqDesc.thenComparing(naturalOrder())).limit(k)`: O(n log n), fine for small inputs; mention bucket sort for O(n).
+
+#### R9. Validate an expression with `{`, `}` and `*` (wildcard) being balanced. {#balanced-braces-with-wildcard-star}
+**Answer:** A stack alone fails because `*` can be `{`, `}` or empty. Track the **range of possible open counts**: `lo` (minimum opens if every `*` closes) and `hi` (maximum if every `*` opens). For `{` both +1; for `}` both −1; for `*` `lo−1`, `hi+1`; clamp `lo` at 0; if `hi < 0` there are more closes than can ever be matched, so fail. It is valid iff `lo == 0` at the end. O(n), O(1) space.
+
+```java
+static boolean valid(String s) {
+    int lo = 0, hi = 0;
+    for (char c : s.toCharArray()) {
+        if (c == '{')      { lo++; hi++; }
+        else if (c == '}') { lo--; hi--; }
+        else               { lo--; hi++; }          // '*'
+        if (hi < 0) return false;
+        lo = Math.max(lo, 0);
+    }
+    return lo == 0;
+}
+```
+This is LeetCode 678 ("Valid Parenthesis String") with braces instead of parentheses.
+
+#### R10. Convert an infix expression to postfix (shunting-yard). {#infix-to-postfix-conversion}
+**Answer:** Scan tokens left to right with an **operator stack**: operands go straight to the output; for an operator, pop operators of **higher or equal precedence** (for left-associative) to the output, then push it; `(` is pushed; `)` pops until `(`. At the end, pop everything. O(n).
+
+```java
+static String toPostfix(String expr) {
+    Map<Character, Integer> prec = Map.of('+',1,'-',1,'*',2,'/',2,'^',3);
+    StringBuilder out = new StringBuilder();
+    Deque<Character> ops = new ArrayDeque<>();
+    for (char c : expr.toCharArray()) {
+        if (Character.isLetterOrDigit(c)) out.append(c);
+        else if (c == '(') ops.push(c);
+        else if (c == ')') { while (ops.peek() != '(') out.append(ops.pop()); ops.pop(); }
+        else {                                   // operator
+            while (!ops.isEmpty() && ops.peek() != '(' && 
+                   (prec.get(ops.peek()) > prec.get(c) || (prec.get(ops.peek()) == prec.get(c) && c != '^')))
+                out.append(ops.pop());
+            ops.push(c);
+        }
+    }
+    while (!ops.isEmpty()) out.append(ops.pop());
+    return out.toString();
+}
+// "a+b*(c-d)" -> "abcd-*+"
+```
+`^` is right-associative, hence the `c != '^'` check. Evaluate postfix with a single operand stack.
+
+#### R11. Sum the even numbers from 1 to 100, and compute the final balance per account from transactions with `Map.merge()`. {#sum-even-numbers-final-balance-per-account}
+**Answer:** Even sum: `IntStream.rangeClosed(1, 100).filter(n -> n % 2 == 0).sum()` = 2550 (or the formula `2 · (50·51/2)`). Balances: `merge(key, delta, Integer::sum)` inserts the delta or adds to the existing value atomically in one call, with no `containsKey`/`get`/`put` dance:
+
+```java
+record Tx(String account, int amount) {}
+
+Map<String, Integer> balances = new HashMap<>();
+for (Tx t : txs) balances.merge(t.account(), t.amount(), Integer::sum);
+// [A:+100, B:+200, A:-50] -> {A=50, B=200}
+
+// stream version
+Map<String, Integer> b2 = txs.stream()
+    .collect(Collectors.toMap(Tx::account, Tx::amount, Integer::sum));
+```
+Complexity O(n) time, O(accounts) space. Use `BigDecimal`/cents (`long`) for real money, and `ConcurrentHashMap.merge` if updated from several threads.
+
+### Streams & collections exercises
+
+#### R12. Streams exercises: highest salary per department, employees above average, `List<Employee>` → `Map<Id, Employee>`, partition even/odd, totals by user, sort by salary then name. {#streams-employee-salary-exercises}
+**Answer:** Assume `record Employee(int id, String name, String dept, String city, double salary)`:
+
+```java
+// highest-paid employee per department
+Map<String, Optional<Employee>> top = emps.stream().collect(
+    groupingBy(Employee::dept, maxBy(comparingDouble(Employee::salary))));
+
+// group by department; names only
+Map<String, List<String>> names = emps.stream().collect(
+    groupingBy(Employee::dept, mapping(Employee::name, toList())));
+
+// above average
+double avg = emps.stream().mapToDouble(Employee::salary).average().orElse(0);
+List<Employee> rich = emps.stream().filter(e -> e.salary() > avg).toList();
+
+// list -> map (merge function handles duplicate ids)
+Map<Integer, Employee> byId = emps.stream().collect(toMap(Employee::id, identity(), (a, b) -> a));
+
+// stats, extremes, partition, totals, filters
+DoubleSummaryStatistics st = emps.stream().mapToDouble(Employee::salary).summaryStatistics(); // sum, avg, min, max
+String longest = names.stream().max(comparingInt(String::length)).orElse("");
+Map<Boolean, List<Integer>> evenOdd = nums.stream().collect(partitioningBy(n -> n % 2 == 0));
+Map<Integer, Double> totalByUser = orders.stream().collect(groupingBy(Order::userId, summingDouble(Order::amount)));
+List<Employee> inCity = emps.stream().filter(e -> "Paris".equals(e.city())).toList();
+List<Employee> startsWithA = emps.stream().filter(e -> e.name().startsWith("A")).toList();
+
+// sort by salary desc then name
+emps.sort(comparingDouble(Employee::salary).reversed().thenComparing(Employee::name));
+
+// top 5 salaries per department
+Map<String, List<Double>> top5 = emps.stream().collect(groupingBy(Employee::dept,
+    collectingAndThen(toList(), l -> l.stream().map(Employee::salary).sorted(reverseOrder()).limit(5).toList())));
+```
+Pitfalls to mention: `toMap` throws on duplicate keys unless you pass a merge function; `maxBy` returns an `Optional`; compare `double`s with `comparingDouble`, never by subtraction.
+
+#### R13. Sort `Shipment` objects by `packageCost` ascending, then `city`. {#comparator-chaining-shipments-package-cost-city}
+**Answer:** Chain comparators: `Comparator.comparingDouble(Shipment::packageCost).thenComparing(Shipment::city)`; `list.sort(cmp)`.
+
+```java
+record Shipment(String city, double packageCost) {}
+
+Comparator<Shipment> cmp = Comparator
+    .comparingDouble(Shipment::packageCost)                 // ascending cost
+    .thenComparing(Shipment::city, String.CASE_INSENSITIVE_ORDER);
+shipments.sort(cmp);
+// descending cost, ascending city: comparingDouble(...).reversed().thenComparing(...)
+```
+Null-safe variants: `Comparator.nullsLast(...)`. Never write `(a, b) -> (int)(a.cost - b.cost)`: it truncates fractions and can overflow, so it violates the comparator contract.
+
+### Lists, heaps, graphs & concurrency
+
+#### R14. Merge K sorted lists, find the Kth largest in a stream, and the median from a data stream. {#merge-k-sorted-lists-kth-largest-median-stream}
+**Answer:** All three use **heaps**. **Merge K sorted lists**: a min-heap holds the current head of each list; poll the smallest, append it, push its successor: O(N log K) for N total nodes.
+
+```java
+ListNode mergeK(ListNode[] lists) {
+    PriorityQueue<ListNode> pq = new PriorityQueue<>(Comparator.comparingInt(n -> n.val));
+    for (ListNode l : lists) if (l != null) pq.add(l);
+    ListNode dummy = new ListNode(0), tail = dummy;
+    while (!pq.isEmpty()) {
+        ListNode n = pq.poll();
+        tail = tail.next = n;
+        if (n.next != null) pq.add(n.next);
+    }
+    return dummy.next;
+}
+```
+**Kth largest in a stream**: keep a **min-heap of size k**; `add(x)`: push, and if size > k poll; the root is the answer: O(log k) per element. **Median of a stream**: two heaps, a **max-heap for the lower half** and a **min-heap for the upper half**, sizes differing by at most 1; add to the lower heap, move its max to the upper, rebalance; the median is the root of the larger heap or the mean of both roots: O(log n) insert, O(1) median.
+
+#### R15. Detect a cycle in a directed graph, and solve Word Ladder. {#detect-cycle-directed-graph-word-ladder}
+**Answer:** **Cycle in a directed graph**: DFS with three colours (0 = unvisited, 1 = on the current path, 2 = done); meeting a node with state 1 means a **back edge**, i.e. a cycle. (Alternative: Kahn's topological sort: if fewer than V nodes are processed, there is a cycle.) O(V+E).
+
+```java
+boolean hasCycle(Map<Integer, List<Integer>> g, int n) {
+    int[] state = new int[n];
+    for (int i = 0; i < n; i++) if (state[i] == 0 && dfs(g, i, state)) return true;
+    return false;
+}
+boolean dfs(Map<Integer, List<Integer>> g, int u, int[] s) {
+    s[u] = 1;
+    for (int v : g.getOrDefault(u, List.of())) {
+        if (s[v] == 1) return true;
+        if (s[v] == 0 && dfs(g, v, s)) return true;
+    }
+    s[u] = 2;
+    return false;
+}
+```
+**Word Ladder** (shortest transformation, one letter at a time, each word in a dictionary) is a **shortest path in an unweighted graph → BFS**: from the start word, generate every one-letter mutation, keep those in the dictionary set (removing them to mark them visited), and count BFS levels until the target is reached; return 0 if it never is. Bidirectional BFS halves the search. O(N · L · 26) for N words of length L.
+
+#### R16. Solve the task scheduler problem and Minimum Platforms (greedy). {#task-scheduler-minimum-platforms-greedy}
+**Answer:** **Minimum Platforms**: sort arrival and departure times separately and sweep with two pointers; each arrival before the earliest unfinished departure needs a new platform, otherwise one frees up. Max simultaneous trains = answer. O(n log n).
+
+```java
+static int minPlatforms(int[] arr, int[] dep) {
+    Arrays.sort(arr); Arrays.sort(dep);
+    int need = 0, best = 0, i = 0, j = 0;
+    while (i < arr.length) {
+        if (arr[i] <= dep[j]) { need++; i++; best = Math.max(best, need); }
+        else { need--; j++; }
+    }
+    return best;
+}
+```
+**Task scheduler** (CPU tasks with a cooling interval `n` between identical tasks, minimise total time): the most frequent task dictates the frame. With `maxFreq` and `countOfMax` tasks sharing it, `answer = max(tasks.length, (maxFreq-1)*(n+1) + countOfMax)`. The idle slots are filled by other tasks. For "priority scheduling" with different priorities, use a `PriorityQueue` ordered by priority (then arrival time) and poll the next task to run.
+
+#### R17. Implement an LFU cache. {#lfu-cache-implementation}
+**Answer:** LFU evicts the **least frequently used** key (ties broken by least recently used). O(1) design: `Map<K, Node>` for values, `Map<K, Integer>` for frequency, and `Map<Integer, LinkedHashSet<K>>` mapping each frequency to keys in recency order, plus a `minFreq` pointer.
+
+```java
+class LFUCache {
+    private final int cap; private int minFreq;
+    private final Map<Integer, Integer> val = new HashMap<>(), freq = new HashMap<>();
+    private final Map<Integer, LinkedHashSet<Integer>> buckets = new HashMap<>();
+    LFUCache(int cap) { this.cap = cap; }
+
+    int get(int k) {
+        if (!val.containsKey(k)) return -1;
+        touch(k);
+        return val.get(k);
+    }
+    void put(int k, int v) {
+        if (cap == 0) return;
+        if (val.containsKey(k)) { val.put(k, v); touch(k); return; }
+        if (val.size() == cap) {                          // evict LFU, oldest among ties
+            int old = buckets.get(minFreq).iterator().next();
+            buckets.get(minFreq).remove(old); val.remove(old); freq.remove(old);
+        }
+        val.put(k, v); freq.put(k, 1); minFreq = 1;
+        buckets.computeIfAbsent(1, f -> new LinkedHashSet<>()).add(k);
+    }
+    private void touch(int k) {
+        int f = freq.get(k);
+        buckets.get(f).remove(k);
+        if (buckets.get(f).isEmpty() && f == minFreq) minFreq++;
+        freq.put(k, f + 1);
+        buckets.computeIfAbsent(f + 1, x -> new LinkedHashSet<>()).add(k);
+    }
+}
+```
+Not thread-safe; make methods `synchronized` or use Caffeine (W-TinyLFU) in production.
+
+#### R18. Print odd and even numbers alternately with two threads, and implement Producer-Consumer with `wait()`/`notify()`. {#alternate-odd-even-threads-producer-consumer-wait-notify}
+**Answer:** Both rely on a **shared monitor**, a **condition checked in a `while` loop** (guards against spurious wakeups) and `notifyAll`. **Odd/even printing**:
+
+```java
+class OddEven {
+    private int n = 1; private final int max = 10;
+    synchronized void print(boolean odd) throws InterruptedException {
+        while (n <= max) {
+            if ((n % 2 == 1) != odd) wait();             // not my turn
+            else { System.out.println(Thread.currentThread().getName() + " " + n++); notifyAll(); }
+        }
+        notifyAll();                                     // release the other thread at the end
+    }
+}
+// new Thread(() -> o.print(true), "odd").start(); new Thread(() -> o.print(false), "even").start();
+```
+**Producer-Consumer** with a bounded buffer:
+
+```java
+class Buffer<T> {
+    private final Queue<T> q = new ArrayDeque<>(); private final int cap;
+    Buffer(int cap) { this.cap = cap; }
+    synchronized void put(T t) throws InterruptedException {
+        while (q.size() == cap) wait();                  // full: producer waits
+        q.add(t); notifyAll();
+    }
+    synchronized T take() throws InterruptedException {
+        while (q.isEmpty()) wait();                      // empty: consumer waits
+        T t = q.poll(); notifyAll(); return t;
+    }
+}
+```
+In real code prefer `BlockingQueue` (`ArrayBlockingQueue`), which does exactly this; show you know `wait/notify` underneath. `wait` must be called while holding the monitor and releases it while waiting.
+
+#### R19. Implement API rate limiting in Java: at most 5 requests per user per minute. {#rate-limiting-five-requests-per-user-per-minute-java}
+**Answer:** A **sliding-window log** per user is exact and simple: keep a deque of request timestamps, drop those older than 60 s, allow if fewer than 5 remain.
+
+```java
+class RateLimiter {
+    private final int max; private final long windowMs;
+    private final ConcurrentHashMap<String, Deque<Long>> hits = new ConcurrentHashMap<>();
+    RateLimiter(int max, long windowMs) { this.max = max; this.windowMs = windowMs; }
+
+    boolean allow(String user) {
+        long now = System.currentTimeMillis();
+        Deque<Long> q = hits.computeIfAbsent(user, k -> new ArrayDeque<>());
+        synchronized (q) {                                // per-user lock, not global
+            while (!q.isEmpty() && now - q.peekFirst() >= windowMs) q.pollFirst();
+            if (q.size() >= max) return false;            // -> respond 429 + Retry-After
+            q.addLast(now);
+            return true;
+        }
+    }
+}
+```
+Costs O(max) memory per user. Alternatives: **fixed window** counter (cheap but allows 2× bursts at the boundary), **token bucket** (smooth, allows bursts, O(1) state). In a multi-instance deployment the counters must be shared (Redis `INCR` + `EXPIRE`, or a Lua script) or enforced at the gateway. Evict idle users to avoid unbounded map growth.
+
+#### R20. How do you approach "predict the output" snippets on Collections, Strings and multithreading? {#predict-the-output-collections-strings-threads}
+**Answer:** Trace the code on paper, step by step, and check the classic traps: **String**: `==` vs `equals` (literals are interned, `new String` isn't; `s1 + s2` at runtime creates a new object, compile-time constants are interned), immutability (`s.concat("x")` without assignment changes nothing), `intern()`. **Collections**: `Arrays.asList` is fixed-size (`add` throws), `List.of` is immutable (and rejects `null`), `remove(int)` vs `remove(Object)` on `List<Integer>`, `ConcurrentModificationException` when modifying during a for-each (use `Iterator.remove`/`removeIf`), `HashSet` of objects without `hashCode`/`equals`, mutable keys in a `HashMap`, `TreeSet` using the comparator for equality, autoboxing `Integer` cache (`127 == 127` true, `128 == 128` false). **Threads**: `run()` vs `start()` (run executes on the caller's thread), non-deterministic interleavings (without `join`, output order isn't defined: say so), missing `volatile`/synchronisation (visibility, lost updates on `count++`), `finally` + `return`, static init order. State the answer and the *rule* behind it, and call out when the output is non-deterministic.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

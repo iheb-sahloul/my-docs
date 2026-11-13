@@ -330,6 +330,11 @@ Questions reported from real interviews, grouped by topic. Each has a short mode
 #### R4. Have you deployed microservices on AWS? Explain the deployment flow. {#have-deployed-microservices-aws-deployment}
 **Answer:** Typical flow: commit → CI (build, test, scan) → build a Docker image → push to **ECR** → deploy to ECS/EKS (Terraform/CloudFormation for infra, ArgoCD/CodeDeploy for releases) behind an **ALB**, using rolling/blue-green/canary → health checks → CloudWatch monitoring and automatic rollback. Secrets in Secrets Manager, IAM roles per task, config per environment.
 
+### Deployment on AWS
+
+#### R5. How is a Docker image deployed on AWS, and where are images stored in a GitLab CI/CD flow? {#how-docker-image-deployed-aws-gitlab-registry}
+**Answer:** Pipeline: commit → CI **builds** the image (Dockerfile, multi-stage), runs tests/scans, tags it immutably (commit SHA, not only `latest`) and **pushes it to a registry**. The registry is either the **GitLab Container Registry** (built into each project, authenticated with `CI_JOB_TOKEN`) or **Amazon ECR** (private registry, IAM-based auth, image scanning, lifecycle policies to delete old tags; CI authenticates via OIDC/role, no static keys). Deploy step: update the service definition to the new tag: **ECS** (new task definition revision → rolling/blue-green via CodeDeploy), **EKS** (`kubectl set image`/Helm/Argo CD with the new tag; nodes pull from ECR via the node/IRSA role), or **Lambda** container images. Add health checks, automatic rollback on failed deployment, and keep a tag → commit mapping for traceability.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

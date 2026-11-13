@@ -166,6 +166,18 @@ GET /api/products/search?q=vélo+électrique&brand=decathlon&brand=btwin&price_m
 
 </details>
 
+## 🗣️ Questions posées en entretien
+
+Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une courte réponse type : approfondissez avec les questions et scénarios détaillés ci-dessus, et dites la réponse à voix haute.
+
+### HTTP & conception d'API
+
+#### R1. Quelle différence entre les codes HTTP 500, 502, 503 et 504 ? {#http-500-502-503-504}
+**Réponse :** **500 Internal Server Error** : le serveur a rencontré un bug ou une exception non gérée. **502 Bad Gateway** : une passerelle/un proxy a reçu une réponse *invalide* de l'amont (l'application a planté ou fermé la connexion). **503 Service Unavailable** : le serveur est *volontairement ou temporairement* incapable de répondre (surcharge, démarrage, maintenance, circuit ouvert) ; en général avec `Retry-After`. **504 Gateway Timeout** : la passerelle n'a *pas reçu de réponse à temps* de l'amont (application, base ou appel aval lent). Diagnostic : 500 → logs applicatifs ; 502/504 → comparer les timeouts du proxy et la latence de l'application, vérifier la santé de l'amont ; 503 → capacité, readiness, rate limiting. Ne réessayer une 5xx avec backoff que si l'appel est idempotent.
+
+#### R2. Comment concevoir une API REST scalable ? {#design-scalable-rest-api}
+**Réponse :** La rendre **sans état** (pas de session serveur : n'importe quelle instance sert n'importe quelle requête, scalabilité horizontale derrière un load balancer). Modéliser des ressources avec les bons verbes/codes ; **paginer** toute collection (keyset pour les gros volumes) avec sélection de champs/filtres ; rendre les écritures **idempotentes** (`Idempotency-Key`) pour que les clients puissent réessayer ; utiliser le **cache HTTP** (`ETag`, `Cache-Control`) et un CDN pour les lectures ; ajouter du **rate limiting** et des timeouts ; garder des handlers non bloquants ou bornés, et déporter le travail lent vers une file (réponse `202 Accepted` + URL de statut). Faire aussi monter en charge la couche données (index, réplicas de lecture, cache), versionner l'API, compresser les réponses et l'observer (percentiles de latence, taux d'erreur, saturation). Mesurer d'abord : le goulot est généralement la base, pas le contrôleur.
+
 ## 🎤 Quiz oral
 
 Répondez à chaque question **à voix haute en 2–3 minutes**, sans regarder : contexte → options → décision → compromis. Relisez ensuite la question liée et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège.

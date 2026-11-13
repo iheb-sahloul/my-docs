@@ -371,8 +371,6 @@ détaillées de ce site.
 | Recrutement                    | Entretiens structurés, évaluation équitable, plans d'onboarding               |
 | Sécurité psychologique         | Culture sans reproche, admettre ses propres erreurs, rendre sûr le fait de poser des questions |
 
-**Pour aller plus loin :** [Leadership](interviews/leadership-behavioral.md)
-
 **Pratique**
 
 - Pilotez la conception d'une fonctionnalité de bout en bout : RFC → review → ADR → livraison → rétro.
