@@ -136,17 +136,6 @@ et visibilité.
 - [ ] Je sais expliquer une estimation de capacité « back-of-envelope » au tableau. ([Q2](system-design.md#back-envelope-numbers-know-heart))
 - [ ] Je sais expliquer concevoir un rate limiter distribué. ([Q43](system-design.md#design-rate-limiter-distributed-system))
 
-### Leadership
-
-- [ ] Je sais expliquer contester la décision d'un stakeholder senior sans abîmer la relation. ([Q3](leadership-behavioral.md#push-back-technical-decision-coming))
-- [ ] Je sais expliquer gérer une revue de conception où deux seniors sont en fort désaccord. ([Q4](leadership-behavioral.md#tech-lead-handle-design-review))
-- [ ] Je sais expliquer comment mener la coordination d'un incident : rôles, atténuer d'abord, cadence de points. ([Q8](leadership-behavioral.md#run-incident-command-during-major))
-- [ ] Je sais expliquer comment rédiger une RFC/ADR qui aboutit à une décision. ([Q9](leadership-behavioral.md#write-rfc-adr-team-decides))
-- [ ] Je sais expliquer comment mener un entretien équitable avec une grille. ([Q10](leadership-behavioral.md#structure-hiring-interviewing-decisions-consistent))
-- [ ] Je sais expliquer comment je délègue et comment je dis non avec un compromis. ([Q11](leadership-behavioral.md#delegate-well-say-damaging-relationship))
-- [ ] Je sais expliquer un plan d'onboarding 30/60/90 pour un nouvel ingénieur. ([Q12](leadership-behavioral.md#onboard-new-engineer-productive-quickly))
-- [ ] Je sais expliquer comment je gère ma relation avec mon manager via un point hebdo. ([Q13](leadership-behavioral.md#manage-up-keeping-manager-informed))
-
 ### Dev assisté par IA
 
 - [ ] Je sais expliquer la boucle agentique et ce que pilote `stop_reason`. ([Q1](claude-code.md#basic-agentic-loop-stop-reason))
@@ -166,8 +155,7 @@ et visibilité.
 | 1 | Live coding | 60 min | Deux problèmes chronométrés : un hachage/two-pointer ([Q4](coding.md#hash-map-turn-o-n2), [Q8](coding.md#two-pointer-sliding-window-patterns)), un de conception ([Q24](coding.md#implement-lru-cache-o-1)) |
 | 2 | Conception | 90 min | Un system design complet en 45 min ([Q1](system-design.md#steps-follow-system-design-interview)), puis comparaison avec la réponse |
 | 2 | Plateforme | 60 min | Quiz DevOps/K8s, sécurité et tests à voix haute |
-| 2 | Comportemental | 60 min | Écrire 6 histoires STAR depuis la [banque d'histoires](leadership-behavioral.md#banque-histoires-star) et dire chacune en 2 minutes |
-| 3 | Entretien blanc | 60 min | Passage complet avec un ami ou un enregistrement : présentation (B1), 2 techniques, 1 coding, 1 comportemental, tes questions (B26) |
+| 3 | Entretien blanc | 60 min | Passage complet avec un ami ou un enregistrement : 2 techniques, 1 coding, 1 system design, tes questions |
 | 3 | Points faibles | 60 min | Relire seulement les points notés sous 2 |
 | 3 | Stop | repos | Vérifier la logistique, dormir tôt |
 

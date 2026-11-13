@@ -345,6 +345,11 @@ Questions rapportées d'entretiens réels, regroupées par sujet. Chacune a une 
 #### R4. Avez-vous déployé des microservices sur AWS ? Expliquez le flux de déploiement. {#have-deployed-microservices-aws-deployment}
 **Réponse :** Flux typique : commit → CI (build, tests, scan) → image Docker → push vers **ECR** → déploiement sur ECS/EKS (Terraform/CloudFormation pour l'infra, ArgoCD/CodeDeploy pour les releases) derrière un **ALB**, en rolling/blue-green/canary → health checks → supervision CloudWatch et rollback automatique. Secrets dans Secrets Manager, rôles IAM par tâche, configuration par environnement.
 
+### Déploiement sur AWS
+
+#### R5. Comment une image Docker est-elle déployée sur AWS, et où sont stockées les images dans un flux GitLab CI/CD ? {#how-docker-image-deployed-aws-gitlab-registry}
+**Réponse :** Pipeline : commit → la CI **construit** l'image (Dockerfile, multi-stage), exécute tests/scans, la tague de façon immuable (SHA du commit, pas seulement `latest`) et la **pousse vers un registre**. Le registre est soit le **GitLab Container Registry** (intégré à chaque projet, authentifié par `CI_JOB_TOKEN`), soit **Amazon ECR** (registre privé, authentification IAM, scan d'images, politiques de cycle de vie pour supprimer les vieux tags ; la CI s'authentifie par OIDC/rôle, sans clés statiques). Étape de déploiement : mettre à jour la définition du service avec le nouveau tag : **ECS** (nouvelle révision de task definition → rolling/blue-green via CodeDeploy), **EKS** (`kubectl set image`/Helm/Argo CD avec le nouveau tag ; les nœuds tirent depuis ECR via le rôle du nœud/IRSA), ou images conteneur **Lambda**. Ajouter health checks, rollback automatique si le déploiement échoue, et conserver la correspondance tag → commit pour la traçabilité.
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.

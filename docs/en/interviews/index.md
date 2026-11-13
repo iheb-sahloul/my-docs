@@ -12,18 +12,17 @@
 | 6 | [`Messaging`](messaging-rabbitmq-kafka.md)                  | RabbitMQ vs Kafka, idempotency, sagas                             |
 | 7 | [`Full Stack & DevOps`](fullstack-devops-k8s.md)            | API design, Docker, K8s, observability                            |
 | 8 | [`System Design`](system-design.md)                         | Method, estimation, CAP, scaling, reliability, OWASP, design exercises |
-| 9 | [`Leadership & Behavioral (STAR)`](leadership-behavioral.md) | Feedback, conflict, stakeholders, estimation, team health         |
-| 10 | [`AI Engineering & Claude Code`](claude-code.md)           | Agentic coding, prompts/context, MCP, AI security, governance     |
-| 11 | [`Testing`](testing.md) | Pyramid, test doubles, Testcontainers, flaky tests, contract tests, RTL/Playwright |
-| 12 | [`Security`](security.md) | OAuth2/OIDC, JWT, Spring Security, injection/XSS/CSRF/IDOR/SSRF, supply chain |
-| 13 | [`Live Coding`](coding.md) | Method, Big-O, core patterns (hashing, windows, BFS/DFS, heaps, DP), Java pitfalls, take-homes |
-| 14 | [`Cloud (AWS)`](cloud-aws.md) | IAM, VPC, ECS/EKS/Lambda, managed data & messaging, SPA hosting, HA, cost |
-| 15 | [`REST API Design`](rest-api.md) | Pagination, PUT vs PATCH, ETag, problem details, caching, evolution |
-| 16 | [`Performance & Load Testing`](performance-load-testing.md) | k6/Gatling, percentiles, coordinated omission, USE method, capacity |
-| 17 | [`Observability`](observability.md) | RED/USE, correlation, cardinality, sampling, SLO burn-rate alerts |
-| 18 | [`Kotlin`](kotlin.md) | Null safety, sealed/value classes, coroutines, Spring + JPA plugins, Java interop |
-| 19 | [`Caching & Redis`](caching-redis.md) | Redis data structures, eviction, stampede, Spring Cache pitfalls, locks, Cluster |
-| 20 | [`Elasticsearch & OpenSearch`](elasticsearch-opensearch.md) | Lucene, mappings, shards, relevance, cluster operations, Elastic Certified Engineer labs |
+| 9 | [`AI Engineering & Claude Code`](claude-code.md)           | Agentic coding, prompts/context, MCP, AI security, governance     |
+| 10 | [`Testing`](testing.md) | Pyramid, test doubles, Testcontainers, flaky tests, contract tests, RTL/Playwright |
+| 11 | [`Security`](security.md) | OAuth2/OIDC, JWT, Spring Security, injection/XSS/CSRF/IDOR/SSRF, supply chain |
+| 12 | [`Live Coding`](coding.md) | Method, Big-O, core patterns (hashing, windows, BFS/DFS, heaps, DP), Java pitfalls, take-homes |
+| 13 | [`Cloud (AWS)`](cloud-aws.md) | IAM, VPC, ECS/EKS/Lambda, managed data & messaging, SPA hosting, HA, cost |
+| 14 | [`REST API Design`](rest-api.md) | Pagination, PUT vs PATCH, ETag, problem details, caching, evolution |
+| 15 | [`Performance & Load Testing`](performance-load-testing.md) | k6/Gatling, percentiles, coordinated omission, USE method, capacity |
+| 16 | [`Observability`](observability.md) | RED/USE, correlation, cardinality, sampling, SLO burn-rate alerts |
+| 17 | [`Kotlin`](kotlin.md) | Null safety, sealed/value classes, coroutines, Spring + JPA plugins, Java interop |
+| 18 | [`Caching & Redis`](caching-redis.md) | Redis data structures, eviction, stampede, Spring Cache pitfalls, locks, Cluster |
+| 19 | [`Elasticsearch & OpenSearch`](elasticsearch-opensearch.md) | Lucene, mappings, shards, relevance, cluster operations, Elastic Certified Engineer labs |
 | ✓ | [`Mock Interview`](mock-interview.md)                       | Readiness checklist for the day before                            |
 
 Curated links per topic live under **Resources › [Further Reading](../resources/further-reading.md)**.
@@ -33,11 +32,11 @@ Curated links per topic live under **Resources › [Further Reading](../resource
 | Day | Morning                        | Afternoon                     |
 |-----|--------------------------------|-------------------------------|
 | D-7 | Module 2 (Java Core)           | Module 3 (Spring)             |
-| D-6 | Module 4 (SQL/Persistence)     | Module 11 (Testing) + review modules 2–3 |
+| D-6 | Module 4 (SQL/Persistence)     | Module 10 (Testing) + review modules 2–3 |
 | D-5 | Module 6 (Messaging)           | Module 5 (React)              |
-| D-4 | Modules 7 + 14 (DevOps/K8s, Cloud) | Module 12 (Security) + review modules 4–6 |
-| D-3 | Modules 8–9 (System Design, Leadership & Behavioral) | Module 10 (AI Engineering) |
-| D-2 | Module 1 (Design Patterns) + cheat-sheets | Module 13 (Live Coding, 2 timed problems) + mock interview (out loud) |
+| D-4 | Modules 7 + 13 (DevOps/K8s, Cloud) | Module 11 (Security) + review modules 4–6 |
+| D-3 | Module 8 (System Design) | Module 9 (AI Engineering) |
+| D-2 | Module 1 (Design Patterns) + cheat-sheets | Module 12 (Live Coding, 2 timed problems) + mock interview (out loud) |
 | D-1 | Weak spots identified          | Rest + light review           |
 
 ## Difficulty legend
@@ -60,8 +59,6 @@ Curated links per topic live under **Resources › [Further Reading](../resource
 
 **Elasticsearch & OpenSearch** adds a **🏅 Elastic Certified Engineer labs** section: hands-on tasks in the exam's style, numbered as scenarios and solved on a live cluster.
 
-**Leadership & Behavioral** follows the same structure. Its **Behavioral** part uses the same levels but has no scenarios: each question gives why the interviewer asks it, a sample ⭐ STAR answer, and the pitfall to avoid. A final **📞 Recruiter screen** section covers the first-call questions (why leaving, salary, five-year plan, project deep-dive, questions to ask).
-
 ## Scenario format
 
 Each scenario follows the same outline:
@@ -82,7 +79,7 @@ Walking through this outline out loud shows an engineering method rather than a 
 - **Give concrete examples from your experience.**
 - **Admit what you don't know**, then reason through it.
 - **For system design**, clarify requirements (load, latency, consistency) before drawing.
-- **For coding** ([module 13](coding.md)), discuss complexity, edge cases and tests.
+- **For coding** ([module 12](coding.md)), discuss complexity, edge cases and tests.
 
 ## Final checklist
 

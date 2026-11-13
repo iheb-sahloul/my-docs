@@ -370,8 +370,6 @@ system design, leadership and tooling, and links to the deeper pages of this sit
 | Hiring                         | Structured interviews, fair evaluation, onboarding plans                      |
 | Psychological safety           | Blameless culture, admitting your own mistakes, making it safe to ask         |
 
-**Go deeper:** [Leadership](interviews/leadership-behavioral.md)
-
 **Practice**
 
 - Lead the design of one feature end-to-end: RFC → review → ADR → delivery → retro.

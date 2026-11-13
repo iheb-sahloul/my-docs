@@ -3013,6 +3013,34 @@ Questions reported from real interviews, grouped by topic. Each has a short mode
 #### R8. The appointments table has billions of rows. How do you keep queries and maintenance fast? {#appointments-table-has-billions-rows}
 **Answer:** First check the indexes match the access paths (`(practitioner_id, start_at)` for calendars, `(patient_id, start_at)` for a patient's history). Then **partition**: by range on `start_at` (monthly) when most queries are time-bounded, so old partitions can be detached and archived instead of deleted row by row, and autovacuum works on smaller tables. Partition pruning only happens when the query filters on the partition key. Unique and exclusion constraints on a partitioned table must include the partition key, which conflicts with the no-overlap rule on a time range ([Q28](persistence-sql-postgres.md#prevent-two-concurrent-requests-booking)). Options: hash-partition by `practitioner_id` instead (exclusion constraints on partitioned tables need PostgreSQL 17+), or keep a smaller "upcoming appointments" table with the constraint and move past rows to a partitioned history table.
 
+### SQL & JPA fundamentals
+
+#### R9. In JPA entities, why avoid primitive types, and what is wrong with UUIDs as primary keys? {#jpa-entities-no-primitives-uuid-keys}
+**Answer:** **Primitives**: a column can be `NULL` (new row, optional value, outer join) but a primitive can't hold null, so Hibernate fails or silently maps to `0`/`false`; and for the **ID** `long id = 0` makes it impossible to tell a new (transient) entity from an existing one, since `0` is a valid-looking value and `save()` can't decide between persist and merge. Use wrappers (`Long`, `Boolean`, `BigDecimal`) so "absent" is representable. **UUID keys**: they're 16 bytes (vs 8), poorly index-friendly when **random v4**: inserts land all over the B-tree, causing page splits, bigger indexes and cache misses, while sequential `bigint` keys append at the end. Mitigate with time-ordered UUIDv7/ULID, or keep a `bigint` PK and expose a UUID as a public identifier; stored as `uuid` type, never `varchar(36)`. Benefit worth keeping: IDs can be generated client-side and aren't guessable/enumerable.
+
+#### R10. SQL vs NoSQL: which database would you choose and why? {#sql-vs-nosql-choose-database}
+**Answer:** Choose from **access patterns and consistency needs**, not fashion. **Relational (PostgreSQL)** is the default: structured data with relations, ACID transactions, ad-hoc queries, joins, constraints; scales vertically then with replicas/partitioning, and JSONB covers semi-structured parts. **NoSQL** fits specific cases: key-value/cache (Redis, DynamoDB) for simple lookups at huge scale and low latency; document stores (MongoDB) for flexible, aggregate-shaped data; wide-column (Cassandra) for massive write throughput with known query patterns and tunable consistency; graph for relationship traversal; search engines (Elasticsearch) for full-text; time-series for metrics. Trade-offs: NoSQL often gives up joins, ad-hoc queries and strong multi-row transactions for horizontal scale and schema flexibility. Rule: start with PostgreSQL, add a specialised store when a measured need justifies the operational cost.
+
+#### R11. What is the difference between a function and a stored procedure? {#functions-vs-stored-procedures}
+**Answer:** A **function** *returns a value* (scalar or table) and is used **inside queries** (`SELECT my_fn(x)`); it generally can't commit/rollback transactions and is expected to be side-effect-light (in PostgreSQL can be `IMMUTABLE`/`STABLE`/`VOLATILE`, which the planner uses). A **stored procedure** is *called* (`CALL proc()`), may return nothing or OUT parameters, and in PostgreSQL 11+ can **control transactions** (`COMMIT`/`ROLLBACK` inside), making it suitable for batch jobs. Trade-offs of putting logic in the database at all: fast and close to the data, but harder to version, test and debug, and ties you to one vendor; most teams keep business rules in application code and use functions for set-based or reporting needs.
+
+#### R12. Write a query that fetches data from three tables linked by a shared column. {#query-three-tables-shared-column}
+**Answer:** Join them on the shared key, choosing the join type deliberately: `INNER JOIN` keeps only matching rows, `LEFT JOIN` keeps all rows of the left table (with `NULL`s when no match). Example with `students`, `enrollments`, `courses`:
+
+```sql
+SELECT s.name, c.title, e.grade
+FROM students s
+JOIN enrollments e ON e.student_id = s.id
+JOIN courses c     ON c.id = e.course_id
+WHERE c.title = 'Math'
+ORDER BY s.name;
+```
+
+When the "shared name column" isn't a key (joining on `name`), beware of duplicates and homonyms: you multiply rows (the revenue-3×-too-high bug). Use real keys, index the join columns, and check row counts with `COUNT(*)` before/after the join.
+
+#### R13. What are the main techniques to scale a database? {#database-scaling-techniques}
+**Answer:** In rough order of effort: (1) **query and index tuning**, plus fixing N+1 and connection pooling (most "scaling" problems end here); (2) **caching** (application cache, Redis, HTTP cache) to cut read load; (3) **vertical scaling** (bigger instance); (4) **read replicas** for read-heavy workloads (watch replication lag and read-your-writes); (5) **partitioning** large tables by range/hash/time and archiving old data; (6) **connection pooling/proxy** (PgBouncer, RDS Proxy); (7) **batching and async writes** through queues; (8) **denormalisation/materialised views/CQRS** read models; (9) **sharding** across nodes by a shard key (hardest: cross-shard queries and transactions, resharding); (10) **specialised stores** (search, time-series, wide-column) for workloads that don't fit. Each step adds operational and consistency cost, so apply them in order and justify with measurements.
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

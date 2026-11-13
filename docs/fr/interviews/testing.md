@@ -728,6 +728,52 @@ Questions qui reviennent souvent en entretien sur ce thème (un jeu typique, non
 #### R3. Comment tester une méthode privée ? {#test-private-method}
 **Réponse :** Ne la testez pas directement : testez-la via le comportement public qui l'utilise. Si la logique privée est assez complexe pour exiger ses propres tests, c'est probablement une classe à part avec son API publique : extrayez-la. La réflexion pour appeler du privé couple les tests à l'implémentation.
 
+### Tests Spring
+
+#### R4. Quelle différence entre `@Mock` et `@InjectMocks`, et comment écrire un test unitaire d'un service qui appelle un autre service ? {#mock-vs-injectmocks-unit-test-service-call}
+**Réponse :** `@Mock` crée un **mock** Mockito d'un collaborateur (un faux que l'on programme et vérifie). `@InjectMocks` crée **l'objet réel testé** et y injecte les mocks via constructeur/champs/setters. Utiliser `@ExtendWith(MockitoExtension.class)` pour les tests unitaires purs (pas de contexte Spring, rapides) :
+
+```java
+@ExtendWith(MockitoExtension.class)
+class OrderServiceTest {
+  @Mock PaymentClient payments;
+  @InjectMocks OrderService service;
+
+  @Test void placesOrderWhenPaymentSucceeds() {
+    when(payments.charge(any())).thenReturn(Receipt.ok());
+    Order o = service.place(new OrderRequest("A", 10));
+    assertEquals(Status.PAID, o.status());
+    verify(payments).charge(any());
+  }
+}
+```
+
+Préparer (stub), agir, vérifier le **comportement/résultat**, ne vérifier que les interactions significatives, et tester aussi le chemin d'échec (le paiement lève une exception → commande rejetée). Préférer l'injection par constructeur pour ne plus avoir besoin de `@InjectMocks`. Sous Spring, `@MockitoBean` (ex-`@MockBean`) remplace un bean du contexte : outil différent et plus lent.
+
+#### R5. Comment tester un endpoint Actuator personnalisé et sa configuration de sécurité ? {#test-custom-actuator-endpoint-security}
+**Réponse :** Exposer l'endpoint avec `@Endpoint(id = "springversion")` et une `@ReadOperation` renvoyant `SpringVersion.getVersion()` ; l'inclure (`management.endpoints.web.exposure.include=springversion`). Le sécuriser avec une `SecurityFilterChain` : `EndpointRequest.to("springversion")` → `authenticated()`, tout le reste refusé, CSRF désactivé pour l'API. Tester avec **MockMvc** :
+
+```java
+@SpringBootTest @AutoConfigureMockMvc
+class SpringVersionEndpointTest {
+  @Autowired MockMvc mvc;
+
+  @Test void anonymousIsRejected() throws Exception {
+    mvc.perform(get("/actuator/springversion")).andExpect(status().isUnauthorized());
+  }
+  @Test @WithMockUser void authenticatedGetsVersion() throws Exception {
+    mvc.perform(get("/actuator/springversion"))
+       .andExpect(status().isOk())
+       .andExpect(jsonPath("$.version").exists());
+  }
+  @Test @WithMockUser void otherEndpointsAreDenied() throws Exception {
+    mvc.perform(get("/actuator/env")).andExpect(status().isNotFound());
+  }
+}
+```
+
+Vérifier les deux côtés de la règle : autorisé si authentifié, rejeté si anonyme, endpoints non exposés inaccessibles ; pour un POST, vérifier aussi que le comportement CSRF correspond à la config.
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.

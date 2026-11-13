@@ -153,6 +153,21 @@ if redis.call("GET", KEYS[1]) == ARGV[1] then return redis.call("DEL", KEYS[1]) 
 
 </details>
 
+## 🗣️ Reported interview questions
+
+Questions reported from real interviews, grouped by topic. Each has a short model answer: expand it with the detailed questions and scenarios above, and say the answer aloud.
+
+### Cache design scenarios
+
+#### R1. Your Redis cache works, but database load is still 100%. What is wrong? {#redis-works-but-database-load-still-100}
+**Answer:** Check the **hit ratio first** (`INFO stats`: `keyspace_hits` vs `keyspace_misses`, or app metrics). Typical causes: (1) **low hit ratio**: TTLs too short, keys too specific (a timestamp or user id in the key), cache too small so entries are evicted (`evicted_keys`); (2) **cache penetration**: requests for non-existent ids always miss (cache negative results, Bloom filter, validate input); (3) **stampede/hot-key expiry**: many misses at once (jitter TTLs, single-flight/lock, refresh-ahead); (4) **wrong things cached**: the heavy queries (aggregations, searches, writes) aren't the ones cached; (5) **write-heavy workload**: constant invalidation; (6) the app **bypasses** the cache (a code path, `@Cacheable` self-invocation, conditions); (7) cold start after a deploy/flush. Fix with measurements: find the top queries in `pg_stat_statements`, then cache those, and size/TTL accordingly.
+
+#### R2. An in-memory `HashMap` cache of user profiles serves stale data, grows without bound and is inconsistent under load. What do you suspect and how do you redesign it? {#inmemory-hashmap-cache-stale-growing-redesign}
+**Answer:** Suspects: **no eviction** (unbounded growth → OOM), **no expiry** (stale forever), **no invalidation on update** (the write path updates the DB but not the map), a **non-thread-safe `HashMap`** (lost updates, corrupt state, infinite loops in old JDKs), and **per-instance copies** (each node has its own view, so users see different data depending on which node answers). Redesign: use **Caffeine** (bounded by size, `expireAfterWrite`, thread-safe, stats) for a local cache, or **Redis** when several instances must share one view; pick **cache-aside** (read: cache → DB → populate; write: update DB then **evict** the key) or write-through if reads must never be stale; add TTL as a safety net even with invalidation; publish invalidation events (pub/sub/Kafka) if you keep local caches; protect against stampede (single-flight) and cache the *right* granularity (a profile by id, not whole lists). Expose hit ratio, size and eviction metrics.
+
+#### R3. Large JSON responses (100 KB–2 MB) from a Redis cluster cause high app CPU and rising P95/P99. How do you improve latency? {#large-json-redis-cluster-high-cpu-p99}
+**Answer:** Big values hurt everywhere: network transfer, **(de)serialisation CPU** (JSON parse/Jackson, GC churn), and head-of-line blocking in Redis's single thread (a 2 MB `GET` delays other commands). Fixes in order: (1) **don't cache the whole blob**: cache smaller, independently-needed pieces, or only the fields requested (hash fields / `HMGET`); (2) **compress** (LZ4/Snappy/gzip) and use a compact **binary format** (Protobuf, MessagePack, Kryo) instead of JSON; (3) add a **local L1 cache** (Caffeine) for hot keys to skip the network and deserialisation; (4) cache the **already-serialised response bytes** so the app doesn't re-serialise per request; (5) avoid `KEYS`/huge multi-gets; use `UNLINK` for big deletes; (6) spread hot keys across the cluster and watch `slowlog`/`latency`; (7) paginate or stream large payloads and use HTTP compression/CDN at the edge. Measure payload size and CPU profile first.
+
 ## 🎤 Oral quiz
 
 Answer each question **aloud in 2–3 minutes** without looking: context → options → decision → trade-offs. Then re-read the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall.

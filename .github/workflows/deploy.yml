@@ -53,10 +53,12 @@ jobs:
             # Password-protect built private pages (client-side AES, unlocked in the browser)
             - name: 🔒 Encrypt private pages
               run: |
-                  npx -y staticrypt@3 site/fr/private/* -r -d site/fr/private \
-                    -p "${{ secrets.PAGES_PASSWORD }}" --remember 30
+                  for d in site/fr/private site/private; do
+                    npx -y staticrypt@3 $d/* -r -d $d \
+                      -p "${{ secrets.PAGES_PASSWORD }}" --remember 30
+                  done
                   # fail if any private page is still plaintext
-                  ! grep -rL staticrypt site/fr/private --include=*.html | grep .
+                  ! grep -rL staticrypt site/fr/private site/private --include=*.html | grep .
 
             - uses: actions/upload-pages-artifact@v5
               with:
