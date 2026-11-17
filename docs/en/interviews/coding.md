@@ -1497,6 +1497,132 @@ Costs O(max) memory per user. Alternatives: **fixed window** counter (cheap but 
 #### R20. How do you approach "predict the output" snippets on Collections, Strings and multithreading? {#predict-the-output-collections-strings-threads}
 **Answer:** Trace the code on paper, step by step, and check the classic traps: **String**: `==` vs `equals` (literals are interned, `new String` isn't; `s1 + s2` at runtime creates a new object, compile-time constants are interned), immutability (`s.concat("x")` without assignment changes nothing), `intern()`. **Collections**: `Arrays.asList` is fixed-size (`add` throws), `List.of` is immutable (and rejects `null`), `remove(int)` vs `remove(Object)` on `List<Integer>`, `ConcurrentModificationException` when modifying during a for-each (use `Iterator.remove`/`removeIf`), `HashSet` of objects without `hashCode`/`equals`, mutable keys in a `HashMap`, `TreeSet` using the comparator for equality, autoboxing `Integer` cache (`127 == 127` true, `128 == 128` false). **Threads**: `run()` vs `start()` (run executes on the caller's thread), non-deterministic interleavings (without `join`, output order isn't defined: say so), missing `volatile`/synchronisation (visibility, lost updates on `count++`), `finally` + `return`, static init order. State the answer and the *rule* behind it, and call out when the output is non-deterministic.
 
+### Code review
+
+Practical "review this code" exercises. For each one: say what you would flag, why it matters, and show the fix. Rank findings (must fix vs nit) as in [Q30](#approach-practical-refactor-code-review).
+
+#### R21. Code review: what do you flag in this Spring Data JPA repository and service? {#code-review-jpa-repository-annotations-method-names}
+**Answer:** Check four things. (1) **Derived query names**: the method name is parsed at startup, so a wrong keyword or property fails the application (`PropertyReferenceException`), and a valid-but-misleading name returns wrong data (`findByNameLike` without `%` behaves like equals). Prefer a short name plus `@Query` once a name gets long. (2) **Annotations**: `@Transactional(readOnly = true)` on reads, `@Modifying` on update queries, `@Param` names that match, `@Enumerated(EnumType.STRING)`, not `ORDINAL`. (3) **N+1 and loading**: a lazy association read in a loop, or `FetchType.EAGER` everywhere; fix with `@EntityGraph`/`join fetch` for the use case. (4) **Return types**: `Optional<T>` for single results, not `null`; a projection or DTO instead of loading a whole entity for two columns; pagination on lists that can grow.
+
+**Example:**
+
+```java
+// BEFORE (what you flag)
+interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByAgeGreaterThen(int age);                  // "Then" typo: PropertyReferenceException at startup -> GreaterThan
+    List<User> findByLastnameLike(String lastname);            // caller must add % itself: surprising
+    @Query("update User u set u.active = false where u.id = ?1")
+    void deactivate(Long id);                                  // missing @Modifying (fails) and @Transactional
+}
+@Entity class Order { @ManyToOne(fetch = FetchType.EAGER) Customer customer;  @Enumerated Status status; }   // EAGER + ORDINAL
+
+// AFTER
+interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByAgeGreaterThan(int age);
+    List<User> findByLastnameContainingIgnoreCase(String lastname);
+    @Modifying @Transactional
+    @Query("update User u set u.active = false where u.id = :id")
+    int deactivate(@Param("id") Long id);
+}
+@Entity class Order { @ManyToOne(fetch = FetchType.LAZY) Customer customer;  @Enumerated(EnumType.STRING) Status status; }
+```
+
+#### R22. Code review: what is wrong with this JPA entity? {#code-review-jpa-entity-pitfalls}
+**Answer:** Typical findings: (1) **`@Data`/`@EqualsAndHashCode` on an entity**: it uses all fields (including lazy collections and the generated id), so `hashCode` changes after `persist` and collections trigger lazy loading; `toString` on a bidirectional relation recurses forever (`StackOverflowError`). Base `equals/hashCode` on the business key, or on the id with a constant `hashCode` as a deliberate choice. (2) **No no-arg constructor / `final` class**: JPA needs a (protected) no-arg constructor and proxyable classes. (3) **Public setters and mutable state** with no invariants: protect them with methods that express intent. (4) **Entity exposed in the REST API**: leaks internal fields, causes lazy exceptions and couples the API to the schema: return a DTO record. (5) **Collections**: initialise them, expose them read-only, and keep both sides of a bidirectional association in sync with `addItem/removeItem` helpers; `orphanRemoval`/`cascade` only on true ownership. (6) **Schema**: `@Column(nullable = false, length = ...)`, `@Version` for optimistic locking, `BigDecimal` for money, `Instant` for timestamps.
+
+**Example:**
+
+```java
+// BEFORE
+@Entity @Data
+public class Order {
+    @Id @GeneratedValue Long id;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) List<OrderLine> lines;   // null until set; toString/hashCode recurse
+    double total;                                                                     // money as double
+}
+@GetMapping("/orders/{id}") Order get(@PathVariable Long id) { return repo.findById(id).orElseThrow(); }  // entity in the API
+
+// AFTER
+@Entity @Getter
+public class Order {
+    @Id @GeneratedValue private Long id;
+    @Version private long version;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true) private List<OrderLine> lines = new ArrayList<>();
+    @Column(nullable = false, precision = 12, scale = 2) private BigDecimal total = BigDecimal.ZERO;
+    protected Order() {}                                                              // for JPA
+    public void addLine(OrderLine l) { lines.add(l); l.setOrder(this); total = total.add(l.amount()); }
+    public List<OrderLine> getLines() { return List.copyOf(lines); }
+    @Override public boolean equals(Object o) { return o instanceof Order x && id != null && id.equals(x.id); }
+    @Override public int hashCode() { return getClass().hashCode(); }
+}
+record OrderDto(Long id, BigDecimal total, int lineCount) {}
+```
+
+#### R23. Code review: what is wrong with the exception handling here? {#code-review-exception-handling}
+**Answer:** Flag: (1) **Swallowed exceptions** (`catch (Exception e) {}` or only `printStackTrace()`): the failure disappears and the caller believes it succeeded (data loss, see [Spring S19](spring-architecture.md#orders-vanish-although-code-handled)). (2) **Too broad a catch** (`Exception`, `Throwable`) that also catches bugs and `InterruptedException`; catch the specific type you can handle. (3) **Losing the cause**: `throw new RuntimeException(e.getMessage())` drops the stack trace; pass `e` as the cause. (4) **Log and rethrow** at every layer, producing duplicate noise: handle or propagate, log once at the boundary. (5) **Generic or checked exceptions leaking** across layers: use a small hierarchy of meaningful unchecked exceptions (`OrderNotFoundException`) and translate once. (6) **Wrong HTTP mapping**: map them in one `@RestControllerAdvice` returning `ProblemDetail` (404 not found, 409 conflict, 400 validation), never a 500 with a stack trace. (7) **Resources and transactions**: try-with-resources; a checked exception does not roll back `@Transactional` by default (`rollbackFor`); `finally` that returns or throws hides the original error; an interrupted thread must restore the flag.
+
+**Example:**
+
+```java
+// BEFORE
+public Order find(long id) {
+    try { return repo.findById(id).get(); }
+    catch (Exception e) { e.printStackTrace(); return null; }          // swallowed, null returned, NoSuchElement hidden
+}
+// AFTER
+public Order find(long id) {
+    return repo.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+}
+@RestControllerAdvice class ApiErrors {
+    @ExceptionHandler(OrderNotFoundException.class)
+    ProblemDetail notFound(OrderNotFoundException e) { return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage()); }
+}
+// translating, keeping the cause
+try { gateway.charge(o); } catch (GatewayTimeoutException e) { throw new PaymentUnavailableException("charge failed for " + o.id(), e); }
+```
+
+#### R24. Code review: what do you flag about object design (nulls, mutability, primitives, equality)? {#code-review-object-design}
+**Answer:** Look for: (1) **`null` as a return value or default**: return `Optional` for "maybe absent" results or an empty collection, validate arguments at the boundary (`Objects.requireNonNull`). (2) **Mutable state and public fields**: make value objects immutable (`record`, `final` fields), return defensive copies or unmodifiable views, no exposed internal lists. (3) **Primitive obsession**: `String email`, `double amount`, `int status`: use value types (`Email`, `Money` with `BigDecimal` and currency, an `enum`) so invalid states cannot be built. (4) **Broken `equals/hashCode/compareTo`**: override both or neither, use stable fields, keep consistency with `compareTo`. (5) **Inheritance used for reuse**: prefer composition and interfaces; a long method or class mixing concerns (God class), `static` mutable state, hidden dependencies created with `new` inside the class (hard to test: inject them). (6) **Naming and size**: intention-revealing names, methods that do one thing. Always propose a concrete change, not only "this is bad".
+
+**Example:**
+
+```java
+// BEFORE
+public class Invoice {
+    public String email; public double amount; public List<Line> lines;       // public mutable fields, primitives
+    public Customer getCustomer(long id) { return customers.get(id); }          // may return null
+}
+// AFTER
+public record Money(BigDecimal amount, Currency currency) {
+    public Money { Objects.requireNonNull(amount); Objects.requireNonNull(currency); }
+    public Money plus(Money o) { check(o); return new Money(amount.add(o.amount), currency); }
+}
+public final class Invoice {
+    private final Email email; private final List<Line> lines;
+    public Invoice(Email email, List<Line> lines) { this.email = email; this.lines = List.copyOf(lines); }
+    public Money total() { return lines.stream().map(Line::price).reduce(Money.ZERO, Money::plus); }
+}
+public Optional<Customer> findCustomer(long id) { return Optional.ofNullable(customers.get(id)); }
+```
+
+#### R25. Code review: a `public` method is never called from anywhere else. What do you say, and how do you verify it? {#code-review-unused-public-method}
+**Answer:** A `public` method that nothing else uses widens the **API surface** you must keep stable and test, invites misuse and hides dead code. Reduce visibility to the narrowest level (`private`, then package-private, then `protected`/`public` only when needed), delete dead code (git remembers it), and keep a method public only if it has a real external caller. **Verify before asking for a change**: IDE "Find usages" (including tests), a search for reflection/string usage (Spring `@Scheduled`, `@EventListener`, `@Bean`, JPA callbacks, serialization, `@PreAuthorize` SpEL, and framework entry points are called without a visible caller), then coverage (JaCoCo) or an unused-code analysis in CI. For a library or published module, public methods may be used by consumers you cannot see: deprecate first, then remove in a major version. Tests that call a method only to make it "used" are a smell: test through the public behaviour instead. Close the review with a short checklist: correctness, tests, transactions and exceptions, security and input validation, performance (N+1, unbounded queries), naming and visibility.
+
+**Example:**
+
+```java
+// BEFORE: helper is public, only used inside this class
+public class PriceService {
+    public BigDecimal applyDiscount(BigDecimal price, int pct) { ... }     // no caller outside -> narrow it
+    public BigDecimal priceFor(Order o) { return applyDiscount(o.total(), o.discountPct()); }
+}
+// AFTER
+public class PriceService {
+    private BigDecimal applyDiscount(BigDecimal price, int pct) { ... }
+    public BigDecimal priceFor(Order o) { return applyDiscount(o.total(), o.discountPct()); }
+}
+```
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

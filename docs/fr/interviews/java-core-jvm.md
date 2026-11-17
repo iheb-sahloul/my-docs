@@ -3811,6 +3811,56 @@ class C implements A, B {
 #### R37. Quels sont les avantages des streams et du style fonctionnel, et quand les boucles classiques sont-elles préférables ? {#streams-vs-loops-benefits}
 **Réponse :** Avantages : code déclaratif (*quoi* plutôt que *comment*), pipelines composables, parallélisme facile, moins d'état mutable, et pipelines sûrs vis-à-vis du `null` avec `Optional`. Les boucles sont préférables quand : la performance est critique sur de petites données primitives (pas de surcoût de lambda/boxing, le JIT aime les boucles simples), il faut un `break`/`continue`/plusieurs `return` anticipés, on modifie un état local ou lève des exceptions vérifiées, on itère par index, ou si le stream serait une longue chaîne difficile à déboguer. La lisibilité est le critère principal : un pipeline en trois étapes est plus clair qu'une boucle ; un en dix étapes avec des `flatMap` imbriqués ne l'est pas.
 
+#### R38. À quoi sert Maven, et que vous apporte-t-il par rapport à un build manuel ? {#maven-what-is-it-for}
+**Réponse :** Maven est un **outil de build et de gestion des dépendances** piloté par un `pom.xml` déclaratif. Il apporte : (1) la **résolution des dépendances** : on déclare `groupId:artifactId:version` et Maven télécharge l'artefact et ses dépendances transitives depuis un dépôt (Central, ou votre Nexus/Artifactory) vers `~/.m2` ; (2) une **structure standard** (`src/main/java`, `src/test/java`, `target/`) et un **cycle de vie standard**, si bien que n'importe quel développeur ou la CI lance `mvn verify` sur n'importe quel projet ; (3) des **plugins** pour compiler, tester, packager, etc. (Surefire, Failsafe, plugin Spring Boot, JaCoCo) ; (4) **héritage et BOM** (`<parent>`, `<dependencyManagement>`) pour aligner les versions entre modules ; (5) des **releases reproductibles** et la publication d'artefacts. Il suit la *convention plutôt que la configuration*. Face à Gradle : XML plus rigide et verbeux, mais très prévisible. Commandes utiles au quotidien : `mvn dependency:tree` pour déboguer les conflits de versions, et le Maven Wrapper (`./mvnw`) pour figer la version de Maven.
+
+**Exemple :**
+
+```xml
+<project>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.4.0</version></parent>
+  <groupId>com.acme</groupId><artifactId>orders</artifactId><version>1.0.0-SNAPSHOT</version>
+  <dependencies>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>   <!-- version issue du BOM parent -->
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+  </dependencies>
+</project>
+```
+
+#### R39. Expliquez le cycle de vie Maven : phases, goals, et ce que lance réellement `mvn clean install`. {#maven-lifecycle-phases-goals}
+**Réponse :** Maven a trois cycles de vie intégrés : **`clean`** (`clean` : supprime `target/`), **`default`** (build et déploiement) et **`site`** (documentation). Les phases du cycle `default` s'exécutent **dans l'ordre**, et lancer une phase lance toutes les précédentes : `validate` → `compile` → `test` → `package` → `verify` → `install` → `deploy` (avec d'autres entre elles, comme `process-resources`, `test-compile`, `integration-test`). Une **phase** est une étape ; un **goal** est une tâche fournie par un plugin (`compiler:compile`, `surefire:test`) **liée** à une phase (par défaut selon le type de packaging, ou dans vos `<executions>`). Donc `mvn clean install` = d'abord le cycle `clean`, puis tout jusqu'à `install` (compilation, tests unitaires, jar, tests d'intégration, copie dans `~/.m2` local). `package` construit l'artefact, `verify` lance les contrôles (tests d'intégration Failsafe, quality gates), `install` publie en local, `deploy` envoie vers le dépôt distant. Les tests unitaires tournent dans Surefire à `test`, les tests d'intégration dans Failsafe à `integration-test`/`verify`.
+
+**Exemple :**
+
+```xml
+<!-- lier un goal à une phase : lancer les tests d'intégration à `verify` -->
+<plugin>
+  <artifactId>maven-failsafe-plugin</artifactId>
+  <executions><execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution></executions>
+</plugin>
+```
+```bash
+mvn clean package -DskipTests   # saute les tests unitaires, construit quand même le jar
+mvn verify                      # compile + tests unitaires + intégration, sans install
+mvn surefire:test               # lance un goal directement, hors cycle de vie
+```
+
+#### R40. Que sont les scopes de dépendance Maven, et comment se comportent-ils en transitivité ? {#maven-dependency-scopes}
+**Réponse :** Le scope contrôle **sur quels classpaths** une dépendance est présente et si elle est transmise aux consommateurs. **`compile`** (défaut) : partout, et transitive. **`provided`** : nécessaire pour compiler et tester mais fournie à l'exécution par le conteneur (API Servlet, Lombok) ; non packagée, non transitive. **`runtime`** : inutile pour compiler, seulement à l'exécution (un driver JDBC) ; transitive. **`test`** : seulement pour compiler et exécuter les tests (JUnit, Mockito, Testcontainers) ; jamais transitive. **`system`** : un jar local par chemin, déprécié, à éviter. **`import`** : uniquement dans `<dependencyManagement>` avec `<type>pom</type>`, pour importer la table de versions d'un BOM (`spring-boot-dependencies`). Notions liées : `<optional>true</optional>` signifie « j'en ai besoin mais mes consommateurs ne l'héritent pas », et `<exclusions>` retire une dépendance transitive indésirable. Bug typique : une bibliothèque de scope `test` utilisée dans `src/main` (erreur de compilation), ou une dépendance `provided` absente à l'exécution dans un jar simple (`NoClassDefFoundError`).
+
+**Exemple :**
+
+```xml
+<dependencyManagement><dependencies>
+  <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-dependencies</artifactId>
+    <version>3.4.0</version><type>pom</type><scope>import</scope></dependency>   <!-- import d'un BOM -->
+</dependencies></dependencyManagement>
+
+<dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope></dependency>
+<dependency><groupId>jakarta.servlet</groupId><artifactId>jakarta.servlet-api</artifactId><scope>provided</scope></dependency>
+<dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
+```
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.

@@ -1894,6 +1894,137 @@ Avoid: listing features instead of a process, "it writes most of my code" with n
 #### R13. Design an enterprise AI chatbot with Spring AI, integrate it into an existing microservice, and name the production challenges. {#design-enterprise-ai-chatbot-spring-ai-production}
 **Answer:** **Architecture**: SSO-authenticated UI → API gateway (rate limits) → a **chat service** (Spring Boot + Spring AI `ChatClient`) that loads conversation memory (Redis/DB), runs **RAG** over an internal knowledge base (ingestion pipeline → PGVector/OpenSearch, **per-user ACL metadata filters**), calls **tools** that wrap existing microservices (orders, tickets) with the caller's identity, and streams the answer over SSE. A separate **ingestion service** keeps the index fresh (events from document systems); model calls go through a provider abstraction with **fallback** and a cheaper model for simple intents. To integrate into an existing microservice: add the starter, a small port/adapter around `ChatClient`, and keep prompts, tools and retrieval in their own module so the domain code isn't coupled to the provider. **Production challenges**: hallucination and quality evaluation, prompt injection and data leakage across tenants, latency and cost (tokens, caching), provider rate limits/outages, non-determinism in tests (golden-set evals), PII/compliance and audit logs, versioning prompts/models, and monitoring with fallbacks to a human or a search result.
 
+#### R14. How do you solve a real problem (a bug, a refactor, a migration) with an AI coding agent, step by step? {#solve-problems-with-ai-agent-workflow}
+**Answer:** Treat the agent like a fast junior who needs a tight loop, not a magic box. (1) **Reproduce first**: give it a failing test or the exact stack trace and the command that triggers the bug, so "done" is verifiable. (2) **Explore before editing**: ask for a plan (plan mode) and read it; correct the approach while it is still cheap. (3) **Small steps**: one concern per prompt, one small diff, run the tests after each. (4) **Verify yourself**: read the diff, rerun tests, check that no test was weakened. (5) **Capture the lesson** in `CLAUDE.md` if the agent got a convention wrong. The failure mode to name: vague prompt, huge diff, no way to check it.
+
+**Example:**
+
+```text
+Bad:  "Orders are sometimes duplicated, fix it."
+
+Good: "Bug: POST /orders can create two rows for the same Idempotency-Key under concurrent calls.
+       Repro: ./mvnw -q test -Dtest=OrderConcurrencyIT  (currently fails, 2 rows).
+       Logs: <paste the 20 relevant lines>.
+       Constraints: no schema change without asking; keep the public API.
+       Start in plan mode: list the suspects (service, repository, DB constraint), wait for my OK,
+       then make the smallest fix and run the test again."
+```
+
+#### R15. How do you optimise token usage when working with an AI coding agent? {#optimise-token-usage-claude-code-practice}
+**Answer:** Cost and quality both degrade as context fills, so the same habits help both. **Keep the context lean**: a short `CLAUDE.md` (commands and rules only), `/clear` between unrelated tasks, `/compact` with a focus hint when a long task must continue, `/context` to see what is consuming space. **Read narrowly**: point to files and line ranges instead of "look at the repo"; exclude `target/`, `node_modules/`, logs and generated files. **Isolate noisy work** in subagents (a test run or a big grep returns a summary, not 5,000 lines). **Match the model to the task**: a small/fast model for renames, boilerplate and summaries; the large one for design and hard debugging. **Be specific**: a precise prompt avoids three rounds of corrections. At the API level add prompt caching (stable prefix first), batch APIs for non-urgent work and a `max_tokens` cap (see [R11](#reduce-token-usage-cache-ai-responses-rate-limits)).
+
+**Example:**
+
+```text
+Wasteful: "Review the whole project and improve it."          -> reads everything, vague result
+Lean:     "Review only OrderService.java (lines 40-120) for transaction bugs. Don't open other files."
+
+/clear                         # new task, drop the old context
+/compact keep the failing test name and the agreed fix   # long task, keep only what matters
+.claude/agents/test-runner.md  # runs the suite, returns only the failing test names + first error
+```
+
+#### R16. What goes into a good `CLAUDE.md` for a Spring Boot + Maven project? {#claude-md-spring-boot-maven-example}
+**Answer:** Only what the agent cannot infer from the code and needs on every task: how to build and test, the architecture rules that are easy to break, and the conventions it must follow. Keep it short (it is loaded on every turn, so each line costs tokens), prefer concrete commands to prose, and put specialised procedures in skills instead. Review it like code and remove lines the agent already follows without being told. See [Q6](#claude-md-file-belongs) for the principles.
+
+**Example:**
+
+```markdown
+# CLAUDE.md
+## Commands
+- Build + unit tests: `./mvnw -q verify`      - One test: `./mvnw -q test -Dtest=OrderServiceTest`
+- Integration tests (Testcontainers, needs Docker): `./mvnw -q verify -Pit`
+## Architecture
+- Hexagonal: `domain` has NO Spring imports; controllers call use cases, never repositories.
+- Entities never leave the service layer: map to DTO records (MapStruct).
+## Conventions
+- Constructor injection only; no field `@Autowired`. Flyway for every schema change, never `ddl-auto`.
+- New endpoint = controller test (`@WebMvcTest`) + one integration test.
+## Don't
+- Don't edit `src/main/resources/db/migration/V*` files that are already merged.
+- Never read or print `.env` or `application-prod.yml`.
+```
+
+#### R17. What is a Claude Code Skill, how is it built, and how does it differ from `CLAUDE.md`? {#claude-code-skills-skill-md-example}
+**Answer:** A **Skill** is a folder with a `SKILL.md` file (YAML frontmatter with `name` and `description`, then instructions) plus optional scripts and reference files. Only the short description sits in context; the full instructions load **on demand** when the task matches (or when you invoke it as `/name`). That is the difference with `CLAUDE.md`, which is always loaded: use `CLAUDE.md` for rules that apply to every task and a Skill for a **specialised, repeatable procedure** (release checklist, DB migration review, generating a report), so the context stays small. Project skills live in `.claude/skills/<name>/SKILL.md` (shareable via git), personal ones in `~/.claude/skills/`. Write the description as "when to use this": it is what triggers the skill.
+
+**Example:**
+
+```markdown
+---
+name: flyway-migration-review
+description: Use when adding or reviewing a Flyway SQL migration (new table, column, index, backfill)
+---
+1. Check the file is `V<next>__<what>.sql` and the version is higher than the latest merged one.
+2. Flag locking risks: `ALTER TABLE` on big tables, non-concurrent `CREATE INDEX`, `NOT NULL` without default.
+3. Require a rollback note and a backfill in batches for any data change.
+4. Run `./mvnw -q -Dtest=MigrationIT test` and report the result.
+```
+
+#### R18. What are the built-in slash commands worth knowing, and how do you add a custom one? {#claude-code-slash-commands-custom}
+**Answer:** **Built-in** commands manage the session: `/init` (generate a starter `CLAUDE.md`), `/clear` (reset context), `/compact` (summarise to free context), `/context` (see what uses the window), `/memory` (edit memory files), `/model` (switch model), `/permissions` (allow/deny rules), `/agents` (manage subagents), `/mcp` (MCP servers), `/hooks`, `/plugin`, `/help`. A **custom command** is a Markdown file: `.claude/commands/<name>.md` in the repo (shared with the team) or `~/.claude/commands/` (personal) becomes `/<name>`. Optional frontmatter sets `description`, `argument-hint`, `allowed-tools` and `model`; `$ARGUMENTS` (or `$1`, `$2`) receives what you type after the command. A skill with a `SKILL.md` can also be invoked as `/name`, so use a plain command for a short saved prompt and a skill when you need supporting files or automatic triggering.
+
+**Example:**
+
+```markdown
+<!-- .claude/commands/review.md  ->  /review src/main/java/com/acme/OrderService.java -->
+---
+description: Review a file for bugs and Spring/JPA pitfalls
+argument-hint: <path>
+allowed-tools: Read, Grep
+---
+Review $ARGUMENTS. Report only: bugs, missing transactions, N+1 queries, swallowed exceptions,
+entities exposed in the API. For each: line, why it matters, a concrete fix. Skip style nits.
+```
+
+#### R19. What is a Claude Code plugin, and when do you package your setup as one? {#claude-code-plugins-packaging}
+**Answer:** A **plugin** is an installable bundle of the extension points above: slash commands, skills, subagents, hooks and MCP server config, described by `.claude-plugin/plugin.json` (name, version, description) with `commands/`, `skills/`, `agents/`, `hooks/hooks.json` and `.mcp.json` next to it. A **marketplace** is a git repo (or file) listing plugins, so a team adds it once (`/plugin marketplace add org/repo`) and installs with `/plugin install name@marketplace`, getting versioned updates instead of copy-pasting `.claude/` folders between repos. Package when the same setup is needed in several repositories or by many developers (company review standards, a security hook, a shared MCP server). Keep it in the repo's `.claude/` when it is specific to one project. Because a plugin can run hooks and MCP servers, review its code like any dependency and pin the source.
+
+**Example:**
+
+```text
+acme-java-standards/
+  .claude-plugin/plugin.json      {"name":"acme-java-standards","version":"1.2.0","description":"Review + migration checks"}
+  commands/review.md              /acme-java-standards:review
+  skills/flyway-migration-review/SKILL.md
+  agents/code-reviewer.md
+  hooks/hooks.json                PreToolUse hook blocking reads of .env
+```
+
+#### R20. How do you define a custom subagent, and what makes a good one? {#claude-code-custom-subagent-definition}
+**Answer:** A subagent is a Markdown file with frontmatter in `.claude/agents/<name>.md` (project) or `~/.claude/agents/` (personal); it runs in its **own context window** with its own system prompt and tool list and returns only a summary to the main conversation. Good ones have a narrow job, a `description` that says when to delegate ("use proactively after code changes"), and the **minimum tools** (a reviewer needs `Read, Grep, Glob`, not `Edit` or `Bash`). Use them for noisy work (tests, searches), independent reviews and parallel exploration. Agents don't have the conversation's history: the prompt must be self-contained. See [Q15](#problem-subagents-delegation-solve-isolating).
+
+**Example:**
+
+```markdown
+---
+name: code-reviewer
+description: Reviews a diff for correctness, security and Spring/JPA pitfalls. Use proactively after code changes.
+tools: Read, Grep, Glob, Bash(git diff:*)
+model: sonnet
+---
+You are a strict reviewer. Run `git diff`, then report by severity: bugs, security, reliability, design.
+For each finding give file:line, the failure scenario and a fix. If the diff is fine, say so; do not invent issues.
+```
+
+#### R21. How do you guarantee an AI coding agent will not leak company data or secrets? {#prevent-data-leaks-ai-coding-agent}
+**Answer:** There is no single switch; you combine controls and be honest that "guarantee" means **reducing and bounding** the risk. (1) **Contract and plan**: use a business/enterprise plan or an API/cloud-provider deployment whose terms say prompts are not used for training, with the retention you need (zero-retention if required), and approve the tool through security/legal. (2) **Keep secrets out of reach**: `permissions.deny` rules for `.env`, key files and prod configs; secrets in a vault, never in the repo; short-lived, least-privilege credentials. (3) **Control actions**: default to asking before shell/network commands; run in a **sandbox or container** with restricted network and filesystem; a `PreToolUse` hook that blocks dangerous reads and commands. (4) **Limit connectors**: MCP servers read-only and scoped, from trusted sources only, because their output is untrusted input too (prompt injection). (5) **Detect**: secret scanning in pre-commit and CI, audit logs of prompts/tool calls, `.gitignore` and no real customer data in prompts (use anonymised fixtures). (6) **People**: a written usage policy and training. See [R12](#security-ai-apps-prompt-injection-hallucinations-observability).
+
+**Example:**
+
+```json
+// .claude/settings.json (checked in, applies to the whole team)
+{
+  "permissions": {
+    "deny": ["Read(./.env*)", "Read(./secrets/**)", "Read(./src/main/resources/application-prod.*)",
+             "Bash(curl:*)", "Bash(git push:*)"],
+    "ask":  ["Bash(rm:*)", "Bash(docker:*)"]
+  },
+  "hooks": { "PreToolUse": [ { "matcher": "Read|Bash",
+              "hooks": [ { "type": "command", "command": ".claude/hooks/block-secrets.sh" } ] } ] }
+}
+```
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

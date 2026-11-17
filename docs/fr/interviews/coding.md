@@ -1529,6 +1529,132 @@ Coûte O(max) mémoire par utilisateur. Alternatives : compteur à **fenêtre fi
 #### R20. Comment aborder les questions « prédire la sortie » sur les Collections, les chaînes et le multithreading ? {#predict-the-output-collections-strings-threads}
 **Réponse :** Dérouler le code sur papier, pas à pas, et vérifier les pièges classiques : **String** : `==` vs `equals` (les littéraux sont internés, `new String` non ; `s1 + s2` à l'exécution crée un nouvel objet, les constantes de compilation sont internées), immutabilité (`s.concat("x")` sans affectation ne change rien), `intern()`. **Collections** : `Arrays.asList` est de taille fixe (`add` lève une exception), `List.of` est immuable (et refuse `null`), `remove(int)` vs `remove(Object)` sur `List<Integer>`, `ConcurrentModificationException` en modifiant pendant un for-each (utiliser `Iterator.remove`/`removeIf`), `HashSet` d'objets sans `hashCode`/`equals`, clés mutables dans une `HashMap`, `TreeSet` qui utilise le comparateur pour l'égalité, cache d'autoboxing des `Integer` (`127 == 127` vrai, `128 == 128` faux). **Threads** : `run()` vs `start()` (run s'exécute sur le thread appelant), entrelacements non déterministes (sans `join`, l'ordre d'affichage n'est pas défini : le dire), `volatile`/synchronisation manquants (visibilité, mises à jour perdues sur `count++`), `finally` + `return`, ordre d'initialisation statique. Énoncer la réponse et la *règle* sous-jacente, et signaler quand la sortie est non déterministe.
 
+### Revue de code
+
+Exercices pratiques « relisez ce code ». Pour chacun : dire ce que vous signaleriez, pourquoi c'est important, et montrer le correctif. Hiérarchisez les remarques (à corriger vs détail) comme dans [Q30](#approach-practical-refactor-code-review).
+
+#### R21. Revue de code : que signalez-vous dans ce repository et ce service Spring Data JPA ? {#code-review-jpa-repository-annotations-method-names}
+**Réponse :** Vérifier quatre points. (1) **Noms de requêtes dérivées** : le nom de la méthode est analysé au démarrage, donc un mot-clé ou une propriété incorrects font échouer l'application (`PropertyReferenceException`), et un nom valide mais trompeur renvoie de mauvaises données (`findByNameLike` sans `%` se comporte comme une égalité). Préférer un nom court plus `@Query` dès que le nom s'allonge. (2) **Annotations** : `@Transactional(readOnly = true)` sur les lectures, `@Modifying` sur les requêtes de mise à jour, noms de `@Param` cohérents, `@Enumerated(EnumType.STRING)` et non `ORDINAL`. (3) **N+1 et chargement** : une association lazy lue dans une boucle, ou `FetchType.EAGER` partout ; corriger avec `@EntityGraph`/`join fetch` selon le cas d'usage. (4) **Types de retour** : `Optional<T>` pour un résultat unique, pas `null` ; une projection ou un DTO plutôt que charger une entité entière pour deux colonnes ; pagination sur les listes qui peuvent grossir.
+
+**Exemple :**
+
+```java
+// AVANT (ce qu'on signale)
+interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByAgeGreaterThen(int age);                  // faute « Then » : PropertyReferenceException au démarrage -> GreaterThan
+    List<User> findByLastnameLike(String lastname);            // l'appelant doit ajouter % lui-même : surprenant
+    @Query("update User u set u.active = false where u.id = ?1")
+    void deactivate(Long id);                                  // @Modifying manquant (échec) et @Transactional
+}
+@Entity class Order { @ManyToOne(fetch = FetchType.EAGER) Customer customer;  @Enumerated Status status; }   // EAGER + ORDINAL
+
+// APRÈS
+interface UserRepository extends JpaRepository<User, Long> {
+    List<User> findByAgeGreaterThan(int age);
+    List<User> findByLastnameContainingIgnoreCase(String lastname);
+    @Modifying @Transactional
+    @Query("update User u set u.active = false where u.id = :id")
+    int deactivate(@Param("id") Long id);
+}
+@Entity class Order { @ManyToOne(fetch = FetchType.LAZY) Customer customer;  @Enumerated(EnumType.STRING) Status status; }
+```
+
+#### R22. Revue de code : qu'est-ce qui ne va pas dans cette entité JPA ? {#code-review-jpa-entity-pitfalls}
+**Réponse :** Remarques typiques : (1) **`@Data`/`@EqualsAndHashCode` sur une entité** : tous les champs sont utilisés (y compris les collections lazy et l'id généré), donc `hashCode` change après `persist` et les collections déclenchent du chargement lazy ; `toString` sur une relation bidirectionnelle récurse sans fin (`StackOverflowError`). Baser `equals/hashCode` sur la clé métier, ou sur l'id avec un `hashCode` constant en choix assumé. (2) **Pas de constructeur sans argument / classe `final`** : JPA exige un constructeur sans argument (protected) et des classes proxifiables. (3) **Setters publics et état mutable** sans invariants : les protéger par des méthodes qui expriment l'intention. (4) **Entité exposée dans l'API REST** : fuite de champs internes, exceptions lazy et couplage de l'API au schéma : renvoyer un record DTO. (5) **Collections** : les initialiser, les exposer en lecture seule, garder les deux côtés d'une association bidirectionnelle synchronisés via `addItem/removeItem` ; `orphanRemoval`/`cascade` seulement pour une vraie relation de propriété. (6) **Schéma** : `@Column(nullable = false, length = ...)`, `@Version` pour le verrouillage optimiste, `BigDecimal` pour l'argent, `Instant` pour les dates.
+
+**Exemple :**
+
+```java
+// AVANT
+@Entity @Data
+public class Order {
+    @Id @GeneratedValue Long id;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL) List<OrderLine> lines;   // null tant que non défini ; toString/hashCode récursent
+    double total;                                                                     // argent en double
+}
+@GetMapping("/orders/{id}") Order get(@PathVariable Long id) { return repo.findById(id).orElseThrow(); }  // entité dans l'API
+
+// APRÈS
+@Entity @Getter
+public class Order {
+    @Id @GeneratedValue private Long id;
+    @Version private long version;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true) private List<OrderLine> lines = new ArrayList<>();
+    @Column(nullable = false, precision = 12, scale = 2) private BigDecimal total = BigDecimal.ZERO;
+    protected Order() {}                                                              // pour JPA
+    public void addLine(OrderLine l) { lines.add(l); l.setOrder(this); total = total.add(l.amount()); }
+    public List<OrderLine> getLines() { return List.copyOf(lines); }
+    @Override public boolean equals(Object o) { return o instanceof Order x && id != null && id.equals(x.id); }
+    @Override public int hashCode() { return getClass().hashCode(); }
+}
+record OrderDto(Long id, BigDecimal total, int lineCount) {}
+```
+
+#### R23. Revue de code : qu'est-ce qui ne va pas dans la gestion des exceptions ici ? {#code-review-exception-handling}
+**Réponse :** À signaler : (1) **Exceptions avalées** (`catch (Exception e) {}` ou simple `printStackTrace()`) : l'échec disparaît et l'appelant croit à un succès (perte de données, voir [Spring S19](spring-architecture.md#orders-vanish-although-code-handled)). (2) **Catch trop large** (`Exception`, `Throwable`) qui attrape aussi les bugs et `InterruptedException` ; attraper le type précis qu'on sait traiter. (3) **Perte de la cause** : `throw new RuntimeException(e.getMessage())` perd la stack trace ; passer `e` comme cause. (4) **Log puis rethrow** à chaque couche, avec du bruit en double : traiter ou propager, logger une fois à la frontière. (5) **Exceptions génériques ou checked qui fuient** entre couches : une petite hiérarchie d'exceptions non vérifiées parlantes (`OrderNotFoundException`) traduites une seule fois. (6) **Mauvais mapping HTTP** : les mapper dans un seul `@RestControllerAdvice` qui renvoie un `ProblemDetail` (404 introuvable, 409 conflit, 400 validation), jamais un 500 avec une stack trace. (7) **Ressources et transactions** : try-with-resources ; une exception checked ne déclenche pas le rollback de `@Transactional` par défaut (`rollbackFor`) ; un `finally` qui fait `return` ou lève une exception masque l'erreur d'origine ; un thread interrompu doit rétablir son drapeau.
+
+**Exemple :**
+
+```java
+// AVANT
+public Order find(long id) {
+    try { return repo.findById(id).get(); }
+    catch (Exception e) { e.printStackTrace(); return null; }          // avalée, null renvoyé, NoSuchElement masquée
+}
+// APRÈS
+public Order find(long id) {
+    return repo.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
+}
+@RestControllerAdvice class ApiErrors {
+    @ExceptionHandler(OrderNotFoundException.class)
+    ProblemDetail notFound(OrderNotFoundException e) { return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage()); }
+}
+// traduire en gardant la cause
+try { gateway.charge(o); } catch (GatewayTimeoutException e) { throw new PaymentUnavailableException("charge failed for " + o.id(), e); }
+```
+
+#### R24. Revue de code : que signalez-vous sur la conception des objets (null, mutabilité, primitives, égalité) ? {#code-review-object-design}
+**Réponse :** Chercher : (1) **`null` comme valeur de retour ou par défaut** : renvoyer un `Optional` pour un résultat « peut-être absent » ou une collection vide, valider les arguments à la frontière (`Objects.requireNonNull`). (2) **État mutable et champs publics** : rendre les objets-valeurs immuables (`record`, champs `final`), renvoyer des copies défensives ou des vues non modifiables, ne pas exposer les listes internes. (3) **Obsession des primitives** : `String email`, `double amount`, `int status` : utiliser des types valeur (`Email`, `Money` avec `BigDecimal` et devise, un `enum`) pour que les états invalides soient impossibles à construire. (4) **`equals/hashCode/compareTo` cassés** : redéfinir les deux ou aucun, utiliser des champs stables, rester cohérent avec `compareTo`. (5) **Héritage utilisé pour réutiliser** : préférer composition et interfaces ; méthode ou classe trop longue mêlant les responsabilités (God class), état `static` mutable, dépendances cachées créées par `new` dans la classe (difficile à tester : les injecter). (6) **Nommage et taille** : noms qui révèlent l'intention, méthodes qui font une seule chose. Toujours proposer un changement concret, pas seulement « c'est mal ».
+
+**Exemple :**
+
+```java
+// AVANT
+public class Invoice {
+    public String email; public double amount; public List<Line> lines;       // champs publics mutables, primitives
+    public Customer getCustomer(long id) { return customers.get(id); }          // peut renvoyer null
+}
+// APRÈS
+public record Money(BigDecimal amount, Currency currency) {
+    public Money { Objects.requireNonNull(amount); Objects.requireNonNull(currency); }
+    public Money plus(Money o) { check(o); return new Money(amount.add(o.amount), currency); }
+}
+public final class Invoice {
+    private final Email email; private final List<Line> lines;
+    public Invoice(Email email, List<Line> lines) { this.email = email; this.lines = List.copyOf(lines); }
+    public Money total() { return lines.stream().map(Line::price).reduce(Money.ZERO, Money::plus); }
+}
+public Optional<Customer> findCustomer(long id) { return Optional.ofNullable(customers.get(id)); }
+```
+
+#### R25. Revue de code : une méthode `public` n'est appelée nulle part ailleurs. Que dites-vous, et comment le vérifier ? {#code-review-unused-public-method}
+**Réponse :** Une méthode `public` que rien d'autre n'utilise élargit la **surface d'API** à garder stable et à tester, invite au mauvais usage et cache du code mort. Réduire la visibilité au niveau le plus étroit (`private`, puis package-private, puis `protected`/`public` seulement si nécessaire), supprimer le code mort (git s'en souvient) et ne garder publique que la méthode qui a un vrai appelant externe. **Vérifier avant de demander un changement** : « Find usages » de l'IDE (tests inclus), recherche d'usages par réflexion ou par chaîne (Spring `@Scheduled`, `@EventListener`, `@Bean`, callbacks JPA, sérialisation, SpEL de `@PreAuthorize`, points d'entrée de framework appelés sans appelant visible), puis couverture (JaCoCo) ou analyse de code inutilisé en CI. Pour une bibliothèque ou un module publié, des méthodes publiques peuvent être utilisées par des consommateurs invisibles : déprécier d'abord, supprimer dans une version majeure. Des tests qui appellent une méthode seulement pour qu'elle soit « utilisée » sont un signe d'alerte : tester via le comportement public. Terminer la revue par une courte checklist : exactitude, tests, transactions et exceptions, sécurité et validation des entrées, performance (N+1, requêtes non bornées), nommage et visibilité.
+
+**Exemple :**
+
+```java
+// AVANT : l'helper est public, utilisé seulement dans cette classe
+public class PriceService {
+    public BigDecimal applyDiscount(BigDecimal price, int pct) { ... }     // aucun appelant externe -> le restreindre
+    public BigDecimal priceFor(Order o) { return applyDiscount(o.total(), o.discountPct()); }
+}
+// APRÈS
+public class PriceService {
+    private BigDecimal applyDiscount(BigDecimal price, int pct) { ... }
+    public BigDecimal priceFor(Order o) { return applyDiscount(o.total(), o.discountPct()); }
+}
+```
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.
