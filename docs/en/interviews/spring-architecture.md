@@ -2562,6 +2562,76 @@ Fix the leak or bound the structure; raising `-Xmx` only delays it. In container
 #### R18. How do you process 100,000 (or millions of) records without loading everything into memory? {#process-100k-records-without-loading-memory}
 **Answer:** Process in **chunks**, never `findAll()`. Options: **pagination/keyset** (`Pageable` or `WHERE id > :last ORDER BY id LIMIT n`) in a loop; **streaming** (`Stream<Entity>` in a `@Transactional(readOnly = true)` method, JDBC `fetchSize` / a server-side cursor, closing the stream); **Spring Batch** (chunk-oriented read-process-write with restart and skip); **bulk SQL** (`INSERT … SELECT`, `UPDATE … WHERE`) when no Java logic is needed. For writes, batch inserts/updates (`hibernate.jdbc.batch_size`), and `flush()` + `clear()` the persistence context per chunk to stop the first-level cache growing. For files, read line by line (`BufferedReader.lines`, `Files.lines`), not `readAllLines`. Bound memory by chunk size, make chunks idempotent, and commit per chunk.
 
+#### R19. Which Spring annotations must you know, and what does each one do? {#spring-annotations-must-know-cheat-list}
+**Answer:** **Beans**: `@Component` (generic), `@Service`/`@Repository`/`@Controller` (same registration, plus meaning; `@Repository` also translates persistence exceptions), `@Configuration` + `@Bean` (explicit factory methods, proxied so `@Bean` calls return singletons). **Injection**: `@Autowired` (optional on a single constructor), `@Qualifier` (pick by name), `@Primary` (default candidate), `@Value`/`@ConfigurationProperties` (config). **Lifecycle and scope**: `@Scope`, `@Lazy`, `@PostConstruct`/`@PreDestroy`. **Conditions**: `@Profile`, `@Conditional*` (`OnProperty`, `OnClass`, `OnMissingBean`) behind auto-configuration. **Boot**: `@SpringBootApplication` = `@Configuration` + `@EnableAutoConfiguration` + `@ComponentScan`. **Web**: `@RestController`, `@RequestMapping`/`@GetMapping`, `@PathVariable`, `@RequestParam`, `@RequestBody`, `@Valid`, `@ControllerAdvice` + `@ExceptionHandler`. **Data/tx**: `@Transactional`, `@Entity`, `@Query`, `@EntityGraph`. **Cross-cutting**: `@Async`, `@Scheduled`, `@Cacheable`, `@EventListener`, `@PreAuthorize`. Explain the *why* for two or three (for example proxies behind `@Transactional`), not just the list.
+
+**Example:**
+
+```java
+@Configuration
+class PaymentConfig {
+    @Bean @Primary PaymentGateway stripe() { return new StripeGateway(); }
+    @Bean @ConditionalOnProperty("payment.sandbox") PaymentGateway sandbox() { return new FakeGateway(); }
+}
+
+@Service
+class CheckoutService {
+    private final PaymentGateway gateway;
+    CheckoutService(@Qualifier("stripe") PaymentGateway gateway) { this.gateway = gateway; }   // no @Autowired needed
+
+    @Transactional @PreAuthorize("hasRole('CUSTOMER')")
+    public Receipt pay(Order order) { return gateway.charge(order); }
+}
+```
+
+#### R20. What changed between Spring 5, 6 and 7 and Spring Boot 2, 3 and 4, and what breaks when you migrate? {#spring-boot-versions-2-3-4-migration}
+**Answer:** **Spring 5 / Boot 2**: Java 8+, WebFlux, functional endpoints, `javax.*`. **Spring 6 / Boot 3** (late 2022): Java 17 minimum, **`javax.*` becomes `jakarta.*`** (the main source of migration breakage: entities, validation, servlet imports and third-party libraries), Spring Security 6 (lambda DSL, `SecurityFilterChain` beans, `authorizeHttpRequests`), `ProblemDetail` (RFC 7807) errors, declarative HTTP interfaces, AOT and GraalVM native support, Micrometer Observation. Later 3.x added virtual threads (`spring.threads.virtual.enabled=true`), `RestClient` and `JdbcClient`. **Spring 7 / Boot 4** (late 2025): Jakarta EE 11 baseline, null-safety with JSpecify, first-class API versioning, modularised auto-configuration and Jackson 3. Migration approach: go one major at a time (2.7 → 3.x → 4.x), use `spring-boot-properties-migrator`, OpenRewrite recipes and the official migration guides, fix deprecations before the jump, and watch the support dates (open-source support for a Boot line is limited, so check the current policy). Mention a concrete win (startup time, virtual threads) to show you migrate for a reason.
+
+**Example:**
+
+```xml
+<!-- Boot 2 -> 3: a mechanical but wide change; OpenRewrite does most of it -->
+<plugin>
+  <groupId>org.openrewrite.maven</groupId><artifactId>rewrite-maven-plugin</artifactId>
+  <configuration><activeRecipes><recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe></activeRecipes></configuration>
+</plugin>
+<!-- before / after -->
+import javax.persistence.Entity;   ->   import jakarta.persistence.Entity;
+http.authorizeRequests().antMatchers("/api/**").hasRole("USER")   ->   http.authorizeHttpRequests(a -> a.requestMatchers("/api/**").hasRole("USER"))
+```
+
+#### R21. How do you build dynamic queries with Spring Data JPA Specifications, and when do you choose them over JPQL or derived queries? {#spring-data-jpa-specification-dynamic-queries}
+**Answer:** A `Specification<T>` is a reusable predicate built with the Criteria API. The repository extends `JpaSpecificationExecutor<T>` and you call `findAll(spec, pageable)`. Small specs (`hasStatus`, `createdAfter`, `nameContains`) are combined with `and`/`or`/`not`, and a `null` filter simply contributes no predicate, which makes optional search forms clean. Choose **derived queries** for 1-2 fixed criteria (`findByStatusAndCustomerId`), **JPQL `@Query`** for fixed, readable queries with joins or projections, **Specifications** (or QueryDSL) when the **set of filters is dynamic**. Traps: a join in a spec combined with pagination duplicates rows (use `distinct` or a subquery), `fetch` joins break the count query of `Page`, and the Criteria API is verbose: keep each spec tiny and tested. Specifications can also be combined with `@EntityGraph` on the repository method to avoid N+1.
+
+**Example:**
+
+```java
+interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {}
+
+final class OrderSpecs {
+    static Specification<Order> status(OrderStatus s)   { return (r, q, cb) -> s == null ? null : cb.equal(r.get("status"), s); }
+    static Specification<Order> createdAfter(Instant t) { return (r, q, cb) -> t == null ? null : cb.greaterThan(r.get("createdAt"), t); }
+    static Specification<Order> customerName(String n)  { return (r, q, cb) -> n == null ? null
+            : cb.like(cb.lower(r.join("customer").get("name")), "%" + n.toLowerCase() + "%"); }
+}
+
+Page<Order> page = orders.findAll(
+    Specification.where(status(filter.status())).and(createdAfter(filter.from())).and(customerName(filter.name())),
+    PageRequest.of(0, 20, Sort.by("createdAt").descending().and(Sort.by("id"))));
+```
+
+#### R22. How does pagination work in Spring Data, and how do `Page`, `Slice` and keyset (scroll) differ? {#spring-data-pagination-page-slice-keyset}
+**Answer:** `Pageable` (page number, size, sort) is passed to a repository method. **`Page<T>`** returns the content plus the **total count**, which costs an extra `SELECT COUNT(*)` (slow on big tables). **`Slice<T>`** only knows whether a next slice exists (it fetches `size + 1` rows), with no count: ideal for "load more" and infinite scroll. Both use `OFFSET`, which gets slower and can skip or repeat rows when data changes during paging (see [Persistence Q11](persistence-sql-postgres.md#offset-pagination-get-slower-less)). **Keyset / scroll** (`ScrollPosition`, `Window<T>`, Spring Data 3.1+) remembers the last seen key and queries `WHERE (created_at, id) < (?, ?)`: constant cost, stable under writes, no jumping to page N. Rules: always add a **unique tie-breaker** to the sort (`id`), cap the page size on the server (`spring.data.web.pageable.max-page-size`), and never `fetch join` a collection with paging (Hibernate paginates in memory: `HHH000104`): fetch ids first, or use `@BatchSize`/an `@EntityGraph` on a to-one association only. Expose a stable API shape (a DTO page, not the framework's `Page` JSON).
+
+**Example:**
+
+```java
+Page<Order>   page  = repo.findByStatus(OPEN, PageRequest.of(2, 20, Sort.by("id")));          // COUNT query
+Slice<Order>  slice = repo.findByStatus(OPEN, PageRequest.of(2, 20, Sort.by("id")));          // no COUNT
+Window<Order> win   = repo.findFirst20ByStatusOrderByIdAsc(OPEN, ScrollPosition.keyset());     // keyset
+Window<Order> next  = repo.findFirst20ByStatusOrderByIdAsc(OPEN, win.positionAt(win.size() - 1));
+```
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

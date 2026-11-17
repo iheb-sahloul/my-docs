@@ -2576,6 +2576,76 @@ Corréler avec les logs GC et un déploiement/pic de trafic récent. Corriger la
 #### R18. Comment traiter 100 000 (ou des millions de) enregistrements sans tout charger en mémoire ? {#process-100k-records-without-loading-memory}
 **Réponse :** Traiter par **lots**, jamais de `findAll()`. Options : **pagination/keyset** (`Pageable` ou `WHERE id > :dernier ORDER BY id LIMIT n`) dans une boucle ; **streaming** (`Stream<Entity>` dans une méthode `@Transactional(readOnly = true)`, `fetchSize` JDBC / curseur côté serveur, en fermant le stream) ; **Spring Batch** (lecture-traitement-écriture par chunks avec reprise et skip) ; **SQL en masse** (`INSERT … SELECT`, `UPDATE … WHERE`) quand aucune logique Java n'est nécessaire. En écriture : inserts/updates en batch (`hibernate.jdbc.batch_size`), et `flush()` + `clear()` du contexte de persistance à chaque lot pour que le cache de premier niveau ne grossisse pas. Pour les fichiers, lire ligne à ligne (`BufferedReader.lines`, `Files.lines`), pas `readAllLines`. Borner la mémoire par la taille du lot, rendre les lots idempotents et valider par lot.
 
+#### R19. Quelles annotations Spring faut-il connaître, et que fait chacune ? {#spring-annotations-must-know-cheat-list}
+**Réponse :** **Beans** : `@Component` (générique), `@Service`/`@Repository`/`@Controller` (même enregistrement, plus de sens ; `@Repository` traduit aussi les exceptions de persistance), `@Configuration` + `@Bean` (méthodes de fabrique explicites, proxifiées pour que les appels à `@Bean` renvoient des singletons). **Injection** : `@Autowired` (facultatif sur un constructeur unique), `@Qualifier` (choisir par nom), `@Primary` (candidat par défaut), `@Value`/`@ConfigurationProperties` (configuration). **Cycle de vie et portée** : `@Scope`, `@Lazy`, `@PostConstruct`/`@PreDestroy`. **Conditions** : `@Profile`, `@Conditional*` (`OnProperty`, `OnClass`, `OnMissingBean`) derrière l'auto-configuration. **Boot** : `@SpringBootApplication` = `@Configuration` + `@EnableAutoConfiguration` + `@ComponentScan`. **Web** : `@RestController`, `@RequestMapping`/`@GetMapping`, `@PathVariable`, `@RequestParam`, `@RequestBody`, `@Valid`, `@ControllerAdvice` + `@ExceptionHandler`. **Données/tx** : `@Transactional`, `@Entity`, `@Query`, `@EntityGraph`. **Transverse** : `@Async`, `@Scheduled`, `@Cacheable`, `@EventListener`, `@PreAuthorize`. Expliquez le *pourquoi* de deux ou trois (par exemple les proxies derrière `@Transactional`), pas seulement la liste.
+
+**Exemple :**
+
+```java
+@Configuration
+class PaymentConfig {
+    @Bean @Primary PaymentGateway stripe() { return new StripeGateway(); }
+    @Bean @ConditionalOnProperty("payment.sandbox") PaymentGateway sandbox() { return new FakeGateway(); }
+}
+
+@Service
+class CheckoutService {
+    private final PaymentGateway gateway;
+    CheckoutService(@Qualifier("stripe") PaymentGateway gateway) { this.gateway = gateway; }   // @Autowired inutile
+
+    @Transactional @PreAuthorize("hasRole('CUSTOMER')")
+    public Receipt pay(Order order) { return gateway.charge(order); }
+}
+```
+
+#### R20. Qu'est-ce qui a changé entre Spring 5, 6 et 7 et Spring Boot 2, 3 et 4, et qu'est-ce qui casse à la migration ? {#spring-boot-versions-2-3-4-migration}
+**Réponse :** **Spring 5 / Boot 2** : Java 8+, WebFlux, endpoints fonctionnels, `javax.*`. **Spring 6 / Boot 3** (fin 2022) : Java 17 minimum, **`javax.*` devient `jakarta.*`** (première source de casse à la migration : entités, validation, imports servlet et bibliothèques tierces), Spring Security 6 (DSL lambda, beans `SecurityFilterChain`, `authorizeHttpRequests`), erreurs `ProblemDetail` (RFC 7807), interfaces HTTP déclaratives, support AOT et GraalVM native, Micrometer Observation. Les 3.x suivantes ajoutent les threads virtuels (`spring.threads.virtual.enabled=true`), `RestClient` et `JdbcClient`. **Spring 7 / Boot 4** (fin 2025) : base Jakarta EE 11, null-safety avec JSpecify, versionnement d'API natif, auto-configuration modularisée et Jackson 3. Méthode de migration : une version majeure à la fois (2.7 → 3.x → 4.x), `spring-boot-properties-migrator`, recettes OpenRewrite et guides officiels de migration, corriger les dépréciations avant le saut, et surveiller les dates de support (le support open source d'une ligne Boot est limité : vérifier la politique actuelle). Citez un gain concret (temps de démarrage, threads virtuels) pour montrer que vous migrez pour une raison.
+
+**Exemple :**
+
+```xml
+<!-- Boot 2 -> 3 : changement mécanique mais large ; OpenRewrite en fait l'essentiel -->
+<plugin>
+  <groupId>org.openrewrite.maven</groupId><artifactId>rewrite-maven-plugin</artifactId>
+  <configuration><activeRecipes><recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe></activeRecipes></configuration>
+</plugin>
+<!-- avant / après -->
+import javax.persistence.Entity;   ->   import jakarta.persistence.Entity;
+http.authorizeRequests().antMatchers("/api/**").hasRole("USER")   ->   http.authorizeHttpRequests(a -> a.requestMatchers("/api/**").hasRole("USER"))
+```
+
+#### R21. Comment construire des requêtes dynamiques avec les Specifications Spring Data JPA, et quand les préférer à JPQL ou aux requêtes dérivées ? {#spring-data-jpa-specification-dynamic-queries}
+**Réponse :** Une `Specification<T>` est un prédicat réutilisable construit avec l'API Criteria. Le repository étend `JpaSpecificationExecutor<T>` et on appelle `findAll(spec, pageable)`. De petites specs (`hasStatus`, `createdAfter`, `nameContains`) se combinent avec `and`/`or`/`not`, et un filtre `null` n'ajoute simplement aucun prédicat, ce qui rend propres les formulaires de recherche facultatifs. Choisir les **requêtes dérivées** pour 1 à 2 critères fixes (`findByStatusAndCustomerId`), **JPQL `@Query`** pour des requêtes fixes et lisibles avec jointures ou projections, les **Specifications** (ou QueryDSL) quand **l'ensemble des filtres est dynamique**. Pièges : une jointure dans une spec combinée à la pagination duplique des lignes (utiliser `distinct` ou une sous-requête), les `fetch` joins cassent la requête de comptage de `Page`, et l'API Criteria est verbeuse : garder chaque spec minuscule et testée. On peut aussi combiner les Specifications avec `@EntityGraph` sur la méthode du repository pour éviter le N+1.
+
+**Exemple :**
+
+```java
+interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {}
+
+final class OrderSpecs {
+    static Specification<Order> status(OrderStatus s)   { return (r, q, cb) -> s == null ? null : cb.equal(r.get("status"), s); }
+    static Specification<Order> createdAfter(Instant t) { return (r, q, cb) -> t == null ? null : cb.greaterThan(r.get("createdAt"), t); }
+    static Specification<Order> customerName(String n)  { return (r, q, cb) -> n == null ? null
+            : cb.like(cb.lower(r.join("customer").get("name")), "%" + n.toLowerCase() + "%"); }
+}
+
+Page<Order> page = orders.findAll(
+    Specification.where(status(filter.status())).and(createdAfter(filter.from())).and(customerName(filter.name())),
+    PageRequest.of(0, 20, Sort.by("createdAt").descending().and(Sort.by("id"))));
+```
+
+#### R22. Comment fonctionne la pagination dans Spring Data, et en quoi `Page`, `Slice` et keyset (scroll) diffèrent-ils ? {#spring-data-pagination-page-slice-keyset}
+**Réponse :** Un `Pageable` (numéro de page, taille, tri) est passé à une méthode du repository. **`Page<T>`** renvoie le contenu plus le **nombre total**, ce qui coûte un `SELECT COUNT(*)` supplémentaire (lent sur de grosses tables). **`Slice<T>`** sait seulement s'il existe une tranche suivante (il lit `size + 1` lignes), sans comptage : idéal pour « charger plus » et le scroll infini. Les deux utilisent `OFFSET`, qui ralentit et peut sauter ou répéter des lignes si les données changent pendant la pagination (voir [Persistence Q11](persistence-sql-postgres.md#offset-pagination-get-slower-less)). **Keyset / scroll** (`ScrollPosition`, `Window<T>`, Spring Data 3.1+) retient la dernière clé vue et interroge `WHERE (created_at, id) < (?, ?)` : coût constant, stable face aux écritures, mais pas de saut à la page N. Règles : toujours ajouter un **critère de départage unique** au tri (`id`), plafonner la taille de page côté serveur (`spring.data.web.pageable.max-page-size`), et ne jamais `fetch join` une collection avec pagination (Hibernate pagine en mémoire : `HHH000104`) : lire d'abord les ids, ou utiliser `@BatchSize`/un `@EntityGraph` sur une association to-one seulement. Exposer une forme d'API stable (un DTO de page, pas le JSON de `Page` du framework).
+
+**Exemple :**
+
+```java
+Page<Order>   page  = repo.findByStatus(OPEN, PageRequest.of(2, 20, Sort.by("id")));          // requête COUNT
+Slice<Order>  slice = repo.findByStatus(OPEN, PageRequest.of(2, 20, Sort.by("id")));          // pas de COUNT
+Window<Order> win   = repo.findFirst20ByStatusOrderByIdAsc(OPEN, ScrollPosition.keyset());     // keyset
+Window<Order> next  = repo.findFirst20ByStatusOrderByIdAsc(OPEN, win.positionAt(win.size() - 1));
+```
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.

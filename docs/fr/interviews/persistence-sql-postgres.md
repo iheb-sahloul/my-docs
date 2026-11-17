@@ -3043,6 +3043,49 @@ Quand la « colonne commune » n'est pas une clé (jointure sur `name`), attenti
 #### R13. Quelles sont les principales techniques pour faire monter en charge une base de données ? {#database-scaling-techniques}
 **Réponse :** Par effort croissant : (1) **réglage des requêtes et index**, correction du N+1 et pooling de connexions (la plupart des problèmes de « scalabilité » s'arrêtent là) ; (2) **cache** (applicatif, Redis, HTTP) pour réduire la charge en lecture ; (3) **scalabilité verticale** (instance plus grosse) ; (4) **réplicas de lecture** pour les charges majoritairement en lecture (attention au retard de réplication et à la lecture de ses propres écritures) ; (5) **partitionnement** des grosses tables par plage/hash/date et archivage des anciennes données ; (6) **pooling/proxy de connexions** (PgBouncer, RDS Proxy) ; (7) **batching et écritures asynchrones** via des files ; (8) **dénormalisation/vues matérialisées/modèles de lecture CQRS** ; (9) **sharding** sur plusieurs nœuds par clé de shard (le plus difficile : requêtes et transactions inter-shards, resharding) ; (10) **stores spécialisés** (recherche, séries temporelles, colonnes larges) pour les charges qui ne rentrent pas. Chaque étape ajoute un coût d'exploitation et de cohérence : les appliquer dans l'ordre et les justifier par des mesures.
 
+#### R14. Dans Oracle, qu'est-ce qu'une vue, qu'est-ce qu'une vue matérialisée, et quand utiliser chacune ? {#oracle-view-vs-materialized-view}
+**Réponse :** Une **vue** est une **requête stockée**, sans données propres : chaque accès exécute la requête sous-jacente, elle montre donc toujours des données à jour. On l'utilise pour masquer jointures et complexité, exposer un sous-ensemble de colonnes/lignes (sécurité) et offrir une interface stable quand les tables changent. Elle peut être modifiable si elle est simple (une table, sans agrégats) ; `WITH CHECK OPTION` empêche un insert/update qui rendrait la ligne invisible via la vue, `WITH READ ONLY` interdit le DML, et un **trigger `INSTEAD OF`** rend une vue complexe modifiable. Une **vue matérialisée** **stocke physiquement le résultat** : lectures rapides (indexable), mais données potentiellement périmées jusqu'au rafraîchissement. Rafraîchissement : `COMPLETE` (reconstruction) ou `FAST` (incrémental, exige un **journal de vue matérialisée** sur les tables de base), `FORCE`, à la demande (`DEMAND`, planifié/manuel) ou au `COMMIT`. Avec la réécriture de requêtes activée, l'optimiseur peut répondre de façon transparente à partir d'elle. Vue simple pour la fraîcheur et l'abstraction, vue matérialisée pour les agrégations coûteuses et le reporting où un léger retard est acceptable. Une vue n'est pas un outil de performance en soi : l'optimiseur la fusionne dans la requête englobante, donc un SQL lent reste lent.
+
+**Exemple :**
+
+```sql
+CREATE OR REPLACE VIEW v_active_customers AS
+  SELECT id, name, email FROM customers WHERE status = 'ACTIVE'
+  WITH READ ONLY;
+
+CREATE MATERIALIZED VIEW LOG ON orders WITH ROWID, SEQUENCE (customer_id, amount) INCLUDING NEW VALUES;
+CREATE MATERIALIZED VIEW mv_sales_by_customer
+  BUILD IMMEDIATE REFRESH FAST ON DEMAND ENABLE QUERY REWRITE AS
+  SELECT customer_id, SUM(amount) total, COUNT(*) cnt, COUNT(amount) c_amt FROM orders GROUP BY customer_id;
+
+BEGIN DBMS_MVIEW.REFRESH('MV_SALES_BY_CUSTOMER', 'F'); END;   -- rafraîchissement incrémental
+```
+
+#### R15. Qu'est-ce qu'une procédure stockée Oracle, comment l'appeler depuis une application Spring, et quand en utiliser une ? {#oracle-stored-procedure-from-spring}
+**Réponse :** Une procédure stockée est du **code PL/SQL stocké et exécuté dans la base**, avec des paramètres `IN`, `OUT` et `IN OUT` et sans valeur de retour (contrairement à une fonction, voir [R11](#functions-vs-stored-procedures)) ; on les regroupe en général dans des **packages** (spécification + corps). **Avantages** : logique ensembliste ou batch au plus près des données (moins d'allers-retours), un point unique pour des règles partagées par plusieurs applications, droits accordés sur la procédure plutôt que sur les tables, exécution précompilée. **Inconvénients** : logique métier répartie entre base et Java, plus difficile à versionner, tester et déboguer, compétences PL/SQL requises, dépendance à Oracle, et gestion explicite des transactions (une procédure qui fait un commit en interne casse la transaction de l'appelant). À utiliser pour le traitement de données lourd, l'intégration de legacy ou une exigence de sécurité, pas pour du CRUD ordinaire. Depuis Spring : **`SimpleJdbcCall`** (simple, sans boilerplate), **`@Procedure`/`@NamedStoredProcedureQuery`** avec JPA, ou `CallableStatement` JDBC. Passer des paramètres liés (jamais de concaténation), définir des timeouts, traiter les codes d'erreur `ORA-` de `SQLException` et garder l'appel dans un `@Transactional` Spring.
+
+**Exemple :**
+
+```sql
+CREATE OR REPLACE PROCEDURE close_order(p_order_id IN NUMBER, p_total OUT NUMBER) AS
+BEGIN
+  UPDATE orders SET status = 'CLOSED' WHERE id = p_order_id;
+  SELECT SUM(price * qty) INTO p_total FROM order_lines WHERE order_id = p_order_id;
+END;
+```
+```java
+@Repository
+class OrderProcedures {
+    private final SimpleJdbcCall closeOrder;
+    OrderProcedures(JdbcTemplate jdbc) { this.closeOrder = new SimpleJdbcCall(jdbc).withProcedureName("close_order"); }
+
+    BigDecimal close(long orderId) {
+        Map<String, Object> out = closeOrder.execute(new MapSqlParameterSource("p_order_id", orderId));
+        return (BigDecimal) out.get("p_total");
+    }
+}
+```
+
 ## 🎤 Quiz oral
 
 Dix questions réparties sur les niveaux. Répondez à chacune **à voix haute en 2–3 minutes**, sans regarder, en structurant : contexte → options → décision → compromis. Ouvrez ensuite la question et notez-vous : **0** vide · **1** définition seule · **2** plus un exemple · **3** plus compromis et piège. Sous 24/30, refaites les points faibles après deux semaines. Les questions et scénarios sont dans les sections ci-dessus.

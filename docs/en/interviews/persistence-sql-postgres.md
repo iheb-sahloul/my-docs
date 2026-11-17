@@ -3041,6 +3041,49 @@ When the "shared name column" isn't a key (joining on `name`), beware of duplica
 #### R13. What are the main techniques to scale a database? {#database-scaling-techniques}
 **Answer:** In rough order of effort: (1) **query and index tuning**, plus fixing N+1 and connection pooling (most "scaling" problems end here); (2) **caching** (application cache, Redis, HTTP cache) to cut read load; (3) **vertical scaling** (bigger instance); (4) **read replicas** for read-heavy workloads (watch replication lag and read-your-writes); (5) **partitioning** large tables by range/hash/time and archiving old data; (6) **connection pooling/proxy** (PgBouncer, RDS Proxy); (7) **batching and async writes** through queues; (8) **denormalisation/materialised views/CQRS** read models; (9) **sharding** across nodes by a shard key (hardest: cross-shard queries and transactions, resharding); (10) **specialised stores** (search, time-series, wide-column) for workloads that don't fit. Each step adds operational and consistency cost, so apply them in order and justify with measurements.
 
+#### R14. In Oracle, what is a view, what is a materialized view, and when do you use each? {#oracle-view-vs-materialized-view}
+**Answer:** A **view** is a **stored query**, no data of its own: each access runs the underlying query, so it always shows current data. Use it to hide joins and complexity, expose a restricted set of columns/rows (security), and give a stable interface when tables change. It can be updatable when simple (one table, no aggregates); `WITH CHECK OPTION` stops an insert/update that would make the row invisible through the view, `WITH READ ONLY` forbids DML, and an **`INSTEAD OF` trigger** makes a complex view writable. A **materialized view** **stores the result physically**: reads are fast (it can be indexed), but the data can be stale until refreshed. Refresh: `COMPLETE` (rebuild) or `FAST` (incremental, needs a **materialized view log** on the base tables), `FORCE`, on `DEMAND` (scheduled/manual) or on `COMMIT`. With query rewrite enabled, the optimiser can transparently answer queries from it. Choose a plain view for freshness and abstraction, a materialized view for expensive aggregations and reporting where some staleness is acceptable. A view is not a performance tool by itself: the optimiser merges it into the outer query, so slow SQL stays slow.
+
+**Example:**
+
+```sql
+CREATE OR REPLACE VIEW v_active_customers AS
+  SELECT id, name, email FROM customers WHERE status = 'ACTIVE'
+  WITH READ ONLY;
+
+CREATE MATERIALIZED VIEW LOG ON orders WITH ROWID, SEQUENCE (customer_id, amount) INCLUDING NEW VALUES;
+CREATE MATERIALIZED VIEW mv_sales_by_customer
+  BUILD IMMEDIATE REFRESH FAST ON DEMAND ENABLE QUERY REWRITE AS
+  SELECT customer_id, SUM(amount) total, COUNT(*) cnt, COUNT(amount) c_amt FROM orders GROUP BY customer_id;
+
+BEGIN DBMS_MVIEW.REFRESH('MV_SALES_BY_CUSTOMER', 'F'); END;   -- incremental refresh
+```
+
+#### R15. What is an Oracle stored procedure, and how do you call it from a Spring application? When would you use one? {#oracle-stored-procedure-from-spring}
+**Answer:** A stored procedure is **PL/SQL code stored and run inside the database**, with `IN`, `OUT` and `IN OUT` parameters and no return value (unlike a function, see [R11](#functions-vs-stored-procedures)); procedures are usually grouped into **packages** (spec + body). **Pros**: set-based or batch logic next to the data (fewer round trips), a single place for rules shared by several applications, privileges granted on the procedure instead of the tables, and precompiled execution. **Cons**: business logic split between database and Java, harder to version, test and debug, PL/SQL skills needed, lock-in to Oracle, and transaction handling must be explicit (a procedure that commits internally breaks the caller's transaction). Use it for heavy data processing, legacy integration, or when security policy requires it, not for ordinary CRUD. From Spring: **`SimpleJdbcCall`** (simple, no boilerplate), **`@Procedure`/`@NamedStoredProcedureQuery`** with JPA, or JDBC `CallableStatement`. Pass bind parameters (never concatenate), set timeouts, handle `SQLException` error codes (`ORA-`), and keep the call inside a Spring `@Transactional`.
+
+**Example:**
+
+```sql
+CREATE OR REPLACE PROCEDURE close_order(p_order_id IN NUMBER, p_total OUT NUMBER) AS
+BEGIN
+  UPDATE orders SET status = 'CLOSED' WHERE id = p_order_id;
+  SELECT SUM(price * qty) INTO p_total FROM order_lines WHERE order_id = p_order_id;
+END;
+```
+```java
+@Repository
+class OrderProcedures {
+    private final SimpleJdbcCall closeOrder;
+    OrderProcedures(JdbcTemplate jdbc) { this.closeOrder = new SimpleJdbcCall(jdbc).withProcedureName("close_order"); }
+
+    BigDecimal close(long orderId) {
+        Map<String, Object> out = closeOrder.execute(new MapSqlParameterSource("p_order_id", orderId));
+        return (BigDecimal) out.get("p_total");
+    }
+}
+```
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.

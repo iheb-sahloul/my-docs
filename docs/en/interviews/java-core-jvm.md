@@ -3753,6 +3753,56 @@ class C implements A, B {
 #### R37. What are the benefits of streams and functional style, and when are plain loops better? {#streams-vs-loops-benefits}
 **Answer:** Benefits: declarative code that states *what* not *how*, composable pipelines, easy parallelism, less mutable state, and null-safe pipelines with `Optional`. Loops are better when: performance is critical on small primitive data (no lambda/boxing overhead, JIT likes simple loops), you need early `break`/`continue`/multiple returns, you mutate local state or throw checked exceptions, you iterate with an index, or the stream would be a long, hard-to-debug chain. Readability is the main criterion: a three-step pipeline is clearer than a loop; a 10-step one with nested `flatMap` is not.
 
+#### R38. What is Maven for, and what does it give you over building by hand? {#maven-what-is-it-for}
+**Answer:** Maven is a **build and dependency-management tool** driven by a declarative `pom.xml`. It gives you: (1) **dependency resolution**: you declare `groupId:artifactId:version` and Maven downloads it and its transitive dependencies from a repository (Central, or your Nexus/Artifactory) into `~/.m2`; (2) a **standard layout** (`src/main/java`, `src/test/java`, `target/`) and a **standard lifecycle**, so any developer or CI can run `mvn verify` on any project; (3) **plugins** for compiling, testing, packaging, and more (Surefire, Failsafe, Spring Boot plugin, JaCoCo); (4) **inheritance and BOMs** (`<parent>`, `<dependencyManagement>`) to align versions across modules; (5) **reproducible releases** and publishing artifacts. It follows *convention over configuration*. Compared with Gradle: more rigid and verbose XML, but very predictable. Useful daily commands: `mvn dependency:tree` to debug version conflicts, and the Maven Wrapper (`./mvnw`) to pin the Maven version.
+
+**Example:**
+
+```xml
+<project>
+  <parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>3.4.0</version></parent>
+  <groupId>com.acme</groupId><artifactId>orders</artifactId><version>1.0.0-SNAPSHOT</version>
+  <dependencies>
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>   <!-- version from the parent BOM -->
+    <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>
+  </dependencies>
+</project>
+```
+
+#### R39. Explain the Maven lifecycle: phases, goals, and what `mvn clean install` actually runs. {#maven-lifecycle-phases-goals}
+**Answer:** Maven has three built-in lifecycles: **`clean`** (`clean`: delete `target/`), **`default`** (build and deploy) and **`site`** (documentation). The default lifecycle phases run **in order**, and running a phase runs all the earlier ones: `validate` → `compile` → `test` → `package` → `verify` → `install` → `deploy` (with others in between, such as `process-resources`, `test-compile`, `integration-test`). A **phase** is a stage; a **goal** is a task provided by a plugin (`compiler:compile`, `surefire:test`) that is **bound** to a phase (by default for the packaging type, or in your `<executions>`). So `mvn clean install` = `clean` lifecycle first, then everything up to `install` (compile, unit tests, jar, integration tests, copy to local `~/.m2`). `package` builds the artifact, `verify` runs checks (Failsafe integration tests, quality gates), `install` publishes locally, `deploy` uploads to the remote repository. Unit tests run in Surefire at `test`, integration tests in Failsafe at `integration-test`/`verify`.
+
+**Example:**
+
+```xml
+<!-- bind a goal to a phase: run integration tests at `verify` -->
+<plugin>
+  <artifactId>maven-failsafe-plugin</artifactId>
+  <executions><execution><goals><goal>integration-test</goal><goal>verify</goal></goals></execution></executions>
+</plugin>
+```
+```bash
+mvn clean package -DskipTests   # skip unit tests, still builds the jar
+mvn verify                      # compile + unit + integration tests, no install
+mvn surefire:test               # run one goal directly, without the lifecycle
+```
+
+#### R40. What are Maven dependency scopes, and how do they behave transitively? {#maven-dependency-scopes}
+**Answer:** The scope controls **on which classpaths** a dependency is present and whether it is passed on to consumers. **`compile`** (default): everywhere, and transitive. **`provided`**: needed to compile and test but supplied at runtime by the container (Servlet API, Lombok); not packaged, not transitive. **`runtime`**: not needed to compile, only at run time (a JDBC driver); transitive. **`test`**: only for test compilation and execution (JUnit, Mockito, Testcontainers); never transitive. **`system`**: a local jar by path, deprecated, avoid. **`import`**: only inside `<dependencyManagement>` with `<type>pom</type>`, to import a BOM's version table (`spring-boot-dependencies`). Related: `<optional>true</optional>` means "I need it but my consumers don't inherit it", and `<exclusions>` removes an unwanted transitive dependency. Typical bug: a `test`-scoped library used in `src/main` (compile error), or a `provided` dependency missing at runtime in a plain jar (`NoClassDefFoundError`).
+
+**Example:**
+
+```xml
+<dependencyManagement><dependencies>
+  <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-dependencies</artifactId>
+    <version>3.4.0</version><type>pom</type><scope>import</scope></dependency>   <!-- BOM import -->
+</dependencies></dependencyManagement>
+
+<dependency><groupId>org.postgresql</groupId><artifactId>postgresql</artifactId><scope>runtime</scope></dependency>
+<dependency><groupId>jakarta.servlet</groupId><artifactId>jakarta.servlet-api</artifactId><scope>provided</scope></dependency>
+<dependency><groupId>org.mockito</groupId><artifactId>mockito-core</artifactId><scope>test</scope></dependency>
+```
+
 ## 🎤 Oral quiz
 
 Ten questions picked across the levels. Answer each **aloud in 2–3 minutes** without looking, structuring it as context → options → decision → trade-offs. Then open the linked question and score yourself: **0** blank · **1** definition only · **2** plus an example · **3** plus trade-offs and a pitfall. Below 24/30, redo the weak ones after two weeks. Questions and scenarios are in the sections above.
